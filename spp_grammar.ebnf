@@ -4,7 +4,6 @@
 (*---------------------------------------------------------------*)
 
 (* Digit and letters *)
-
 lc-letter = 
 	"a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" |
 	"k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" |
@@ -15,29 +14,36 @@ uc-letter =
 	"K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
 	"V" | "W" | "X" | "Y" | "Z";
 
-digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+non-zero-digit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
+zero   = "0";
+digit  = zero | non-zero-digit;
 letter = lc_letter | uc_letter;
 
 (* Symbols *)
 (* how to represent double quote " ??? *)
-symbol =  
-	"," | ";" | ":" | "=" | "$" | "&" | "|" | "(" | "!" | ")" | 
-	"-" | "<" | ">" | "," | "?" | "." | "/" | "+" | "%" | "*" |
-	"{" | "}" | "_" | "\" | "[" | "]" | "~" | "'"; 
+symbol = symbol_no_quote | quote;
+quote  = "";
+
+symbol_no_quote = 
+    "," | ";" | ":" | "=" | "$" | "&" | "|" | "(" | "!" | ")" | 
+    "-" | "<" | ">" | "," | "?" | "." | "/" | "+" | "%" | "*" |
+    "{" | "}" | "_" | "\" | "[" | "]" | "~" | "'";
 
 (* Symbol that might appear in words *)
 underscore = "_";
 hyphen     = "-";
+opening-parenthesis = "(";
+closing-parenthesis = ")";
 
 (* Whitespace characters *)
 space        = " ";
 newline      = "\n" | "\r\n" | "\r";
-vertical_tab = "\x0B";
+vertical-tab = "\x0B";
 tabulation   = "\t";
-form_feed    = "\f";
+form-feed    = "\f";
 
-whitespace = space | newline | tabulation | vertical_tab | form_feed;
+whitespace = space | newline | tabulation | vertical-tab | form_feed;
 
 (* Combinations *)
 char-no-digit = letter | underscore;
@@ -54,36 +60,77 @@ word-no-digit-first 	   = char-no-digit, *{ char };
 word-hyphen-letter-first   = letter, *{ char-hyphen };
 word-hyphen-no-digit-first = char-no-digit, *{ char-hyphen};
 
-
 (*---------------------------------------------------------------*)
 (*-                      Sushi++ language                       -*)
+(*-       Rules directly related to the language structure      -*)
 (*---------------------------------------------------------------*)
 
-(*  *) 
 (* General structure *)
-program = declaration | definition;
+program = *{ declaration | definition };
 
 (* Keywords *)
-(* definition, lambda,... *)
-keyword_maki   = "maki";
-keyword_soy    = "soy"; 
+keyword-maki   = "maki";
+keyword-soy    = "soy"; 
 
-(* flow control *)
-keyword_if     = "if";
-keyword_elseif = "else if";
-keyword_else   = "else";
-keyword_roll   = "roll";
+(* Flow control *)
+keyword-if     = "if";
+keyword-elseif = "else if";
+keyword-else   = "else";
+keyword-roll   = "roll";
 
-(* Variables and parameters *)
-variable = ;
+(* Symbols *)
+symb-func-def = ":";
+symb-case-def = "->";
+symb-assign   = "=";
+symb-comma    = ",";
+symb-quote    = quote;
+
+symb-end-of-scope     = ";;";
+symb-op-parenthesis   = "(";
+symb-cl-parenthesis   = ")";
+
+(* Delimiters *)
+delim-arr-op = "[";
+delim-arr-cl = "]";
+delim-lst-op = "{";
+delim-lst-cl = "}";
+delim-tup-op = "<";
+delim-tup-cl = ">";
+
+(* Constant *)
+constant = number | string | datastructure;
+
+number  = integer | float;
+integer = digit, { *digit };
+float   = ( zero | non-zero-digit, *{ digit } ), symb-comma, *{ digit };
+string  = quote, word , quote;
+
+(* Datastructure *)
+
+array = delim-arr-op, *{ expression }, delim-arr-cl;
+list  = delim-lst-op, *{ expression }, delim-lst-cl;
+tuple = delim-tup-op, *{ expression }, delim-tup-cl;
+
+(* Identifiers name *)
+var-name   = word-no-digit-first;
+param-name = word-no-digit-first;
+func-name  = word-hyphen-no-digit-first;
 
 (* Definitions *)
-definition = keyword-maki, space, def-item;
+definition = keyword-maki, def-item;
 def-item   = def-func | def-var;
 
 (* Function definition *)
-def-func = keyword_soy, space, *{ }
+def-func   = function-name, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
+def-lambda = keyword-soy, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
+
+(* Variable *)
+def-var = var-name, symb-assign, [ symb-op-parenthesis ], ( expression | def-lambda ), [ symb-cl-parenthesis ];
+
+(* Declaration *)
 
 
+(* Expression *)
+expression = constant;
 
 
