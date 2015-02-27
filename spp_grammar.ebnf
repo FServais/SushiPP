@@ -20,6 +20,12 @@ zero   = "0";
 digit  = zero | non-zero-digit;
 letter = lc_letter | uc_letter;
 
+hexa-digit = 
+    digit | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" |
+    "d" | "e" | "f";
+
+bin-digit  = "0" | "1";
+
 (* Symbols *)
 (* how to represent double quote " ??? *)
 symbol = symbol_no_quote | quote;
@@ -89,6 +95,9 @@ symb-end-of-scope     = ";;";
 symb-op-parenthesis   = "(";
 symb-cl-parenthesis   = ")";
 
+symb-hexa-pref = "0x";
+symb-bin-pref = "0b";
+
 (* Delimiters *)
 delim-arr-op = "[";
 delim-arr-cl = "]";
@@ -100,13 +109,16 @@ delim-tup-cl = ">";
 (* Constant *)
 constant = number | string | datastructure;
 
-number  = integer | float;
+number  = integer | float | bin | hexa;
+
 integer = digit, { *digit };
+hexa    = symb-hexa-pref, hexa-digit, *{ hexa-digit };
+bin     = symb-bin-pref, bin-digit, *{ bin-digit };
 float   = ( zero | non-zero-digit, *{ digit } ), symb-comma, *{ digit };
+
 string  = quote, word , quote;
 
 (* Datastructure *)
-
 array = delim-arr-op, *{ expression }, delim-arr-cl;
 list  = delim-lst-op, *{ expression }, delim-lst-cl;
 tuple = delim-tup-op, *{ expression }, delim-tup-cl;
@@ -131,6 +143,7 @@ def-var = var-name, symb-assign, [ symb-op-parenthesis ], ( expression | def-lam
 
 
 (* Expression *)
-expression = constant;
+expression = constant | func-call;
+func-call  = ;
 
 
