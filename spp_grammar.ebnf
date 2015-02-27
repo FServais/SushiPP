@@ -1,18 +1,89 @@
-(* Constants and identifier *)
+(*---------------------------------------------------------------*)
+(*-                      Basic components                       -*)
+(*-  Set of symbols for construction of basic chain like words  -*)
+(*---------------------------------------------------------------*)
 
-digit    = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+(* Digit and letters *)
 
-lowercase alphabet character = 
-		   "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" |
-		   "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" |
-		   "v" | "w" | "x" | "y" | "z";
+lc-letter = 
+	"a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" |
+	"k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" |
+	"v" | "w" | "x" | "y" | "z";
 
-uppercase alphabet character =
-		   "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" |
-		   "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
-		   "V" | "W" | "X" | "Y" | "Z";
+uc-letter =
+	"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" |
+	"K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
+	"V" | "W" | "X" | "Y" | "Z";
 
-character alphabet = lowercase alphabet character | uppercase alphabet character
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-program = declartion | definition; 
-declaration = statement | ;
+letter = lc_letter | uc_letter;
+
+(* Symbols *)
+(* how to represent double quote " ??? *)
+symbol =  
+	"," | ";" | ":" | "=" | "$" | "&" | "|" | "(" | "!" | ")" | 
+	"-" | "<" | ">" | "," | "?" | "." | "/" | "+" | "%" | "*" |
+	"{" | "}" | "_" | "\" | "[" | "]" | "~" | "'"; 
+
+(* Symbol that might appear in words *)
+underscore = "_";
+hyphen     = "-";
+
+(* Whitespace characters *)
+space        = " ";
+newline      = "\n" | "\r\n" | "\r";
+vertical_tab = "\x0B";
+tabulation   = "\t";
+form_feed    = "\f";
+
+whitespace = space | newline | tabulation | vertical_tab | form_feed;
+
+(* Combinations *)
+char-no-digit = letter | underscore;
+char-no-symb  = letter | digit;
+char          = char-no-digit | digit;
+char-hyphen   = char | "-";
+
+(* Words *)
+word              = char, *{ char };
+word-hyphen       = char-hyphen, *{ char-hyphen };
+word-letter-first = letter, *{ char };
+
+word-no-digit-first 	   = char-no-digit, *{ char };
+word-hyphen-letter-first   = letter, *{ char-hyphen };
+word-hyphen-no-digit-first = char-no-digit, *{ char-hyphen};
+
+
+(*---------------------------------------------------------------*)
+(*-                      Sushi++ language                       -*)
+(*---------------------------------------------------------------*)
+
+(*  *) 
+(* General structure *)
+program = declaration | definition;
+
+(* Keywords *)
+(* definition, lambda,... *)
+keyword_maki   = "maki";
+keyword_soy    = "soy"; 
+
+(* flow control *)
+keyword_if     = "if";
+keyword_elseif = "else if";
+keyword_else   = "else";
+keyword_roll   = "roll";
+
+(* Variables and parameters *)
+variable = ;
+
+(* Definitions *)
+definition = keyword-maki, space, def-item;
+def-item   = def-func | def-var;
+
+(* Function definition *)
+def-func = keyword_soy, space, *{ }
+
+
+
+
