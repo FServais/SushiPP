@@ -1,0 +1,66 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+name: Sushi++
+scopeName: source.sushipp
+fileTypes: [spp, sushipp]
+uuid: 07edafb1-1c30-4106-8c69-e5d61c81c3ec
+
+patterns:
+- comment: Control flow keywords
+  name: keyword.control.sushipp
+  match: \b(if|else( if)?|roll|menu|elseif|to|nori)\b
+
+- comment: Operators
+  name: keyword.operator.sushipp
+  match: (\+|-|/|\*\*?|\.|!|==|<|>|<=|>=|=)
+
+- comment: Delimiters
+  name: keyword.other.sushipp
+  match: (->|;;|:)
+
+- comment: Other keywords
+  name: storage.type.sushipp
+  match: (maki|soy)
+
+- comment: Named function declaration
+  match: 'maki +([a-zA-Z_][\w-]*)((?: +[a-zA-Z_]\w*)*)? *:'
+  captures:
+    '1': {name: entity.name.function.sushipp}
+    '2': {name: variable.parameter.sushipp}
+
+- comment: Lambda function declaration
+  match: 'soy((?: +[a-zA-Z_]\w*)*)? *:'
+  captures:
+    '1': {name: variable.parameter.sushipp }
+
+- comment: Variable declaration
+  match: maki +([a-zA-Z_]\w*) +=
+  captures:
+    '1': {name: variable.other.sushipp}
+
+- comment: Comments
+  name: comment.line.sushipp
+  match: '\$.*$'
+
+- comment: string literal
+  name: string.quoted.double.sushipp
+  begin: "\""
+  end: "\""
+
+- comment: string literal
+  name: string.quoted.simple.sushipp
+  begin: "'"
+  end: "'"
+
+- comment: numeric constants
+  name: constant.numeric.sushipp
+  match: '\b(?:[+-]? *\d+(?:,\d+)?|0x[\da-fA-F]+|0b[01]+)\b'
+
+- comment: function call
+  name: meta.function-call.sushipp
+  match: '([a-zA-Z_][\w-]*)'
+  
+- comment: support functions
+  name: support.function.sushipp
+  match: '\b(print|array_(len|add|del|empty|push|pop|top|len|cpy)|list_(top|pop|len|tail))\b'
+
+    
