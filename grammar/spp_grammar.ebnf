@@ -134,13 +134,12 @@ param-name = word-no-digit-first;
 func-name  = word-hyphen-no-digit-first;
 
 (* Definitions *)
-(* Note:  space or whitespace ? *)
-definition = keyword-maki, space, def-item;
+definition = keyword-maki, def-item;
 def-item   = def-func | def-var;
 
 (* Function definition *)
-def-func   = function-name, *{ space, param-name }, [ space ], symb-func-def, [ space ], declaration, [ whitespace ], symb-end-of-scope;
-def-lambda = keyword-soy, *{ space, param-name }, [ space ], symb-func-def, [ space ], declaration, [ whitespace ], symb-end-of-scope;
+def-func   = function-name, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
+def-lambda = keyword-soy, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
 
 (* Variable *)
 def-var = var-name, symb-assign, [ symb-op-parenthesis ], ( expression | def-lambda ), [ symb-cl-parenthesis ];
