@@ -29,7 +29,7 @@ bin-digit  = "0" | "1";
 (* Symbols *)
 (* how to represent double quote " ??? *)
 symbol = symbol_no_quote | quote;
-quote  = "";
+quote  = '"';
 
 symbol_no_quote = 
     "," | ";" | ":" | "=" | "$" | "&" | "|" | "(" | "!" | ")" | 
@@ -78,11 +78,13 @@ program = *{ declaration | definition };
 keyword-maki   = "maki";
 keyword-soy    = "soy"; 
 
+
 (* Flow control *)
 keyword-if     = "if";
 keyword-elseif = "else if";
 keyword-else   = "else";
 keyword-roll   = "roll";
+keyword-nori   = "nori";
 
 (* Symbols *)
 symb-func-def = ":";
@@ -90,6 +92,7 @@ symb-case-def = "->";
 symb-assign   = "=";
 symb-comma    = ",";
 symb-quote    = quote;
+symb-vbar     = "|";
 
 symb-end-of-scope     = ";;";
 symb-op-parenthesis   = "(";
@@ -119,6 +122,8 @@ float   = ( zero | non-zero-digit, *{ digit } ), symb-comma, *{ digit };
 string  = quote, word , quote;
 
 (* Datastructure *)
+datastructure = array | list | tuple;
+
 array = delim-arr-op, *{ expression }, delim-arr-cl;
 list  = delim-lst-op, *{ expression }, delim-lst-cl;
 tuple = delim-tup-op, *{ expression }, delim-tup-cl;
