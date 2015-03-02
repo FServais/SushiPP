@@ -41,8 +41,8 @@ Regex : "(==|<=?|>=?)"
 
 - Special operator :
 Desc : concatenation, function def, end of scope operators, structures
-Values : ".", ":", ";;", "[", "]", "(", ")", "<", ">", "{", "}"
-Regex : "(\.|:|;;|\[|\]|<|>|\(|\)|{|})" 
+Values : ".", ":", ";;", "[", "]", "(", ")", "<", ">", "{", "}", "|"
+Regex : "(\.|:|;;|\[|\]|<|>|\(|\)|{|}|\|)" 
 
 - Identifier
 Desc : variable, parameter, function name,... 
