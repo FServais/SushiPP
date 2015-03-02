@@ -26,8 +26,8 @@ Regex : "="
 
 - Arithmetic operator :
 Desc : arithmetic operator
-Values : +, -, *, /, **
-Regex : "(++?|--?|**?|/)"
+Values : +, -, *, /, **, %
+Regex : "(++?|--?|**?|/|%)"
 
 - Logical operator :
 Desc : logical operator
