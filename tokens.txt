@@ -1,0 +1,66 @@
+>>>>>>>>> TOKENS <<<<<<<<<
+---------------------------------
+
+Note: 1st draft, from "scratch".
+
+---------------------------------
+
+Scheme : 
+- Token category
+Desc : short description
+Values : val1 val2,...
+Regex : regex for matching the 
+	tokens of the category 
+
+---------------------------------
+
+- Keyword : 
+Desc: language keywords
+Values : "maki", "nori", "roll", "soy", "if", "elseif", "else", "to"
+Regex : "(maki|nori|roll|soy|if|else(if)?|to)"
+
+- Assignement operator :
+Desc : assignment operator
+Values : "="
+Regex : "="
+
+- Arithmetic operator :
+Desc : arithmetic operator
+Values : +, -, *, /, **
+Regex : "(+|-|**?|/)"
+
+- Logical operator :
+Desc : logical operator
+Values : ||, |, &, &&, ^, !
+Regex : "(\|\|?|&&?|\^|!)"
+
+- Comparision operators :
+Desc : comparision operators
+Values : ==, <, >, <=, >=
+Regex : "(==|<=?|>=?)"
+
+- Special operator :
+Desc : concatenation, function def, end of scope operators, structures
+Values : ".", ":", ";;", "[", "]", "(", ")", "<", ">", "{", "}"
+Regex : "(\.|:|;;|\[|\]|<|>|\(|\)|{|})" 
+
+- Identifier
+Desc : variable, parameter, function name,... 
+Values: func_name, varName2, ...
+Regex: "\b[a-zA-Z][\w-]*\b"
+
+- Integer literal
+Desc : integers
+Values : "5", "153", "-5" 
+Regex : "([-+][ \t]*)?[0-9]+"
+
+- Float literal
+Desc : float
+Values : "5.25", ".25", "-25.2"
+Regex : ([-+][ \t]*)?([0-9]+,[0-9]*|,[0-9]+)(eE([+-][ \t]*)?[0-9]+)?
+
+- String literal
+Desc: a quoted string
+Values: "a", "b", "dfhsfh",...
+Regex : "\"[^\"]*\""
+
