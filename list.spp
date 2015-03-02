@@ -1,12 +1,22 @@
+$ Get the size of a list
+$ list: list
+maki list_size list : 
+	if list_empty list
+		nori 0
+	;;
+
+	nori (list_size (list_tail list)) + 1;
+;;
+
 
 $ Append 2 lists together
-$ list1, list2 : two lists
+$ list1, list2: two lists
 maki list_append list1 list2 :
 	if list_empty list1
 		nori list2
 	;;
 
-	list_cons (list_head list1) (append (list_tail list1) list2)
+	nori list_cons (list_head list1) (append (list_tail list1) list2)
 ;;
 
 list_append {2 3 4} {5 6 7}
@@ -19,7 +29,19 @@ maki list_reverse list :
 		nori list
 	;;
 
-	list_append (list_reverse (list_tail list)) (list_head list)
+	nori list_append (list_reverse (list_tail list)) (list_head list)
 ;;
 
 list_reverse {3 4 1 3 2 5 4 "ER" "Z" 43}
+
+
+$ Apply a function of one argument to each element of the list.
+$ fun: function of one argument to apply.
+$ list: list of elements to which the function of applied.
+maki list_map fun list : 
+	if list_empty list
+		nori list
+	;;
+
+	nori list_cons (fun (list_head list)) (list_map fun (list_tail list))
+;;
