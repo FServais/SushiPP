@@ -17,7 +17,7 @@ Regex : regex for matching the
 - Keyword : 
 Desc: language keywords
 Values : "maki", "nori", "roll", "soy", "if", "elseif", "else", "to"
-Regex : "(maki|nori|roll|soy|if|else(if)?|to)"
+Regex : "(maki|nori|roll|menu|soy|if|else(if)?|to)"
 
 - Assignement operator :
 Desc : assignment operator
