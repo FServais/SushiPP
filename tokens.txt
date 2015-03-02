@@ -16,8 +16,8 @@ Regex : regex for matching the
 
 - Keyword : 
 Desc: language keywords
-Values : "maki", "nori", "roll", "soy", 
-Regex : "(maki|nori|roll|soy)"
+Values : "maki", "nori", "roll", "soy", "if", "elseif", "else", "to"
+Regex : "(maki|nori|roll|soy|if|else(if)?|to)"
 
 - Assignement operator :
 Desc : assignment operator
@@ -41,13 +41,13 @@ Regex : "(==|<=?|>=?)"
 
 - Special operator :
 Desc : concatenation, function def, end of scope operators, structures
-Values : ".", ":", ";;", "[", "]", "(", ")", "<", ">"
-Regex : "(\.|:|;;|\[|\]|<|>|\(|\))" 
+Values : ".", ":", ";;", "[", "]", "(", ")", "<", ">", "{", "}"
+Regex : "(\.|:|;;|\[|\]|<|>|\(|\)|{|})" 
 
 - Identifier
 Desc : variable, parameter, function name,... 
 Values: func_name, varName2, ...
-Regex: "\b[a-zA-z][\w-]*\b"
+Regex: "\b[a-zA-Z][\w-]*\b"
 
 - Integer literal
 Desc : integers
@@ -56,7 +56,8 @@ Regex : "([-+][ \t]*)?[0-9]+"
 
 - Float literal
 Desc : float
-Values : ([-+][ \t]*)?([0-9]+(\.[0-9]*)?|\.[0-9]+)(eE([+-][ \t]*)?[0-9]+)?
+Values : "5.25", ".25", "-25.2"
+Regex : ([-+][ \t]*)?([0-9]+(\.[0-9]*)?|\.[0-9]+)(eE([+-][ \t]*)?[0-9]+)?
 
 - String literal
 Desc: a quoted string
