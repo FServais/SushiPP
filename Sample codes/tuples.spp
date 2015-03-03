@@ -1,0 +1,4 @@
+maki make_coord x y : 
+	nori <x y>
+;;
+
