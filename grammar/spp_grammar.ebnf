@@ -78,8 +78,8 @@ param-list = { T_IDENTIFIER, [ T_DELIM_CHEVR_BEG, type, T_DELIM_CHEVR_END ] };
 func-body = ( declaration | expression_eol | statement )+;
 
 (* Variables *)
-decl-vars = decl-var, { T_DELIM_COMMA, [T_DELIM_EOL], decl-var };
-decl-var  = variable, T_OPERATOR_ASSIGN_VAR, ( expression | datastructure );
+decl-vars = assign-var, { T_DELIM_COMMA, [T_DELIM_EOL], assign-var };
+assign-var  = variable, T_OPERATOR_ASSIGN_VAR, ( expression | datastructure );
 variable  = T_IDENTIFIER;
 
 (* Expressions *)
@@ -103,6 +103,7 @@ expression = T_OPERATOR_INCR, expression;
 expression = T_OPERATOR_DECR, expression;
 expression = expression, T_OPERATOR_INCR;
 expression = expression, T_OPERATOR_DECR;
+expression = expression, T_OPERATOR_ASSIGN_VAR, expression;
 
 (* Braced expression : expression sourrounded with parenthesis *)
 braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
