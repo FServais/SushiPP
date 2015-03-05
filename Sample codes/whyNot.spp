@@ -1,0 +1,79 @@
+maki main arg1 : 
+	$ Variable
+	maki eat_var = 21
+
+
+	$ Function
+	maki fun_print : print "4" ;;
+
+
+	$ Closure
+	maki useless = 4
+	maki useless_func x : 
+		arg1 = 2
+		print arg1
+		print x
+		print useless
+	;; $ End of "useless_func" scope
+
+	
+	$ Passing a function as an argument
+	maki embedded_func lambda_func y : 
+		lambda_func y
+	;; $ end of "embedded_func" scope
+
+	embedded_func (maki lambda_test x : x*x) 79
+	(embedded_func (maki lambda_test x : x*x) 79)
+	maki lambda_test x : x*x;;
+	embedded_func lambda_test 79
+
+
+	maki add x y : x + y;;
+	maki n_sum add_func a b n : 
+		if n==0
+			nori 0;; $nori = return
+		else
+			n_sum add a b (n-1);;
+	;; $ End of "n_sum" scope
+
+	n_sum add 2 4 88
+
+	maki tab = [i = 4 to 9]
+	maki tab2
+	tab2 = [4 3]
+
+	roll i = 0 to 3
+		print i
+	;;
+
+	menu arg1 
+		"choix1" -> embedded_func useless_func 2;;
+		"test_value" -> embedded_func useless_func arg1;;
+
+;; 
+
+$Run
+main 34
+
+
+
+
+KEYWORDS
+
+cali
+soy
+mirin
+sashimi
+wasabi
+nigiri
+rice
+temaki
+tuna
+salmon
+alga/algae -> nori
+avocado
+carot
+stick
+roll -> boucles
+gari (gingembre)
+makisu
