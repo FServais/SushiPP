@@ -7,6 +7,7 @@
 (* Keywords *) 
 T_KEYWORD_MAKI  = "maki";
 T_KEYWORD_NORI  = "nori";
+T_KEYWORD_FOR   = "for";
 T_KEYWORD_ROLL  = "roll";
 T_KEYWORD_MAT   = "mat"; 
 T_KEYWORD_IF    = "if";
@@ -21,6 +22,9 @@ T_KEYWORD_TUPLE = "tuple";
 T_KEYWORD_ARRAY = "array";
 T_KEYWORD_LIST  = "list";
 T_KEYWORD_STR   = "string";
+T_KEYWORD_CONT  = "continue";
+T_KEYWORD_BREAK = "break";
+T_KEYWORD_DEFAU = "_";
 
 type = T_KEYWORD_STR | T_KEYWORD_TUPLE | T_KEYWORD_ARRAY 
 		| T_KEYWORD_INT | T_KEYWORD_FLOAT | T_KEYWORD_LIST;
@@ -59,6 +63,7 @@ T_DELIM_BRACK_BEG = "[";
 T_DELIM_BRACK_END = "]";
 T_DELIM_CHEVR_BEG = "<";
 T_DELIM_CHEVR_END = ">";
+T_DELIM_ARROW     = "->";
 
 (*---------------------------------------------------------------*)
 (*-                       Sushi++ syntax                        -*)
@@ -66,16 +71,17 @@ T_DELIM_CHEVR_END = ">";
 (*---------------------------------------------------------------*)
 
 (* General structure *)
-program = { declaration | expression_eol | statement };
+program = { program_item };
+program_item = declaration | expression_eol | statement;
 
 (* Declaration *)
 declaration = T_KEYWORD_MAKI, ( decl-func | decl-vars ), T_DELIM_EOL;
 
 (* Named functions *)
-decl-func = T_IDENTIFIER, param-list, T_OPERATOR_ASSIGN_FUNC, func-body, T_DELIM_EOS;
+decl-func = T_IDENTIFIER, param-list, T_OPERATOR_ASSIGN_FUNC, [T_DELIM_EOL], func-body, T_DELIM_EOS;
 param-list = { T_IDENTIFIER, [ T_DELIM_CHEVR_BEG, type, T_DELIM_CHEVR_END ] };
 
-func-body = ( declaration | expression_eol | statement )+;
+func-body = program_item+;
 
 (* Variables *)
 decl-vars = assign-var, { T_DELIM_COMMA, [T_DELIM_EOL], assign-var };
@@ -103,7 +109,10 @@ expression = T_OPERATOR_INCR, expression;
 expression = T_OPERATOR_DECR, expression;
 expression = expression, T_OPERATOR_INCR;
 expression = expression, T_OPERATOR_DECR;
-expression = expression, T_OPERATOR_ASSIGN_VAR, expression;
+expression = assignable-expression, T_OPERATOR_ASSIGN_VAR, expression;
+
+(* Expression that can be assigned a value *)
+assignable-expression = variable | datastructure-access;
 
 (* Braced expression : expression sourrounded with parenthesis *)
 braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
@@ -130,5 +139,29 @@ make-sequence-list  = T_DELIM_BRACE_BEG, seq-expression, T_DELIM_BRACK_END;
 make-sequence-array = T_DELIM_BRACK_BEG, seq-expression, T_DELIM_BRACK_END;
 
 seq-expression = T_CONST_INT, T_KEYWORD_TO, T_CONST_INT;
+
+(* Statement *)
+statement = condition | loop | switch | return | T_CONTINUE;
+
+(* Condition *)
+condition = T_KEYWORD_IF, expression_eol, program_item+, 
+			{ T_KEYWORD_ELIF, expression_eol, program_item+ }, 
+			[ T_KEYWORD_ELSE, [ T_DELIM_EOL ], program_item+ ], T_DELIM_EOS;
+
+(* Loops *)
+loop = for_list | for_cond | roll;
+for_list = T_KEYWORD_FOR, variable, T_OPERATOR_ASSIGN_VAR, expression_eol, { program_item }, T_DELIM_EOS;
+for_cond = T_KEYWORD_FOR, variable, T_OPERATOR_ASSIGN_VAR, expression, 
+					T_DELIM_COMMA, expression, 
+					T_DELIM_COMMA, expression_eol,
+					{ program_item },
+					T_DELIM_EOS;
+
+roll = T_KEYWORD_ROLL, expression_eol, { program_item }, T_DELIM_EOS;
+
+(* Switch *)
+switch = T_KEYWORD_MENU, expression_eol, switch-body+, [ switch-default ], T_DELIM_EOS;
+switch-body = expression, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
+switch-default = T_KEYWORD_DEFAU, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
 
 
