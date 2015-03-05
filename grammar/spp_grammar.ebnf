@@ -1,154 +1,134 @@
 (*---------------------------------------------------------------*)
-(*-                      Basic components                       -*)
+(*-                      Terminal symbols                       -*)
 (*-  Set of symbols for construction of basic chain like words  -*)
 (*---------------------------------------------------------------*)
 
-(* Digit and letters *)
-lc-letter = 
-	"a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" |
-	"k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" |
-	"v" | "w" | "x" | "y" | "z";
+(* Tokens *)
+(* Keywords *) 
+T_KEYWORD_MAKI  = "maki";
+T_KEYWORD_NORI  = "nori";
+T_KEYWORD_ROLL  = "roll";
+T_KEYWORD_MAT   = "mat"; 
+T_KEYWORD_IF    = "if";
+T_KEYWORD_ELIF  = "elseif";
+T_KEYWORD_ELSE  = "else";
+T_KEYWORD_TO    = "to";
+T_KEYWORD_SOY   = "soy";
+T_KEYWORD_MENU  = "menu";
+T_KEYWORD_INT   = "int";
+T_KEYWORD_FLOAT = "float";
+T_KEYWORD_TUPLE = "tuple";
+T_KEYWORD_ARRAY = "array";
+T_KEYWORD_LIST  = "list";
+T_KEYWORD_STR   = "string";
 
-uc-letter =
-	"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" |
-	"K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
-	"V" | "W" | "X" | "Y" | "Z";
+type = T_KEYWORD_STR | T_KEYWORD_TUPLE | T_KEYWORD_ARRAY 
+		| T_KEYWORD_INT | T_KEYWORD_FLOAT | T_KEYWORD_LIST;
 
-non-zero-digit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+(* Constant expression : integers, float,.. *)
+T_CONST_INT    = "int_val"; 
+T_CONST_FLOAT  = "float_val";
+T_CONST_STRING = "string_val";
 
-zero   = "0";
-digit  = zero | non-zero-digit;
-letter = lc_letter | uc_letter;
+constant = T_CONST_STRING | T_CONST_FLOAT | T_CONST_INT;
 
-hexa-digit = 
-    digit | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" |
-    "d" | "e" | "f";
+(* Identifier *)
+T_IDENTIFIER = "id";
 
-bin-digit  = "0" | "1";
+(* Operators *)
+T_OPERATOR_ARITH       = "op_arith";
+T_OPERATOR_LOGICAL     = "op_logic";
+T_OPERATOR_COMP        = "op_comp";
+T_OPERATOR_INCR 	   = "++";
+T_OPERATOR_DECR		   = "--";
+T_OPERATOR_NEG 		   = "!";
+T_OPERATOR_CONCAT      = ".";
 
-(* Symbols *)
-(* how to represent double quote " ??? *)
-symbol = symbol_no_quote | quote;
-quote  = '"';
+T_OPERATOR_ASSIGN_VAR  = "=";
+T_OPERATOR_ASSIGN_FUNC = ":";
 
-symbol_no_quote = 
-    "," | ";" | ":" | "=" | "$" | "&" | "|" | "(" | "!" | ")" | 
-    "-" | "<" | ">" | "," | "?" | "." | "/" | "+" | "%" | "*" |
-    "{" | "}" | "_" | "\" | "[" | "]" | "~" | "'";
-
-(* Symbol that might appear in words *)
-underscore = "_";
-hyphen     = "-";
-opening-parenthesis = "(";
-closing-parenthesis = ")";
-
-(* Whitespace characters *)
-space        = " ";
-newline      = "\n" | "\r\n" | "\r";
-vertical-tab = "\x0B";
-tabulation   = "\t";
-form-feed    = "\f";
-
-whitespace = space | newline | tabulation | vertical-tab | form_feed;
-
-(* Combinations *)
-char-no-digit = letter | underscore;
-char-no-symb  = letter | digit;
-char          = char-no-digit | digit;
-char-hyphen   = char | "-";
-
-(* Words *)
-word              = char, *{ char };
-word-hyphen       = char-hyphen, *{ char-hyphen };
-word-letter-first = letter, *{ char };
-
-word-no-digit-first 	   = char-no-digit, *{ char };
-word-hyphen-letter-first   = letter, *{ char-hyphen };
-word-hyphen-no-digit-first = char-no-digit, *{ char-hyphen};
+(* Delimiters *)
+T_DELIM_COMMA     = ",";
+T_DELIM_EOL       = "\n";
+T_DELIM_EOS       = ";;";
+T_DELIM_PAREN_BEG = "(";
+T_DELIM_PAREN_END = ")";
+T_DELIM_BRACE_BEG = "{";
+T_DELIM_BRACE_END = "}";
+T_DELIM_BRACK_BEG = "[";
+T_DELIM_BRACK_END = "]";
+T_DELIM_CHEVR_BEG = "<";
+T_DELIM_CHEVR_END = ">";
 
 (*---------------------------------------------------------------*)
-(*-                      Sushi++ language                       -*)
-(*-       Rules directly related to the language structure      -*)
+(*-                       Sushi++ syntax                        -*)
+(*-                      Syntactic rules                        -*)
 (*---------------------------------------------------------------*)
 
 (* General structure *)
-program = *{ declaration | definition };
-
-(* Keywords *)
-keyword-maki   = "maki";
-keyword-soy    = "soy"; 
-
-
-(* Flow control *)
-keyword-if     = "if";
-keyword-elseif = "else if";
-keyword-else   = "else";
-keyword-roll   = "roll";
-keyword-nori   = "nori";
-
-(* Symbols *)
-symb-func-def = ":";
-symb-case-def = "->";
-symb-assign   = "=";
-symb-comma    = ",";
-symb-quote    = quote;
-symb-vbar     = "|";
-
-symb-end-of-scope     = ";;";
-symb-op-parenthesis   = "(";
-symb-cl-parenthesis   = ")";
-
-symb-hexa-pref = "0x";
-symb-bin-pref = "0b";
-
-(* Delimiters *)
-delim-arr-op = "[";
-delim-arr-cl = "]";
-delim-lst-op = "{";
-delim-lst-cl = "}";
-delim-tup-op = "<";
-delim-tup-cl = ">";
-
-(* Constant *)
-constant = number | string | datastructure;
-
-number  = integer | float | bin | hexa;
-
-integer = digit, { *digit };
-hexa    = symb-hexa-pref, hexa-digit, *{ hexa-digit };
-bin     = symb-bin-pref, bin-digit, *{ bin-digit };
-float   = ( zero | non-zero-digit, *{ digit } ), symb-comma, *{ digit };
-
-string  = quote, word , quote;
-
-(* Datastructure *)
-datastructure = array | list | tuple;
-
-array = delim-arr-op, *{ expression }, delim-arr-cl;
-list  = delim-lst-op, *{ expression }, delim-lst-cl;
-tuple = delim-tup-op, *{ expression }, delim-tup-cl;
-
-(* Identifiers name *)
-var-name   = word-no-digit-first;
-param-name = word-no-digit-first;
-func-name  = word-hyphen-no-digit-first;
-
-(* Definitions *)
-definition = keyword-maki, def-item;
-def-item   = def-func | def-var;
-
-(* Function definition *)
-def-func   = function-name, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
-def-lambda = keyword-soy, *{ param-name }, symb-func-def, declaration, symb-end-of-scope;
-
-(* Variable *)
-def-var = var-name, symb-assign, [ symb-op-parenthesis ], ( expression | def-lambda ), [ symb-cl-parenthesis ];
+program = { declaration | expression_eol | statement };
 
 (* Declaration *)
+declaration = T_KEYWORD_MAKI, ( decl-func | decl-vars ), T_DELIM_EOL;
 
+(* Named functions *)
+decl-func = T_IDENTIFIER, param-list, T_OPERATOR_ASSIGN_FUNC, func-body, T_DELIM_EOS;
+param-list = { T_IDENTIFIER, [ T_DELIM_CHEVR_BEG, type, T_DELIM_CHEVR_END ] };
 
-(* Expression *)
-expression = constant | func-call;
-func-call  = ;
+func-body = ( declaration | expression_eol | statement )+;
+
+(* Variables *)
+decl-vars = assign-var, { T_DELIM_COMMA, [T_DELIM_EOL], assign-var };
+assign-var  = variable, T_OPERATOR_ASSIGN_VAR, ( expression | datastructure );
+variable  = T_IDENTIFIER;
+
+(* Expressions *)
+expression_eol = expression, T_DELIM_EOL;
+
+(* General expressions *)
+expression = braced-expression; 
+expression = soy-expression; 
+expression = constant;
+expression = func-call;
+expression = variable;
+expression = datastructure-access;
+
+(* Arithmetic, boolean, comparison and concatenation operations *)
+expression = expression, T_OPERATOR_ARITH, expression;
+expression = expression, T_OPERATOR_COMP, expression;
+expression = expression, T_OPERATOR_LOGICAL, expression;
+expression = expression, T_OPERATOR_CONCAT, expression;
+expression = T_OPERATOR_NEG, expression;
+expression = T_OPERATOR_INCR, expression;
+expression = T_OPERATOR_DECR, expression;
+expression = expression, T_OPERATOR_INCR;
+expression = expression, T_OPERATOR_DECR;
+expression = expression, T_OPERATOR_ASSIGN_VAR, expression;
+
+(* Braced expression : expression sourrounded with parenthesis *)
+braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
+
+(* Function call *)
+func-call = ( T_IDENTIFIER | soy-expression ), { argument };
+argument = variable | constant | datastructure | braced-expression | soy-expression;
+
+(* Anonymous function *)
+soy-expression = T_DELIM_PAREN_BEG, soy-func, T_DELIM_PAREN_END;
+soy-func = T_KEYWORD_SOY, param-list, T_OPERATOR_ASSIGN_FUNC, func-body; 
+
+(* Datastructure *)
+datastructure = array | list | tuple | make-sequence;
+
+array = T_DELIM_BRACK_BEG, *{ expression }, T_DELIM_BRACK_END;
+list  = T_DELIM_BRACE_BEG, *{ expression }, T_DELIM_BRACK_END;
+tuple = T_DELIM_CHEVR_BEG, *{ expression }, T_DELIM_CHEVR_END;
+
+datastructure-access = variable, T_DELIM_BRACK_BEG, expression, T_DELIM_BRACK_END;
+
+make-sequence = make-sequence-list | make-sequence-array;
+make-sequence-list  = T_DELIM_BRACE_BEG, seq-expression, T_DELIM_BRACK_END;
+make-sequence-array = T_DELIM_BRACK_BEG, seq-expression, T_DELIM_BRACK_END;
+
+seq-expression = T_CONST_INT, T_KEYWORD_TO, T_CONST_INT;
 
 
