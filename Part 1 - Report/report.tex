@@ -70,6 +70,7 @@ Here is our list of features presented in a decreasing order of priority:
   \item Closure: a function will be able to capture a variable or a function from a higher scope,
   \item Delimiter of end of line: $\backslash$n (...),
   \item Full type inference,
+  \item Type hinting: allow the user to specify the type of a function parameter,
   \item Built-in datastructures: array, list and tuple,
   \item Usage of language C to use a few function,
   \item Simple garbage collector: to clean the memory after the usage of built-in datastructures.
@@ -79,13 +80,42 @@ Here is our list of features presented in a decreasing order of priority:
 
   \subsection{Keywords}
 
-The keywords of this language are inspired from the lexical field of sushi food. 
+The keywords of this language are inspired from the lexical field of sushi food. We have:
+\begin{itemize}
+  \item \texttt{maki}: declaration of a variable or a named function.
+  \item \texttt{soy}: declaration of an anonymous function.
+  \item \texttt{roll}: while loop.
+  \item \texttt{for}: for loop.
+  \item \texttt{continue}, \texttt{break}: loop iteration control. 
+  \item \texttt{if-elseif-else}: conditional structure.
+  \item \texttt{menu}: switch structure.
+  \item \texttt{nori}: return.
+  \item \texttt{to}: list "constructor". 
+  \item Types: \texttt{int}, \texttt{float}, \texttt{string}, \texttt{array}, \texttt{list}, \texttt{tuple}
+  \item \texttt{mat}: define a package. This is not taken into account yet, but will be considered if time allows it.
+\end{itemize}
 
 
   \subsection{Built-in datastructures}
 
+We consider to implement 3 types of datastructure of which the behavior will be defined based on 3 properties:
+\begin{itemize}
+  \item \textbf{Structure mutability}: it is mutable if items can be added and removed after the creation of the datastructure,
+  \item \textbf{Item mutability}: it is mutable if the items can be changed after the creation of the datastructure,
+  \item \textbf{"Multityping"}: if the datastructure can contain elements of different types. 
+\end{itemize}
 
-
+\begin{table}[h!]
+  \center
+  \begin{tabular}{c|ccc}
+    Name & Structure mutability & Item mutability & Multityping\\
+    \hline
+    \texttt{array} & Mutable & Mutable & Single type\\
+    \texttt{list} & Immutable & Immutable & Single type\\
+    \texttt{tuple} & Immutable & Mutable & Multiple types
+  \end{tabular}
+  \caption{Properties of the datastructures}
+\end{table}
 
   \subsection{Operators}
 
