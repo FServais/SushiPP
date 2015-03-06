@@ -164,4 +164,5 @@ switch = T_KEYWORD_MENU, expression_eol, switch-body+, [ switch-default ], T_DEL
 switch-body = expression, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
 switch-default = T_KEYWORD_DEFAU, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
 
+return = T_KEYWORD_NORI, expression_eol;
 
