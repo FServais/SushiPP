@@ -1,0 +1,18 @@
+$ Function that create a tuple from 2 elements.
+$ x, y : 	Two elements
+maki tuple-2 x y : 
+	nori <x y>
+;;
+
+$ Function that create a tuple of 2 integers.
+$ x, y :	2 integers
+maki make_coord x<int> y<int> : 
+	nori tuple-2 x y
+;;
+
+$ Add a constant to the elements of a tuple of 2 integers.
+$ t : 	tuple of 2 integers
+$ cste : integer to add
+maki add_constant_tuple t<int> cste<int> :
+	nori tuple-2 (t[0]+cste) (t[1]+cste)
+;;
