@@ -161,8 +161,8 @@ roll = T_KEYWORD_ROLL, expression_eol, { program_item }, T_DELIM_EOS;
 
 (* Switch *)
 switch = T_KEYWORD_MENU, expression_eol, switch-body+, [ switch-default ], T_DELIM_EOS;
-switch-body = expression, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
-switch-default = T_KEYWORD_DEFAU, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
+switch-body = expression, T_DELIM_ARROW, { program_item }, T_DELIM_EOS;
+switch-default = T_KEYWORD_DEFAU, T_DELIM_ARROW, { program_item }, T_DELIM_EOS;
 
 return = T_KEYWORD_NORI, expression_eol;
 
