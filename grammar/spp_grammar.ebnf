@@ -40,15 +40,92 @@ constant = T_CONST_STRING | T_CONST_FLOAT | T_CONST_INT;
 T_IDENTIFIER = "id";
 
 (* Operators *)
-T_OPERATOR_ARITH       = "op_arith";
-T_OPERATOR_LOGICAL     = "op_logic";
-T_OPERATOR_COMP        = "op_comp";
-T_OPERATOR_INCR 	   = "++";
-T_OPERATOR_DECR		   = "--";
-T_OPERATOR_NEG 		   = "!";
-T_OPERATOR_CONCAT      = ".";
+(* Operator precedence : 
+ *  level 13 : postfix ++ postfix -- (left associative)
+ *  level 12 : prefix ++ prefix-- !  (right associative)
+ *  level 11 : ** (right associative)
+ *  level 10 : * / % (left associative)
+ *  level 9  : + - (left associative)
+ *  level 8  : << >> (left associative)
+ *  level 7  : < <= > >= (left associative)
+ *  level 6  : == != (left associative)
+ *  level 5  : & (left associative)
+ *  level 4  : ^ (left associative)
+ *  level 3  : | (left associative)
+ *  level 2  : && (left associative)
+ *  level 1  : || (left associative)
+ *  level 0  : = += -= *= /= %= &= ^= |= (right associative)
+ *)
+(* Arithmetic *)
+T_OPERATOR_PLUS     = "+";
+T_OPERATOR_MINUS	= "-";
+T_OPERATOR_MULT		= "*";
+T_OPERATOR_DIVISION = "/";
+T_OPERATOR_MODULO   = "%";
+T_OPERATOR_EXP 		= "**";
+T_OPERATOR_INCR 	= "++";
+T_OPERATOR_DECR		= "--";
 
-T_OPERATOR_ASSIGN_VAR  = "=";
+T_OPERATOR_ARITH  = T_OPERATOR_PLUS | T_OPERATOR_MINUS | T_OPERATOR_MULT
+					| T_OPERATOR_DIVISION | T_OPERATOR_EXP 
+					| T_OPERATOR_INCR | T_OPERATOR_DECR | T_OPERATOR_MODULO;
+
+(* Bitwise *)
+T_OPERATOR_BITWISE_AND = "&";
+T_OPERATOR_BITWISE_OR  = "|";
+T_OPERATOR_BITWISE_XOR = "^";
+T_OPERATOR_BITWISE_LSH = "<<";
+T_OPERATOR_BITWISE_RSH = ">>";
+
+T_OPERATOR_BITWISE_SHIFT = T_OPERATOR_BITWISE_LSH | T_OPERATOR_BITWISE_RSH;
+
+T_OPERATOR_BITWISE = T_OPERATOR_BITWISE_XOR | T_OPERATOR_BITWISE_AND 
+						| T_OPERATOR_BITWISE_OR | T_OPERATOR_BITWISE_SHIFT;
+
+(* Logical *)
+T_OPERATOR_LOGICAL_AND = "&&";
+T_OPERATOR_LOGICAL_OR  = "||";
+T_OPERATOR_LOGICAL_NOT = "!";
+
+T_OPERATOR_LOGICAL = T_OPERATOR_LOGICAL_AND | T_OPERATOR_LOGICAL_OR;
+
+(* Comparison *)
+T_OPERATOR_COMP_LT  = "<";
+T_OPERATOR_COMP_GT 	= ">";
+T_OPERATOR_COMP_LEQ	= "<=";
+T_OPERATOR_COMP_GEQ = ">=";
+T_OPERATOR_COMP_EQ  = "==";
+T_OPERATOR_COMP_NEQ = "!=";
+
+T_OPERATOR_COMP_EQUALITY   = T_OPERATOR_COMP_EQ | T_OPERATOR_COMP_NEQ;
+T_OPERATOR_COMP_INEQUALITY = T_OPERATOR_COMP_LT | T_OPERATOR_COMP_GT 
+							| T_OPERATOR_COMP_LEQ | T_OPERATOR_COMP_GEQ;
+
+T_OPERATOR_COMP = T_OPERATOR_COMP_EQUALITY | T_OPERATOR_COMP_INEQUALITY;
+
+(* String *)
+T_OPERATOR_STR_CONCAT  = ".";
+
+T_OPERATOR_STRING = T_OPERATOR_STR_CONCAT;
+
+(* Variable assignment *)
+T_OPERATOR_ASSIGN_BASE   = "=";
+T_OPERATOR_ASSIGN_PLUS   = "+=";
+T_OPERATOR_ASSIGN_MINUS  = "-=";
+T_OPERATOR_ASSIGN_TIMES  = "*=";
+T_OPERATOR_ASSIGN_DIVIDE = "/=";
+T_OPERATOR_ASSIGN_MODULO = "%=";
+T_OPERATOR_ASSIGN_AND    = "&=";
+T_OPERATOR_ASSIGN_OR     = "|=";
+T_OPERATOR_ASSIGN_XOR    = "^="; 
+
+T_OPERATOR_ASSIGN_VAR = T_OPERATOR_ASSIGN_BASE | T_OPERATOR_ASSIGN_PLUS 
+						| T_OPERATOR_ASSIGN_MINUS | T_OPERATOR_ASSIGN_TIMES 
+						| T_OPERATOR_ASSIGN_DIVIDE | T_OPERATOR_ASSIGN_MODULO
+						| T_OPERATOR_ASSIGN_OR | T_OPERATOR_ASSIGN_AND 
+						| T_OPERATOR_ASSIGN_XOR;
+
+(* Function assignment *)
 T_OPERATOR_ASSIGN_FUNC = ":";
 
 (* Delimiters *)
@@ -100,7 +177,61 @@ expression = variable;
 expression = datastructure-access;
 
 (* Arithmetic, boolean, comparison and concatenation operations *)
-expression = expression, T_OPERATOR_ARITH, expression;
+(* Chaining levels of precedence *)
+expression   = expression0;
+expression0  = expression1;
+expression1  = expression2;
+expression2  = expression3;
+expression3  = expression4;
+expression4  = expression5;
+expression5  = expression6;
+expression6  = expression7;
+expression7  = expression8;
+expression8  = expression9;
+expression9  = expression10;
+expression10 = expression11;
+expression11 = expression12;
+expression12 = expression13;
+
+expression13 = constant | braced-expression | variable 
+				| soy-expression | braced-func-call | datastructure-access;
+
+(* Precedence level 0 : assignement (right associative) *)
+expression0  = assignable-expression, T_OPERATOR_ASSIGN_VAR, expression0;
+(* Precedence level 1 : logical or (left associative) *)
+expression1  = expression1, T_OPERATOR_LOGICAL_OR, expression2;
+(* Precedence level 2 : logical and (left associative) *)
+expression2  = expression2, T_OPERATOR_LOGICAL_AND, expression3;
+(* Precedence level 3 : bitwise or (left associative) *)
+expression3  = expression3, T_OPERATOR_BITWISE_OR, expression4;
+(* Precedence level 4 : bitwise xor (left associative) *)
+expression4  = expression4, T_OPERATOR_BITWISE_XOR, expression5;
+(* Precedence level 5 : bitwise and (left associative) *)
+expression5  = expression5, T_OPERATOR_BITWISE_AND, expression6;
+(* Precedence level 6 : equality comparison (left associative) *)
+expression6  = expression6, T_OPERATOR_COMP_EQUALITY, expression7;
+(* Precedence level 7 : comparison (left associative) *)
+expression7  = expression7, T_OPERATOR_COMP_INEQUALITY, expression8;
+(* Precedence level 8 : right and left shift (left associative) *)
+expression8  = expression8, T_OPERATOR_BITWISE_SHIFT, expression9;
+(* Precedence level 9 : addition, substraction (left associative) *)
+expression9  = expression9, (T_OPERATOR_PLUS | T_OPERATOR_MINUS), expression10;
+(* Precedence level 10 : mutliplication, division, module (left associative) *)
+expression10 = expression10, (T_OPERATOR_MULT | T_OPERATOR_MODULO | T_OPERATOR_DIVISION),
+					expression11;
+(* Precedence level 11 : exponentiation (right associative) *)
+expression11 = expression12, T_OPERATOR_EXP, expression11;
+(* Precedence level 12 : prefix ++, prefix --, ! (right associative) *)
+expression12 = T_OPERATOR_LOGICAL_NOT, expression12;
+expression12 = (T_OPERATOR_INCR | T_OPERATOR_DECR), assignable-expression;
+(* Precedence level 13 : postfix ++,  postfix -- (left associative) *)
+expression13 = assignable-expression, (T_OPERATOR_INCR | T_OPERATOR_DECR);
+
+(* Expression that can be assigned a value 
+ * Braced expression : expression sourrounded with parenthesis *)
+assignable-expression = variable | datastructure-access;
+braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
+
 expression = expression, T_OPERATOR_COMP, expression;
 expression = expression, T_OPERATOR_LOGICAL, expression;
 expression = expression, T_OPERATOR_CONCAT, expression;
@@ -111,19 +242,14 @@ expression = expression, T_OPERATOR_INCR;
 expression = expression, T_OPERATOR_DECR;
 expression = assignable-expression, T_OPERATOR_ASSIGN_VAR, expression;
 
-(* Expression that can be assigned a value *)
-assignable-expression = variable | datastructure-access;
-
-(* Braced expression : expression sourrounded with parenthesis *)
-braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
-
 (* Function call *)
-func-call = ( T_IDENTIFIER | soy-expression ), { argument };
-argument = variable | constant | datastructure | braced-expression | soy-expression;
+braced-func-call = T_DELIM_PAREN_BEG, func-call, T_DELIM_PAREN_END;
+func-call 		 = ( T_IDENTIFIER | soy-expression ), { argument };
+argument 		 = variable | constant | datastructure | braced-expression | soy-expression;
 
 (* Anonymous function *)
 soy-expression = T_DELIM_PAREN_BEG, soy-func, T_DELIM_PAREN_END;
-soy-func = T_KEYWORD_SOY, param-list, T_OPERATOR_ASSIGN_FUNC, func-body; 
+soy-func 	   = T_KEYWORD_SOY, param-list, T_OPERATOR_ASSIGN_FUNC, func-body; 
 
 (* Datastructure *)
 datastructure = array | list | tuple | make-sequence;
