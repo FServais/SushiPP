@@ -2,3 +2,10 @@ Part 1 - Report/report.aux
 Part 1 - Report/report.fdb_latexmk
 Part 1 - Report/report.log
 Part 1 - Report/report.synctex.gz
+Tests/Bison/rpcalc.yy
+Tests/Flex/hide-digits
+Tests/Flex/hide-digits.l
+Tests/Flex/lex.yy.c
+Tests/Flex/C++/lex.yy.c
+Tests/Flex/C++/snazzle
+Tests/Flex/C++/snazzle.l
