@@ -13,6 +13,7 @@
 
 
 %union{
+	bool vbool;
 	int vint;
 	double vdouble;
 	std::string* vstring;
@@ -20,6 +21,7 @@
 
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
+%token KEYWORD_TO "to"
 
 %token TYPE_INT "int"
 %token TYPE_STRING "string"
@@ -78,14 +80,21 @@
 /* Delimiters */
 %token DELIM_EOL /* End of line */
 %token DELIM_EOS ";;" /* End of scope */
+%token DELIM_TUPLE_BEG "#{"
+%token DELIM_TUPLE_END "}#"
 %token ','
+%token '('
+%token ')'
 %token '['
 %token ']'
+%token '{'
+%token '}'
 
 /* Constant value */
 %token <vint>    CONST_INT
 %token <vdouble> CONST_FLOAT
 %token <vstring> CONST_STRING
+%token <vbool>   CONST_BOOL
 
 /* Identifier */
 %token <vstring> IDENTIFIER
@@ -167,6 +176,7 @@ expression:
   constant
 | braced-expression 
 | IDENTIFIER
+| datastructure
 /*
 | soy-expression 
 | braced-func-call */
@@ -217,11 +227,47 @@ assignable-expression: IDENTIFIER | datastructure-access;
 
 datastructure-access: IDENTIFIER '[' expression ']';
 
+expression-list: /* comma separeted list of expressions */
+  expression
+| expression ',' expression-list
+;
+
 constant: 
   CONST_INT
 | CONST_FLOAT
 | CONST_STRING
+| CONST_BOOL
 ; 
+
+/* datastructure */
+datastructure: 
+  array 
+| list 
+| tuple 
+| make-sequence
+;
+
+array: 
+  '[' ']' /* empty array */
+| '[' expression-list ']'
+;
+
+list: 
+  '{' '}' /* empty list */
+| '{' expression-list '}'
+;
+
+tuple:
+  DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
+| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
+;
+
+/* sequence generator */
+make-sequence: make-sequence-list | make-sequence-array;
+make-sequence-list: '{' seq-expression '}';
+make-sequence-array: '[' seq-expression ']';
+
+seq-expression: expression KEYWORD_TO expression;
 
 %%
 

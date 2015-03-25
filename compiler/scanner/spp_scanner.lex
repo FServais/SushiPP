@@ -12,6 +12,12 @@
 
 \[					   { cout << "t : [" << endl; return '['; }
 \]					   { cout << "t : ]" << endl; return ']'; }
+\{					   { cout << "t : {" << endl; return '{'; }
+\}					   { cout << "t : }" << endl; return '}'; }
+#\{					   { cout << "t : #{" << endl; return DELIM_TUPLE_BEG; } 
+\}#					   { cout << "t : }#" << endl; return DELIM_TUPLE_END; } 
+\(					   { cout << "t : (" << endl; return '('; }
+\)					   { cout << "t : )" << endl; return ')'; }
 \:					   { cout << "t : ':'" << endl; return ':'; }
 , 					   { cout << "t : ," << endl; return ','; }
 ;;					   { cout << "t : ;;" << endl; return DELIM_EOS; }
@@ -50,12 +56,15 @@
 \&=					   { cout << "t : &=" << endl; return OP_ASSIGN_AND; }
 \^=					   { cout << "t : ^=" << endl; return OP_ASSIGN_XOR; }
 \.=					   { cout << "t : .=" << endl; return OP_ASSIGN_CONCAT; }
+to					   { cout << "t : to" << endl; return KEYWORD_TO; }
 maki                   { cout << "t : maki" << endl; yylval.vstring = new string(yytext); return KEYWORD_MAKI; }
 int    				   { cout << "t : type 'int'" << endl; return TYPE_INT; }
 string 				   { cout << "t : type 'string'" << endl; return TYPE_STRING; }
 array  				   { cout << "t : type 'array'" << endl; return TYPE_ARRAY; }
 list   				   { cout << "t : type 'list'" << endl; return TYPE_LIST; }
 tuple  				   { cout << "t : type 'tuple'" << endl; return TYPE_TUPLE; }
+(false|FALSE) 	       { cout << "t : bool(false)" << endl; yylval.vbool = false; return CONST_BOOL; }
+(true|TRUE) 	       { cout << "t : bool(true)" << endl; yylval.vbool = true; return CONST_BOOL; }
 [a-zA-Z][-a-zA-Z0-9_]* { cout << "t : id(" << yytext << ")" << endl; yylval.vstring = new string(yytext); return IDENTIFIER; }
 [+-]?[0-9]+			   { cout << "t : int(" << yytext << ")" << endl; yylval.vint = strtol(yytext, NULL, 10); return CONST_INT; }
 [+-]?[0-9]+\,[0-9]+    { cout << "t : float(" << yytext << ")" << endl; yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
