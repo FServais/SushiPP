@@ -28,17 +28,59 @@
 %token TYPE_TUPLE "tuple"
 
 /* Operators */
-%token OP_ASSIGN "="
-%token OP_ASSIGN_FUNC ":"
+%token '='
+%token ':'
 
-%token OP_COMP_LT '<'
-%token OP_COMP_GT '>'
+%token OP_ARITH_INCR "++"
+%token OP_ARITH_DECR "--"
+%token OP_ARITH_EXPO "**"
+
+%token OP_LOGIC_OR "||"
+%token OP_LOGIC_AND "&&"
+
+%token OP_COMP_LEQ "<="
+%token OP_COMP_GEQ ">="
+%token OP_COMP_EQ  "=="
+%token OP_COMP_NEQ "!="
+
+%token OP_RSHIFT ">>"
+%token OP_LSHIFT "<<"
+
+%token OP_ASSIGN_PLUS "+="
+%token OP_ASSIGN_MINUS "-="
+%token OP_ASSIGN_MULT "*="
+%token OP_ASSIGN_DIV "/="
+%token OP_ASSIGN_EXPO "**="
+%token OP_ASSIGN_MOD "%="
+%token OP_ASSIGN_OR "|="
+%token OP_ASSIGN_AND "&="
+%token OP_ASSIGN_XOR "^="
+%token OP_ASSIGN_CONCAT ".="
+
+/* Operator precedence */
+%right '=' OP_ASSIGN_CONCAT OP_ASSIGN_XOR OP_ASSIGN_AND OP_ASSIGN_OR OP_ASSIGN_MOD OP_ASSIGN_EXPO OP_ASSIGN_DIV OP_ASSIGN_MULT OP_ASSIGN_MINUS OP_ASSIGN_PLUS
+%left OP_LOGIC_OR
+%left OP_LOGIC_AND
+%left '|'
+%left '^'
+%left '&'
+%left OP_COMP_EQ OP_COMP_NEQ
+%left '<' '>' OP_COMP_LEQ OP_COMP_GEQ
+%left OP_LSHIFT OP_RSHIFT
+%left '+' '-'
+%left '*' '/' '%'
+%precedence '~' '!'
+%precedence UNARY_MINUS 
+%right OP_ARITH_EXPO '.'
+%precedence PREFIX_INCR PREFIX_DECR
+%precedence SUFFIX_INCR SUFFIX_DECR
 
 /* Delimiters */
 %token DELIM_EOL /* End of line */
 %token DELIM_EOS ";;" /* End of scope */
-%token DELIM_COMMA ',' 
-
+%token ','
+%token '['
+%token ']'
 
 /* Constant value */
 %token <vint>    CONST_INT
@@ -55,6 +97,8 @@
 %type <vstring> param
 %type <vstring> param-list
 
+%start program
+
 %% 
 
 program:
@@ -64,6 +108,7 @@ program:
 
 program_item:
   declaration
+| expression DELIM_EOL
 ;
 
 /* Declaration */
@@ -75,22 +120,20 @@ declaration:
 /* variable declaration */
 decl-vars:
   decl-var
-| decl-var DELIM_COMMA decl-vars
-| decl-var DELIM_COMMA DELIM_EOL decl-vars
+| decl-var ',' decl-vars
+| decl-var ',' DELIM_EOL decl-vars
 ;
 
 decl-var:
-  IDENTIFIER OP_ASSIGN CONST_INT    { cout << "Assign the integer " << $3 << " to the variable " << *$1 << endl; }
-| IDENTIFIER OP_ASSIGN CONST_FLOAT  { cout << "Assign the float " << $3 << " to the variable " << *$1 << endl; }
-| IDENTIFIER OP_ASSIGN CONST_STRING { cout << "Assign the string " << *$3 << " to the variable " << *$1 << endl; };
+  IDENTIFIER '=' expression  { cout << "Assign an expression to the variable " << *$1 << endl; }
 ;
 
 /************************/
 /* function declaration */
 /************************/
 decl-func:
-  IDENTIFIER param-list OP_ASSIGN_FUNC func-body DELIM_EOS			 { cout << "Declare a function " << (*$1) << " with parameters : " << (*$2) << endl; }
-| IDENTIFIER param-list OP_ASSIGN_FUNC DELIM_EOL func-body DELIM_EOS { cout << "Declare a function " << (*$1) << " (with eol) with parameters : " << (*$2) << endl; }
+  IDENTIFIER param-list ':' func-body DELIM_EOS			 { cout << "Declare a function " << (*$1) << " with parameters : " << (*$2) << endl; }
+| IDENTIFIER param-list ':' DELIM_EOL func-body DELIM_EOS { cout << "Declare a function " << (*$1) << " (with eol) with parameters : " << (*$2) << endl; }
 ;
 
 /* function's parameters list */
@@ -101,7 +144,7 @@ param-list:
 
 param:
   IDENTIFIER 			  				{ $$ = new string(string("'") + (*$1) + string("'")); }
-| IDENTIFIER OP_COMP_LT type OP_COMP_GT { $$ = new string(string("'") + (*$1) + string("' of type ") + (*$3));  }
+| IDENTIFIER '<' type '>' { $$ = new string(string("'") + (*$1) + string("' of type ") + (*$3));  }
 ;
 
 func-body:
@@ -116,6 +159,69 @@ type:
 | TYPE_INT    { $$ = new string("integer"); }
 | TYPE_STRING { $$ = new string("string"); }
 ;
+
+/***************/
+/* Expressions */
+/***************/
+expression:
+  constant
+| braced-expression 
+| IDENTIFIER
+/*
+| soy-expression 
+| braced-func-call */
+| datastructure-access
+| expression '+' expression 
+| expression '-' expression 
+| expression '*' expression
+| expression '/' expression
+| expression '%' expression
+| expression OP_ARITH_EXPO expression
+| '-' expression %prec UNARY_MINUS
+| expression '|' expression
+| expression '&' expression
+| expression '^' expression
+| '~' expression
+| expression OP_LOGIC_OR expression
+| expression OP_LOGIC_AND expression
+| '!' expression 
+| expression '<' expression 
+| expression '>' expression
+| expression OP_COMP_LEQ expression
+| expression OP_COMP_GEQ expression
+| expression OP_COMP_EQ  expression
+| expression OP_COMP_NEQ expression 
+| expression OP_LSHIFT expression
+| expression OP_RSHIFT expression 
+| expression '.' expression 
+| OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
+| OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
+| assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
+| assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
+| assignable-expression '=' expression
+| assignable-expression OP_ASSIGN_PLUS expression
+| assignable-expression OP_ASSIGN_MINUS expression
+| assignable-expression OP_ASSIGN_MULT expression
+| assignable-expression OP_ASSIGN_DIV expression
+| assignable-expression OP_ASSIGN_EXPO expression
+| assignable-expression OP_ASSIGN_MOD expression
+| assignable-expression OP_ASSIGN_AND expression
+| assignable-expression OP_ASSIGN_OR expression
+| assignable-expression OP_ASSIGN_XOR expression
+| assignable-expression OP_ASSIGN_CONCAT expression
+;
+
+braced-expression: '(' expression ')';
+
+assignable-expression: IDENTIFIER | datastructure-access;
+
+datastructure-access: IDENTIFIER '[' expression ']';
+
+constant: 
+  CONST_INT
+| CONST_FLOAT
+| CONST_STRING
+; 
 
 %%
 

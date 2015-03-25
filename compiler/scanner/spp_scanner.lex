@@ -10,12 +10,46 @@
 
 %%
 
-=                      { cout << "t : =" << endl; return OP_ASSIGN; }
-\:					   { cout << "t : ':'" << endl; return OP_ASSIGN_FUNC; }
-, 					   { cout << "t : ," << endl; return DELIM_COMMA; }
+\[					   { cout << "t : [" << endl; return '['; }
+\]					   { cout << "t : ]" << endl; return ']'; }
+\:					   { cout << "t : ':'" << endl; return ':'; }
+, 					   { cout << "t : ," << endl; return ','; }
 ;;					   { cout << "t : ;;" << endl; return DELIM_EOS; }
-\<					   { cout << "t : <" << endl; return OP_COMP_LT; }
-\>					   { cout << "t : >" << endl; return OP_COMP_GT; }
+=                      { cout << "t : =" << endl; return '='; }
+\<					   { cout << "t : <" << endl; return '<'; }
+\>					   { cout << "t : >" << endl; return '>'; }
+\.					   { cout << "t : ." << endl; return '.'; }
+\|					   { cout << "t : |" << endl; return '|'; }
+& 					   { cout << "t : &" << endl; return '&'; }
+\^					   { cout << "t : ^" << endl; return '^'; }
+\+					   { cout << "t : +" << endl; return '+'; }
+-					   { cout << "t : -" << endl; return '-'; }
+\*					   { cout << "t : *" << endl; return '*'; }
+\/					   { cout << "t : /" << endl; return '/'; }
+%					   { cout << "t : %" << endl; return '%'; }
+~					   { cout << "t : ~" << endl; return '~'; }
+! 					   { cout << "t : !" << endl; return '!'; }
+\+\+				   { cout << "t : ++" << endl; return OP_ARITH_INCR; }
+\-\-				   { cout << "t : --" << endl; return OP_ARITH_DECR; }
+\*\*				   { cout << "t : **" << endl; return OP_ARITH_EXPO; }
+\|\|				   { cout << "t : ||" << endl; return OP_LOGIC_OR; }
+&& 					   { cout << "t : &&" << endl; return OP_LOGIC_AND; }
+\<= 				   { cout << "t : <=" << endl; return OP_COMP_LEQ; }
+\>=					   { cout << "t : >=" << endl; return OP_COMP_GEQ; }
+== 					   { cout << "t : ==" << endl; return OP_COMP_EQ; }
+!=					   { cout << "t : !=" << endl; return OP_COMP_NEQ; }
+\<\<				   { cout << "t : <<" << endl; return OP_RSHIFT; }
+\>\>				   { cout << "t : >>" << endl; return OP_LSHIFT; }
+\+= 				   { cout << "t : +=" << endl; return OP_ASSIGN_PLUS; }
+-= 					   { cout << "t : -=" << endl; return OP_ASSIGN_MINUS; }
+\*= 				   { cout << "t : *=" << endl; return OP_ASSIGN_MULT; }
+\/= 				   { cout << "t : /=" << endl; return OP_ASSIGN_DIV; }
+\*\*=				   { cout << "t : **=" << endl; return OP_ASSIGN_EXPO; }
+%= 					   { cout << "t : %=" << endl; return OP_ASSIGN_MOD; }
+\|=					   { cout << "t : |=" << endl; return OP_ASSIGN_OR; }
+\&=					   { cout << "t : &=" << endl; return OP_ASSIGN_AND; }
+\^=					   { cout << "t : ^=" << endl; return OP_ASSIGN_XOR; }
+\.=					   { cout << "t : .=" << endl; return OP_ASSIGN_CONCAT; }
 maki                   { cout << "t : maki" << endl; yylval.vstring = new string(yytext); return KEYWORD_MAKI; }
 int    				   { cout << "t : type 'int'" << endl; return TYPE_INT; }
 string 				   { cout << "t : type 'string'" << endl; return TYPE_STRING; }
