@@ -9,8 +9,8 @@ sushipp.tab.c sushipp.tab.h: $(PARSER_PATH)spp_parser.y
 sushipp.yy.c: $(SCANNER_PATH)spp_scanner.lex sushipp.tab.h
 	flex -o $(SCANNER_PATH)sushipp.yy.c $(SCANNER_PATH)spp_scanner.lex 
 
-sushipp: sushipp.yy.c sushipp.tab.c sushipp.tab.h
-	g++ $(PARSER_PATH)sushipp.tab.c $(SCANNER_PATH)sushipp.yy.c -lfl -o sushipp --std=c++11
+sushipp: sushipp.yy.c 
+	g++ $(PARSER_PATH)sushipp.tab.c $(SCANNER_PATH)sushipp.yy.c -o sushipp --std=c++11 -Wall -lfl
 
 clean: 
 	rm -rf *.o
