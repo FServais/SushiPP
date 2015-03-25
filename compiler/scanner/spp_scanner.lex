@@ -57,7 +57,8 @@
 \^=					   { cout << "t : ^=" << endl; return OP_ASSIGN_XOR; }
 \.=					   { cout << "t : .=" << endl; return OP_ASSIGN_CONCAT; }
 to					   { cout << "t : to" << endl; return KEYWORD_TO; }
-maki                   { cout << "t : maki" << endl; yylval.vstring = new string(yytext); return KEYWORD_MAKI; }
+maki                   { cout << "t : maki" << endl; return KEYWORD_MAKI; }
+soy 				   { cout << "t : soy" << endl; return KEYWORD_SOY; }
 int    				   { cout << "t : type 'int'" << endl; return TYPE_INT; }
 string 				   { cout << "t : type 'string'" << endl; return TYPE_STRING; }
 array  				   { cout << "t : type 'array'" << endl; return TYPE_ARRAY; }

@@ -22,6 +22,7 @@
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
 %token KEYWORD_TO "to"
+%token KEYWORD_SOY "soy"
 
 %token TYPE_INT "int"
 %token TYPE_STRING "string"
@@ -177,9 +178,8 @@ expression:
 | braced-expression 
 | IDENTIFIER
 | datastructure
-/*
 | soy-expression 
-| braced-func-call */
+/*| braced-func-call */
 | datastructure-access
 | expression '+' expression 
 | expression '-' expression 
@@ -268,6 +268,11 @@ make-sequence-list: '{' seq-expression '}';
 make-sequence-array: '[' seq-expression ']';
 
 seq-expression: expression KEYWORD_TO expression;
+
+/* Soy anonymous functions */
+soy-expression: '(' soy-func ')';
+soy-func: KEYWORD_SOY param-list ':' func-body; 
+
 
 %%
 
