@@ -1,6 +1,7 @@
 %{
 	#include <cstdio>
 	#include <iostream>
+	#include <string>
 	using namespace std;
 
 	extern "C" int yylex();
@@ -14,7 +15,7 @@
 %union{
 	int vint;
 	double vdouble;
-	string vstring;
+	std::string* vstring;
 }
 
 /* Keywords tokens */
@@ -31,35 +32,32 @@
 /* Identifier */
 %token <vstring> IDENTIFIER
 
-/* Type of the non terminal symbols */
-%type <vstring> decl_var
-
 %% 
 
 program:
   %empty
-| KEYWORD_MAKI decl_var DELIM_EOL  { cout << "Declare variable : " << $2 << endl;} 
+| KEYWORD_MAKI decl_var DELIM_EOL 
 
 decl_var:
-  IDENTIFIER OP_ASSIGN CONST_INT    { cout << "Assign the integer " << $3 << " to the variable " << $1 << endl; $$ = $1; }
-| IDENTIFIER OP_ASSIGN CONST_FLOAT  { cout << "Assign the float " << $3 << " to the variable " << $1 << endl; $$ = $1; }
-| IDENTIFIER OP_ASSIGN CONST_STRING { cout << "Assign the string " << $3 << " to the variable " << $1 << endl; $$ = $1; };
+  IDENTIFIER OP_ASSIGN CONST_INT    { cout << "Assign the integer " << $3 << " to the variable " << *$1 << endl; }
+| IDENTIFIER OP_ASSIGN CONST_FLOAT  { cout << "Assign the float " << $3 << " to the variable " << *$1 << endl; }
+| IDENTIFIER OP_ASSIGN CONST_STRING { cout << "Assign the string " << $3 << " to the variable " << *$1 << endl; };
 
 %%
 
 int main(int, char**) 
 {
-	// open a file handle to a particular file:
-	FILE *myfile = fopen("in.snazzle", "r");
-	// make sure it is valid:
-	if (!myfile) {
-		cout << "I can't open a.snazzle.file!" << endl;
-		return -1;
-	}
-	// set flex to read from it instead of defaulting to STDIN:
-	yyin = myfile;
+	// // open a file handle to a particular file:
+	// FILE *myfile = fopen("in.snazzle", "r");
+	// // make sure it is valid:
+	// if (!myfile) {
+	// 	cout << "I can't open a.snazzle.file!" << endl;
+	// 	return -1;
+	// }
+	// // set flex to read from it instead of defaulting to STDIN:
+	// yyin = myfile;
 	
-	// parse through the input until there is no more:
+	// // parse through the input until there is no more:
 	do {
 		yyparse();
 	} while (!feof(yyin));
@@ -67,5 +65,6 @@ int main(int, char**)
 }
 
 void yyerror(const char *s) {
+	cerr << "Error : " << s << endl;
 	exit(-1);
 }
