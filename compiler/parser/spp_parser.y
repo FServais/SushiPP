@@ -21,7 +21,10 @@
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
 
+/* Operators */
 %token OP_ASSIGN "="
+
+/* Delimiters */
 %token DELIM_EOL /* End of line */
 
 /* Constant value */
@@ -36,13 +39,19 @@
 
 program:
   %empty
+| line program
+;
+
+line:
+  DELIM_EOL
 | KEYWORD_MAKI decl_var DELIM_EOL 
+;
 
 decl_var:
   IDENTIFIER OP_ASSIGN CONST_INT    { cout << "Assign the integer " << $3 << " to the variable " << *$1 << endl; }
 | IDENTIFIER OP_ASSIGN CONST_FLOAT  { cout << "Assign the float " << $3 << " to the variable " << *$1 << endl; }
-| IDENTIFIER OP_ASSIGN CONST_STRING { cout << "Assign the string " << $3 << " to the variable " << *$1 << endl; };
-
+| IDENTIFIER OP_ASSIGN CONST_STRING { cout << "Assign the string " << *$3 << " to the variable " << *$1 << endl; };
+;
 %%
 
 int main(int, char**) 
