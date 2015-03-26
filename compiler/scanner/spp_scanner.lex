@@ -16,6 +16,8 @@
 \}					   { cout << "t : }" << endl; return '}'; }
 #\{					   { cout << "t : #{" << endl; return DELIM_TUPLE_BEG; } 
 \}#					   { cout << "t : }#" << endl; return DELIM_TUPLE_END; } 
+#\[					   { cout << "t : #[" << endl; return DELIM_ARRAY_BEG; }
+\]#					   { cout << "t : ]#" << endl; return DELIM_ARRAY_BEG; }
 \(					   { cout << "t : (" << endl; return '('; }
 \)					   { cout << "t : )" << endl; return ')'; }
 \:					   { cout << "t : ':'" << endl; return ':'; }

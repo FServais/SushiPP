@@ -83,6 +83,8 @@
 %token DELIM_EOS ";;" /* End of scope */
 %token DELIM_TUPLE_BEG "#{"
 %token DELIM_TUPLE_END "}#"
+%token DELIM_ARRAY_BEG "#["
+%token DELIM_ARRAY_END "]#"
 %token ','
 %token '('
 %token ')'
@@ -170,6 +172,34 @@ type:
 | TYPE_STRING { $$ = new string("string"); }
 ;
 
+/******************/
+/* Function calls */
+/******************/
+/*braced-func-call: '(' func-call-eol ')';*/
+
+func-call: 
+  IDENTIFIER arg-list
+;
+
+arg-list:
+  argument
+| argument arg-list
+;
+
+/* the arguments can be separated by some EOL tokens */
+/*func-call-eol: 
+  IDENTIFIER arg-list-eol
+| soy-expression arg-list-eol
+;
+
+arg-list-eol:
+  argument
+| argument arg-list-eol
+| argument DELIM_EOL arg-list-eol
+;*/
+
+argument: IDENTIFIER | constant | datastructure | braced-expression | soy-expression;
+
 /***************/
 /* Expressions */
 /***************/
@@ -179,7 +209,7 @@ expression:
 | IDENTIFIER
 | datastructure
 | soy-expression 
-/*| braced-func-call */
+| func-call
 | datastructure-access
 | expression '+' expression 
 | expression '-' expression 
@@ -248,8 +278,8 @@ datastructure:
 ;
 
 array: 
-  '[' ']' /* empty array */
-| '[' expression-list ']'
+  DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
+| DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
 ;
 
 list: 
@@ -272,7 +302,6 @@ seq-expression: expression KEYWORD_TO expression;
 /* Soy anonymous functions */
 soy-expression: '(' soy-func ')';
 soy-func: KEYWORD_SOY param-list ':' func-body; 
-
 
 %%
 
