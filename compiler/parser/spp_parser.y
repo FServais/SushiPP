@@ -112,7 +112,7 @@
 %type <vstring> param-list
 %type <vint>    arg-list
 %type <vint>    arg-list-eol
-/*%type <vint>    expression-list*/
+%type <vint>    expression-list
 
 %start program
 
@@ -144,16 +144,16 @@ decl-vars:
 ;
 
 decl-var:
-  IDENTIFIER 				 { cout << "Declare the variable " << *$1 << endl; } 
-| IDENTIFIER '=' expression  { cout << "Assign an expression to the variable " << *$1 << endl; }
+  IDENTIFIER 				 { cout << endl << "Declare the variable " << *$1 << endl; } 
+| IDENTIFIER '=' expression  { cout << endl << "Assign an expression to the variable " << *$1 << endl; }
 ;
 
 /************************/
 /* function declaration */
 /************************/
 decl-func:
-  IDENTIFIER param-list ':' func-body DELIM_EOS			 { cout << "Declare a function " << (*$1) << " with parameters : " << (*$2) << endl; }
-| IDENTIFIER param-list ':' DELIM_EOL func-body DELIM_EOS { cout << "Declare a function " << (*$1) << " (with eol) with parameters : " << (*$2) << endl; }
+  IDENTIFIER param-list ':' func-body DELIM_EOS			 { cout << endl << "Declare a function " << (*$1) << " with parameters : " << (*$2) << endl; }
+| IDENTIFIER param-list ':' DELIM_EOL func-body DELIM_EOS { cout << endl << "Declare a function " << (*$1) << " (with eol) with parameters : " << (*$2) << endl; }
 ;
 
 /* function's parameters list */
@@ -198,7 +198,7 @@ type:
 /******************/
 
 func-call: 
-  IDENTIFIER arg-list { cout << "Function call of '" << (*$1) << "' with " << $2 << "paramters"; }
+  IDENTIFIER arg-list { cout << endl << "Function call of '" << (*$1) << "' with " << $2 << " parameter(s)" << endl;; }
 ;
 
 arg-list: 
@@ -212,7 +212,7 @@ braced-func-call: '(' func-call-eol ')';
 
 /* the arguments can be separated by some EOL tokens */
 func-call-eol: 
-  IDENTIFIER arg-list-eol { cout << "Braced function call of '" << (*$1) << "' with " << $2 << "paramters"; };
+  IDENTIFIER arg-list-eol { cout << endl << "Braced function call of '" << (*$1) << "' with " << $2 << " parameter(s)" << endl; };
 | soy-expression arg-list-eol
 ;
 
@@ -229,6 +229,7 @@ expression:
   constant
 | '(' expression ')'
 | IDENTIFIER
+| datastructure
 | soy-expression 
 | braced-func-call
 | '(' assignment ')'
@@ -291,6 +292,41 @@ constant:
 soy-expression: '(' soy-func ')';
 soy-func: KEYWORD_SOY param-list ':' func-body; 
 
+/* datastructure */
+datastructure: 
+  array 
+| list 
+| tuple 
+| make-sequence
+;
+
+array: 
+  DELIM_ARRAY_BEG DELIM_ARRAY_END 				  { cout << "Empty array" << endl; }
+| DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END { cout << "Array of " << $2 << " element(s)" << endl; }
+;
+
+list: 
+  '{' '}' /* empty list */ { cout << "Empty list" << endl; }
+| '{' expression-list '}'  { cout << "List of " << $2 << " element(s)" << endl; }
+;
+
+tuple:
+  DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */ { cout << "Empty tuple" << endl; }
+| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END	{ cout << "Tuple of " << $2 << " element(s)" << endl; }
+;
+
+expression-list: /* comma separeted list of expressions */
+  expression { $$ = 1; }
+| expression ',' expression-list { $$ = 1 + $3; }
+;
+
+/* sequence generator */
+make-sequence: make-sequence-list | make-sequence-array;
+make-sequence-list: '{' seq-expression '}';
+make-sequence-array: DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END;
+
+seq-expression: expression KEYWORD_TO expression;
+
 %%
 
 int main(int, char**) 
@@ -299,7 +335,7 @@ int main(int, char**)
 	// FILE *myfile = fopen("in.snazzle", "r");
 	// // make sure it is valid:
 	// if (!myfile) {
-	// 	cout << "I can't open a.snazzle.file!" << endl;
+	// 	cout << endl << "I can't open a.snazzle.file!" << endl;
 	// 	return -1;
 	// }
 	// // set flex to read from it instead of defaulting to STDIN:
