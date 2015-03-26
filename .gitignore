@@ -9,3 +9,9 @@ Tests/Flex/lex.yy.c
 Tests/Flex/C++/lex.yy.c
 Tests/Flex/C++/snazzle
 Tests/Flex/C++/snazzle.l
+Tests/AST/AST.xcodeproj/project.pbxproj
+Tests/AST/AST.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+Tests/AST/AST.xcodeproj/project.xcworkspace/xcshareddata/AST.xccheckout
+Tests/AST/AST.xcodeproj/project.xcworkspace/xcuserdata/fabs.xcuserdatad/UserInterfaceState.xcuserstate
+Tests/AST/AST.xcodeproj/xcuserdata/fabs.xcuserdatad/xcschemes/AST.xcscheme
+Tests/AST/AST.xcodeproj/xcuserdata/fabs.xcuserdatad/xcschemes/xcschememanagement.plist
