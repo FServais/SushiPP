@@ -25,6 +25,9 @@
 %token KEYWORD_SOY "soy"
 
 %token TYPE_INT "int"
+%token TYPE_FLOAT "float"
+%token TYPE_BOOL "bool"
+%token TYPE_CHAR "char"
 %token TYPE_STRING "string"
 %token TYPE_ARRAY "array"
 %token TYPE_LIST "list"
@@ -105,9 +108,11 @@
 /**********************/
 /* Non-terminal types */
 /**********************/
-%type <vstring> type
 %type <vstring> param
 %type <vstring> param-list
+%type <vint>    arg-list
+%type <vint>    arg-list-eol
+/*%type <vint>    expression-list*/
 
 %start program
 
@@ -115,18 +120,20 @@
 
 program:
   %empty
+| DELIM_EOL program
 | program_item program
 ;
 
 program_item:
-  declaration
-| expression DELIM_EOL
+  declaration DELIM_EOL
+| assignment DELIM_EOL
+| func-call DELIM_EOL
 ;
 
 /* Declaration */
 declaration:
-  KEYWORD_MAKI decl-func DELIM_EOL
-| KEYWORD_MAKI decl-vars DELIM_EOL
+  KEYWORD_MAKI decl-func
+| KEYWORD_MAKI decl-vars
 ;
 
 /* variable declaration */
@@ -137,7 +144,8 @@ decl-vars:
 ;
 
 decl-var:
-  IDENTIFIER '=' expression  { cout << "Assign an expression to the variable " << *$1 << endl; }
+  IDENTIFIER 				 { cout << "Declare the variable " << *$1 << endl; } 
+| IDENTIFIER '=' expression  { cout << "Assign an expression to the variable " << *$1 << endl; }
 ;
 
 /************************/
@@ -155,61 +163,75 @@ param-list:
 ;
 
 param:
-  IDENTIFIER 			  				{ $$ = new string(string("'") + (*$1) + string("'")); }
-| IDENTIFIER '<' type '>' { $$ = new string(string("'") + (*$1) + string("' of type ") + (*$3));  }
+  IDENTIFIER 			  		{ $$ = new string(string("'") + (*$1) + string("'")); }
+| IDENTIFIER '<' IDENTIFIER '>' { $$ = new string(string("'") + (*$1) + string("' of type ") + (*$3)); }
 ;
 
 func-body:
-	program_item program
+  singleline-func-body
+| mutliline-func-body
 ;
 
-/* types */
+singleline-func-body:
+  expression
+;
+
+mutliline-func-body:
+  program_item 
+| program_item mutliline-func-body
+;
+
+/*/* types 
 type: 
   TYPE_TUPLE  { $$ = new string("tuple"); }
 | TYPE_LIST   { $$ = new string("list"); }
 | TYPE_ARRAY  { $$ = new string("array"); }
 | TYPE_INT    { $$ = new string("integer"); }
 | TYPE_STRING { $$ = new string("string"); }
-;
+| TYPE_BOOL   { $$ = new string("bool"); }
+| TYPE_CHAR   { $$ = new string("char"); }
+| TYPE_FLOAT  { $$ = new string("float"); }
+;*/
 
 /******************/
 /* Function calls */
 /******************/
-/*braced-func-call: '(' func-call-eol ')';*/
 
 func-call: 
-  IDENTIFIER arg-list
+  IDENTIFIER arg-list { cout << "Function call of '" << (*$1) << "' with " << $2 << "paramters"; }
 ;
 
-arg-list:
-  argument
-| argument arg-list
+arg-list: 
+  %empty 			 { $$ = 0; }
+| argument arg-list  { $$ = $2 + 1; }
 ;
+
+argument: IDENTIFIER | constant | '(' expression ')'| soy-expression | datastructure-access | braced-func-call;
+
+braced-func-call: '(' func-call-eol ')';
 
 /* the arguments can be separated by some EOL tokens */
-/*func-call-eol: 
-  IDENTIFIER arg-list-eol
+func-call-eol: 
+  IDENTIFIER arg-list-eol { cout << "Braced function call of '" << (*$1) << "' with " << $2 << "paramters"; };
 | soy-expression arg-list-eol
 ;
 
 arg-list-eol:
-  argument
-| argument arg-list-eol
-| argument DELIM_EOL arg-list-eol
-;*/
-
-argument: IDENTIFIER | constant | datastructure | braced-expression | soy-expression;
+  argument { $$ = 1; }
+| argument arg-list-eol { $$ = 1 + $2; }
+| argument DELIM_EOL arg-list-eol { $$ = 1 + $3; }
+;
 
 /***************/
 /* Expressions */
 /***************/
 expression:
   constant
-| braced-expression 
+| '(' expression ')'
 | IDENTIFIER
-| datastructure
 | soy-expression 
-| func-call
+| braced-func-call
+| '(' assignment ')'
 | datastructure-access
 | expression '+' expression 
 | expression '-' expression 
@@ -238,7 +260,10 @@ expression:
 | OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
 | assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
 | assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
-| assignable-expression '=' expression
+;
+
+assignment:
+  assignable-expression '=' expression
 | assignable-expression OP_ASSIGN_PLUS expression
 | assignable-expression OP_ASSIGN_MINUS expression
 | assignable-expression OP_ASSIGN_MULT expression
@@ -251,53 +276,16 @@ expression:
 | assignable-expression OP_ASSIGN_CONCAT expression
 ;
 
-braced-expression: '(' expression ')';
-
+/* braced-expression: '(' expression ')'; */
 assignable-expression: IDENTIFIER | datastructure-access;
-
 datastructure-access: IDENTIFIER '[' expression ']';
-
-expression-list: /* comma separeted list of expressions */
-  expression
-| expression ',' expression-list
-;
 
 constant: 
   CONST_INT
 | CONST_FLOAT
 | CONST_STRING
 | CONST_BOOL
-; 
-
-/* datastructure */
-datastructure: 
-  array 
-| list 
-| tuple 
-| make-sequence
 ;
-
-array: 
-  DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
-| DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
-;
-
-list: 
-  '{' '}' /* empty list */
-| '{' expression-list '}'
-;
-
-tuple:
-  DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
-| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
-;
-
-/* sequence generator */
-make-sequence: make-sequence-list | make-sequence-array;
-make-sequence-list: '{' seq-expression '}';
-make-sequence-array: '[' seq-expression ']';
-
-seq-expression: expression KEYWORD_TO expression;
 
 /* Soy anonymous functions */
 soy-expression: '(' soy-func ')';
