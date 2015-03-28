@@ -1,0 +1,133 @@
+program = { program_item };
+program_item = 
+  declaration
+| expression, DELIM_EOL 
+| func-call, DELIM_EOL
+| assignment, DELIM_EOL
+| statement;
+
+(* Declaration *)
+declaration = "maki", ( decl-func | decl-vars ), DELIM_EOL;
+
+(* Named functions *)
+decl-func = IDENTIFIER, param-list, ':', [DELIM_EOL], func-body, ';;';
+param-list = { IDENTIFIER, [ '<', type, '>' ] };
+
+func-body = program_item+;
+
+(* Variables *)
+decl-vars = assign-var, { ',', [DELIM_EOL], assign-var };
+assign-var = variable, '=', ( expression | datastructure );
+variable = IDENTIFIER;
+
+(* Expressions *)
+expression_eol = expression, DELIM_EOL;
+
+(* General expressions *)
+expression = constant
+	         | '(', expression, ')' 
+	         | '(' func-call ')'
+	         | '(' assignment ')'
+	         | IDENTIFIER
+	         | datastructure
+	         | soy-expression 
+	         | datastructure-access
+	         | expression '+' expression 
+	         | expression '-' expression 
+	         | expression '*' expression
+	         | expression '/' expression
+	         | expression '%' expression
+	         | expression "**" expression
+	         | '-' expression
+	         | expression '|' expression
+	         | expression '&' expression
+	         | expression '^' expression
+	         | '~' expression
+	         | expression "||" expression
+	         | expression "&&" expression
+	         | '!' expression 
+	         | expression '<' expression 
+	         | expression '>' expression
+	         | expression "<=" expression
+	         | expression ">=" expression
+	         | expression "==" expression
+	         | expression "!=" expression 
+	         | expression "<<" expression
+	         | expression ">>" expression 
+	         | expression '.' expression 
+	         | "++" assignable-expression
+	         | "--" assignable-expression
+	         | assignable-expression "++"
+	         | assignable-expression "--"
+	         | assignable-expression '=' expression
+	         | assignable-expression "+=" expression
+	         | assignable-expression "-=" expression
+	         | assignable-expression "*=" expression
+	         | assignable-expression "/=" expression
+	         | assignable-expression "**=" expression
+	         | assignable-expression "%=" expression
+	         | assignable-expression "&=" expression
+	         | assignable-expression "|=" expression
+	         | assignable-expression "^=" expression
+	         | assignable-expression ".=" expression;
+
+assignment= assignable-expression '=' ( expression, func-call )
+	         | assignable-expression "+=" ( expression, func-call )
+	         | assignable-expression "-=" ( expression, func-call )
+	         | assignable-expression "*=" ( expression, func-call )
+	         | assignable-expression "/=" ( expression, func-call )
+	         | assignable-expression "**=" ( expression, func-call )
+	         | assignable-expression "%=" ( expression, func-call )
+	         | assignable-expression "&=" ( expression, func-call )
+	         | assignable-expression "|=" ( expression, func-call )
+	         | assignable-expression "^=" ( expression, func-call )
+	         | assignable-expression ".=" ( expression, func-call );
+
+(* Expression that can be assigned a value 
+ * Braced expression : expression sourrounded with parenthesis *)
+assignable-expression = variable | datastructure-access;
+
+(* Function call *)
+braced-func-call = DELIM_PAREN_BEG, func-call, DELIM_PAREN_END;
+func-call = ( IDENTIFIER | soy-expression ), { argument };
+argument = variable | constant | datastructure | '(', expression, ')' | '(' func-call ')' | soy-expression;
+constant = CONST_STRING | CONST_FLOAT | CONST_INT;
+
+(* Anonymous function *)
+soy-expression = '(', soy-func, ')';
+soy-func 	   = "soy", param-list, ':', func-body; 
+
+(* Datastructure *)
+datastructure = array | list | tuple | make-sequence;
+
+array = "#[", *{ expression }, "]#";
+list  = '{', *{ expression }, '}';
+tuple = "#{", *{ expression }, "}#";
+
+datastructure-access = variable, '[', expression, ']';
+
+make-sequence = make-sequence-list | make-sequence-array;
+make-sequence-list  = '{', seq-expression, '}';
+make-sequence-array = "#[", seq-expression, "]#";
+
+seq-expression = expression, "to", expression;
+
+(* Statement *)
+statement = condition | loop | switch | return | "continue" | "break";
+
+(* Condition *)
+condition = "if", expression, DELIM_EOL, program_item+, 
+			{ "elseif", expression, DELIM_EOL, program_item+ }, 
+			[ "else", [ DELIM_EOL ], program_item+ ], ";;";
+
+(* Loops *)
+loop = for_list | for_cond | roll;
+for_list = "for", variable, '=', expression, DELIM_EOL, { program_item }, ";;";
+for_cond = "for", variable, '=', expression, ',', expression,',', expression, DELIM_EOL, { program_item }, ";;";
+
+roll = "roll", expression, DELIM_EOL, { program_item }, ";;";
+
+(* Switch *)
+switch = "menu", expression, DELIM_EOL, switch-body+, [ switch-default ], ";;";
+switch-body = expression, "->", { program_item }, DELIM_EOL;
+switch-default = '_', "->", { program_item }, DELIM_EOL;
