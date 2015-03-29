@@ -89,6 +89,9 @@ roll					{ cout /*<< "l." << line*/ << "roll"; return KEYWORD_ROLL; }
 for 					{ cout /*<< "l." << line*/ << "for"; return KEYWORD_FOR; }
 foreach					{ cout /*<< "l." << line*/ << "foreach"; return KEYWORD_FOREACH; }
 as 						{ cout /*<< "l." << line*/ << "as"; return KEYWORD_AS; }
+if  					{ cout /*<< "l." << line*/ << "if"; return KEYWORD_IF; }
+elseif                  { cout /*<< "l." << line*/ << "elseif"; return KEYWORD_ELSEIF; }
+else                    { cout /*<< "l." << line*/ << "else"; return KEYWORD_ELSE; }
 char 					{ cout /*<< "l." << line*/ << "type(char) "; return IDENTIFIER; }
 int    				    { cout /*<< "l." << line*/ << "type(int) "; return IDENTIFIER; }
 float            	    { cout /*<< "l." << line*/ << "type(float) "; return IDENTIFIER; }
