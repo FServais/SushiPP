@@ -104,7 +104,7 @@ tuple  				    { cout /*<< "l." << line*/ << "type(tuple) "; return IDENTIFIER; 
 (true|TRUE) 	        { cout /*<< "l." << line*/ << "bool(true) "; yylval.vbool = true; return CONST_BOOL; }
 {ALPHA}{WORD_HYPH}*     { cout /*<< "l." << line*/ << "id(" << yytext << ") "; yylval.vstring = new string(yytext); return IDENTIFIER; }
 [+-]?{DIGIT}+			{ cout /*<< "l." << line*/ << "int(" << yytext << ") "; yylval.vint = strtol(yytext, NULL, 10); return CONST_INT; }
-[+-]?{DIGIT}+\,{DIGIT}+ { cout /*<< "l." << line*/ << "float(" << yytext << ") "; yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
+[+-]?{DIGIT}+.{DIGIT}+  { cout /*<< "l." << line*/ << "float(" << yytext << ") "; yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
 \"(\\.|[^"])*\"	        { cout /*<< "l." << line*/ << "string(" << yytext << ") "; yylval.vstring = new string(yytext); return CONST_STRING; }
 '(\\.|[^'])'	  		{ cout /*<< "l." << line*/ << "char(" << yytext << ") "; yylval.vchar = yytext[1]; return CONST_CHAR; }
 ({EOL}|\$.*{EOL})+		{ cout /*<< "l." << line*/ << "eol" << endl; line += count_ln(yytext, yyleng); return DELIM_EOL; }
