@@ -1,0 +1,42 @@
+maki str2list str<string> :	
+
+	maki list = {}
+
+	for i = (str-len str) - 1, i >= 0, --i
+		list-append list str[i]
+	;;
+	
+	nori list
+;;
+
+
+maki perform_heavy_computation parameter :
+	
+	maki hash = 0, tmp
+
+	str2list (a + b) c
+
+	foreach (str2list parameter) as char
+		tmp = char % 18
+		hash += tmp + char * 45
+	;;
+
+	if hash
+		print "Error '".hash."' is an incorrect hash"
+	else
+		print "Hash is ok"
+	;;
+;;
+
+
+maki main args :	
+	if (len args) < 2
+		nori -1
+	;;
+
+	foreach args as arg 
+		perform_heavy_computation arg
+	;;
+;;
+
+
