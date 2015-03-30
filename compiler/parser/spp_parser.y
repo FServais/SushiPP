@@ -2,6 +2,8 @@
 	#include <cstdio>
 	#include <iostream>
 	#include <string>
+	#include <sstream>
+
 	using namespace std;
 
 	extern "C" int yylex();
@@ -130,6 +132,8 @@
 
 %start program
 
+%define parse.error verbose
+
 %% 
 
 /*************************/
@@ -166,14 +170,15 @@ declaration:
 
 /* variable declaration */
 decl-vars:
-  decl-var
-| decl-var ',' decl-vars
-| decl-var ',' DELIM_EOL decl-vars
+  decl-var { cout << endl << "New var" << endl; }
+| decl-var ',' decl-vars { cout << endl << "New var" << endl; }
+| decl-var ',' DELIM_EOL decl-vars { cout << endl << "New var" << endl; }
+| error decl-vars { yyerrok; }
 ;
 
 decl-var:
-  IDENTIFIER 				 { cout << endl << "Declare the variable " << *$1 << endl; } 
-| IDENTIFIER '=' expression  { cout << endl << "Assign an expression to the variable " << *$1 << endl; }
+  IDENTIFIER 				  
+| IDENTIFIER '=' expression 
 ;
 
 /* function declaration */
@@ -271,6 +276,12 @@ expression:
 | expression OP_LSHIFT expression
 | expression OP_RSHIFT expression 
 | expression '.' expression
+| error { 
+			yyerrok;
+			stringstream ss;
+			ss << "Error near line (" << @1.first_line << ", " << @1.last_line << endl; 
+			yyerror(ss.str().c_str());
+		}
 ;
 
 incr-expression:
@@ -463,6 +474,5 @@ int main(int, char**)
 }
 
 void yyerror(const char *s) {
-	cerr << "Error : " << s << endl;
-	exit(-1);
+	cerr << "Error near (line, column) : (" << yylloc.first_line << ", " << yylloc.first_column <<  ") : " << s << endl;
 }
