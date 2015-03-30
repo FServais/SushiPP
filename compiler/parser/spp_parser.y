@@ -31,6 +31,9 @@
 %token KEYWORD_CONTINUE "continue"
 %token KEYWORD_FOREACH "foreach"
 %token KEYWORD_AS "as"
+%token KEYWORD_IF "if"
+%token KEYWORD_ELSEIF "elseif"
+%token KEYWORD_ELSE "else"
 
 %token TYPE_INT "int"
 %token TYPE_FLOAT "float"
@@ -371,10 +374,14 @@ statement:
 | loop 
 | KEYWORD_CONTINUE
 | KEYWORD_BREAK
+| conditional
 ;
 
 /* Return */
-return: KEYWORD_NORI expression ;
+return: 
+  KEYWORD_NORI
+| KEYWORD_NORI expression 
+;
 
 /* Switch */
 menu: KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS;
@@ -421,6 +428,18 @@ for-update:
   %empty
 | modifying-expression
 ;
+
+/* Conditionnal */
+conditional: 
+  KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS 
+;
+
+elseif:
+  KEYWORD_ELSEIF expression DELIM_EOL scope-body 
+| KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif;
 
 %%
 

@@ -89,6 +89,9 @@ roll					{ cout /*<< "l." << line*/ << "roll"; return KEYWORD_ROLL; }
 for 					{ cout /*<< "l." << line*/ << "for"; return KEYWORD_FOR; }
 foreach					{ cout /*<< "l." << line*/ << "foreach"; return KEYWORD_FOREACH; }
 as 						{ cout /*<< "l." << line*/ << "as"; return KEYWORD_AS; }
+if  					{ cout /*<< "l." << line*/ << "if"; return KEYWORD_IF; }
+elseif                  { cout /*<< "l." << line*/ << "elseif"; return KEYWORD_ELSEIF; }
+else                    { cout /*<< "l." << line*/ << "else"; return KEYWORD_ELSE; }
 char 					{ cout /*<< "l." << line*/ << "type(char) "; return IDENTIFIER; }
 int    				    { cout /*<< "l." << line*/ << "type(int) "; return IDENTIFIER; }
 float            	    { cout /*<< "l." << line*/ << "type(float) "; return IDENTIFIER; }
@@ -101,7 +104,7 @@ tuple  				    { cout /*<< "l." << line*/ << "type(tuple) "; return IDENTIFIER; 
 (true|TRUE) 	        { cout /*<< "l." << line*/ << "bool(true) "; yylval.vbool = true; return CONST_BOOL; }
 {ALPHA}{WORD_HYPH}*     { cout /*<< "l." << line*/ << "id(" << yytext << ") "; yylval.vstring = new string(yytext); return IDENTIFIER; }
 [+-]?{DIGIT}+			{ cout /*<< "l." << line*/ << "int(" << yytext << ") "; yylval.vint = strtol(yytext, NULL, 10); return CONST_INT; }
-[+-]?{DIGIT}+\,{DIGIT}+ { cout /*<< "l." << line*/ << "float(" << yytext << ") "; yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
+[+-]?{DIGIT}+.{DIGIT}+  { cout /*<< "l." << line*/ << "float(" << yytext << ") "; yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
 \"(\\.|[^"])*\"	        { cout /*<< "l." << line*/ << "string(" << yytext << ") "; yylval.vstring = new string(yytext); return CONST_STRING; }
 '(\\.|[^'])'	  		{ cout /*<< "l." << line*/ << "char(" << yytext << ") "; yylval.vchar = yytext[1]; return CONST_CHAR; }
 ({EOL}|\$.*{EOL})+		{ cout /*<< "l." << line*/ << "eol" << endl; line += count_ln(yytext, yyleng); return DELIM_EOL; }
