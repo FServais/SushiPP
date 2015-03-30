@@ -1,46 +1,27 @@
 
-$ variable decl-assign
-maki a = 2
+$ maki -> mak
+mak a = 2
 
-$ multiple decl assing
-maki a = 3, b = 5, c = 18
+$ comma missing
+maki a = 3 b = 5, c = 18
 
-$multiple decl
-maki a, b, v=  3
+$ parenthesis missing
+maki func a b : nori (a + b ;;
 
-$func decl
-maki func a b : nori (a + b) ;;
+$ typo
+maki func a b<hint> : nori (a + 2) ;;
 
-$ func decl with type
-maki func a b<int> : nori (a + 2) ;;
+$ ';' missing
+maki func a b : nori (a = b - 2) ;
 
-$ decl eol after body
-maki func a b : nori (a = b - 2) ;;
-
-$ function call !!
-a (soy a b : nori 18 + a + b)
-
-$ expressions
-a = a + b - (a += b)
-a **= 25 ** 3
+$ parenthesis missing between function call
+a soy a b : nori 18 + a + b
 
 $ strings 
-a = "aaa"
+a = 'aaa'
 b = "bbb"
-c = a.b
-c .= "ccc"
+c = a+b $ . -> +
 
-$ mutliple item function
-maki func a<int> v<float> :
-	maki a = 2, a = 3,
-			b = 2
-
-	a = 25 - 36,25
-	func b[2] 2
-
-	func (func b[2] a) c
-;;
- 
 
 $ datastructures
 maki a = { 2, b, 1 }
