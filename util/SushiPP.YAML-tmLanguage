@@ -6,10 +6,6 @@ uuid: 07edafb1-1c30-4106-8c69-e5d61c81c3ec
 
 patterns:
 
-- comment: function call
-  name: meta.function-call.sushipp
-  match: ([a-zA-Z_][\w-]*)
-
 - comment: Control flow keywords
   name: keyword.control.sushipp
   match: \b(if|roll|menu|else(if)?|to|nori|for|foreach|continue|break|as)\b
@@ -24,7 +20,7 @@ patterns:
 
 - comment: Other keywords
   name: storage.type.sushipp
-  match: (maki|soy|_|int|float|bool|char|string|array|tuple|list)
+  match: (maki|soy|_|<int>|<float>|<bool>|<char>|<string>|<array>|<tuple>|<list>)
 
 - comment: Named function declaration
   match: 'maki +([a-zA-Z_][\w-]*)((?: +[a-zA-Z_]\w*)*)? *:'
@@ -60,6 +56,9 @@ patterns:
   name: constant.numeric.sushipp
   match: \b(?:[+-]? *\d+(?:\.\d+)?|0x[\da-fA-F]+|0b[01]+)\b
 
+- comment: function call
+  name: meta.function-call.sushipp
+  match: \b([a-zA-Z_][\w-]*)\b
 
 - comment: support functions
   name: support.function.sushipp

@@ -11,7 +11,7 @@ sushipp.yy.c: $(SCANNER_PATH)spp_scanner.lex sushipp.tab.h
 	flex -o $(SCANNER_PATH)sushipp.yy.c $(SCANNER_PATH)spp_scanner.lex 
 
 sushipp: sushipp.yy.c 
-	$(CC) $(PARSER_PATH)sushipp.tab.c $(SCANNER_PATH)sushipp.yy.c -o sushipp --std=c++11 -Wall -lfl
+	$(CC) $(PARSER_PATH)sushipp.tab.c $(SCANNER_PATH)sushipp.yy.c -o sushipp --std=c++11 -lfl
 
 clean: 
 	rm -rf *.o

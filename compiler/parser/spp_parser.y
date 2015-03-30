@@ -2,13 +2,16 @@
 	#include <cstdio>
 	#include <iostream>
 	#include <string>
+	#include <sstream>
+
 	using namespace std;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
 	extern "C" FILE* yyin;
 
-	void yyerror(const char*);
+	static void yyerror(const char*);
+	static string curr_line_row();
 %}
 
 %union{
@@ -18,6 +21,8 @@
 	std::string* vstring;
 	char vchar;
 }
+
+%locations
 
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
@@ -87,7 +92,7 @@
 %left '+' '-'
 %left '*' '/' '%'
 %precedence '~' '!'
-%precedence UNARY_MINUS 
+%precedence UNARY_MINUS
 %right OP_ARITH_EXPO '.'
 %precedence PREFIX_INCR PREFIX_DECR
 %precedence SUFFIX_INCR SUFFIX_DECR
@@ -122,15 +127,12 @@
 /**********************/
 /* Non-terminal types */
 /**********************/
-%type <vstring> param
-%type <vstring> param-list
-%type <vint>    arg-list
-%type <vint>    arg-list-eol
-%type <vint>    expression-list
 
 %start program
 
-%% 
+%define parse.error verbose
+
+%%
 
 /*************************/
 /* Program general rules */
@@ -140,11 +142,11 @@ program:
 | scope-body
 ;
 
-/* Scope containing sushi++ code */ 
+/* Scope containing sushi++ code */
 scope: scope-body ;;
 
 scope-body:
-  program-element 
+  program-element
 | program-element DELIM_EOL
 | program-element DELIM_EOL scope-body
 | DELIM_EOL scope-body
@@ -172,68 +174,91 @@ decl-vars:
 ;
 
 decl-var:
-  IDENTIFIER 				 { cout << endl << "Declare the variable " << *$1 << endl; } 
-| IDENTIFIER '=' expression  { cout << endl << "Assign an expression to the variable " << *$1 << endl; }
+  IDENTIFIER
+| IDENTIFIER '=' expression
+| error '=' expression
+	{
+		//cerr << " Details : a valid identifier name was exptected as left-hand-side item." << endl;
+		yyerrok;
+	}
+| IDENTIFIER '=' error
+	{
+		//cerr << " Details : a valid expression was exptected as right-hand-side item." << endl;
+		yyerrok;
+	}
 ;
 
 /* function declaration */
 decl-func:
-  IDENTIFIER param-list ':' scope DELIM_EOS	{ cout << endl << "Declare a function " << (*$1) << " with parameters : " << (*$2) << endl; }
+  IDENTIFIER param-list ':' scope DELIM_EOS
 ;
 
 /* function's parameters list */
 param-list:
-  %empty           { $$ = new string(""); }
-| param param-list { $$ = new string((*$1) + string(",") + (*$2)); }
+  %empty
+| param param-list
 ;
 
 param:
-  IDENTIFIER 			  		{ $$ = new string(string("'") + (*$1) + string("'")); }
-| IDENTIFIER '<' IDENTIFIER '>' { $$ = new string(string("'") + (*$1) + string("' of type ") + (*$3)); }
+  IDENTIFIER
+| IDENTIFIER '<' IDENTIFIER '>'
 ;
 
 /******************/
 /* Function calls */
 /******************/
 
-func-call: 
-  IDENTIFIER arg-list { cout << endl << "Function call of '" << (*$1) << "' with " << $2 << " parameter(s)" << endl;; }
+func-call:
+  IDENTIFIER arg-list
 ;
 
-arg-list: 
-  %empty 			 { $$ = 0; }
-| argument arg-list  { $$ = $2 + 1; }
+arg-list:
+  %empty
+| argument arg-list
 ;
 
-argument: 
-  IDENTIFIER 
-| constant 
-| '(' expression ')' 
-| soy-expression 
-| datastructure-access 
-| braced-func-call;
+argument:
+  IDENTIFIER
+| constant
+| '(' expression ')'
+| soy-expression
+| datastructure-access
+| braced-func-call
+| error
+	{
+		/*cerr << " Details : the argument is invalid. It should be either " << endl
+			 << "    a constant, a braced expression, an anonymous soy function, " << endl
+			 << "    a datastructure access or a variable." << endl; */
+		yyclearin;
+	}
+;
 
 braced-func-call: '(' func-call-eol ')';
 
-/* 
- * The func call eol is introduced to allow programmers to write 
- * the arguments on several lines. To prevent ambiguities, this notation 
+/*
+ * The func call eol is introduced to allow programmers to write
+ * the arguments on several lines. To prevent ambiguities, this notation
  * is only allowed if the initial function call is braced (braced-func-call).
  */
-func-call-eol: 
-  IDENTIFIER arg-list-eol { cout << endl << "Braced function call of '" << (*$1) << "' with " << $2 << " parameter(s)" << endl; };
+func-call-eol:
+  IDENTIFIER arg-list-eol
 | soy-expression arg-list-eol
+| error arg-list-eol
+	{
+		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
+		yyclearin;
+	}
 ;
 
 arg-list-eol:
-  argument { $$ = 1; }
-| argument arg-list-eol { $$ = 1 + $2; }
-| argument DELIM_EOL arg-list-eol { $$ = 1 + $3; }
+  argument
+| argument arg-list-eol
+| argument DELIM_EOL arg-list-eol
 ;
 
 /* Anonymous functions */
 soy-expression: '(' soy-func ')';
-soy-func: KEYWORD_SOY param-list ':' scope; 
+soy-func: KEYWORD_SOY param-list ':' scope;
 
 /***************/
 /* Expressions */
@@ -243,13 +268,13 @@ expression:
 | '(' expression ')'
 | IDENTIFIER
 | datastructure
-| soy-expression 
+| soy-expression
 | datastructure-access
-| incr-expression 
+| incr-expression
 | assignment
 | braced-func-call
-| expression '+' expression 
-| expression '-' expression 
+| expression '+' expression
+| expression '-' expression
 | expression '*' expression
 | expression '/' expression
 | expression '%' expression
@@ -261,15 +286,15 @@ expression:
 | '~' expression
 | expression OP_LOGIC_OR expression
 | expression OP_LOGIC_AND expression
-| '!' expression 
-| expression '<' expression 
+| '!' expression
+| expression '<' expression
 | expression '>' expression
 | expression OP_COMP_LEQ expression
 | expression OP_COMP_GEQ expression
 | expression OP_COMP_EQ  expression
-| expression OP_COMP_NEQ expression 
+| expression OP_COMP_NEQ expression
 | expression OP_LSHIFT expression
-| expression OP_RSHIFT expression 
+| expression OP_RSHIFT expression
 | expression '.' expression
 ;
 
@@ -295,35 +320,35 @@ assignment:
 ;
 
 /* A modifying expression is an expression that could bring about
- * a state modification (global variable, IO,...). These are the only 
+ * a state modification (global variable, IO,...). These are the only
  * expressions that can be as such in a program (see program-element rule)
  */
-modifying-expression: 
-  assignment 
-| incr-expression 
+modifying-expression:
+  assignment
+| incr-expression
 | braced-func-call
 | func-call
 ;
 
-/* An assignable expression is an expression that represents a 
+/* An assignable expression is an expression that represents a
  * memory storage that can thus be assigned a new value
  */
-assignable-expression: 
-  IDENTIFIER 
+assignable-expression:
+  IDENTIFIER
 | datastructure-access;
 
 datastructure-access: IDENTIFIER '[' expression ']';
 
 /* Comma-separated expression list */
-expression-list: 
-  expression { $$ = 1; }
-| expression ',' expression-list { $$ = 1 + $3; }
+expression-list:
+  expression
+| expression ',' expression-list
 ;
 
 /*************/
 /* Constants */
 /*************/
-constant: 
+constant:
   CONST_INT
 | CONST_FLOAT
 | CONST_STRING
@@ -334,26 +359,26 @@ constant:
 /******************/
 /* Datastructures */
 /******************/
-datastructure: 
-  array 
-| list 
-| tuple 
+datastructure:
+  array
+| list
+| tuple
 | make-sequence
 ;
 
-array: 
-  DELIM_ARRAY_BEG DELIM_ARRAY_END { cout << "Empty array" << endl; } /* empty array */ 
-| DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END { cout << "Array of " << $2 << " element(s)" << endl; }
+array:
+  DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
+| DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
 ;
 
-list: 
-  '{' '}' { cout << "Empty list" << endl; } /* empty list */
-| '{' expression-list '}'  { cout << "List of " << $2 << " element(s)" << endl; }
+list:
+  '{' '}' /* empty list */
+| '{' expression-list '}'
 ;
 
 tuple:
-  DELIM_TUPLE_BEG DELIM_TUPLE_END { cout << "Empty tuple" << endl; } /* empty tuple */ 
-| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END	{ cout << "Tuple of " << $2 << " element(s)" << endl; }
+  DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
+| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
 ;
 
 /* The make sequence list allows to create datastructures
@@ -368,26 +393,26 @@ seq-expression: expression KEYWORD_TO expression;
 /**************/
 /* Statements */
 /**************/
-statement: 
-  return 
+statement:
+  return
 | menu
-| loop 
+| loop
 | KEYWORD_CONTINUE
 | KEYWORD_BREAK
 | conditional
 ;
 
 /* Return */
-return: 
+return:
   KEYWORD_NORI
-| KEYWORD_NORI expression 
+| KEYWORD_NORI expression
 ;
 
 /* Switch */
 menu: KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS;
-menu-body: 
-  menu-def DELIM_EOL 
-| menu-case DELIM_EOL 
+menu-body:
+  menu-def DELIM_EOL
+| menu-case DELIM_EOL
 | menu-case DELIM_EOL menu-body
 ;
 
@@ -395,8 +420,8 @@ menu-case: expression DELIM_ARROW scope DELIM_EOS;
 menu-def: '_' DELIM_ARROW scope DELIM_EOS;
 
 /* Loop */
-loop : 
-  foreach 
+loop :
+  foreach
 | for
 | roll ;
 
@@ -405,7 +430,7 @@ loop :
  */
 roll : KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS ;
 
-/* The foreach loop iterates over a list/array expression (so the expression part should be 
+/* The foreach loop iterates over a list/array expression (so the expression part should be
  * interpretable as a list/array)
  */
 foreach: KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS;
@@ -419,7 +444,7 @@ foreach: KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_
  */
 for: KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS;
 
-for-initializer: 
+for-initializer:
   %empty
 | assignment
 ;
@@ -430,20 +455,20 @@ for-update:
 ;
 
 /* Conditionnal */
-conditional: 
+conditional:
   KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
 | KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
 | KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
-| KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS 
+| KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
 ;
 
 elseif:
-  KEYWORD_ELSEIF expression DELIM_EOL scope-body 
+  KEYWORD_ELSEIF expression DELIM_EOL scope-body
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif;
 
 %%
 
-int main(int, char**) 
+int main(int, char**)
 {
 	// // open a file handle to a particular file:
 	// FILE *myfile = fopen("in.snazzle", "r");
@@ -454,15 +479,22 @@ int main(int, char**)
 	// }
 	// // set flex to read from it instead of defaulting to STDIN:
 	// yyin = myfile;
-	
+
 	// // parse through the input until there is no more:
 	do {
 		yyparse();
 	} while (!feof(yyin));
-	
+
 }
 
-void yyerror(const char *s) {
-	cerr << "Error : " << s << endl;
-	exit(-1);
+static void yyerror(const char *s)
+{
+	cerr << "[Error] " << s << curr_line_row() << endl;
+}
+
+static string curr_line_row()
+{
+	stringstream ss;
+	ss << " at line " << yylloc.first_line << " (column " << yylloc.first_column << ")";
+	return ss.str();
 }
