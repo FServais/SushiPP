@@ -7,8 +7,8 @@ using namespace std;
 NodeLocation::NodeLocation() : first_line_(0), last_line_(0), first_column_(0), last_column_(0) { }
 
 NodeLocation::NodeLocation(int first_line, int last_line, int first_column, int last_column)
-	: first_line_(first_line_), last_line_(last_line_), 
-	  first_column_(first_column_), last_column_(last_column_) 
+	: first_line_(first_line), last_line_(last_line), 
+	  first_column_(first_column), last_column_(last_column) 
 {
 	if(first_line_ > last_line_)
 		throw logic_error::domain_error("NodeLocation: first line should be less or equal than last_line");

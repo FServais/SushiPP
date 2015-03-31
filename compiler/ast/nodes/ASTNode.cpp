@@ -5,7 +5,7 @@
  *      Author: Floriane
  */
 
-#include "ASTNode.h"
+#include "ASTNode.hpp"
 
 #include <algorithm> // for_each
 #include <memory> // default_delete
@@ -46,10 +46,10 @@ ASTNode(const std::string& name, int first_line, int last_line, int first_column
 
 ASTNode::ASTNode(const ASTNode& copy) 
 {
-	for(auto it = copy.getChildren().begin(); it != copy.getChildren().end(); it++) {
+	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) {
 		if(*it != NULL){
-			Node* ch = new Node(**it);
-			addChild(*ch);
+			ASTNode* ch = new ASTNode(**it);
+			add_child(*ch);
 		}	
 	}
 }
@@ -58,9 +58,9 @@ ASTNode& ASTNode::operator=(const ASTNode&)
 {
 	children.clear();
 	
-	for(auto it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
-			Node* ch = new Node(**it);
-			addChild(*ch);
+	for(auto it = copy.get_children().begin(); it !=  copy.get_children().end(); it++) {
+			ASTNode* ch = new ASTNode(**it);
+			add_child(*ch);
 	}
 
 }
@@ -91,7 +91,7 @@ std::vector<ASTNode*>& ASTNode::get_children()
 	return children;
 }
 
-void ASTNode::add_child(const ASTNode& child)
+void ASTNode::add_child(ASTNode& child)
 {
 	children.push_back(&child);
 }
