@@ -1,6 +1,6 @@
 #include "NonTerminal.hpp"
 
-using namespace ast::nodes::nonterminal::NonTerminal;
+using namespace ast::nodes::nonterminals::NonTerminal;
 using ast::nodes::ASTNode;
 using ast::nodes::NodeLocation;
 
