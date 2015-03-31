@@ -13,9 +13,9 @@ namespace ast::nodes::nonterminals::nt_constant
 	{
 	public:
 		// Constructors
-		NT_Constant(const std::string&);
-		NT_Constant(const std::string&,int,int,int,int);
-		NT_Constant(const std::string&,const ast::nodes::NodeLocation&);
+		NT_Constant();
+		NT_Constant(int,int,int,int);
+		NT_Constant(const ast::nodes::NodeLocation&);
 	};
 
 }

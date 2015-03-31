@@ -12,9 +12,9 @@ namespace ast::nodes::nonterminals::nt_functioncall
 	{
 	public:
 		// Constructors
-		NT_FunctionCall(const std::string&);
-		NT_FunctionCall(const std::string&,int,int,int,int);
-		NT_FunctionCall(const std::string&,const ast::nodes::NodeLocation&);
+		NT_FunctionCall();
+		NT_FunctionCall(int,int,int,int);
+		NT_FunctionCall(const ast::nodes::NodeLocation&);
 	};
 
 	/***************************************
@@ -24,72 +24,72 @@ namespace ast::nodes::nonterminals::nt_functioncall
 	{
 	public:
 		// Constructors
-		FuncCall(const std::string&);
-		FuncCall(const std::string&,int,int,int,int);
-		FuncCall(const std::string&,const ast::nodes::NodeLocation&);
+		FuncCall();
+		FuncCall(int,int,int,int);
+		FuncCall(const ast::nodes::NodeLocation&);
 	};
 
 	class ArgList : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		ArgList(const std::string&);
-		ArgList(const std::string&,int,int,int,int);
-		ArgList(const std::string&,const ast::nodes::NodeLocation&);
+		ArgList();
+		ArgList(int,int,int,int);
+		ArgList(const ast::nodes::NodeLocation&);
 	};
 
 	class Argument : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		Argument(const std::string&);
-		Argument(const std::string&,int,int,int,int);
-		Argument(const std::string&,const ast::nodes::NodeLocation&);
+		Argument();
+		Argument(int,int,int,int);
+		Argument(const ast::nodes::NodeLocation&);
 	};
 
 	class BracedFuncCall : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		BracedFuncCall(const std::string&);
-		BracedFuncCall(const std::string&,int,int,int,int);
-		BracedFuncCall(const std::string&,const ast::nodes::NodeLocation&);
+		BracedFuncCall();
+		BracedFuncCall(int,int,int,int);
+		BracedFuncCall(const ast::nodes::NodeLocation&);
 	};
 
 	class FuncCallEol : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		FuncCallEol(const std::string&);
-		FuncCallEol(const std::string&,int,int,int,int);
-		FuncCallEol(const std::string&,const ast::nodes::NodeLocation&);
+		FuncCallEol();
+		FuncCallEol(int,int,int,int);
+		FuncCallEol(const ast::nodes::NodeLocation&);
 	};
 
 	class ArgListEol : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		ArgListEol(const std::string&);
-		ArgListEol(const std::string&,int,int,int,int);
-		ArgListEol(const std::string&,const ast::nodes::NodeLocation&);
+		ArgListEol();
+		ArgListEol(int,int,int,int);
+		ArgListEol(const ast::nodes::NodeLocation&);
 	};
 
 	class SoyExpression : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		SoyExpression(const std::string&);
-		SoyExpression(const std::string&,int,int,int,int);
-		SoyExpression(const std::string&,const ast::nodes::NodeLocation&);
+		SoyExpression();
+		SoyExpression(int,int,int,int);
+		SoyExpression(const ast::nodes::NodeLocation&);
 	};
 
 	class SoyFunc : public NT_FunctionCall
 	{
 	public:
 		// Constructors
-		SoyFunc(const std::string&);
-		SoyFunc(const std::string&,int,int,int,int);
-		SoyFunc(const std::string&,const ast::nodes::NodeLocation&);
+		SoyFunc();
+		SoyFunc(int,int,int,int);
+		SoyFunc(const ast::nodes::NodeLocation&);
 	};
 }
 
