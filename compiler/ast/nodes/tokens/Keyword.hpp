@@ -18,40 +18,40 @@ namespace ast
 	};
 
 	/** Keyword derived class */
-	class Maki : public Keyword
+	class K_Maki : public Keyword
 	{
 	public:
 		// constructors
-		Maki();
-		Maki(int,int,int,int);
-		Maki(const NodeLocation&);
+		K_Maki();
+		K_Maki(int,int,int,int);
+		K_Maki(const NodeLocation&);
 	};
 
-	class To : public Keyword
+	class K_To : public Keyword
 	{
 	public:
 		// constructors
-		To();
-		To(int,int,int,int);
-		To(const NodeLocation&);
+		K_To();
+		K_To(int,int,int,int);
+		K_To(const NodeLocation&);
 	};
 
-	class Soy : public Keyword
+	class K_Soy : public Keyword
 	{
 	public:
 		// constructors
-		Soy();
-		Soy(int,int,int,int);
-		Soy(const NodeLocation&);
+		K_Soy();
+		K_Soy(int,int,int,int);
+		K_Soy(const NodeLocation&);
 	};
 
-	class Nori: public Keyword
+	class K_Nori: public Keyword
 	{
 	public:
 		// constructors
-		Nori();
-		Nori(int,int,int,int);
-		Nori(const NodeLocation&);
+		K_Nori();
+		K_Nori(int,int,int,int);
+		K_Nori(const NodeLocation&);
 	};
 
 	class K_Menu : public Keyword
@@ -81,22 +81,22 @@ namespace ast
 		K_Roll(const NodeLocation&);
 	};
 
-	class Break : public Keyword
+	class K_Break : public Keyword
 	{
 	public:
 		// constructors
-		Break();
-		Break(int,int,int,int);
-		Break(const NodeLocation&);
+		K_Break();
+		K_Break(int,int,int,int);
+		K_Break(const NodeLocation&);
 	};
 
-	class Continue : public Keyword
+	class K_Continue : public Keyword
 	{
 	public:
 		// constructors
-		Continue();
-		Continue(int,int,int,int);
-		Continue(const NodeLocation&);
+		K_Continue();
+		K_Continue(int,int,int,int);
+		K_Continue(const NodeLocation&);
 	};
 
 	class K_Foreach : public Keyword
@@ -108,22 +108,22 @@ namespace ast
 		K_Foreach(const NodeLocation&);
 	};
 
-	class As : public Keyword
+	class K_As : public Keyword
 	{
 	public:
 		// constructors
-		As();
-		As(int,int,int,int);
-		As(const NodeLocation&);
+		K_As();
+		K_As(int,int,int,int);
+		K_As(const NodeLocation&);
 	};
 
-	class If : public Keyword
+	class K_If : public Keyword
 	{
 	public:
 		// constructors
-		If();
-		If(int,int,int,int);
-		If(const NodeLocation&);
+		K_If();
+		K_If(int,int,int,int);
+		K_If(const NodeLocation&);
 	};
 
 	class K_Elseif : public Keyword
@@ -135,13 +135,13 @@ namespace ast
 		K_Elseif(const NodeLocation&);
 	};
 
-	class Else : public Keyword
+	class K_Else : public Keyword
 	{
 	public:
 		// constructors
-		Else();
-		Else(int,int,int,int);
-		Else(const NodeLocation&);
+		K_Else();
+		K_Else(int,int,int,int);
+		K_Else(const NodeLocation&);
 	};
 
 	class Type_Int : public Keyword

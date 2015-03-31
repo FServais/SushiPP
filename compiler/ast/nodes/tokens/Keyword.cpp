@@ -19,57 +19,57 @@ Keyword::Keyword(const std::string& node_name, const NodeLocation& node_loc)
 
 /** Keyword derived classes */
 /* Keyword : maki */
-Maki::Maki() : Keyword("maki") { }
+K_Maki::K_Maki() : Keyword("maki") { }
 
-Maki::Maki(int first_line, int last_line, int first_column, int last_column)
+K_Maki::K_Maki(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("maki", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Maki::Maki(const NodeLocation& node_loc) : Keyword("maki", node_loc)
+K_Maki::K_Maki(const NodeLocation& node_loc) : Keyword("maki", node_loc)
 {
 
 }
 
 /* Keyword : to */
-To::To() : Keyword("to") { }
+K_To::K_To() : Keyword("to") { }
 
-To::To(int first_line, int last_line, int first_column, int last_column)
+K_To::K_To(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("to", first_line, last_line, first_column, last_column)
 {
 
 }
 
-To::To(const NodeLocation& node_loc) : Keyword("to", node_loc)
+K_To::K_To(const NodeLocation& node_loc) : Keyword("to", node_loc)
 {
 
 }
 
 /* Keyword : soy */
-Soy::Soy() : Keyword("soy") { }
+K_Soy::K_Soy() : Keyword("soy") { }
 
-Soy::Soy(int first_line, int last_line, int first_column, int last_column)
+K_Soy::K_Soy(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("soy", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Soy::Soy(const NodeLocation& node_loc) : Keyword("soy", node_loc)
+K_Soy::K_Soy(const NodeLocation& node_loc) : Keyword("soy", node_loc)
 {
 
 }
 
 /* Keyword : nori */
-Nori::Nori() : Keyword("nori") { }
+K_Nori::K_Nori() : Keyword("nori") { }
 
-Nori::Nori(int first_line, int last_line, int first_column, int last_column)
+K_Nori::K_Nori(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("nori", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Nori::Nori(const NodeLocation& node_loc) : Keyword("nori", node_loc)
+K_Nori::K_Nori(const NodeLocation& node_loc) : Keyword("nori", node_loc)
 {
 
 }
@@ -117,29 +117,29 @@ K_Roll::K_Roll(const NodeLocation& node_loc) : Keyword("roll", node_loc)
 }
 
 /* Keyword :break */
-Break::Break() : Keyword("break") { }
+K_Break::K_Break() : Keyword("break") { }
 
-Break::Break(int first_line, int last_line, int first_column, int last_column)
+K_Break::K_Break(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("break", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Break::Break(const NodeLocation& node_loc) : Keyword("break", node_loc)
+K_Break::K_Break(const NodeLocation& node_loc) : Keyword("break", node_loc)
 {
 
 }
 
 /* Keyword : continue */
-Continue::Continue() : Keyword("continue") { }
+K_Continue::K_Continue() : Keyword("continue") { }
 
-Continue::Continue(int first_line, int last_line, int first_column, int last_column)
+K_Continue::K_Continue(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("continue", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Continue::Continue(const NodeLocation& node_loc) : Keyword("continue", node_loc)
+K_Continue::K_Continue(const NodeLocation& node_loc) : Keyword("continue", node_loc)
 {
 
 }
@@ -159,29 +159,29 @@ K_Foreach::K_Foreach(const NodeLocation& node_loc) : Keyword("foreach", node_loc
 }
 
 /* Keyword : as */
-As::As() : Keyword("as") { }
+K_As::K_As() : Keyword("as") { }
 
-As::As(int first_line, int last_line, int first_column, int last_column)
+K_As::K_As(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("as", first_line, last_line, first_column, last_column)
 {
 
 }
 
-As::As(const NodeLocation& node_loc) : Keyword("as", node_loc)
+K_As::K_As(const NodeLocation& node_loc) : Keyword("as", node_loc)
 {
 
 }
 
 /* Keyword : if */
-If::If() : Keyword("if") { }
+K_If::K_If() : Keyword("if") { }
 
-If::If(int first_line, int last_line, int first_column, int last_column)
+K_If::K_If(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("if", first_line, last_line, first_column, last_column)
 {
 
 }
 
-If::If(const NodeLocation& node_loc) : Keyword("if", node_loc)
+K_If::K_If(const NodeLocation& node_loc) : Keyword("if", node_loc)
 {
 
 }
@@ -201,15 +201,15 @@ K_Elseif::K_Elseif(const NodeLocation& node_loc) : Keyword("elseif", node_loc)
 }
 
 /* Keyword : else */
-Else::Else() : Keyword("else") { }
+K_Else::K_Else() : Keyword("else") { }
 
-Else::Else(int first_line, int last_line, int first_column, int last_column)
+K_Else::K_Else(int first_line, int last_line, int first_column, int last_column)
 	: Keyword("else", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Else::Else(const NodeLocation& node_loc) : Keyword("else", node_loc)
+K_Else::K_Else(const NodeLocation& node_loc) : Keyword("else", node_loc)
 {
 
 }
