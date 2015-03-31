@@ -5,6 +5,17 @@
 
 namespace ast::nodes::nonterminals::nt_functioncall
 {
+	/*********************************************
+	 * Intermediate NT_FunctionCall node base class *
+	 *********************************************/
+	class NT_FunctionCall : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_FunctionCall(const std::string&);
+		NT_FunctionCall(const std::string&,int,int,int,int);
+		NT_FunctionCall(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/***************************************
 	 * Function call rules node base class *

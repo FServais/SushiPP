@@ -5,6 +5,17 @@
 
 namespace ast::nodes::nonterminals::nt_expression
 {
+	/**********************************************
+	 * Intermediate NT_Expression node base class *
+	 **********************************************/
+	class NT_Expression : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_Expression(const std::string&);
+		NT_Expression(const std::string&,int,int,int,int);
+		NT_Expression(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/************************************
 	 * Expression rules node base class *

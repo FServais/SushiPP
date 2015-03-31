@@ -5,6 +5,17 @@
 
 namespace ast::nodes::nonterminals::nt_statement
 {
+	/*********************************************
+	 * Intermediate NT_Statement node base class *
+	 *********************************************/
+	class NT_Statement : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_Statement(const std::string&);
+		NT_Statement(const std::string&,int,int,int,int);
+		NT_Statement(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/***********************************
 	 * Statement rules node base class *

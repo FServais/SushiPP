@@ -5,6 +5,17 @@
 
 namespace ast::nodes::nonterminals::nt_datastructure
 {
+	/*************************************************
+	 * Intermediate NT_Datastructure node base class *
+	 *************************************************/
+	class NT_Datastructure : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_Datastructure(const std::string&);
+		NT_Datastructure(const std::string&,int,int,int,int);
+		NT_Datastructure(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/***************************************
 	 * Datastructure rules node base class *
