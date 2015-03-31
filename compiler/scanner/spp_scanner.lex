@@ -31,6 +31,8 @@
 
 %}
 
+%option noyywrap
+
 EOL        (\r|\n|\r\n)
 DIGIT      [0-9]
 WORD	   [0-9A-Za-z_]
