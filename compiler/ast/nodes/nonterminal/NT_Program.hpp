@@ -29,15 +29,6 @@ namespace ast::nodes::nonterminals::nt_program
 		Program(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Empty : public NT_Program
-	{
-	public:
-		// Constructors
-		Empty(const std::string&);
-		Empty(const std::string&,int,int,int,int);
-		Empty(const std::string&,const ast::nodes::NodeLocation&);
-	};
-
 	class ScopeBody : public NT_Program
 	{
 	public:
