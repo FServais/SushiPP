@@ -21,7 +21,9 @@ ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& n
 
 }
 
+
 /** Constant token derived classes */
+// String
 String::String(const std::string& lexer_val)
 	: ConstantToken("string"),
 	  str_val(next(lexer_val.begin()), prev(lexer_val.end())) // remove the double quotes
@@ -53,6 +55,8 @@ const std::string& String::value() const
 	return str_val;
 }
 
+
+// Character
 Character::Character(const std::string& lexer_val)
 	: ConstantToken("char"),
 	  char_val(lexer_val[1])
@@ -79,6 +83,8 @@ char Character::value() const
 	return char_val;
 }
 
+
+// Integer
 Integer::Integer(const std::string& lexer_val)
 	: ConstantToken("integer"),
 	  int_val(atoi(lexer_val.c_str()))
@@ -105,6 +111,8 @@ int Integer::value() const
 	return int_val;
 }
 
+
+// Float
 Float::Float(const std::string& lexer_val)
 	: ConstantToken("float"),
 	  float_val(atof(lexer_val.c_str()))
@@ -131,6 +139,8 @@ float Float::value() const
 	return float_val;
 }
 
+
+// Bool
 Bool::Bool(const std::string& lexer_val)
 	: ConstantToken("bool"),
 	  bool_val(Bool::stob(lexer_val))

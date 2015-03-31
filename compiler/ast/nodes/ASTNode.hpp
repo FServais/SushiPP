@@ -9,7 +9,9 @@
 
 #include <vector>
 #include <string>
+
 #include "NodeLocation.hpp"
+#include "../visitor/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -70,9 +72,11 @@ namespace ast
 		// print the node name
 		std::string& node_name();
 		const std::string& node_name() const;
+		
+		void print(int);
 
 		// function for accepting a visitor
-//virtual accept(ASTVisitor& v) = 0;
+		virtual void accept(ASTVisitor& v) = 0;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */

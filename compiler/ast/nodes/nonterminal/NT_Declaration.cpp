@@ -28,7 +28,7 @@ Declaration::Declaration(int first_line, int last_line, int first_column, int la
 
 }
 
-Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("Declaration", node_loc)
+Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("declaration", node_loc)
 {
 
 }
