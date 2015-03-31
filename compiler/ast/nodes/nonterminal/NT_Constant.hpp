@@ -6,9 +6,9 @@
 namespace ast::nodes::nonterminals::nt_constant
 {
 
-	/*********************************************
-	 * Intermediate NT_Constant node base class *
-	 *********************************************/
+	/**********************************
+	 * Constant rules node base class *
+	 **********************************/
 	class NT_Constant : public NonTerminal
 	{
 	public:
@@ -18,17 +18,6 @@ namespace ast::nodes::nonterminals::nt_constant
 		NT_Constant(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	/**********************************
-	 * Constant rules node base class *
-	 **********************************/
-	class Constant : public NT_Constant
-	{
-	public:
-		// Constructors
-		Constant(const std::string&);
-		Constant(const std::string&,int,int,int,int);
-		Constant(const std::string&,const ast::nodes::NodeLocation&);
-	};
 }
 
 #endif
