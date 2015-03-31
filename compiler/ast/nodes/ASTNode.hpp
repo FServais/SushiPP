@@ -72,6 +72,8 @@ namespace ast
 		// print the node name
 		std::string& node_name();
 		const std::string& node_name() const;
+		
+		void print(int);
 
 		// function for accepting a visitor
 		virtual void accept(ASTVisitor& v) = 0;
