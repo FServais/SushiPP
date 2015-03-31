@@ -157,7 +157,7 @@
 /* Program general rules */
 /*************************/
 program:
-  %empty 		{ syntax_tree = new AbstractSyntaxTree(); }
+  %empty 		{ syntax_tree = new AbstractSyntaxTree; }
 | scope-body	{ syntax_tree = new AbstractSyntaxTree($$); }
 ;
 
@@ -165,7 +165,7 @@ program:
 scope: 
   scope-body 
 	{ 
-		$$ = new Scope();
+		$$ = new Scope;
 		$$->add_child($1); 
 	}
 ;
@@ -173,25 +173,25 @@ scope:
 scope-body:
   program-element 
 	{
-		$$ = new ScopeBody();
+		$$ = new ScopeBody;
 		$$->add_child($1);
 	}
 | program-element DELIM_EOL
 	{
-		$$ = new ScopeBody();
+		$$ = new ScopeBody;
 		$$->add_child($1);
 		$$->add_child(new DelimEol);
 	}
 | program-element DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody();
+		$$ = new ScopeBody;
 		$$->add_child($1);
 		$$->add_child(new DelimEol);
 		$$->add_child($3);
 	}
 | DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody();
+		$$ = new ScopeBody;
 		$$->add_child(new DelimEol);
 		$$->add_child($2);
 	}
@@ -200,17 +200,17 @@ scope-body:
 program-element:
   statement
 	{
-		$$ = new ProgramElement();
+		$$ = new ProgramElement;
 		$$->add_child($1);
 	}
 | modifying-expression
 	{
-		$$ = new ProgramElement();
+		$$ = new ProgramElement;
 		$$->add_child($1);
 	}
 | declaration
 	{
-		$$ = new ProgramElement();
+		$$ = new ProgramElement;
 		$$->add_child($1);
 	}
 ;
@@ -220,14 +220,14 @@ program-element:
 /***************/
 declaration:
   KEYWORD_MAKI decl-func
-  	{
-  		$$ = new Declaration();
-  		$$->add_child(new K_Maki);
-  		$$->add_child($2);
-  	}
+	{
+		$$ = new Declaration;
+		$$->add_child(new K_Maki);
+		$$->add_child($2);
+	}
 | KEYWORD_MAKI decl-vars
 	{
-		$$ = new Declaration();
+		$$ = new Declaration;
 		$$->add_child(new K_Maki);
 		$$->add_child($2);
 	}
@@ -237,19 +237,19 @@ declaration:
 decl-vars:
   decl-var
 	{
-		$$ = new DeclVars();
+		$$ = new DeclVars;
 		$$->add_child($1);
 	}
 | decl-var ',' decl-vars
 	{
-		$$ = new DeclVars();
+		$$ = new DeclVars;
 		$$->add_child($1);
 		$$->add_child(new Virg);
 		$$->add_child($3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
-		$$ = new DeclVars();
+		$$ = new DeclVars;
 		$$->add_child($1);
 		$$->add_child(new Virg);
 		$$->add_child(new DelimEol);
@@ -260,15 +260,21 @@ decl-vars:
 decl-var:
   IDENTIFIER
 	{
-		$$ = new DeclVar();
-		$$->add_child(new Identifier($1));
+		$$ = new DeclVar;
+		$$->add_child(new Identifier(*$1));
+		
+		// free semantic type of identifier
+		delete $1;
 	}
 | IDENTIFIER '=' expression
 	{
-		$$ = new DeclVar();
-		$$->add_child(new Identifier($1));
+		$$ = new DeclVar;
+		$$->add_child(new Identifier(*$1));
 		$$->add_child(new Op_Assign);
 		$$->add_child($3);
+
+		// free semantic type of identifier
+		delete $1;
 	}
 | error '=' expression
 	{
@@ -286,32 +292,51 @@ decl-var:
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
 	{
-		$$ = new DeclFunc();
-		$$->add_child(new Identifier($1));
+		$$ = new DeclFunc;
+		$$->add_child(new Identifier(*$1));
 		$$->add_child($2);
 		$$->add_child(new Op_AssignFunc);
 		$$->add_child($4);
 		$$->add_child(new DelimEos);
+
+		// free semantic type of identifier
+		delete $1;
 	}
 ;
 
 /* function's parameters list */
 param-list:
   %empty
+	{
+		$$ = nullptr;
+	}
 | param param-list
 	{
-		$$ = new DeclFunc();
-		$$->add_child(new Identifier($1));
-		$$->add_child($2);
-		$$->add_child(new Op_AssignFunc);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);		
+		$$ = new ParamList;
+		$$->add_child($1);
+		if($2 != nullptr)
+			$$->add_child($2);
 	}
 ;
 
 param:
   IDENTIFIER
+	{
+		$$ = new Param;
+		$$->add_child(new Identifier(*$1));
+	}
 | IDENTIFIER '<' IDENTIFIER '>'
+	{
+		$$ = new Param;
+		$$->add_child(new Identifier(*$1));
+		$$->add_child(new OpenChevr);
+		$$->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
+		$$->add_child(new CloseChevr);
+
+		// free semantic type of identifier
+		delete $1;
+		delete $3;
+	}
 ;
 
 /******************/
@@ -320,20 +345,67 @@ param:
 
 func-call:
   IDENTIFIER arg-list
+	{
+		$$ = new Param;
+		$$->add_child(new Identifier(*$1));
+		$$->add_child($2);
+
+		// free semantic type of identifier
+		delete $1;
+	}
 ;
 
 arg-list:
   %empty
+	{
+		$$ = nullptr;
+	}
 | argument arg-list
+	{
+		$$ = new ArgList;
+		$$->add_child($1);
+
+		if($2 != nullptr)
+			$$->add_child($2);
+	}
 ;
 
 argument:
   IDENTIFIER
+	{
+		$$ = new Argument;
+		$$->add_child(new Identifier(*$1));
+
+		// free semantic type of identifier
+		delete $1;
+	}
 | constant
+	{
+		$$ = new Argument;
+		$$->add_child($1);
+	}
 | '(' expression ')'
+	{
+		$$ = new Argument;
+		$$->add_child(new OpenPar);
+		$$->add_child($2);
+		$$->add_child(new ClosePar);
+	}
 | soy-expression
+	{
+		$$ = new Argument;
+		$$->add_child($1);
+	}
 | datastructure-access
+	{
+		$$ = new Argument;
+		$$->add_child($1);
+	}
 | braced-func-call
+	{
+		$$ = new Argument;
+		$$->add_child($1);
+	}
 | error
 	{
 		/*cerr << " Details : the argument is invalid. It should be either " << endl
@@ -343,7 +415,15 @@ argument:
 	}
 ;
 
-braced-func-call: '(' func-call-eol ')';
+braced-func-call: 
+  '(' func-call-eol ')'
+	{
+		$$ = new BracedFuncCall;
+		$$->add_child(new OpenPar);
+		$$->add_child($2);
+		$$->add_child(new ClosePar);
+	}
+;
 
 /*
  * The func call eol is introduced to allow programmers to write
@@ -352,7 +432,16 @@ braced-func-call: '(' func-call-eol ')';
  */
 func-call-eol:
   IDENTIFIER arg-list-eol
+	{
+		$$ = new FuncCallEol;
+		$$->add_child($1);
+	}
 | soy-expression arg-list-eol
+	{
+		$$ = new FuncCallEol;
+		$$->add_child($1);
+		$$->add_child($2);
+	}
 | error arg-list-eol
 	{
 		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
@@ -362,71 +451,364 @@ func-call-eol:
 
 arg-list-eol:
   argument
+	{
+		$$ = new ArgListEol;
+		$$->add_child($1);
+	}
 | argument arg-list-eol
+	{
+		$$ = new ArgListEol;
+		$$->add_child($1);
+		$$->add_child($2);
+	}
 | argument DELIM_EOL arg-list-eol
+	{
+		$$ = new ArgListEol;
+		$$->add_child($1);
+		$$->add_child(new DelimEol);
+	}
 ;
 
 /* Anonymous functions */
-soy-expression: '(' soy-func ')';
-soy-func: KEYWORD_SOY param-list ':' scope;
+soy-expression: 
+  '(' soy-func ')'
+	{
+		$$ = new SoyExpression;
+		$$->add_child(new OpenPar);
+		$$->add_child($2);
+		$$->add_child(new ClosePar);
+	}
+;
+
+soy-func: 
+  KEYWORD_SOY param-list ':' scope
+	{
+		$$ = new SoyFunc;
+		$$->add_child(new K_Soy);
+		$$->add_child($2);
+		$$->add_child(new Op_AssignFunc);
+		$$->add_child($4);
+	}
+;
 
 /***************/
 /* Expressions */
 /***************/
 expression:
   constant
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | '(' expression ')'
+	{
+		$$ = new Expression;
+		$$->add_child(new OpenPar);
+		$$->add_child($2);
+		$$->add_child(new ClosePar);
+	}
 | IDENTIFIER
+	{
+		$$ = new Expression;
+		$$->add_child(new Identifier(*$1));
+
+		delete $1;
+	}
 | datastructure
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | soy-expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | datastructure-access
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | incr-expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | assignment
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | braced-func-call
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+	}
 | expression '+' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Plus);
+		$$->add_child($3);
+	}
 | expression '-' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Minus);
+		$$->add_child($3);
+	}
 | expression '*' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Mult);
+		$$->add_child($3);
+	}
 | expression '/' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Div);
+		$$->add_child($3);
+	}
 | expression '%' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Modulo);
+		$$->add_child($3);
+	}
 | expression OP_ARITH_EXPO expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_Exponentiation);
+		$$->add_child($3);
+	}
 | '-' expression %prec UNARY_MINUS
+	{
+		$$ = new Expression;
+		$$->add_child(new Op_UnaryMinus);
+		$$->add_child($2);
+	}
 | expression '|' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_BitwiseOr);
+		$$->add_child($3);
+	}
 | expression '&' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_BitwiseAnd);
+		$$->add_child($3);
+	}
 | expression '^' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_BitwiseXor);
+		$$->add_child($3);
+	}
 | '~' expression
+	{
+		$$ = new Expression;
+		$$->add_child(new Op_BitwiseNot);
+		$$->add_child($2);
+	}
 | expression OP_LOGIC_OR expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_LogicalOr);
+		$$->add_child($3);
+	}
 | expression OP_LOGIC_AND expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_LogicalAnd);
+		$$->add_child($3);
+	}
 | '!' expression
+	{
+		$$ = new Expression;
+		$$->add_child(new Op_LogicalNot);
+		$$->add_child($2);
+	}
 | expression '<' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompLessThan);
+		$$->add_child($3);
+	}
 | expression '>' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompGreaterThan);
+		$$->add_child($3);
+	}
 | expression OP_COMP_LEQ expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompLessEqual);
+		$$->add_child($3);
+	}
 | expression OP_COMP_GEQ expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompGreaterEqual);
+		$$->add_child($3);
+	}
 | expression OP_COMP_EQ  expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompEqual);
+		$$->add_child($3);
+	}
 | expression OP_COMP_NEQ expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_CompNotEqual);
+		$$->add_child($3);
+	}
 | expression OP_LSHIFT expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_RightShift);
+		$$->add_child($3);
+	}
 | expression OP_RSHIFT expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_LeftShift);
+		$$->add_child($3);
+	}
 | expression '.' expression
+	{
+		$$ = new Expression;
+		$$->add_child($1);
+		$$->add_child(new Op_StringConcat);
+		$$->add_child($3);
+	}
 ;
 
 incr-expression:
   OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
+	{
+		$$ = new IncrExpression;
+		$$->add_child(new Op_PrefixIncrement);
+		$$->add_child($2);
+	}
 | OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
+	{
+		$$ = new IncrExpression;
+		$$->add_child(new Op_PrefixDecrement);
+		$$->add_child($2);
+	}
 | assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
+	{
+		$$ = new IncrExpression;
+		$$->add_child($1);
+		$$->add_child(new Op_PostfixIncrement);
+	}
 | assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
+	{
+		$$ = new IncrExpression;
+		$$->add_child($1);
+		$$->add_child(new Op_PostfixDecrement);
+	}
 ;
 
 assignment:
   assignable-expression '=' expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_Assignment);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_PLUS expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignPlus);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_MINUS expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignMinus);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_MULT expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignMult);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_DIV expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignDiv);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_EXPO expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignExpo);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_MOD expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignMod);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_AND expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignAnd);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_OR expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignOr);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_XOR expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignXor);
+		$$->add_child($3);
+	}
 | assignable-expression OP_ASSIGN_CONCAT expression
+	{
+		$$ = new Assignment;
+		$$->add_child($1);
+		$$->add_child(new Op_AssignConcat);
+		$$->add_child($3);
+	}
 ;
 
 /* A modifying expression is an expression that could bring about
@@ -435,9 +817,25 @@ assignment:
  */
 modifying-expression:
   assignment
+  	{
+		$$ = new ModifyingExpression;
+		$$->add_child($1);
+	}
 | incr-expression
+  	{
+		$$ = new ModifyingExpression;
+		$$->add_child($1);
+	}
 | braced-func-call
+  	{
+		$$ = new ModifyingExpression;
+		$$->add_child($1);
+	}
 | func-call
+  	{
+		$$ = new ModifyingExpression;
+		$$->add_child($1);
+	}
 ;
 
 /* An assignable expression is an expression that represents a
@@ -445,14 +843,46 @@ modifying-expression:
  */
 assignable-expression:
   IDENTIFIER
-| datastructure-access;
+    {
+		$$ = new AssignableExpression;
+		$$->add_child(new Identifier(*$1));
 
-datastructure-access: IDENTIFIER '[' expression ']';
+		delete $1;
+	}
+| datastructure-access
+  	{
+		$$ = new AssignableExpression;
+		$$->add_child($1);
+	}
+;
+
+datastructure-access: 
+  IDENTIFIER '[' expression ']'
+    {
+		$$ = new DatastructureAccess;
+		$$->add_child(new Identifier(*$1));
+		$$->add_child(new OpenBrace);
+		$$->add_child($3);
+		$$->add_child(new ClosingBrace);
+
+		delete $1;
+	}
+;
 
 /* Comma-separated expression list */
 expression-list:
   expression
+	{
+		$$ = new ExpressionList;
+		$$->add_child($1);
+	}
 | expression ',' expression-list
+	{
+		$$ = new ExpressionList;
+		$$->add_child($1);
+		$$->add_child(new Virg);
+		$$->add_child($3);
+	}
 ;
 
 /*************/
@@ -460,10 +890,40 @@ expression-list:
 /*************/
 constant:
   CONST_INT
+    {
+		$$ = new Constant;
+		$$->add_child(new Integer(*$1));
+		
+		delete $1;
+	}
 | CONST_FLOAT
+    {
+		$$ = new Constant;
+		$$->add_child(new Float(*$1));
+		
+		delete $1;
+	}
 | CONST_STRING
+    {
+		$$ = new Constant;
+		$$->add_child(new String(*$1));
+		
+		delete $1;
+	}
 | CONST_BOOL
+    {
+		$$ = new Constant;
+		$$->add_child(new Bool(*$1));
+		
+		delete $1;
+	}
 | CONST_CHAR
+    {
+		$$ = new Constant;
+		$$->add_child(new Character(*$1));
+		
+		delete $1;
+	}
 ;
 
 /******************/
@@ -471,24 +931,73 @@ constant:
 /******************/
 datastructure:
   array
+    {
+		$$ = new Datastructure;
+		$$->add_child($1);
+	}
 | list
+    {
+		$$ = new Datastructure;
+		$$->add_child($1);
+	}
 | tuple
+    {
+		$$ = new Datastructure;
+		$$->add_child($1);
+	}
 | make-sequence
+    {
+		$$ = new Datastructure;
+		$$->add_child($1);
+	}
 ;
 
 array:
   DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
+    {
+		$$ = new Array;
+		$$->add_child(new ArrayBeg);
+		$$->add_child(new ArrayClose);
+	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
+    {
+		$$ = new Array;
+		$$->add_child(new ArrayBeg);
+		$$->add_child($2);
+		$$->add_child(new ArrayClose);
+	}
 ;
 
 list:
   '{' '}' /* empty list */
+    {
+		$$ = new Array;
+		$$->add_child(new OpenAcc);
+		$$->add_child(new ClosingAcc);
+	}
 | '{' expression-list '}'
+    {
+		$$ = new Array;
+		$$->add_child(new OpenAcc);
+		$$->add_child($2);
+		$$->add_child(new ClosingAcc);
+	}
 ;
 
 tuple:
   DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
+    {
+		$$ = new Tuple;
+		$$->add_child(new TupleBeg);
+		$$->add_child(new TupleClosing);
+	}
 | DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
+    {
+		$$ = new Tuple;
+		$$->add_child(new TupleBeg);
+		$$->add_child($2);
+		$$->add_child(new TupleClosing);
+	}
 ;
 
 /* The make sequence list allows to create datastructures
