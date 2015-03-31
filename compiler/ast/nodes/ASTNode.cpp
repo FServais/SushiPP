@@ -114,10 +114,10 @@ bool ASTNode::has_father() const
 
 string& ASTNode::node_name()
 {
-
+	return node_name_;
 }
 
 const string& ASTNode::node_name() const
 {
-
+	return node_name_;
 }
