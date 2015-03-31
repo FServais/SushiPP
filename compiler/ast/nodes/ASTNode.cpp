@@ -16,7 +16,7 @@ using namespace std;
 
 ASTNode::ASTNode() : parent(nullptr)
 {
-
+	std::vector<ASTNode*> children();
 }
 
 ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc)
@@ -46,11 +46,23 @@ ASTNode(const std::string& name, int first_line, int last_line, int first_column
 
 ASTNode::ASTNode(const ASTNode& tree) 
 {
-
+	for(std::vector<Node*>::iterator it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
+			if(*it != NULL){
+				Node* ch = new Node(**it);
+				addChild(*ch);
+			}
+			
+	}
 }
 
 ASTNode& ASTNode::operator=(const ASTNode&)
 {
+	children.clear();
+	
+	for(std::vector<Node*>::iterator it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
+			Node* ch = new Node(**it);
+			addChild(*ch);
+	}
 
 }
 
