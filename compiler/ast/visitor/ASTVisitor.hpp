@@ -2,7 +2,7 @@
 #ifndef __visitor__ASTVisitor__
 #define __visitor__ASTVisitor__
 
-#inclde "../nodes/ASTNode.hpp"
+#include "../nodes/ASTNode.hpp"
 
 #include "../nodes/tokens/ConstantToken.cpp"
 #include "../nodes/tokens/Delimiter.cpp"

@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace ast::nodes::nonterminals::nt_declaration
+namespace ast
 {
 	/*********************************************
 	 * Intermediate NT_Declaration node base class *
@@ -13,8 +13,8 @@ namespace ast::nodes::nonterminals::nt_declaration
 	public:
 		// Constructors
 		NT_Declaration(const std::string&);
-		NT_Declaration(const std::string&,int,int,int,int);
-		NT_Declaration(const std::string&,const ast::nodes::NodeLocation&);
+		NT_Declaration(const std::string&, int,int,int,int);
+		NT_Declaration(const std::string&, const ast::NodeLocation&);
 	};
 
 	/*************************************
@@ -24,54 +24,54 @@ namespace ast::nodes::nonterminals::nt_declaration
 	{
 	public:
 		// Constructors
-		Declaration(const std::string&);
-		Declaration(const std::string&,int,int,int,int);
-		Declaration(const std::string&,const ast::nodes::NodeLocation&);
+		Declaration();
+		Declaration(int,int,int,int);
+		Declaration(const ast::NodeLocation&);
 	};
 
 	class DeclFunc : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclFunc(const std::string&);
-		DeclFunc(const std::string&,int,int,int,int);
-		DeclFunc(const std::string&,const ast::nodes::NodeLocation&);
+		DeclFunc();
+		DeclFunc(int,int,int,int);
+		DeclFunc(const ast::NodeLocation&);
 	};
 
 	class DeclVars : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclVars(const std::string&);
-		DeclVars(const std::string&,int,int,int,int);
-		DeclVars(const std::string&,const ast::nodes::NodeLocation&);
+		DeclVars();
+		DeclVars(int,int,int,int);
+		DeclVars(const ast::NodeLocation&);
 	};
 
 	class DeclVar : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclVar(const std::string&);
-		DeclVar(const std::string&,int,int,int,int);
-		DeclVar(const std::string&,const ast::nodes::NodeLocation&);
+		DeclVar();
+		DeclVar(int,int,int,int);
+		DeclVar(const ast::NodeLocation&);
 	};
 
 	class ParamList : public NT_Declaration
 	{
 	public:
 		// Constructors
-		ParamList(const std::string&);
-		ParamList(const std::string&,int,int,int,int);
-		ParamList(const std::string&,const ast::nodes::NodeLocation&);
+		ParamList();
+		ParamList(int,int,int,int);
+		ParamList(const ast::NodeLocation&);
 	};
 
 	class Param : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Param(const std::string&);
-		Param(const std::string&,int,int,int,int);
-		Param(const std::string&,const ast::nodes::NodeLocation&);
+		Param();
+		Param(int,int,int,int);
+		Param(const ast::NodeLocation&);
 	};
 
 

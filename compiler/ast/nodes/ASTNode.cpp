@@ -16,7 +16,7 @@ using namespace std;
 
 ASTNode::ASTNode() : father(nullptr)
 {
-	vector<ASTNode*> children();
+	 
 }
 
 ASTNode::ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc)
