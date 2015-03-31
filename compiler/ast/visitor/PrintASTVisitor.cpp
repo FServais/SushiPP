@@ -3,7 +3,7 @@
 using namespace std;
 
 // Constructor
-PrintASTVisitor::PrintASTVisitor() : depth(0), length_line(5) { }
+PrintASTVisitor::PrintASTVisitor() : length_line(5) { }
 
 
 PrintASTVisitor::visit( ast::Token& token )
