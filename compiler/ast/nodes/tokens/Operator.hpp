@@ -359,5 +359,14 @@ namespace ast
 		Op_AssignConcat(int,int,int,int);
 		Op_AssignConcat(const NodeLocation&);
 	};
+
+	class Op_AssignFunc : public Operator
+	{
+	public:
+		// constructors
+		Op_AssignFunc();
+		Op_AssignFunc(int,int,int,int);
+		Op_AssignFunc(const NodeLocation&);
+	};
 }
 #endif
