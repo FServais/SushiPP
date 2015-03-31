@@ -18,7 +18,7 @@ NT_Program::NT_Program(const std::string& node_name, const NodeLocation& loc)
 
 }
 
-/** (NT_)FunctionCall derived classes **/
+/** (NT_)Program derived classes **/
 
 /* Program */
 Program::Program() : NT_FunctionCall("program") { }
