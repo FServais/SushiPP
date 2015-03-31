@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include "NodeLocation.hpp"
+#include "../visitor/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -72,6 +73,8 @@ namespace ast
 		const std::string& node_name() const;
 		
 		void print(int);
+
+		//void accept(ASTVisitor&);
 
 		// function for accepting a visitor
 //virtual accept(ASTVisitor& v) = 0;
