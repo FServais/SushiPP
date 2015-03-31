@@ -1,9 +1,7 @@
 #ifndef NT_PROGRAM_HPP_DEFINED
 #define NT_PROGRAM_HPP_DEFINED
 
-#include <string>
 #include "NonTerminal.hpp"
-#include "../NodeLocation.hpp"
 
 namespace ast
 {

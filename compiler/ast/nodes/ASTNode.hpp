@@ -11,7 +11,8 @@
 #include <string>
 
 #include "NodeLocation.hpp"
-#include "../visitor/ASTVisitor.hpp"
+
+class ASTVisitor;
 
 namespace ast
 {
@@ -76,14 +77,19 @@ namespace ast
 		void print(int);
 
 		// function for accepting a visitor
-		virtual void accept(ASTVisitor& v) = 0;
+		virtual void accept(ASTVisitor&);
+
+		int depth();
+		const int depth() const;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
 		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */
 		NodeLocation loc; /* Node location */
 		std::string node_name_; /* Node name */
+		int depth_;
 	};
 }
+
 
 #endif /* NODE_HPP_DEFINED */

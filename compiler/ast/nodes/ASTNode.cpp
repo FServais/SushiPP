@@ -5,47 +5,50 @@
  *      Author: Floriane
  */
 
-#include "ASTNode.hpp"
 
 #include <algorithm> // for_each
 #include <memory> // default_delete
 #include <iterator> //
 #include <iostream>
 
+#include "ASTNode.hpp"
+#include "NodeLocation.hpp"
+#include "../visitor/ASTVisitor.hpp"
+
 using namespace ast;
 using namespace std;
 
-ASTNode::ASTNode() : father(nullptr)
+ASTNode::ASTNode() : father(nullptr), depth_(0)
 {
 
 }
 
-ASTNode::ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc)
+ASTNode::ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc), depth_(0)
 {
 
 }
 
 ASTNode::ASTNode(int first_line, int last_line, int first_column, int last_column)
-	: father(nullptr), loc(first_line, last_line, first_column, last_column)
+	: father(nullptr), loc(first_line, last_line, first_column, last_column), depth_(0)
 {
 
 }
 
-ASTNode::ASTNode(const string& name) : father(nullptr), node_name_(name) {}
+ASTNode::ASTNode(const string& name) : father(nullptr), node_name_(name), depth_(0) {}
 
 ASTNode::ASTNode(const string& name, const NodeLocation& node_loc)
-	: father(nullptr), loc(node_loc), node_name_(name)
+	: father(nullptr), loc(node_loc), node_name_(name), depth_(0)
 {
 
 }
 
 ASTNode::ASTNode(const string& name, int first_line, int last_line, int first_column, int last_column)
-	: father(nullptr), loc(first_line, last_line, first_column, last_column), node_name_(name)
+	: father(nullptr), loc(first_line, last_line, first_column, last_column), node_name_(name), depth_(0)
 {
 
 }
 
-ASTNode::ASTNode(const ASTNode& copy) : loc(copy.loc),node_name_(copy.node_name_)
+ASTNode::ASTNode(const ASTNode& copy) : loc(copy.loc),node_name_(copy.node_name_), depth_(copy.depth())
 {
 	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) {
 		
@@ -121,15 +124,16 @@ bool ASTNode::has_father() const
 
 string& ASTNode::node_name()
 {
-
+	return node_name_;
 }
 
 const string& ASTNode::node_name() const
 {
-
+	return node_name_;
 }
 
-void ASTNode::print(int depht){
+void ASTNode::print(int depht)
+{
 	string s(depht*3, ' ');
 	std::cout<<s<<"name : "<<node_name_<<std::endl;
 	std::cout<<s<<"nb sons : "<<children.size()<<std::endl;
@@ -137,4 +141,21 @@ void ASTNode::print(int depht){
 	for( auto it = children.begin(); it != children.end(); it++){
 		(*it)->print(depht+1);
 	}
+}
+
+void ASTNode::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		visitor.visit(**it);
+}
+
+int ASTNode::depth()
+{
+	return depth_;
+}
+
+const int ASTNode::depth() const
+{
+	return depth_;
 }

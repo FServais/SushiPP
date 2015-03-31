@@ -1,12 +1,15 @@
 #ifndef TOKEN_HPP_DEFINED
 #define TOKEN_HPP_DEFINED
 
+//class ASTNode;
+
 #include <string>
 #include "../ASTNode.hpp"
-#include "../NodeLocation.hpp"
+//#include "../NodeLocation.hpp"
 
 namespace ast
 {
+	class NodeLocation;
 
 	/*************************
 	 * Token node base class *
