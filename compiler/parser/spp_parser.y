@@ -1,10 +1,20 @@
 %{
-	#include <cstdio>
 	#include <iostream>
 	#include <string>
 	#include <sstream>
 
 	using namespace std;
+
+	/*
+	#include "../ast/nodes/ASTNode.hpp"
+	#include "../ast/nodes/NodeLocation.hpp"
+
+	#include "../ast/nodes/tokens/Token.hpp"
+	#include "../ast/nodes/tokens/Operator.hpp"
+	#include "../ast/nodes/tokens/ConstantToken.hpp"
+	#include "../ast/nodes/tokens/Delimiter.hpp"
+	#include "../ast/nodes/tokens/Keyword.hpp"
+	*/
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
@@ -19,7 +29,7 @@
 	int vint;
 	double vdouble;
 	std::string* vstring;
-	char vchar;
+	char vchar; 
 }
 
 %locations
@@ -467,25 +477,6 @@ elseif:
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif;
 
 %%
-
-int main(int, char**)
-{
-	// // open a file handle to a particular file:
-	// FILE *myfile = fopen("in.snazzle", "r");
-	// // make sure it is valid:
-	// if (!myfile) {
-	// 	cout << endl << "I can't open a.snazzle.file!" << endl;
-	// 	return -1;
-	// }
-	// // set flex to read from it instead of defaulting to STDIN:
-	// yyin = myfile;
-
-	// // parse through the input until there is no more:
-	do {
-		yyparse();
-	} while (!feof(yyin));
-
-}
 
 static void yyerror(const char *s)
 {
