@@ -5,6 +5,17 @@
 
 namespace ast::nodes::nonterminals::nt_program
 {
+	/*********************************************
+	 * Intermediate NT_Program node base class *
+	 *********************************************/
+	class NT_Program : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_Program(const std::string&);
+		NT_Program(const std::string&,int,int,int,int);
+		NT_Program(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/********************************
 	 * Program rules node base class *
