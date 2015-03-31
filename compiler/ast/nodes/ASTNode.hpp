@@ -68,7 +68,7 @@ namespace ast::nodes
 		bool has_father() const;
 
 		// print the node name
-		std::string& node_name() const;
+		std::string& node_name();
 		const std::string& node_name() const;
 
 		// function for accepting a visitor
@@ -78,7 +78,7 @@ namespace ast::nodes
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
 		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */
 		NodeLocation loc; /* Node location */
-		std::string node_name; /* Node name */
+		std::string node_name_; /* Node name */
 	};
 }
 
