@@ -16,7 +16,7 @@ using namespace std;
 
 ASTNode::ASTNode() : father(nullptr)
 {
-	std::vector<ASTNode*> children();
+	vector<ASTNode*> children();
 }
 
 ASTNode::ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc)
@@ -30,15 +30,15 @@ ASTNode::ASTNode(int first_line, int last_line, int first_column, int last_colum
 
 }
 
-ASTNode::ASTNode(const std::string& name) : father(nullptr), node_name_(name) {}
+ASTNode::ASTNode(const string& name) : father(nullptr), node_name_(name) {}
 
-ASTNode::ASTNode(const std::string& name, const NodeLocation& node_loc)
+ASTNode::ASTNode(const string& name, const NodeLocation& node_loc)
 	: father(nullptr), loc(node_loc), node_name_(name)
 {
 
 }
 
-ASTNode::ASTNode(const std::string& name, int first_line, int last_line, int first_column, int last_column)
+ASTNode::ASTNode(const string& name, int first_line, int last_line, int first_column, int last_column)
 	: father(nullptr), loc(first_line, last_line, first_column, last_column), node_name_(name)
 {
 
@@ -81,12 +81,12 @@ ASTNode&  ASTNode::get_father()
 	return *father;
 }
 
-const std::vector<ASTNode*>& ASTNode::get_children() const
+const vector<ASTNode*>& ASTNode::get_children() const
 {
 	return children;
 }
 
-std::vector<ASTNode*>& ASTNode::get_children()
+vector<ASTNode*>& ASTNode::get_children()
 {
 	return children;
 }
@@ -112,12 +112,12 @@ bool ASTNode::has_father() const
 	return father != nullptr;
 }
 
-std::string& ASTNode::node_name()
+string& ASTNode::node_name()
 {
 
 }
 
-const std::string& ASTNode::node_name() const
+const string& ASTNode::node_name() const
 {
 
 }

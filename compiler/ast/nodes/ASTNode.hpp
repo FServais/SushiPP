@@ -72,7 +72,7 @@ namespace ast
 		const std::string& node_name() const;
 
 		// function for accepting a visitor
-//virtual accept(ASTVisitor& v) = 0;
+		//virtual accept(ASTVisitor& v) = 0;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
