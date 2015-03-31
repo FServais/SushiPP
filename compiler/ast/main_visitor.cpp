@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	Expression *exp = new ast::Expression();
 
 	K_Maki *maki = new ast::K_Maki();
-	exp->add_child(maki);
+	soy->add_child(maki);
 
 	tree->add_child(pe);
 	tree->add_child(soy);

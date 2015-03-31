@@ -82,6 +82,9 @@ namespace ast
 		int depth();
 		const int depth() const;
 
+		void incr_depth();
+		void decr_depth();
+
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
 		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */

@@ -105,10 +105,14 @@ void ASTNode::add_child(ASTNode* child)
 		return;
 	children.push_back(child);
 	child->father = this;
+
+	child->incr_depth();
 }
 
 void ASTNode::delete_child(size_t index)
 {
+	ASTNode* ch = children.at(index);
+	ch->decr_depth();
 	children.erase(next(children.begin(), index));
 }
 
@@ -147,7 +151,7 @@ void ASTNode::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 	for(auto it = children.begin() ; it != children.end() ; ++it)
-		visitor.visit(**it);
+		(*it)->accept(visitor);
 }
 
 int ASTNode::depth()
@@ -159,3 +163,18 @@ const int ASTNode::depth() const
 {
 	return depth_;
 }
+
+void ASTNode::incr_depth()
+{
+	++depth_;
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->incr_depth();
+}
+
+void ASTNode::decr_depth()
+{
+	--depth_;
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->decr_depth();
+}
+

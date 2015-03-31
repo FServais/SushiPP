@@ -90,6 +90,8 @@ namespace ast
 		SoyFunc();
 		SoyFunc(int,int,int,int);
 		SoyFunc(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

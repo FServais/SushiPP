@@ -27,6 +27,8 @@ namespace ast
 		Expression();
 		Expression(int,int,int,int);
 		Expression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class IncrExpression : public NT_Expression

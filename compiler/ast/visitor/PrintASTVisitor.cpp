@@ -3,7 +3,7 @@
 using namespace std;
 
 // Constructor
-PrintASTVisitor::PrintASTVisitor() : length_line(5) { }
+PrintASTVisitor::PrintASTVisitor() : length_line(12) { }
 
 
 void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )
