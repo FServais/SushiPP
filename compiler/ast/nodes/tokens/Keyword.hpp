@@ -5,8 +5,6 @@
 
 namespace ast::nodes::tokens::keywords
 {
-	
-	
 	/** Keyword derived class */
 	class Maki : public Keyword
 	{

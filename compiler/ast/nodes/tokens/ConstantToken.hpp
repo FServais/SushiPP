@@ -1,6 +1,9 @@
 #ifndef CONSTANT_TOKEN
 #define CONSTANT_TOKEN
 
+#include <string>
+#include "../NodeLocation.hpp"
+
 namespace ast::nodes::tokens::constants
 { 
 	/** Constant token base class */
@@ -28,7 +31,7 @@ namespace ast::nodes::tokens::constants
 		const std::string& value() const;
 
 	private:
-		std::string str_val;
+		std::string str_val; // without the double quotes
 	};
 
 	class Character : public ConstantToken
@@ -90,6 +93,12 @@ namespace ast::nodes::tokens::constants
 
 		// accessor
 		bool value() const;
+
+		/** string to boolean : "true" is true, anything else is false */
+		static bool stob(const std::string& str)
+		{
+			return !str.compare("true");
+		}
 		
 	private:
 		bool bool_val;

@@ -44,14 +44,13 @@ ASTNode(const std::string& name, int first_line, int last_line, int first_column
 	
 }
 
-ASTNode::ASTNode(const ASTNode& tree) 
+ASTNode::ASTNode(const ASTNode& copy) 
 {
-	for(std::vector<Node*>::iterator it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
-			if(*it != NULL){
-				Node* ch = new Node(**it);
-				addChild(*ch);
-			}
-			
+	for(auto it = copy.getChildren().begin(); it != copy.getChildren().end(); it++) {
+		if(*it != NULL){
+			Node* ch = new Node(**it);
+			addChild(*ch);
+		}	
 	}
 }
 
@@ -59,7 +58,7 @@ ASTNode& ASTNode::operator=(const ASTNode&)
 {
 	children.clear();
 	
-	for(std::vector<Node*>::iterator it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
+	for(auto it = copy.getChildren().begin(); it !=  copy.getChildren().end(); it++) {
 			Node* ch = new Node(**it);
 			addChild(*ch);
 	}
