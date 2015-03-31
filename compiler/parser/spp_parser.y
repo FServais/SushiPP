@@ -30,6 +30,9 @@
 
 	static void yyerror(const char*);
 	static string curr_line_row();
+
+	// will store a pointer to the abstract syntax tree constructed by the parser
+	extern AbstractSyntaxTree* syntax_tree;
 %}
 
 %define parse.error verbose
@@ -154,24 +157,62 @@
 /* Program general rules */
 /*************************/
 program:
-  %empty
-| scope-body
+  %empty 		{ syntax_tree = new AbstractSyntaxTree(); }
+| scope-body	{ syntax_tree = new AbstractSyntaxTree($$); }
 ;
 
 /* Scope containing sushi++ code */
-scope: scope-body ;;
+scope: 
+  scope-body 
+	{ 
+		$$ = new Scope();
+		$$->add_child($1); 
+	}
+;
 
 scope-body:
-  program-element
+  program-element 
+	{
+		$$ = new ScopeBody();
+		$$->add_child($1);
+	}
 | program-element DELIM_EOL
+	{
+		$$ = new ScopeBody();
+		$$->add_child($1);
+		$$->add_child(new DelimEol);
+	}
 | program-element DELIM_EOL scope-body
+	{
+		$$ = new ScopeBody();
+		$$->add_child($1);
+		$$->add_child(new DelimEol);
+		$$->add_child($3);
+	}
 | DELIM_EOL scope-body
+	{
+		$$ = new ScopeBody();
+		$$->add_child(new DelimEol);
+		$$->add_child($2);
+	}
 ;
 
 program-element:
   statement
+	{
+		$$ = new ProgramElement();
+		$$->add_child($1);
+	}
 | modifying-expression
+	{
+		$$ = new ProgramElement();
+		$$->add_child($1);
+	}
 | declaration
+	{
+		$$ = new ProgramElement();
+		$$->add_child($1);
+	}
 ;
 
 /***************/
@@ -179,19 +220,56 @@ program-element:
 /***************/
 declaration:
   KEYWORD_MAKI decl-func
+  	{
+  		$$ = new Declaration();
+  		$$->add_child(new K_Maki);
+  		$$->add_child($2);
+  	}
 | KEYWORD_MAKI decl-vars
+	{
+		$$ = new Declaration();
+		$$->add_child(new K_Maki);
+		$$->add_child($2);
+	}
 ;
 
 /* variable declaration */
 decl-vars:
   decl-var
+	{
+		$$ = new DeclVars();
+		$$->add_child($1);
+	}
 | decl-var ',' decl-vars
+	{
+		$$ = new DeclVars();
+		$$->add_child($1);
+		$$->add_child(new Virg);
+		$$->add_child($3);
+	}
 | decl-var ',' DELIM_EOL decl-vars
+	{
+		$$ = new DeclVars();
+		$$->add_child($1);
+		$$->add_child(new Virg);
+		$$->add_child(new DelimEol);
+		$$->add_child($3);
+	}
 ;
 
 decl-var:
   IDENTIFIER
+	{
+		$$ = new DeclVar();
+		$$->add_child(new Identifier($1));
+	}
 | IDENTIFIER '=' expression
+	{
+		$$ = new DeclVar();
+		$$->add_child(new Identifier($1));
+		$$->add_child(new Op_Assign);
+		$$->add_child($3);
+	}
 | error '=' expression
 	{
 		//cerr << " Details : a valid identifier name was exptected as left-hand-side item." << endl;
@@ -207,12 +285,28 @@ decl-var:
 /* function declaration */
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
+	{
+		$$ = new DeclFunc();
+		$$->add_child(new Identifier($1));
+		$$->add_child($2);
+		$$->add_child(new Op_AssignFunc);
+		$$->add_child($4);
+		$$->add_child(new DelimEos);
+	}
 ;
 
 /* function's parameters list */
 param-list:
   %empty
 | param param-list
+	{
+		$$ = new DeclFunc();
+		$$->add_child(new Identifier($1));
+		$$->add_child($2);
+		$$->add_child(new Op_AssignFunc);
+		$$->add_child($4);
+		$$->add_child(new DelimEos);		
+	}
 ;
 
 param:

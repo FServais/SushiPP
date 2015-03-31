@@ -13,8 +13,8 @@ namespace ast
 	public:
 		// Constructors
 		NT_Declaration(const std::string&);
-		NT_Declaration(const std::string&, int,int,int,int);
-		NT_Declaration(const std::string&, const ast::NodeLocation&);
+		NT_Declaration(const std::string&,int,int,int,int);
+		NT_Declaration(const std::string&,const NodeLocation&);
 	};
 
 	/*************************************
@@ -26,7 +26,7 @@ namespace ast
 		// Constructors
 		Declaration();
 		Declaration(int,int,int,int);
-		Declaration(const ast::NodeLocation&);
+		Declaration(const NodeLocation&);
 	};
 
 	class DeclFunc : public NT_Declaration
@@ -35,7 +35,7 @@ namespace ast
 		// Constructors
 		DeclFunc();
 		DeclFunc(int,int,int,int);
-		DeclFunc(const ast::NodeLocation&);
+		DeclFunc(const NodeLocation&);
 	};
 
 	class DeclVars : public NT_Declaration
@@ -44,7 +44,7 @@ namespace ast
 		// Constructors
 		DeclVars();
 		DeclVars(int,int,int,int);
-		DeclVars(const ast::NodeLocation&);
+		DeclVars(const NodeLocation&);
 	};
 
 	class DeclVar : public NT_Declaration
@@ -53,7 +53,7 @@ namespace ast
 		// Constructors
 		DeclVar();
 		DeclVar(int,int,int,int);
-		DeclVar(const ast::NodeLocation&);
+		DeclVar(const NodeLocation&);
 	};
 
 	class ParamList : public NT_Declaration
@@ -62,7 +62,7 @@ namespace ast
 		// Constructors
 		ParamList();
 		ParamList(int,int,int,int);
-		ParamList(const ast::NodeLocation&);
+		ParamList(const NodeLocation&);
 	};
 
 	class Param : public NT_Declaration
@@ -71,10 +71,8 @@ namespace ast
 		// Constructors
 		Param();
 		Param(int,int,int,int);
-		Param(const ast::NodeLocation&);
+		Param(const NodeLocation&);
 	};
-
-
 }
 
 #endif
