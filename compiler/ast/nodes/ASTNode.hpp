@@ -8,6 +8,7 @@
 #define NODE_HPP_DEFINED
 
 #include <vector>
+#include <string>
 
 namespace ast::nodes
 {
@@ -64,6 +65,10 @@ namespace ast::nodes
 
 		// check whether the node has a parent
 		bool has_father() const;
+
+		// print the node name
+		std::string& node_name() const;
+		const std::string& node_name() const;
 
 		// function for accepting a visitor
 		virtual accept(ASTVisitor& v) = 0;
