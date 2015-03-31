@@ -4,7 +4,19 @@
 #include <string>
 
 namespace ast::nodes::nonterminals::nt_declaration
+namespace ast::nodes::nonterminals::NonTerminal
 {
+	/*********************************************
+	 * Intermediate NT_Declaration node base class *
+	 *********************************************/
+	class NT_Declaration : public NonTerminal
+	{
+	public:
+		// Constructors
+		NT_Declaration(const std::string&);
+		NT_Declaration(const std::string&,int,int,int,int);
+		NT_Declaration(const std::string&,const ast::nodes::NodeLocation&);
+	};
 
 	/*************************************
 	 * Declaration rules node base class *
@@ -27,31 +39,31 @@ namespace ast::nodes::nonterminals::nt_declaration
 		DeclFunc(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Decl_vars : public NT_Declaration
+	class DeclVars : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Decl_vars(const std::string&);
-		Decl_vars(const std::string&,int,int,int,int);
-		Decl_vars(const std::string&,const ast::nodes::NodeLocation&);
+		DeclVars(const std::string&);
+		DeclVars(const std::string&,int,int,int,int);
+		DeclVars(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Decl_var : public NT_Declaration
+	class DeclVar : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Decl_var(const std::string&);
-		Decl_var(const std::string&,int,int,int,int);
-		Decl_var(const std::string&,const ast::nodes::NodeLocation&);
+		DeclVar(const std::string&);
+		DeclVar(const std::string&,int,int,int,int);
+		DeclVar(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Param_list : public NT_Declaration
+	class ParamList : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Param_list(const std::string&);
-		Param_list(const std::string&,int,int,int,int);
-		Param_list(const std::string&,const ast::nodes::NodeLocation&);
+		ParamList(const std::string&);
+		ParamList(const std::string&,int,int,int,int);
+		ParamList(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
 	class Param : public NT_Declaration
