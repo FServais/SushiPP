@@ -41,20 +41,20 @@ public:
 	 *************************/
 	virtual void visit( ast::Keyword& );
 
-	virtual void visit( ast::Maki& );
-	virtual void visit( ast::To& );
-	virtual void visit( ast::Soy& );
-	virtual void visit( ast::Nori& );
+	virtual void visit( ast::K_Maki& );
+	virtual void visit( ast::K_To& );
+	virtual void visit( ast::K_Soy& );
+	virtual void visit( ast::K_Nori& );
 	virtual void visit( ast::K_Menu& );
 	virtual void visit( ast::K_For& );
 	virtual void visit( ast::K_Roll& );
-	virtual void visit( ast::Break& );
-	virtual void visit( ast::Continue& );
+	virtual void visit( ast::K_Break& );
+	virtual void visit( ast::K_Continue& );
 	virtual void visit( ast::K_Foreach& );
-	virtual void visit( ast::As& );
-	virtual void visit( ast::If& );
+	virtual void visit( ast::K_As& );
+	virtual void visit( ast::K_If& );
 	virtual void visit( ast::K_Elseif& );
-	virtual void visit( ast::Else& );
+	virtual void visit( ast::K_Else& );
 	virtual void visit( ast::Type_Int& );
 	virtual void visit( ast::Type_Float& );
 	virtual void visit( ast::Type_Char& );

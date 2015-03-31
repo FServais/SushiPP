@@ -33,22 +33,22 @@ void visit( ast::Identifier& token )
 /*************************
  * 		Keyword token    *
  *************************/
-void visit( ast::Maki& token )
+void visit( ast::K_Maki& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::To& token )
+void visit( ast::K_To& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Soy& token )
+void visit( ast::K_Soy& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Nori& token )
+void visit( ast::K_Nori& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -68,12 +68,12 @@ void visit( ast::K_Roll& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Break& token )
+void visit( ast::K_Break& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Continue& token )
+void visit( ast::K_Continue& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -83,12 +83,12 @@ void visit( ast::K_Foreach& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::As& token )
+void visit( ast::K_As& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::If& token )
+void visit( ast::K_If& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -98,7 +98,7 @@ void visit( ast::K_Elseif& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Else& token )
+void visit( ast::K_Else& token )
 {
 	print_single(token.node_name(), token.depth());
 }
