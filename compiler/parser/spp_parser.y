@@ -3,9 +3,8 @@
 	#include <string>
 	#include <sstream>
 
-	using namespace std;
-
-	/*
+	/** AST includes*/
+	#include "../ast/AbstractSyntaxTree.hpp"
 	#include "../ast/nodes/ASTNode.hpp"
 	#include "../ast/nodes/NodeLocation.hpp"
 
@@ -14,7 +13,18 @@
 	#include "../ast/nodes/tokens/ConstantToken.hpp"
 	#include "../ast/nodes/tokens/Delimiter.hpp"
 	#include "../ast/nodes/tokens/Keyword.hpp"
-	*/
+
+	#include "../ast/nodes/nonterminal/NonTerminal.hpp"
+	#include "../ast/nodes/nonterminal/NT_Constant.hpp"
+	#include "../ast/nodes/nonterminal/NT_Datastructure.hpp"
+	#include "../ast/nodes/nonterminal/NT_Declaration.hpp"
+	#include "../ast/nodes/nonterminal/NT_Expression.hpp"
+	#include "../ast/nodes/nonterminal/NT_FunctionCall.hpp"
+	#include "../ast/nodes/nonterminal/NT_Program.hpp"
+	#include "../ast/nodes/nonterminal/NT_Statement.hpp"
+
+	using namespace std;
+	using namespace ast;
 
 	extern "C" int yylex();
 
@@ -22,15 +32,14 @@
 	static string curr_line_row();
 %}
 
-%union{
-	bool vbool;
-	int vint;
-	double vdouble;
-	std::string* vstring;
-	char vchar; 
-}
-
+%define parse.error verbose
 %locations
+
+%union
+{
+	string* vstring;
+	ASTNode* vnode;
+}
 
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
@@ -123,22 +132,21 @@
 %token '_'
 
 /* Constant value */
-%token <vint>    CONST_INT
-%token <vdouble> CONST_FLOAT
-%token <vstring> CONST_STRING
-%token <vbool>   CONST_BOOL
-%token <vchar>   CONST_CHAR
+%token <vstring> CONST_STRING CONST_INT CONST_FLOAT CONST_BOOL CONST_CHAR
 
 /* Identifier */
 %token <vstring> IDENTIFIER
 
-/**********************/
-/* Non-terminal types */
-/**********************/
+/* Non terminal types */
+%type <vnode> program scope-body program-element scope
+%type <vnode> declaration decl-vars decl-var decl-func param param-list
+%type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
+%type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
+%type <vnode> constant
+%type <vnode> datastructure array list tuple make-sequence make-sequence-list make-sequence-array seq-expression
+%type <vnode> statement return menu menu-body menu-case menu-def loop roll foreach for for-initializer for-update conditional elseif
 
 %start program
-
-%define parse.error verbose
 
 %%
 
