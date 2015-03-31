@@ -42,8 +42,6 @@ Delimiter::Delimiter(const std::string& node_name, const NodeLocation& loc)
 
 }
 
-
-
 /** Keyword */
 Keyword::Keyword(const std::string& node_name) : Token(node_name) {}
 
@@ -63,13 +61,15 @@ Keyword::Keyword(const std::string& node_name, const NodeLocation& loc)
 Identifier::Identifier(const std::string& id) : Token("identifier"), id_(id) {}
 
 Identifier::Identifier(const std::string& id, int first_line, int last_line, int first_column, int last_column)
-	: Token("identifier", first_line, last_line, first_column, last_column), id_(id) 
+	: Token("identifier", first_line, last_line, first_column, last_column), 
+	  id_(id) 
 {
 
 }
 
 Identifier::Identifier(const std::string& id, const NodeLocation& loc)
-	: Token("identifier", node_loc), id_(id)
+	: Token("identifier", node_loc), 
+	  id_(id)
 {
 
 }
