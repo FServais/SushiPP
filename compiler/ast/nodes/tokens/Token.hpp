@@ -32,14 +32,6 @@ namespace ast::nodes::tokens
 		ConstantToken(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Operator : public Token
-	{
-	public: 
-		// constructors
-		Operator(const std::string&,);
-		Operator(const std::string&,int,int,int,int);
-		Operator(const std::string&,const ast::nodes::NodeLocation&);
-	};
 
 	class Delimiter : public Token
 	{
@@ -69,7 +61,7 @@ namespace ast::nodes::tokens
 		Identifier(const std::string&,const ast::nodes::NodeLocation&);
 
 		// id getters 
-		std::string& id();
+		std::string& id() const;
 		const std::string& id() const;
 
 	private:
@@ -79,6 +71,7 @@ namespace ast::nodes::tokens
 	/*************
 	 * Operators *
 	 *************/
+
 }
 
 #endif

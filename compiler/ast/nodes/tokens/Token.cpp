@@ -25,20 +25,7 @@ Token::Token(const std::string& node_name, const NodeLocation& node_loc)
  * Token intermediate base classes *
  ***********************************/
 
-/** Constant token */
-ConstantToken::ConstantToken(const std::string& node_name) : Token(node_name) {}
 
-ConstantToken::ConstantToken(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
-	: Token(node_name, first_line, last_line, first_column, last_column)
-{
-
-}
-
-ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& loc)
-	: Token(node_name, node_loc)
-{
-
-}
 
 /** Delimiter */
 Delimiter::Delimiter(const std::string& node_name) : Token(node_name) {}
@@ -55,20 +42,7 @@ Delimiter::Delimiter(const std::string& node_name, const NodeLocation& loc)
 
 }
 
-/** Operator */
-Operator::Operator(const std::string& node_name) : Token(node_name) {}
 
-Operator::Operator(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
-	: Token(node_name, first_line, last_line, first_column, last_column)
-{
-
-}
-
-Operator::Operator(const std::string& node_name, const NodeLocation& loc)
-	: Token(node_name, node_loc)
-{
-
-}
 
 /** Keyword */
 Keyword::Keyword(const std::string& node_name) : Token(node_name) {}
@@ -100,7 +74,7 @@ Identifier::Identifier(const std::string& id, const NodeLocation& loc)
 
 }
 
-std::string& id()
+std::string& id() const
 {
 	return id_;
 }
