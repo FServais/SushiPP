@@ -1,7 +1,8 @@
 #ifndef TOKEN_HPP_DEFINED
-#define TOKEN_HPP_DEFINED value
+#define TOKEN_HPP_DEFINED
 
 #include <string>
+#include "../NodeLocation.hpp"
 
 namespace ast::nodes::tokens
 {
