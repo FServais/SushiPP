@@ -17,8 +17,6 @@
 	*/
 
 	extern "C" int yylex();
-	extern "C" int yyparse();
-	extern "C" FILE* yyin;
 
 	static void yyerror(const char*);
 	static string curr_line_row();
