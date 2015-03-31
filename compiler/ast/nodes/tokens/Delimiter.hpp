@@ -1,148 +1,156 @@
 #ifndef DELIMITER_HPP_DEFINED
 #define DELIMITER_HPP_DEFINED
 
+#include <string>
 #include "Token.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::tokens::Delimiters
+namespace ast
 {
-	
-	
 	/** Delimiter derived class */
-	class Delimeol : public Delimiter
+	class Delimiter : public Token
 	{
-	public: 
+	public:
 		// constructors
-		Delimeol();
-		Delimeol(int,int,int,int);
-		Delimeol(const ast::nodes::NodeLocation&);
+		Delimiter(const std::string&);
+		Delimiter(const std::string&,int,int,int,int);
+		Delimiter(const std::string&,const NodeLocation&);
 	};
 
-	class Delimeos : public Delimiter
+	/** Delimiter derived class */
+	class DelimEol : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
-		Delimeos();
-		Delimeos(int,int,int,int);
-		Delimeos(const ast::nodes::NodeLocation&);
+		DelimEol();
+		DelimEol(int,int,int,int);
+		DelimEol(const NodeLocation&);
+	};
+
+	class DelimEos : public Delimiter
+	{
+	public:
+		// constructors
+		DelimEos();
+		DelimEos(int,int,int,int);
+		DelimEos(const NodeLocation&);
 	};
 
 	class TupleBeg : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		TupleBeg();
 		TupleBeg(int,int,int,int);
-		TupleBeg(const ast::nodes::NodeLocation&);
+		TupleBeg(const NodeLocation&);
 	};
 
 	class TupleEnd: public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		TupleEnd();
 		TupleEnd(int,int,int,int);
-		TupleEnd(const ast::nodes::NodeLocation&);
+		TupleEnd(const NodeLocation&);
 	};
 
 	class ArrayBeg : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		ArrayBeg();
 		ArrayBeg(int,int,int,int);
-		ArrayBeg(const ast::nodes::NodeLocation&);
+		ArrayBeg(const NodeLocation&);
 	};
 
 	class ArrayEnd : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		ArrayEnd();
 		ArrayEnd(int,int,int,int);
-		ArrayEnd(const ast::nodes::NodeLocation&);
+		ArrayEnd(const NodeLocation&);
 	};
 
 	class Arrow : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		Arrow();
 		Arrow(int,int,int,int);
-		Arrow(const ast::nodes::NodeLocation&);
+		Arrow(const NodeLocation&);
 	};
 
 	class Virg : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		Virg();
 		Virg(int,int,int,int);
-		Virg(const ast::nodes::NodeLocation&);
+		Virg(const NodeLocation&);
 	};
-	
+
 	class OpenPar : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		OpenPar();
 		OpenPar(int,int,int,int);
-		OpenPar(const ast::nodes::NodeLocation&);
+		OpenPar(const NodeLocation&);
 	};
-	
+
 	class ClosingPar : public Delimiter
 	{
 	public:
 		// constructors
 		ClosingPar();
 		ClosingPar(int,int,int,int);
-		ClosingPar(const ast::nodes::NodeLocation&);
+		ClosingPar(const NodeLocation&);
 	};
-	
+
 	class OpenBrace : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		OpenBrace();
 		OpenBrace(int,int,int,int);
-		OPenBrace(const ast::nodes::NodeLocation&);
+		OpenBrace(const NodeLocation&);
 	};
-	
+
 	class ClosingBrace : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		ClosingBrace();
 		ClosingBrace(int,int,int,int);
-		ClosingBrace(const ast::nodes::NodeLocation&);
+		ClosingBrace(const NodeLocation&);
 	};
-	
+
 	class OpenAcc : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		OpenAcc();
 		OpenAcc(int,int,int,int);
-		OpenAcc(const ast::nodes::NodeLocation&);
+		OpenAcc(const NodeLocation&);
 	};
-	
+
 	class ClosingAcc : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		ClosingAcc();
 		ClosingAcc(int,int,int,int);
-		ClosingAcc(const ast::nodes::NodeLocation&);
+		ClosingAcc(const NodeLocation&);
 	};
-	
+
 	class Underscore : public Delimiter
 	{
-	public: 
+	public:
 		// constructors
 		Underscore();
 		Underscore(int,int,int,int);
-		Underscore(const ast::nodes::NodeLocation&);
+		Underscore(const NodeLocation&);
 	};
-	
-	
 }
 #endif

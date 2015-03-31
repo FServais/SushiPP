@@ -2,18 +2,19 @@
 #define CONSTANT_TOKEN
 
 #include <string>
+#include "Token.hpp"
 #include "../NodeLocation.hpp"
 
-namespace ast::nodes::tokens::constants
-{ 
+namespace ast
+{
 	/** Constant token base class */
 	class ConstantToken : public Token
 	{
-	public: 
+	public:
 		// constructors
 		ConstantToken(const std::string&);
 		ConstantToken(const std::string&,int,int,int,int);
-		ConstantToken(const std::string&,const ast::nodes::NodeLocation&);
+		ConstantToken(const std::string&,const NodeLocation&);
 	};
 
 	/** Constant token derived class */
@@ -24,10 +25,10 @@ namespace ast::nodes::tokens::constants
 		// the string field is the value of the string literal as matched by the lexer (i.e. with double quotes)
 		String(const std::string&);
 		String(const std::string&,int,int,int,int);
-		String(const std::string&,const ast::nodes::NodeLocation&);
+		String(const std::string&,const NodeLocation&);
 
 		// accessor
-		std::string& value() const;
+		std::string& value();
 		const std::string& value() const;
 
 	private:
@@ -41,11 +42,11 @@ namespace ast::nodes::tokens::constants
 		// the string field is the value of the char literal as matched by the lexer (i.e. with quotes)
 		Character(const std::string&);
 		Character(const std::string&,int,int,int,int);
-		Character(const std::string&,const ast::nodes::NodeLocation&);
+		Character(const std::string&,const NodeLocation&);
 
 		// accessor
 		char value() const;
-		
+
 	private:
 		char char_val;
 	};
@@ -57,11 +58,11 @@ namespace ast::nodes::tokens::constants
 		// the string field is the value of the integer literal as matched by the lexer
 		Integer(const std::string&);
 		Integer(const std::string&,int,int,int,int);
-		Integer(const std::string&,const ast::nodes::NodeLocation&);
+		Integer(const std::string&,const NodeLocation&);
 
 		// accessor
 		int value() const;
-		
+
 	private:
 		int int_val;
 	};
@@ -73,11 +74,11 @@ namespace ast::nodes::tokens::constants
 		// the string field is the value of the float literal as matched by the lexer
 		Float(const std::string&);
 		Float(const std::string&,int,int,int,int);
-		Float(const std::string&,const ast::nodes::NodeLocation&);
+		Float(const std::string&,const NodeLocation&);
 
 		// accessor
 		float value() const;
-		
+
 	private:
 		float float_val;
 	};
@@ -89,7 +90,7 @@ namespace ast::nodes::tokens::constants
 		// the string field is the value of the float literal as matched by the lexer
 		Bool(const std::string&);
 		Bool(const std::string&,int,int,int,int);
-		Bool(const std::string&,const ast::nodes::NodeLocation&);
+		Bool(const std::string&,const NodeLocation&);
 
 		// accessor
 		bool value() const;
@@ -99,10 +100,10 @@ namespace ast::nodes::tokens::constants
 		{
 			return !str.compare("true");
 		}
-		
+
 	private:
 		bool bool_val;
 	};
 }
 
-#endif // CONSTANT_TOKEN 
+#endif // CONSTANT_TOKEN

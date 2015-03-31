@@ -1,18 +1,18 @@
 #include "NT_Declaration.hpp"
 
-using namespace ast::nodes::nonterminals::nt_declaration;
-using ast::nodes::nonterminals::NonTerminal;
+using namespace ast;
+using namespace std;
 
 /** Constant base class */
-NT_Declaration::NT_Declaration(const std::string& node_name) : NonTerminal(node_name) {}
+NT_Declaration::NT_Declaration(const string& node_name) : NonTerminal(node_name) {}
 
-NT_Declaration::NT_Declaration(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
+NT_Declaration::NT_Declaration(const string& node_name, int first_line, int last_line, int first_column, int last_column)
 	: NonTerminal(node_name, first_line, last_line, first_column, last_column)
 {
 
 }
 
-NT_Declaration::NT_Declaration(const std::string& node_name, const NodeLocation& loc)
+NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node_loc)
 	: NonTerminal(node_name, node_loc)
 {
 
@@ -22,13 +22,13 @@ NT_Declaration::NT_Declaration(const std::string& node_name, const NodeLocation&
 /* Declaration */
 Declaration::Declaration() : NT_Declaration("declaration") { }
 
-Declaration::Declaration(int first_line, int last_line, int first_column, int last_column) 
+Declaration::Declaration(int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("declaration", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Declaration::Declaration(const ast::nodes::NodeLocation& node_loc) : NT_Datastructure("Declaration", node_loc)
+Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("Declaration", node_loc)
 {
 
 }
@@ -36,13 +36,13 @@ Declaration::Declaration(const ast::nodes::NodeLocation& node_loc) : NT_Datastru
 /* DeclFunc */
 DeclFunc::DeclFunc() : NT_Declaration("declfunc") { }
 
-DeclFunc::DeclFunc(int first_line, int last_line, int first_column, int last_column) 
+DeclFunc::DeclFunc(int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("declfunc", first_line, last_line, first_column, last_column)
 {
 
 }
 
-DeclFunc::DeclFunc(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("declfunc", node_loc)
+DeclFunc::DeclFunc(const NodeLocation& node_loc) : NT_Declaration("declfunc", node_loc)
 {
 
 }
@@ -50,13 +50,13 @@ DeclFunc::DeclFunc(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("d
 /* DeclVars */
 DeclVars::DeclVars() : NT_Declaration("declvars") { }
 
-DeclVars::DeclVars(int first_line, int last_line, int first_column, int last_column) 
+DeclVars::DeclVars(int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("declvars", first_line, last_line, first_column, last_column)
 {
 
 }
 
-DeclVars::DeclVars(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("declvars", node_loc)
+DeclVars::DeclVars(const NodeLocation& node_loc) : NT_Declaration("declvars", node_loc)
 {
 
 }
@@ -64,13 +64,13 @@ DeclVars::DeclVars(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("d
 /* DeclVar */
 DeclVar::DeclVar() : NT_Declaration("declvar") { }
 
-DeclVar::DeclVar(int first_line, int last_line, int first_column, int last_column) 
+DeclVar::DeclVar(int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("declvar", first_line, last_line, first_column, last_column)
 {
 
 }
 
-DeclVar::DeclVar(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("declvar", node_loc)
+DeclVar::DeclVar(const NodeLocation& node_loc) : NT_Declaration("declvar", node_loc)
 {
 
 }
@@ -78,13 +78,13 @@ DeclVar::DeclVar(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("dec
 /* Param */
 Param::Param() : NT_Declaration("param") { }
 
-Param::Param(int first_line, int last_line, int first_column, int last_column) 
+Param::Param(int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("param", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Param::Param(const ast::nodes::NodeLocation& node_loc) : NT_Declaration("param", node_loc)
+Param::Param(const NodeLocation& node_loc) : NT_Declaration("param", node_loc)
 {
 
 }
