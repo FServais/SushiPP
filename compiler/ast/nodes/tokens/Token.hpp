@@ -1,7 +1,7 @@
 #ifndef TOKEN_HPP_DEFINED
 #define TOKEN_HPP_DEFINED
 
-#include <string>
+
 #include "../ASTNode.hpp"
 #include "../NodeLocation.hpp"
 
@@ -32,6 +32,8 @@ namespace ast
 		Identifier(const std::string&);
 		Identifier(const std::string&,int,int,int,int);
 		Identifier(const std::string&,const NodeLocation&);
+		
+		void print(int depth);
 
 		// id getters
 		std::string& id();

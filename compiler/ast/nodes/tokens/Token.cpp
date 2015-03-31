@@ -1,4 +1,6 @@
 #include "Token.hpp"
+#include <iostream>
+#include <string>
 
 using namespace ast;
 
@@ -38,6 +40,22 @@ Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
 	  id_(id)
 {
 
+}
+
+void Identifier::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
+	for( auto it = children.begin(); it != children.end(); it++){
+		(*it)->print(depth+1);
+	}
 }
 
 std::string& Identifier::id()

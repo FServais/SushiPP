@@ -15,6 +15,7 @@ namespace ast
 		ConstantToken(const std::string&);
 		ConstantToken(const std::string&,int,int,int,int);
 		ConstantToken(const std::string&,const NodeLocation&);
+
 	};
 
 	/** Constant token derived class */
@@ -26,6 +27,7 @@ namespace ast
 		String(const std::string&);
 		String(const std::string&,int,int,int,int);
 		String(const std::string&,const NodeLocation&);
+		void print(int depth);
 
 		// accessor
 		std::string& value();
@@ -43,6 +45,7 @@ namespace ast
 		Character(const std::string&);
 		Character(const std::string&,int,int,int,int);
 		Character(const std::string&,const NodeLocation&);
+		void print(int depth);
 
 		// accessor
 		char value() const;
@@ -59,6 +62,7 @@ namespace ast
 		Integer(const std::string&);
 		Integer(const std::string&,int,int,int,int);
 		Integer(const std::string&,const NodeLocation&);
+		void print(int depth);
 
 		// accessor
 		int value() const;
@@ -75,6 +79,7 @@ namespace ast
 		Float(const std::string&);
 		Float(const std::string&,int,int,int,int);
 		Float(const std::string&,const NodeLocation&);
+		void print(int depth);
 
 		// accessor
 		float value() const;
@@ -91,6 +96,7 @@ namespace ast
 		Bool(const std::string&);
 		Bool(const std::string&,int,int,int,int);
 		Bool(const std::string&,const NodeLocation&);
+		void print(int depth);
 
 		// accessor
 		bool value() const;

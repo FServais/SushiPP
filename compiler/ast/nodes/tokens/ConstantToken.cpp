@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace ast;
@@ -21,9 +22,7 @@ ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& n
 
 }
 
-
 /** Constant token derived classes */
-// String
 String::String(const std::string& lexer_val)
 	: ConstantToken("string"),
 	  str_val(next(lexer_val.begin()), prev(lexer_val.end())) // remove the double quotes
@@ -45,6 +44,23 @@ String::String(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
+void String::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
+
+	for( auto it = children.begin(); it != children.end(); it++){
+		(*it)->print(depth+1);
+	}
+}
+
 std::string& String::value()
 {
 	return str_val;
@@ -55,8 +71,6 @@ const std::string& String::value() const
 	return str_val;
 }
 
-
-// Character
 Character::Character(const std::string& lexer_val)
 	: ConstantToken("char"),
 	  char_val(lexer_val[1])
@@ -78,13 +92,28 @@ Character::Character(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
+void Character::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
+
+	for( auto it = children.begin(); it != children.end(); it++){
+		(*it)->print(depth+1);
+	}
+}
+
 char Character::value() const
 {
 	return char_val;
 }
 
-
-// Integer
 Integer::Integer(const std::string& lexer_val)
 	: ConstantToken("integer"),
 	  int_val(atoi(lexer_val.c_str()))
@@ -111,8 +140,22 @@ int Integer::value() const
 	return int_val;
 }
 
+void Integer::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
 
-// Float
+	for( auto it = children.begin(); it != children.end(); it++)
+		(*it)->print(depth+1);
+}
+
 Float::Float(const std::string& lexer_val)
 	: ConstantToken("float"),
 	  float_val(atof(lexer_val.c_str()))
@@ -139,8 +182,22 @@ float Float::value() const
 	return float_val;
 }
 
+void Float::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
 
-// Bool
+	for( auto it = children.begin(); it != children.end(); it++)
+			(*it)->print(depth+1);
+}
+
 Bool::Bool(const std::string& lexer_val)
 	: ConstantToken("bool"),
 	  bool_val(Bool::stob(lexer_val))
@@ -160,6 +217,22 @@ Bool::Bool(const std::string& lexer_val, const NodeLocation& node_loc)
 	  bool_val(Bool::stob(lexer_val))
 {
 
+}
+
+void Bool::print(int depth)
+{
+	string s("");
+	string t("");
+	if(depth > 2)
+		 s = string((depth-1)*3, ' ');
+	
+	if(depth > 1)
+		t = string("|___");
+	
+	std::cout<<s<<t<<node_name_<<std::endl;
+
+	for( auto it = children.begin(); it != children.end(); it++)
+		(*it)->print(depth+1);
 }
 
 bool Bool::value() const
