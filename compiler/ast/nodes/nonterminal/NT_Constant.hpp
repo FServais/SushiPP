@@ -2,22 +2,24 @@
 #define NT_CONSTANT_HPP_DEFINED
 
 #include <string>
+#include "../NodeLocation.hpp"
+#include "../ASTNode.hpp"
+#include "NonTerminal.hpp"
 
-namespace ast::nodes::nonterminals::nt_constant
+namespace ast
 {
 
-	/**********************************
-	 * Constant rules node base class *
-	 **********************************/
+	/*********************************************
+	 * Intermediate NT_Constant node base class *
+	 *********************************************/
 	class NT_Constant : public NonTerminal
 	{
 	public:
 		// Constructors
 		NT_Constant();
 		NT_Constant(int,int,int,int);
-		NT_Constant(const ast::nodes::NodeLocation&);
+		NT_Constant(const NodeLocation&);
 	};
-
 }
 
 #endif

@@ -2,9 +2,10 @@
 #define NT_DECLARATION_HPP_DEFINED
 
 #include <string>
+#include "NonTerminal.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::nonterminals::nt_declaration
-namespace ast::nodes::nonterminals::NonTerminal
+namespace ast
 {
 	/*********************************************
 	 * Intermediate NT_Declaration node base class *
@@ -13,9 +14,9 @@ namespace ast::nodes::nonterminals::NonTerminal
 	{
 	public:
 		// Constructors
-		NT_Declaration();
-		NT_Declaration(int,int,int,int);
-		NT_Declaration(const ast::nodes::NodeLocation&);
+		NT_Declaration(const std::string&);
+		NT_Declaration(const std::string&, int,int,int,int);
+		NT_Declaration(const std::string&, const NodeLocation&);
 	};
 
 	/*************************************
@@ -27,7 +28,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		Declaration();
 		Declaration(int,int,int,int);
-		Declaration(const ast::nodes::NodeLocation&);
+		Declaration(const NodeLocation&);
 	};
 
 	class DeclFunc : public NT_Declaration
@@ -36,7 +37,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		DeclFunc();
 		DeclFunc(int,int,int,int);
-		DeclFunc(const ast::nodes::NodeLocation&);
+		DeclFunc(const NodeLocation&);
 	};
 
 	class DeclVars : public NT_Declaration
@@ -45,7 +46,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		DeclVars();
 		DeclVars(int,int,int,int);
-		DeclVars(const ast::nodes::NodeLocation&);
+		DeclVars(const NodeLocation&);
 	};
 
 	class DeclVar : public NT_Declaration
@@ -54,7 +55,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		DeclVar();
 		DeclVar(int,int,int,int);
-		DeclVar(const ast::nodes::NodeLocation&);
+		DeclVar(const NodeLocation&);
 	};
 
 	class ParamList : public NT_Declaration
@@ -63,7 +64,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		ParamList();
 		ParamList(int,int,int,int);
-		ParamList(const ast::nodes::NodeLocation&);
+		ParamList(const NodeLocation&);
 	};
 
 	class Param : public NT_Declaration
@@ -72,7 +73,7 @@ namespace ast::nodes::nonterminals::NonTerminal
 		// Constructors
 		Param();
 		Param(int,int,int,int);
-		Param(const ast::nodes::NodeLocation&);
+		Param(const NodeLocation&);
 	};
 
 

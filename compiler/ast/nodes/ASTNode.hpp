@@ -11,14 +11,14 @@
 #include <string>
 #include "NodeLocation.hpp"
 
-namespace ast::nodes
+namespace ast
 {
 	class ASTNode {
 	public:
 		/** Empty node name constructors */
-		// initialize an empty node 
+		// initialize an empty node
 		ASTNode();
-		
+
 		// initialize a node with the given location info
 		ASTNode(const NodeLocation&);
 
@@ -29,7 +29,7 @@ namespace ast::nodes
 		/** Node with name constructors */
 		// initialize a node with the given name
 		ASTNode(const std::string&);
-		
+
 		// initialize a node with the given location info
 		ASTNode(const std::string&, const NodeLocation&);
 
@@ -38,10 +38,10 @@ namespace ast::nodes
 		ASTNode(const std::string&, int, int, int, int);
 
 		/** Rule of the Big Three */
-		// copy constructor : deep copy 
-		ASTNode(ASTNode& tree);
+		// copy constructor : deep copy
+		ASTNode(const ASTNode&);
 
-		// assignment operator 
+		// assignment operator
 		ASTNode& operator=(const ASTNode&);
 
 		// destructor
@@ -56,9 +56,9 @@ namespace ast::nodes
 		const std::vector<ASTNode*>& get_children() const;
 
 		// add a child to the node
-		void add_child(ASTNode&);
+		void add_child(ASTNode*);
 
-		// delete a child at the given index 
+		// delete a child at the given index
 		void delete_child(size_t);
 
 		// check wheter the node has at least a child
@@ -72,7 +72,7 @@ namespace ast::nodes
 		const std::string& node_name() const;
 
 		// function for accepting a visitor
-		//virtual void accept(ASTVisitor& v) = 0;
+//virtual accept(ASTVisitor& v) = 0;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */

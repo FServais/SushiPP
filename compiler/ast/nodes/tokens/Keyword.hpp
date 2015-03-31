@@ -1,136 +1,219 @@
 #ifndef KEYWORD_HPP_DEFINED
 #define KEYWORD_HPP_DEFINED
 
+#include <string>
 #include "Token.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::tokens::keywords
+namespace ast
 {
+    /** Keyword derived class */
+	class Keyword : public Token
+	{
+	public:
+		// constructors
+		Keyword(const std::string&);
+		Keyword(const std::string&,int,int,int,int);
+		Keyword(const std::string&,const NodeLocation&);
+	};
+
 	/** Keyword derived class */
 	class Maki : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		Maki();
 		Maki(int,int,int,int);
-		Maki(const ast::nodes::NodeLocation&);
+		Maki(const NodeLocation&);
 	};
 
 	class To : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		To();
 		To(int,int,int,int);
-		To(const ast::nodes::NodeLocation&);
+		To(const NodeLocation&);
 	};
 
 	class Soy : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		Soy();
 		Soy(int,int,int,int);
-		Soy(const ast::nodes::NodeLocation&);
+		Soy(const NodeLocation&);
 	};
 
 	class Nori: public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		Nori();
 		Nori(int,int,int,int);
-		Nori(const ast::nodes::NodeLocation&);
+		Nori(const NodeLocation&);
 	};
 
-	class Menu : public Keyword
+	class K_Menu : public Keyword
 	{
-	public: 
+	public:
 		// constructors
-		Menu();
-		Menu(int,int,int,int);
-		Menu(const ast::nodes::NodeLocation&);
+		K_Menu();
+		K_Menu(int,int,int,int);
+		K_Menu(const NodeLocation&);
 	};
 
-	class For : public Keyword
+	class K_For : public Keyword
 	{
-	public: 
+	public:
 		// constructors
-		For();
-		For(int,int,int,int);
-		For(const ast::nodes::NodeLocation&);
+		K_For();
+		K_For(int,int,int,int);
+		K_For(const NodeLocation&);
 	};
 
-	class Roll : public Keyword
+	class K_Roll : public Keyword
 	{
-	public: 
+	public:
 		// constructors
-		Roll();
-		Roll(int,int,int,int);
-		Roll(const ast::nodes::NodeLocation&);
+		K_Roll();
+		K_Roll(int,int,int,int);
+		K_Roll(const NodeLocation&);
 	};
 
 	class Break : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		Break();
 		Break(int,int,int,int);
-		Break(const ast::nodes::NodeLocation&);
+		Break(const NodeLocation&);
 	};
-	
+
 	class Continue : public Keyword
-	{
-	public: 
-		// constructors
-		Continue();
-		Continue(int,int,int,int);
-		Continue(const ast::nodes::NodeLocation&);
-	};
-	
-	class Foreach : public Keyword
 	{
 	public:
 		// constructors
-		Foreach();
-		Foreach(int,int,int,int);
-		Foreach(const ast::nodes::NodeLocation&);
+		Continue();
+		Continue(int,int,int,int);
+		Continue(const NodeLocation&);
 	};
-	
+
+	class K_Foreach : public Keyword
+	{
+	public:
+		// constructors
+		K_Foreach();
+		K_Foreach(int,int,int,int);
+		K_Foreach(const NodeLocation&);
+	};
+
 	class As : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		As();
 		As(int,int,int,int);
-		As(const ast::nodes::NodeLocation&);
+		As(const NodeLocation&);
 	};
-	
+
 	class If : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		If();
 		If(int,int,int,int);
-		If(const ast::nodes::NodeLocation&);
+		If(const NodeLocation&);
 	};
-	
-	class Elseif : public Keyword
+
+	class K_Elseif : public Keyword
 	{
-	public: 
+	public:
 		// constructors
-		Elseif();
-		Elseif(int,int,int,int);
-		Elseif(const ast::nodes::NodeLocation&);
+		K_Elseif();
+		K_Elseif(int,int,int,int);
+		K_Elseif(const NodeLocation&);
 	};
-	
+
 	class Else : public Keyword
 	{
-	public: 
+	public:
 		// constructors
 		Else();
 		Else(int,int,int,int);
-		Else(const ast::nodes::NodeLocation&);
+		Else(const NodeLocation&);
 	};
-	
+
+	class Type_Int : public Keyword
+	{
+	public:
+		// constructors
+		Type_Int();
+		Type_Int(int,int,int,int);
+		Type_Int(const NodeLocation&);
+	};
+
+	class Type_Float : public Keyword
+	{
+	public:
+		// constructors
+		Type_Float();
+		Type_Float(int,int,int,int);
+		Type_Float(const NodeLocation&);
+	};
+
+	class Type_Char : public Keyword
+	{
+	public:
+		// constructors
+		Type_Char();
+		Type_Char(int,int,int,int);
+		Type_Char(const NodeLocation&);
+	};
+
+	class Type_String : public Keyword
+	{
+	public:
+		// constructors
+		Type_String();
+		Type_String(int,int,int,int);
+		Type_String(const NodeLocation&);
+	};
+
+	class Type_Array : public Keyword
+	{
+	public:
+		// constructors
+		Type_Array();
+		Type_Array(int,int,int,int);
+		Type_Array(const NodeLocation&);
+	};
+
+	class Type_List : public Keyword
+	{
+	public:
+		// constructors
+		Type_List();
+		Type_List(int,int,int,int);
+		Type_List(const NodeLocation&);
+	};
+
+	class Type_Tuple : public Keyword
+	{
+	public:
+		// constructors
+		Type_Tuple();
+		Type_Tuple(int,int,int,int);
+		Type_Tuple(const NodeLocation&);
+	};
+
+	class Type_Bool : public Keyword
+	{
+	public:
+		// constructors
+		Type_Bool();
+		Type_Bool(int,int,int,int);
+		Type_Bool(const NodeLocation&);
+	};
 }
 #endif

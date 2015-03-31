@@ -2,48 +2,39 @@
 #define TOKEN_HPP_DEFINED
 
 #include <string>
+#include "../ASTNode.hpp"
 #include "../NodeLocation.hpp"
 
-namespace ast::nodes::tokens
+namespace ast
 {
 
 	/*************************
 	 * Token node base class *
 	 *************************/
-	class Token : public ast::nodes::ASTNode
+	class Token : public ASTNode
 	{
-	public: 
+	public:
 		// constructors
-		// string arg is the token node name 
+		// string arg is the token node name
 		Token(const std::string&);
 		// additionnal arguments are for location (see ast node constructors for ordering)
 		Token(const std::string&,int,int,int,int);
-		Token(const std::string&,const ast::nodes::NodeLocation&);
+		Token(const std::string&,const NodeLocation&);
 	};
 
-	/**************************************
-	 * Intermediate token node base class *
-	 **************************************/
-	class ConstantToken : public Token
-	{
-	public: 
-		// constructors
-		ConstantToken(const std::string&);
-		ConstantToken(const std::string&,int,int,int,int);
-		ConstantToken(const std::string&,const ast::nodes::NodeLocation&);
-	};
 
+	/* Identifier token */
 	class Identifier : public Token
 	{
-	public: 
+	public:
 		// constructors
 		// the string parameters is the identifier name (not the node name /!\)
 		Identifier(const std::string&);
 		Identifier(const std::string&,int,int,int,int);
-		Identifier(const std::string&,const ast::nodes::NodeLocation&);
+		Identifier(const std::string&,const NodeLocation&);
 
-		// id getters 
-		std::string& id() const;
+		// id getters
+		std::string& id();
 		const std::string& id() const;
 
 	private:

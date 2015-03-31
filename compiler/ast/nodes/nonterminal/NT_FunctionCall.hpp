@@ -2,8 +2,10 @@
 #define NT_FUNCTIONCALL_HPP_DEFINED
 
 #include <string>
+#include "NonTerminal.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::nonterminals::nt_functioncall
+namespace ast
 {
 	/*********************************************
 	 * Intermediate NT_FunctionCall node base class *
@@ -12,9 +14,9 @@ namespace ast::nodes::nonterminals::nt_functioncall
 	{
 	public:
 		// Constructors
-		NT_FunctionCall();
-		NT_FunctionCall(int,int,int,int);
-		NT_FunctionCall(const ast::nodes::NodeLocation&);
+		NT_FunctionCall(const std::string&);
+		NT_FunctionCall(const std::string&,int,int,int,int);
+		NT_FunctionCall(const std::string&,const NodeLocation&);
 	};
 
 	/***************************************
@@ -26,7 +28,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		FuncCall();
 		FuncCall(int,int,int,int);
-		FuncCall(const ast::nodes::NodeLocation&);
+		FuncCall(const NodeLocation&);
 	};
 
 	class ArgList : public NT_FunctionCall
@@ -35,7 +37,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		ArgList();
 		ArgList(int,int,int,int);
-		ArgList(const ast::nodes::NodeLocation&);
+		ArgList(const NodeLocation&);
 	};
 
 	class Argument : public NT_FunctionCall
@@ -44,7 +46,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		Argument();
 		Argument(int,int,int,int);
-		Argument(const ast::nodes::NodeLocation&);
+		Argument(const NodeLocation&);
 	};
 
 	class BracedFuncCall : public NT_FunctionCall
@@ -53,7 +55,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		BracedFuncCall();
 		BracedFuncCall(int,int,int,int);
-		BracedFuncCall(const ast::nodes::NodeLocation&);
+		BracedFuncCall(const NodeLocation&);
 	};
 
 	class FuncCallEol : public NT_FunctionCall
@@ -62,7 +64,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		FuncCallEol();
 		FuncCallEol(int,int,int,int);
-		FuncCallEol(const ast::nodes::NodeLocation&);
+		FuncCallEol(const NodeLocation&);
 	};
 
 	class ArgListEol : public NT_FunctionCall
@@ -71,7 +73,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		ArgListEol();
 		ArgListEol(int,int,int,int);
-		ArgListEol(const ast::nodes::NodeLocation&);
+		ArgListEol(const NodeLocation&);
 	};
 
 	class SoyExpression : public NT_FunctionCall
@@ -80,7 +82,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		SoyExpression();
 		SoyExpression(int,int,int,int);
-		SoyExpression(const ast::nodes::NodeLocation&);
+		SoyExpression(const NodeLocation&);
 	};
 
 	class SoyFunc : public NT_FunctionCall
@@ -89,7 +91,7 @@ namespace ast::nodes::nonterminals::nt_functioncall
 		// Constructors
 		SoyFunc();
 		SoyFunc(int,int,int,int);
-		SoyFunc(const ast::nodes::NodeLocation&);
+		SoyFunc(const NodeLocation&);
 	};
 }
 

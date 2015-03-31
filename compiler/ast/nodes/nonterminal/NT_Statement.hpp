@@ -2,8 +2,10 @@
 #define NT_STATEMENT_HPP_DEFINED
 
 #include <string>
+#include "NonTerminal.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::nonterminals::nt_statement
+namespace ast
 {
 	/*********************************************
 	 * Intermediate NT_Statement node base class *
@@ -12,9 +14,9 @@ namespace ast::nodes::nonterminals::nt_statement
 	{
 	public:
 		// Constructors
-		NT_Statement();
-		NT_Statement(int,int,int,int);
-		NT_Statement(const ast::nodes::NodeLocation&);
+		NT_Statement(const std::string&);
+		NT_Statement(const std::string&,int,int,int,int);
+		NT_Statement(const std::string&,const NodeLocation&);
 	};
 
 	/***********************************
@@ -26,7 +28,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Statement();
 		Statement(int,int,int,int);
-		Statement(const ast::nodes::NodeLocation&);
+		Statement(const NodeLocation&);
 	};
 
 	class Return : public NT_Statement
@@ -35,7 +37,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Return();
 		Return(int,int,int,int);
-		Return(const ast::nodes::NodeLocation&);
+		Return(const NodeLocation&);
 	};
 
 	class Menu : public NT_Statement
@@ -44,7 +46,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Menu();
 		Menu(int,int,int,int);
-		Menu(const ast::nodes::NodeLocation&);
+		Menu(const NodeLocation&);
 	};
 
 	class MenuDef : public NT_Statement
@@ -53,7 +55,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		MenuDef();
 		MenuDef(int,int,int,int);
-		MenuDef(const ast::nodes::NodeLocation&);
+		MenuDef(const NodeLocation&);
 	};
 
 	class Loop : public NT_Statement
@@ -62,7 +64,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Loop();
 		Loop(int,int,int,int);
-		Loop(const ast::nodes::NodeLocation&);
+		Loop(const NodeLocation&);
 	};
 
 	class Roll : public NT_Statement
@@ -71,7 +73,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Roll();
 		Roll(int,int,int,int);
-		Roll(const ast::nodes::NodeLocation&);
+		Roll(const NodeLocation&);
 	};
 
 	class Foreach : public NT_Statement
@@ -80,7 +82,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Foreach();
 		Foreach(int,int,int,int);
-		Foreach(const ast::nodes::NodeLocation&);
+		Foreach(const NodeLocation&);
 	};
 
 	class For : public NT_Statement
@@ -89,7 +91,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		For();
 		For(int,int,int,int);
-		For(const ast::nodes::NodeLocation&);
+		For(const NodeLocation&);
 	};
 
 	class ForInitializer : public NT_Statement
@@ -98,7 +100,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		ForInitializer();
 		ForInitializer(int,int,int,int);
-		ForInitializer(const ast::nodes::NodeLocation&);
+		ForInitializer(const NodeLocation&);
 	};
 
 	class ForUpdate : public NT_Statement
@@ -107,7 +109,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		ForUpdate();
 		ForUpdate(int,int,int,int);
-		ForUpdate(const ast::nodes::NodeLocation&);
+		ForUpdate(const NodeLocation&);
 	};
 
 	class Conditional : public NT_Statement
@@ -116,7 +118,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Conditional();
 		Conditional(int,int,int,int);
-		Conditional(const ast::nodes::NodeLocation&);
+		Conditional(const NodeLocation&);
 	};
 
 	class Elseif : public NT_Statement
@@ -125,7 +127,7 @@ namespace ast::nodes::nonterminals::nt_statement
 		// Constructors
 		Elseif();
 		Elseif(int,int,int,int);
-		Elseif(const ast::nodes::NodeLocation&);
+		Elseif(const NodeLocation&);
 	};
 }
 

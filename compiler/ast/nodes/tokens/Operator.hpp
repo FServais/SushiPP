@@ -1,361 +1,363 @@
 #ifndef OPERATOR_HPP_DEFINED
 #define OPERATOR_HPP_DEFINED
 
+#include <string>
 #include "Token.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::tokens::operators
+namespace ast
 {
 	/** operator base class */
-	class Operator : public ast::nodes::tokens::Token
+	class Operator : public Token
 	{
-	public: 
+	public:
 		// constructors
-		Operator();
-		Operator(int,int,int,int);
-		Operator(const ast::nodes::NodeLocation&);
+		Operator(const std::string&);
+		Operator(const std::string&,int,int,int,int);
+		Operator(const std::string&,const NodeLocation&);
 	};
-	
+
 	/** operator derived class */
 	class Op_Plus : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Plus();
 		Op_Plus(int,int,int,int);
-		Op_Plus(const ast::nodes::NodeLocation&);
+		Op_Plus(const NodeLocation&);
 	};
 
 	class Op_Minus : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Minus();
 		Op_Minus(int,int,int,int);
-		Op_Minus(const ast::nodes::NodeLocation&);
+		Op_Minus(const NodeLocation&);
 	};
 
 	class Op_Mult : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Mult();
 		Op_Mult(int,int,int,int);
-		Op_Mult(const ast::nodes::NodeLocation&);
+		Op_Mult(const NodeLocation&);
 	};
 
 	class Op_Div : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Div();
 		Op_Div(int,int,int,int);
-		Op_Div(const ast::nodes::NodeLocation&);
+		Op_Div(const NodeLocation&);
 	};
 
 	class Op_Modulo : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Modulo();
 		Op_Modulo(int,int,int,int);
-		Op_Modulo(const ast::nodes::NodeLocation&);
+		Op_Modulo(const NodeLocation&);
 	};
 
 	class Op_Exponentiation : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Exponentiation();
 		Op_Exponentiation(int,int,int,int);
-		Op_Exponentiation(const ast::nodes::NodeLocation&);
+		Op_Exponentiation(const NodeLocation&);
 	};
 
 	class Op_UnaryMinus : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_UnaryMinus();
 		Op_UnaryMinus(int,int,int,int);
-		Op_UnaryMinus(const ast::nodes::NodeLocation&);
+		Op_UnaryMinus(const NodeLocation&);
 	};
 
 	class Op_BitwiseOr : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_BitwiseOr();
 		Op_BitwiseOr(int,int,int,int);
-		Op_BitwiseOr(const ast::nodes::NodeLocation&);
+		Op_BitwiseOr(const NodeLocation&);
 	};
-	
+
 	class Op_BitwiseAnd : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_BitwiseAnd();
 		Op_BitwiseAnd(int,int,int,int);
-		Op_BitwiseAnd(const ast::nodes::NodeLocation&);
+		Op_BitwiseAnd(const NodeLocation&);
 	};
-	
+
 	class Op_BitwiseXor : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_BitwiseXor();
 		Op_BitwiseXor(int,int,int,int);
-		Op_BitwiseXor(const ast::nodes::NodeLocation&);
+		Op_BitwiseXor(const NodeLocation&);
 	};
-	
+
 	class Op_BitwiseNot : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_BitwiseNot();
 		Op_BitwiseNot(int,int,int,int);
-		Op_BitwiseNot(const ast::nodes::NodeLocation&);
+		Op_BitwiseNot(const NodeLocation&);
 	};
-	
+
 	class Op_LogicalOr : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_LogicalOr();
 		Op_LogicalOr(int,int,int,int);
-		Op_LogicalOr(const ast::nodes::NodeLocation&);
+		Op_LogicalOr(const NodeLocation&);
 	};
-	
+
 	class Op_LogicalAnd : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_LogicalAnd();
 		Op_LogicalAnd(int,int,int,int);
-		Op_LogicalAnd(const ast::nodes::NodeLocation&);
+		Op_LogicalAnd(const NodeLocation&);
 	};
-	
+
 	class Op_LogicalNot : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_LogicalNot();
 		Op_LogicalNot(int,int,int,int);
-		Op_LogicalNot(const ast::nodes::NodeLocation&);
+		Op_LogicalNot(const NodeLocation&);
 	};
-	
+
 	class Op_CompLessThan : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompLessThan();
 		Op_CompLessThan(int,int,int,int);
-		Op_CompLessThan(const ast::nodes::NodeLocation&);
+		Op_CompLessThan(const NodeLocation&);
 	};
-	
+
 	class Op_CompGreaterThan : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompGreaterThan();
 		Op_CompGreaterThan(int,int,int,int);
-		Op_CompGreaterThan(const ast::nodes::NodeLocation&);
+		Op_CompGreaterThan(const NodeLocation&);
 	};
 
 	class Op_CompLessEqual : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompLessEqual();
 		Op_CompLessEqual(int,int,int,int);
-		Op_CompLessEqual(const ast::nodes::NodeLocation&);
+		Op_CompLessEqual(const NodeLocation&);
 	};
 
 	class Op_CompGreaterEqual : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompGreaterEqual();
 		Op_CompGreaterEqual(int,int,int,int);
-		Op_CompGreaterEqual(const ast::nodes::NodeLocation&);
+		Op_CompGreaterEqual(const NodeLocation&);
 	};
-		
+
 	class Op_CompEqual : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompEqual();
 		Op_CompEqual(int,int,int,int);
-		Op_CompEqual(const ast::nodes::NodeLocation&);
+		Op_CompEqual(const NodeLocation&);
 	};
-		
+
 	class Op_CompNotEqual : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_CompNotEqual();
 		Op_CompNotEqual(int,int,int,int);
-		Op_CompNotEqual(const ast::nodes::NodeLocation&);
+		Op_CompNotEqual(const NodeLocation&);
 	};
-		
+
 	class Op_LeftShift : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_LeftShift();
 		Op_LeftShift(int,int,int,int);
-		Op_LeftShift(const ast::nodes::NodeLocation&);
+		Op_LeftShift(const NodeLocation&);
 	};
 
 	class Op_RightShift : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_RightShift();
 		Op_RightShift(int,int,int,int);
-		Op_RightShift(const ast::nodes::NodeLocation&);
+		Op_RightShift(const NodeLocation&);
 	};
 
 	class Op_StringConcat : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_StringConcat();
 		Op_StringConcat(int,int,int,int);
-		Op_StringConcat(const ast::nodes::NodeLocation&);
+		Op_StringConcat(const NodeLocation&);
 	};
 
 	class Op_PrefixIncrement : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_PrefixIncrement();
 		Op_PrefixIncrement(int,int,int,int);
-		Op_PrefixIncrement(const ast::nodes::NodeLocation&);
+		Op_PrefixIncrement(const NodeLocation&);
 	};
 
 	class Op_PrefixDecrement : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_PrefixDecrement();
 		Op_PrefixDecrement(int,int,int,int);
-		Op_PrefixDecrement(const ast::nodes::NodeLocation&);
+		Op_PrefixDecrement(const NodeLocation&);
 	};
 
 	class Op_PostfixIncrement : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_PostfixIncrement();
 		Op_PostfixIncrement(int,int,int,int);
-		Op_PostfixIncrement(const ast::nodes::NodeLocation&);
+		Op_PostfixIncrement(const NodeLocation&);
 	};
-	
+
 	class Op_PostfixDecrement : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_PostfixDecrement();
 		Op_PostfixDecrement(int,int,int,int);
-		Op_PostfixDecrement(const ast::nodes::NodeLocation&);
+		Op_PostfixDecrement(const NodeLocation&);
 	};
-	
+
 	class Op_Assignment : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_Assignment();
 		Op_Assignment(int,int,int,int);
-		Op_Assignment(const ast::nodes::NodeLocation&);
+		Op_Assignment(const NodeLocation&);
 	};
-	
+
 	class Op_AssignPlus : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignPlus();
 		Op_AssignPlus(int,int,int,int);
-		Op_AssignPlus(const ast::nodes::NodeLocation&);
+		Op_AssignPlus(const NodeLocation&);
 	};
-	
+
 	class Op_AssignLess : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignLess();
 		Op_AssignLess(int,int,int,int);
-		Op_AssignLess(const ast::nodes::NodeLocation&);
+		Op_AssignLess(const NodeLocation&);
 	};
-		
+
 	class Op_AssignMult : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignMult();
 		Op_AssignMult(int,int,int,int);
-		Op_AssignMult(const ast::nodes::NodeLocation&);
+		Op_AssignMult(const NodeLocation&);
 	};
-		
+
 	class Op_AssignDiv : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignDiv();
 		Op_AssignDiv(int,int,int,int);
-		Op_AssignDiv(const ast::nodes::NodeLocation&);
+		Op_AssignDiv(const NodeLocation&);
 	};
-		
+
 	class Op_AssignExpo : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignExpo();
 		Op_AssignExpo(int,int,int,int);
-		Op_AssignExpo(const ast::nodes::NodeLocation&);
+		Op_AssignExpo(const NodeLocation&);
 	};
-		
+
 	class Op_AssignMod : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignMod();
 		Op_AssignMod(int,int,int,int);
-		Op_AssignMod(const ast::nodes::NodeLocation&);
+		Op_AssignMod(const NodeLocation&);
 	};
-		
+
 	class Op_AssignAnd : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignAnd();
 		Op_AssignAnd(int,int,int,int);
-		Op_AssignAnd(const ast::nodes::NodeLocation&);
+		Op_AssignAnd(const NodeLocation&);
 	};
-	
+
 	class Op_AssignOr : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignOr();
 		Op_AssignOr(int,int,int,int);
-		Op_AssignOr(const ast::nodes::NodeLocation&);
+		Op_AssignOr(const NodeLocation&);
 	};
-	
+
 	class Op_AssignXor : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignXor();
 		Op_AssignXor(int,int,int,int);
-		Op_AssignXor(const ast::nodes::NodeLocation&);
+		Op_AssignXor(const NodeLocation&);
 	};
-	
+
 	class Op_AssignConcat : public Operator
 	{
-	public: 
+	public:
 		// constructors
 		Op_AssignConcat();
 		Op_AssignConcat(int,int,int,int);
-		Op_AssignConcat(const ast::nodes::NodeLocation&);
+		Op_AssignConcat(const NodeLocation&);
 	};
 }
 #endif

@@ -2,8 +2,10 @@
 #define NT_PROGRAM_HPP_DEFINED
 
 #include <string>
+#include "NonTerminal.hpp"
+#include "../NodeLocation.hpp"
 
-namespace ast::nodes::nonterminals::nt_program
+namespace ast
 {
 	/*********************************************
 	 * Intermediate NT_Program node base class *
@@ -12,9 +14,9 @@ namespace ast::nodes::nonterminals::nt_program
 	{
 	public:
 		// Constructors
-		NT_Program();
-		NT_Program(int,int,int,int);
-		NT_Program(const ast::nodes::NodeLocation&);
+		NT_Program(const std::string&);
+		NT_Program(const std::string&,int,int,int,int);
+		NT_Program(const std::string&,const NodeLocation&);
 	};
 
 	/********************************
@@ -26,7 +28,7 @@ namespace ast::nodes::nonterminals::nt_program
 		// Constructors
 		Program();
 		Program(int,int,int,int);
-		Program(const ast::nodes::NodeLocation&);
+		Program(const NodeLocation&);
 	};
 
 	class ScopeBody : public NT_Program
@@ -35,7 +37,7 @@ namespace ast::nodes::nonterminals::nt_program
 		// Constructors
 		ScopeBody();
 		ScopeBody(int,int,int,int);
-		ScopeBody(const ast::nodes::NodeLocation&);
+		ScopeBody(const NodeLocation&);
 	};
 
 	class ProgramElement : public NT_Program
@@ -44,7 +46,7 @@ namespace ast::nodes::nonterminals::nt_program
 		// Constructors
 		ProgramElement();
 		ProgramElement(int,int,int,int);
-		ProgramElement(const ast::nodes::NodeLocation&);
+		ProgramElement(const NodeLocation&);
 	};
 
 	class Scope : public NT_Program
@@ -53,10 +55,8 @@ namespace ast::nodes::nonterminals::nt_program
 		// Constructors
 		Scope();
 		Scope(int,int,int,int);
-		Scope(const ast::nodes::NodeLocation&);
+		Scope(const NodeLocation&);
 	};
-
-
 }
 
 #endif

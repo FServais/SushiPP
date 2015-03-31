@@ -1,8 +1,6 @@
 #include "NonTerminal.hpp"
 
-using namespace ast::nodes::nonterminals::NonTerminal;
-using ast::nodes::ASTNode;
-using ast::nodes::NodeLocation;
+using namespace ast;
 
 
 /***************************
@@ -10,13 +8,13 @@ using ast::nodes::NodeLocation;
  ***************************/
 NonTerminal::NonTerminal(const std::string& node_name) : ASTNode(node_name) {}
 
-NonTerminal::NonTerminal(const std::string& node_name, int first_line, int last_line, int first_column, int last_column) 
+NonTerminal::NonTerminal(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
 	: ASTNode(node_name, first_line, last_line, first_column, last_column)
 {
 
 }
 
-NonTerminal::NonTerminal(const std::string& node_name, const NodeLocation& node_loc) 
+NonTerminal::NonTerminal(const std::string& node_name, const NodeLocation& node_loc)
 	: ASTNode(node_name, node_loc)
 {
 
