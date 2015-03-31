@@ -11,7 +11,7 @@
 #include <memory> // default_delete
 #include <iterator> // 
 
-using namespace ast;
+using namespace ast::nodes;
 using namespace std;
 
 ASTNode::ASTNode() : parent(nullptr)
@@ -19,8 +19,33 @@ ASTNode::ASTNode() : parent(nullptr)
 
 }
 
-ASTNode::ASTNode(const ASTNode& tree) {
+ASTNode(const NodeLocation& node_loc) : father(nullptr), loc(node_loc)
+{
 
+}
+
+ASTNode(int first_line, int last_line, int first_column, int last_column) 
+	: father(nullptr), loc(first_line, last_line, first_column, last_column)
+{
+
+}
+
+ASTNode(const std::string& name) : parent(nullptr), node_name(name) {}
+
+ASTNode(const std::string& name, const NodeLocation& node_loc) 
+	: parent(nullptr), loc(node_loc), node_name(name)
+{
+
+}
+
+ASTNode(const std::string& name, int first_line, int last_line, int first_column, int last_column)
+	: father(nullptr), loc(first_line, last_line, first_column, last_column), node_name(name)
+{
+	
+}
+
+ASTNode::ASTNode(const ASTNode& tree) 
+{
 
 }
 

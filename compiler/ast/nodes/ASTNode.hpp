@@ -1,26 +1,47 @@
 /*
- * ASTNode.h
+ * ASTNode.hpp
  *
- *  Created on: 27 mars 2015
- *      Author: Floriane
+ * Author: Floriane Magera, Fabrice Servais, Romain Mormont
  */
 
 #ifndef NODE_HPP_DEFINED
 #define NODE_HPP_DEFINED
+
 #include <vector>
 
-
-namespace ast
+namespace ast::nodes
 {
 	class ASTNode {
 	public:
-		// initialize an empty node
+		/** Empty node name constructors */
+		// initialize an empty node 
 		ASTNode();
-		ASTNode(Location);
+		
+		// initialize a node with the given location info
+		ASTNode(const NodeLocation&);
+
+		// params : first_line, last_line, first_column, last_column
+		// throws a domain_error exception if the location data are invalid
+		ASTNode(int, int, int, int);
+
+		/** Node with name constructors */
+		// initialize a node with the given name
+		ASTNode(const std::string&);
+		
+		// initialize a node with the given location info
+		ASTNode(const std::string&, const NodeLocation&);
+
+		// params : first_line, last_line, first_column, last_column
+		// throws a domain_error exception if the location data are invalid
+		ASTNode(const std::string&, int, int, int, int);
+
+		/** Rule of the Big Three */
 		// copy constructor : deep copy 
 		ASTNode(ASTNode& tree);
+
 		// assignment operator 
 		ASTNode& operator=(const ASTNode&);
+
 		// destructor
 		virtual ~ASTNode();
 
@@ -48,9 +69,10 @@ namespace ast
 		virtual accept(ASTVisitor& v) = 0;
 
 	protected:
-		ASTNode* father;
-		std::vector<ASTNode*> children;
-		Location loc;
+		ASTNode* father; /* Points to the current node father, nullptr if there is none */
+		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */
+		NodeLocation loc; /* Node location */
+		std::string node_name; /* Node name */
 	};
 }
 
