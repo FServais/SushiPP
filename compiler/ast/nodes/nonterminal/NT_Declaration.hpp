@@ -3,55 +3,64 @@
 
 #include <string>
 
-namespace ast::nodes::nonterminals::nt_program
+namespace ast::nodes::nonterminals::nt_declaration
 {
 
-	/********************************
-	 * Program rules node base class *
-	 ********************************/
-	class Program : public NT_Declaration
+	/*************************************
+	 * Declaration rules node base class *
+	 *************************************/
+	class Declaration : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Program(const std::string&);
-		Program(const std::string&,int,int,int,int);
-		Program(const std::string&,const ast::nodes::NodeLocation&);
+		Declaration(const std::string&);
+		Declaration(const std::string&,int,int,int,int);
+		Declaration(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Empty : public NT_Declaration
+	class DeclFunc : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Empty(const std::string&);
-		Empty(const std::string&,int,int,int,int);
-		Empty(const std::string&,const ast::nodes::NodeLocation&);
+		DeclFunc(const std::string&);
+		DeclFunc(const std::string&,int,int,int,int);
+		DeclFunc(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class ScopeBody : public NT_Declaration
+	class Decl_vars : public NT_Declaration
 	{
 	public:
 		// Constructors
-		ScopeBody(const std::string&);
-		ScopeBody(const std::string&,int,int,int,int);
-		ScopeBody(const std::string&,const ast::nodes::NodeLocation&);
+		Decl_vars(const std::string&);
+		Decl_vars(const std::string&,int,int,int,int);
+		Decl_vars(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class ProgramElement : public NT_Declaration
+	class Decl_var : public NT_Declaration
 	{
 	public:
 		// Constructors
-		ProgramElement(const std::string&);
-		ProgramElement(const std::string&,int,int,int,int);
-		ProgramElement(const std::string&,const ast::nodes::NodeLocation&);
+		Decl_var(const std::string&);
+		Decl_var(const std::string&,int,int,int,int);
+		Decl_var(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
-	class Scope : public NT_Declaration
+	class Param_list : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Scope(const std::string&);
-		Scope(const std::string&,int,int,int,int);
-		Scope(const std::string&,const ast::nodes::NodeLocation&);
+		Param_list(const std::string&);
+		Param_list(const std::string&,int,int,int,int);
+		Param_list(const std::string&,const ast::nodes::NodeLocation&);
+	};
+
+	class Param : public NT_Declaration
+	{
+	public:
+		// Constructors
+		Param(const std::string&);
+		Param(const std::string&,int,int,int,int);
+		Param(const std::string&,const ast::nodes::NodeLocation&);
 	};
 
 
