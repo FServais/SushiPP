@@ -25,38 +25,6 @@ Token::Token(const std::string& node_name, const NodeLocation& node_loc)
  * Token intermediate base classes *
  ***********************************/
 
-
-
-/** Delimiter */
-Delimiter::Delimiter(const std::string& node_name) : Token(node_name) {}
-
-Delimiter::Delimiter(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
-	: Token(node_name, first_line, last_line, first_column, last_column)
-{
-
-}
-
-Delimiter::Delimiter(const std::string& node_name, const NodeLocation& loc)
-	: Token(node_name, node_loc)
-{
-
-}
-
-/** Keyword */
-Keyword::Keyword(const std::string& node_name) : Token(node_name) {}
-
-Keyword::Keyword(const std::string& node_name, int first_line, int last_line, int first_column, int last_column)
-	: Token(node_name, first_line, last_line, first_column, last_column)
-{
-
-}
-
-Keyword::Keyword(const std::string& node_name, const NodeLocation& loc)
-	: Token(node_name, node_loc)
-{
-
-}
-
 /** Identifier */
 Identifier::Identifier(const std::string& id) : Token("identifier"), id_(id) {}
 
