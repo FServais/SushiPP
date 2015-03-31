@@ -494,56 +494,214 @@ tuple:
 /* The make sequence list allows to create datastructures
  * filled with increasing values (lists or arrays)
  */
-make-sequence: make-sequence-list | make-sequence-array;
-make-sequence-list: '{' seq-expression '}';
-make-sequence-array: DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END;
+make-sequence: 
+	make-sequence-list
+	{
+		$$ = new MakeSequence();
+		$$->add_child($1);
+	}
+ | 	make-sequence-array
+	 {
+	 	$$ = new MakeSequence();
+		$$->add_child($1);
+	 }
+ ;
+make-sequence-list: 
+'{' seq-expression '}'
+	{
+		$$ = new MakeSequenceList();
+		$$->add_child(new OpenAcc());
+		$$->add_child($1);
+		$$->add_child(new ClosingAcc());
 
-seq-expression: expression KEYWORD_TO expression;
+	}
+;
+
+make-sequence-array: 
+	DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
+		{
+			$$ = new MakeSequenceArray();
+			$$->add_child(new ArrayBeg());
+			$$->add_child($1);
+			$$->add_child(new ArrayEnd());
+
+		}
+	;
+
+seq-expression: 
+	expression KEYWORD_TO expression
+		{
+			$$ = new SeqExpression();
+			$$->add_child($1);
+			$$->add_child(new K_To());
+			$$->add_child($2);
+		}
+	;
 
 /**************/
 /* Statements */
 /**************/
 statement:
   return
+  	{
+  		$$ = new Statement();
+  		$$->add_child($1);
+  	}
 | menu
+	{
+		$$ = new Statement();
+  		$$->add_child($1);
+	}
 | loop
+	{
+		$$ = new Statement();
+  		$$->add_child($1);
+	}
 | KEYWORD_CONTINUE
+	{
+		$$ = new Statement();
+  		$$->add_child(new K_Continue);
+	}
 | KEYWORD_BREAK
+	{
+		$$ = new Statement();
+  		$$->add_child(K_Break);
+	}
 | conditional
+	{
+		$$ = new Statement();
+  		$$->add_child($1);
+	}
 ;
 
 /* Return */
 return:
   KEYWORD_NORI
+  	{
+  		$$ = new Return();
+  		$$->add_child(K_Nori);
+  	}
 | KEYWORD_NORI expression
+	{
+		$$ = new Return();
+  		$$->add_child(K_Nori);
+  		$$->add_child($1);
+	}
 ;
 
 /* Switch */
-menu: KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS;
+menu: 
+	KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
+		{
+			$$ = new Menu();
+			$$->add_child(new K_Menu);
+			$$->add_child($1);
+			$$->add_child(DelimEol);
+			$$->add_child($2);
+			$$->add_child(new DelimEos);
+		}
+	;
+
 menu-body:
   menu-def DELIM_EOL
+  {
+  	$$ = new MenuBody();
+  	$$->add_child($1);
+  	$$->add_child(DelimEol);
+  }
 | menu-case DELIM_EOL
+	{
+		$$ = new MenuBody();
+  		$$->add_child($1);
+  		$$->add_child(DelimEol);
+	}
 | menu-case DELIM_EOL menu-body
+{
+	$$ = new MenuBody();
+	$$->add_child($1);
+	$$->add_child(DelimEol);
+	$$->add_child($2);
+}
+	
 ;
 
-menu-case: expression DELIM_ARROW scope DELIM_EOS;
-menu-def: '_' DELIM_ARROW scope DELIM_EOS;
+menu-case: 
+	expression DELIM_ARROW scope DELIM_EOS
+		{
+			$$ = new MenuCase();
+			$$->add_child($1);
+			$$->add_child(new Arrow());
+			$$->add_child($2);
+ 			$$->add_child(new DelimEos);
+
+		}
+;
+
+menu-def:
+ '_' DELIM_ARROW scope DELIM_EOS
+ {
+ 	$$ = new MenuDef();
+ 	$$->add_child(new Underscore());
+ 	$$->add_child(new Arrow());
+ 	$$->add_child($1);
+ 	$$->add_child(new DelimEos);
+ }
+;
 
 /* Loop */
 loop :
   foreach
+  	{
+  		$$ = new Loop();
+  		$$->add_child($1);
+  	}
 | for
-| roll ;
+	{
+		$$ = new Loop();
+  		$$->add_child($1);
+	}
+| roll
+	{
+		$$ = new Loop();
+  		$$->add_child($1);
+	}
+ ;
 
 /* The roll loop is actually a while loop
  * The expression should be interpretable as a boolean value
  */
-roll : KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS ;
+roll : 
+	KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
+		{
+			$$ = new Roll();
+			$$->add_child(new K_Roll);
+			$$->add_child($1);
+			$$->add_child(new DelimEol);
+			$$->add_child($2);
+			$$->add_child(new DelimEos);
+
+		}
+	;
 
 /* The foreach loop iterates over a list/array expression (so the expression part should be
  * interpretable as a list/array)
  */
-foreach: KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS;
+foreach: 
+	KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
+		{
+			$$ = new Foreach();
+			$$->add_child(new K_Foreach);
+			$$->add_child($1);
+			$$->add_child(new K_As);
+			$$->add_child(new Identifier(*$2));
+			$$->add_child(new DelimEol);
+			$$->add_child($3);
+			$$->add_child(new DelimEos);
+			delete $2;
+
+		}
+	;
+
 
 /* The for loop iterates until a condition becomes false
  * The initializer part can be empty or contain an assignment (if the variable does not exist
@@ -552,29 +710,105 @@ foreach: KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_
  * The modifying-expression part should contain any update code  for updating some variables used
  * for iterating (or contain nothing)
  */
-for: KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS;
+for: 
+	KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
+		{
+			$$ = new For();
+			$$->add_child(new K_For);
+			$$->add_child($1);
+			$$->add_child(new Virg);
+			$$->add_child($2);
+			$$->add_child(new Virg);
+			$$->add_child($3);
+			$$->add_child(new DelimEol);
+			$$->add_child($4);
+			$$->add_child(DelimEos);
+		}
+	;
 
 for-initializer:
   %empty
 | assignment
+	{
+		$$ = new ForInitializer();
+		$$->add_child($1);
+	}
 ;
 
 for-update:
   %empty
 | modifying-expression
+	{
+		$$ = new ForUpdate();
+		$$->add_child($1);
+	}
 ;
 
 /* Conditionnal */
 conditional:
   KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
+  	{
+  		$$ = new Conditional();
+  		$$->add_child(new K_If);
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  		$$->add_child(new DelimEos);
+  	}
 | KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
+	{
+		$$ = new Conditional();
+		$$->add_child(new K_If);
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  		$$->add_child(new K_Else);
+  		$$->add_child($3);
+  		$$->add_child(new DelimEos);
+	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
+	{
+		$$ = new Conditional();
+		$$->add_child(new K_If);
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  		$$->add_child($3);
+  		$$->add_child(new DelimEos);
+	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
+	{
+		$$ = new Conditional();
+		$$->add_child(new K_If);
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  		$$->add_child($3);
+  		$$->add_child(new K_Else);
+  		$$->add_child($4);
+  		$$->add_child(new DelimEos);
+	}
 ;
 
 elseif:
+
   KEYWORD_ELSEIF expression DELIM_EOL scope-body
-| KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif;
+  	{
+  		$$ = new K_Elseif();
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  	}
+| KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
+	{
+		$$ = new K_Elseif();
+  		$$->add_child($1);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($2);
+  		$$->add_child($3);
+	}
+
+;
 
 %%
 
