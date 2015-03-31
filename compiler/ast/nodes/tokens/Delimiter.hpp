@@ -126,6 +126,24 @@ namespace ast
 		ClosingBrace(const NodeLocation&);
 	};
 
+	class OpenChevr : public Delimiter
+	{
+	public:
+		// constructors
+		OpenChevr();
+		OpenChevr(int,int,int,int);
+		OpenChevr(const NodeLocation&);
+	};
+
+	class ClosingChevr : public Delimiter
+	{
+	public:
+		// constructors
+		ClosingChevr();
+		ClosingChevr(int,int,int,int);
+		ClosingChevr(const NodeLocation&);
+	};
+
 	class OpenAcc : public Delimiter
 	{
 	public:
