@@ -4,7 +4,6 @@
 #include <string>
 
 namespace ast::nodes::nonterminals::nt_declaration
-namespace ast::nodes::nonterminals::NonTerminal
 {
 	/*********************************************
 	 * Intermediate NT_Declaration node base class *

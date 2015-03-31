@@ -17,6 +17,100 @@ namespace ast{
 	namespace nodes{
 	
 		class ASTNode;
+		namespace nonterminals{
+			
+			class NonTerminal;
+			
+			namespace nt_declaration{
+				
+				class NT_Declaration;
+				class Declaration;
+				class DeclFunc;
+				class DeclVars;
+				class DeclVar;
+				class ParamList;
+				class Param;
+			
+			}
+		
+			namespace nt_expression{
+				
+				class NT_Expression;
+				class Expression;
+				class IncrExpression;
+				class Assignment;
+				class ModifyingExpression;
+				class AssignableExpression;
+				class DatastructureAccess;
+				
+							
+			}
+			
+			namespace nt_functioncall{
+				
+				class NT_FunctionCall;
+				class FuncCall;
+				class ArgList;
+				class Argument;
+				class BracedFuncCall;
+				class FuncCallEol;
+				class ArgListEol;
+				class SoyExpression;
+				class SoyFunc;
+				
+						
+			}
+			
+			namespace nt_programs{
+			
+				class NT_Program;
+				class Program;
+				class ScopeBody;
+				class ProgramElement;
+				class Scope;
+								
+			}
+			
+			namespace nt_statement{
+			
+				class NT_Statement;
+				class Statement;
+				class Return;
+				class Menu;
+				class MenuDef;
+				class Loop;
+				class Roll;
+				class Foreach;
+				class For;
+				class ForInitializer;
+				class ForUpdate;
+				class Conditional;
+				class Elseif;				
+						
+			}
+			
+			namespace nt_datastructure{
+				
+				class NT_Datastructure;
+				class Datastructure;
+				class Array;
+				class List;
+				class Tuple;
+				class MakeSequence;
+				class MakeSequenceList;
+				class MakeSequenceArray;
+				class SeqExpression;			
+			}
+			
+			namespace nt_constant{
+				
+				class NT_Constant;
+				class Constant;
+			}
+						
+		
+		}
+		
 		namespace tokens{
 			
 			class Token; 
