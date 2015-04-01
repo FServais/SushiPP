@@ -8,8 +8,7 @@
 
 #include <algorithm> // for_each
 #include <memory> // default_delete
-#include <iterator> //
-#include <iostream>
+#include <iterator> // next
 
 #include "ASTNode.hpp"
 #include "NodeLocation.hpp"
