@@ -1,4 +1,5 @@
 #include "ConstantToken.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 #include <iterator>
 #include <cstdlib>
@@ -21,6 +22,12 @@ ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& n
 
 }
 
+void ConstantToken::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
 
 /** Constant token derived classes */
 // String
@@ -43,6 +50,13 @@ String::String(const std::string& lexer_val, const NodeLocation& node_loc)
 	  str_val(next(lexer_val.begin()), prev(lexer_val.end())) // remove the double quotes
 {
 
+}
+
+void String::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 std::string& String::value()
@@ -78,6 +92,13 @@ Character::Character(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
+void Character::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 char Character::value() const
 {
 	return char_val;
@@ -104,6 +125,13 @@ Integer::Integer(const std::string& lexer_val, const NodeLocation& node_loc)
 	  int_val(atoi(lexer_val.c_str()))
 {
 
+}
+
+void Integer::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 int Integer::value() const
@@ -134,6 +162,13 @@ Float::Float(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
+void Float::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 float Float::value() const
 {
 	return float_val;
@@ -160,6 +195,13 @@ Bool::Bool(const std::string& lexer_val, const NodeLocation& node_loc)
 	  bool_val(Bool::stob(lexer_val))
 {
 
+}
+
+void Bool::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 bool Bool::value() const

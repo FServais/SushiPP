@@ -18,8 +18,14 @@ NT_Program::NT_Program(const std::string& node_name, const NodeLocation& node_lo
 
 }
 
-/** (NT_)Program derived classes **/
+void NT_Program::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
 
+/** (NT_)Program derived classes **/
 /* Program */
 Program::Program() : NT_Program("program") { }
 
@@ -55,6 +61,12 @@ ScopeBody::ScopeBody(const NodeLocation& node_loc) : NT_Program("scopebody", nod
 
 }
 
+void ScopeBody::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
 /* ProgramElement */
 ProgramElement::ProgramElement() : NT_Program("programelement") { }
 
@@ -90,3 +102,9 @@ Scope::Scope(const NodeLocation& node_loc) : NT_Program("scope", node_loc)
 
 }
 
+void Scope::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}

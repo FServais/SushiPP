@@ -15,6 +15,8 @@ namespace ast
 		NT_Program(const std::string&);
 		NT_Program(const std::string&,int,int,int,int);
 		NT_Program(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/********************************
@@ -38,6 +40,8 @@ namespace ast
 		ScopeBody();
 		ScopeBody(int,int,int,int);
 		ScopeBody(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ProgramElement : public NT_Program
@@ -58,6 +62,8 @@ namespace ast
 		Scope();
 		Scope(int,int,int,int);
 		Scope(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

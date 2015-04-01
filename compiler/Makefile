@@ -4,12 +4,13 @@ AST_PATH = ast/
 NODES_PATH = $(AST_PATH)nodes/
 NONTERMINAL_PATH = $(NODES_PATH)nonterminal/
 TOKENS_PATH = $(NODES_PATH)tokens/
+VISITOR_PATH= $(AST_PATH)visitor/
 CC = g++
-CCFLAGS = --std=c++11
+CCFLAGS = --std=c++11 -g
 
 all: sushipp
 
-sushipp: ast.o node nonterminal tokens sushipp.tab.o sushipp.yy.o main.o 
+sushipp: ast.o node nonterminal tokens print_visitor sushipp.tab.o sushipp.yy.o main.o 
 	$(CC) $(PARSER_PATH)sushipp.tab.o $(SCANNER_PATH)sushipp.yy.o main.o \
 		  $(AST_PATH)ast.o $(NODES_PATH)node_location.o $(NODES_PATH)ast_node.o \
 		  $(NONTERMINAL_PATH)nt_terminal.o $(NONTERMINAL_PATH)nt_datastructure.o \
@@ -17,7 +18,7 @@ sushipp: ast.o node nonterminal tokens sushipp.tab.o sushipp.yy.o main.o
 		  $(NONTERMINAL_PATH)nt_expression.o $(NONTERMINAL_PATH)nt_declaration.o \
 		  $(NONTERMINAL_PATH)nt_constant.o $(NONTERMINAL_PATH)nt_functioncall.o  \
 		  $(TOKENS_PATH)token.o $(TOKENS_PATH)constanttoken.o $(TOKENS_PATH)delimiter.o \
-		   $(TOKENS_PATH)keyword.o $(TOKENS_PATH)operator.o	\
+		   $(TOKENS_PATH)keyword.o $(TOKENS_PATH)operator.o	$(VISITOR_PATH)print_visitor.o \
 		  -o sushipp $(CCFLAGS)
 
 # main
@@ -92,12 +93,18 @@ keyword.o: $(TOKENS_PATH)Keyword.cpp $(TOKENS_PATH)Keyword.hpp $(NODES_PATH)Node
 operator.o: $(TOKENS_PATH)Operator.cpp $(TOKENS_PATH)Operator.hpp $(NODES_PATH)NodeLocation.hpp $(TOKENS_PATH)Token.hpp 
 	$(CC) -c $(TOKENS_PATH)Operator.cpp -o $(TOKENS_PATH)operator.o $(CCFLAGS)
 
+# Visitor #
+
+print_visitor:$(VISITOR_PATH)ASTVisitor.hpp $(VISITOR_PATH)PrintASTVisitor.cpp $(VISITOR_PATH)PrintASTVisitor.hpp  $(NODES_PATH)ASTNode.hpp
+	$(CC) -c $(VISITOR_PATH)PrintASTVisitor.cpp -o $(VISITOR_PATH)print_visitor.o $(CCFLAGS)
 
 # clean 
 clean: 
 	rm -rf *.o
-	rm -rf $(PARSER_PATH)*.o $(SCANNER_PATH)*.o $(NODES_PATH)*.o $(NONTERMINAL_PATH)*.o $(TOKENS_PATH)*.o
+	rm -rf $(PARSER_PATH)*.o $(SCANNER_PATH)*.o $(NODES_PATH)*.o $(NONTERMINAL_PATH)*.o $(TOKENS_PATH)*.o $(VISITOR_PATH)print_visitor.o
 	rm -rf *~
+	rm -rf $(PARSER_PATH)*.output
+	rm -rf sushipp
 
 clean-hard: clean
 	rm -f $(SCANNER_PATH)sushipp.yy.c 

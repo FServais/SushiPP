@@ -3,6 +3,7 @@
 
 /** AST includes*/
 #include "ast/AbstractSyntaxTree.hpp"
+#include "ast/visitor/PrintASTVisitor.hpp"
 #include "parser/sushipp.tab.h"
 
 using namespace std;
@@ -43,7 +44,7 @@ int main(int argc, char** argv)
 	{
 		cout << "Parsing : success..." << endl;
 		PrintASTVisitor printer_v;
-		syntax_tree->accept(printer_v);
+		syntax_tree->root().accept(printer_v);
 	}
 	
 	return EXIT_SUCCESS;

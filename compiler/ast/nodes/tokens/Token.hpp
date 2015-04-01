@@ -5,7 +5,6 @@
 
 #include <string>
 #include "../ASTNode.hpp"
-//#include "../NodeLocation.hpp"
 
 namespace ast
 {
@@ -36,6 +35,8 @@ namespace ast
 		Identifier(const std::string&,int,int,int,int);
 		Identifier(const std::string&,const NodeLocation&);
 
+		virtual void accept(ASTVisitor&);
+	
 		// id getters
 		std::string& id();
 		const std::string& id() const;

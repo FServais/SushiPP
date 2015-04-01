@@ -17,6 +17,8 @@ namespace ast
 		NT_Declaration(const std::string&);
 		NT_Declaration(const std::string&,int,int,int,int);
 		NT_Declaration(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/*************************************
@@ -29,6 +31,8 @@ namespace ast
 		Declaration();
 		Declaration(int,int,int,int);
 		Declaration(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class DeclFunc : public NT_Declaration
@@ -38,6 +42,8 @@ namespace ast
 		DeclFunc();
 		DeclFunc(int,int,int,int);
 		DeclFunc(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class DeclVars : public NT_Declaration
@@ -47,6 +53,8 @@ namespace ast
 		DeclVars();
 		DeclVars(int,int,int,int);
 		DeclVars(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class DeclVar : public NT_Declaration
@@ -56,6 +64,8 @@ namespace ast
 		DeclVar();
 		DeclVar(int,int,int,int);
 		DeclVar(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ParamList : public NT_Declaration
@@ -65,6 +75,8 @@ namespace ast
 		ParamList();
 		ParamList(int,int,int,int);
 		ParamList(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Param : public NT_Declaration
@@ -74,6 +86,8 @@ namespace ast
 		Param();
 		Param(int,int,int,int);
 		Param(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

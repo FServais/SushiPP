@@ -15,6 +15,8 @@ namespace ast
 		NT_Datastructure(const std::string&);
 		NT_Datastructure(const std::string&,int,int,int,int);
 		NT_Datastructure(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/***************************************
@@ -27,6 +29,8 @@ namespace ast
 		Datastructure();
 		Datastructure(int,int,int,int);
 		Datastructure(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Array : public NT_Datastructure
@@ -36,6 +40,8 @@ namespace ast
 		Array();
 		Array(int,int,int,int);
 		Array(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class List : public NT_Datastructure
@@ -45,6 +51,8 @@ namespace ast
 		List();
 		List(int,int,int,int);
 		List(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Tuple : public NT_Datastructure
@@ -54,6 +62,8 @@ namespace ast
 		Tuple();
 		Tuple(int,int,int,int);
 		Tuple(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MakeSequence : public NT_Datastructure
@@ -63,6 +73,8 @@ namespace ast
 		MakeSequence();
 		MakeSequence(int,int,int,int);
 		MakeSequence(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MakeSequenceList : public NT_Datastructure
@@ -72,6 +84,8 @@ namespace ast
 		MakeSequenceList();
 		MakeSequenceList(int,int,int,int);
 		MakeSequenceList(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MakeSequenceArray : public NT_Datastructure
@@ -81,6 +95,8 @@ namespace ast
 		MakeSequenceArray();
 		MakeSequenceArray(int,int,int,int);
 		MakeSequenceArray(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class SeqExpression : public NT_Datastructure
@@ -90,6 +106,8 @@ namespace ast
 		SeqExpression();
 		SeqExpression(int,int,int,int);
 		SeqExpression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

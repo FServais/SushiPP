@@ -18,6 +18,14 @@ NT_FunctionCall::NT_FunctionCall(const std::string& node_name, const NodeLocatio
 
 }
 
+void NT_FunctionCall::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /** (NT_)FunctionCall derived classes **/
 
 /* FuncCall */
@@ -34,6 +42,14 @@ FuncCall::FuncCall(const NodeLocation& node_loc) : NT_FunctionCall("funccall", n
 
 }
 
+void FuncCall::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* ArgList */
 ArgList::ArgList() : NT_FunctionCall("arglist") { }
 
@@ -47,6 +63,14 @@ ArgList::ArgList(const NodeLocation& node_loc) : NT_FunctionCall("arglist", node
 {
 
 }
+
+void ArgList::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 
 /* Argument */
@@ -63,6 +87,14 @@ Argument::Argument(const NodeLocation& node_loc) : NT_FunctionCall("argument", n
 
 }
 
+void Argument::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* BracedFuncCall */
 BracedFuncCall::BracedFuncCall() : NT_FunctionCall("bracedfunccall") { }
 
@@ -76,6 +108,14 @@ BracedFuncCall::BracedFuncCall(const NodeLocation& node_loc) : NT_FunctionCall("
 {
 
 }
+
+void BracedFuncCall::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* FuncCallEol */
 FuncCallEol::FuncCallEol() : NT_FunctionCall("funccalleol") { }
@@ -91,6 +131,14 @@ FuncCallEol::FuncCallEol(const NodeLocation& node_loc) : NT_FunctionCall("funcca
 
 }
 
+void FuncCallEol::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* ArgListEol */
 ArgListEol::ArgListEol() : NT_FunctionCall("arglisteol") { }
 
@@ -104,6 +152,14 @@ ArgListEol::ArgListEol(const NodeLocation& node_loc) : NT_FunctionCall("argliste
 {
 
 }
+
+void ArgListEol::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* SoyExpression */
 SoyExpression::SoyExpression() : NT_FunctionCall("soyexpression") { }
@@ -119,6 +175,14 @@ SoyExpression::SoyExpression(const NodeLocation& node_loc) : NT_FunctionCall("so
 
 }
 
+void SoyExpression::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* SoyFunc */
 SoyFunc::SoyFunc() : NT_FunctionCall("soyfunc") { }
 
@@ -132,6 +196,7 @@ SoyFunc::SoyFunc(const NodeLocation& node_loc) : NT_FunctionCall("soyfunc", node
 {
 
 }
+
 
 void SoyFunc::accept(ASTVisitor& visitor)
 {

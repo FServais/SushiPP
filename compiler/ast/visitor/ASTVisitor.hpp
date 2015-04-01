@@ -97,7 +97,7 @@ public:
 	virtual void visit( ast::Op_PostfixDecrement& ) = 0;
 	virtual void visit( ast::Op_Assignment& ) = 0;
 	virtual void visit( ast::Op_AssignPlus& ) = 0;
-	virtual void visit( ast::Op_AssignLess& ) = 0;
+	virtual void visit( ast::Op_AssignMinus& ) = 0;
 	virtual void visit( ast::Op_AssignMult& ) = 0;
 	virtual void visit( ast::Op_AssignDiv& ) = 0;
 	virtual void visit( ast::Op_AssignExpo& ) = 0;

@@ -1,4 +1,5 @@
 #include "Token.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -38,6 +39,13 @@ Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
 	  id_(id)
 {
 
+}
+
+void Identifier::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 std::string& Identifier::id()

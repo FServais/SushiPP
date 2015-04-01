@@ -16,6 +16,8 @@ namespace ast
 		NT_Constant();
 		NT_Constant(int,int,int,int);
 		NT_Constant(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

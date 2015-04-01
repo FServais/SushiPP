@@ -207,7 +207,7 @@ union YYSTYPE
 #line 43 "parser/spp_parser.y" /* yacc.c:355  */
 
 	std::string* vstring;
-	ast::ASTNode* vnode;
+	void* vnode;
 
 #line 213 "parser/sushipp.tab.c" /* yacc.c:355  */
 };
@@ -547,18 +547,18 @@ static const yytype_uint16 yyrline[] =
      207,   212,   223,   229,   239,   244,   251,   262,   270,   280,
      285,   294,   313,   317,   327,   332,   351,   365,   369,   380,
      388,   393,   400,   405,   410,   415,   425,   440,   447,   453,
-     461,   466,   472,   482,   492,   509,   514,   521,   528,   533,
-     538,   543,   548,   553,   558,   565,   572,   579,   586,   593,
-     600,   606,   613,   620,   627,   633,   640,   647,   653,   660,
-     667,   674,   681,   688,   695,   702,   709,   719,   725,   731,
-     737,   746,   753,   760,   767,   774,   781,   788,   795,   802,
-     809,   816,   830,   835,   840,   845,   856,   863,   871,   885,
-     890,   903,   910,   917,   924,   931,   944,   949,   954,   959,
-     967,   973,   983,   989,   999,  1005,  1018,  1023,  1031,  1041,
-    1052,  1065,  1070,  1075,  1080,  1085,  1090,  1099,  1104,  1114,
-    1126,  1132,  1138,  1148,  1159,  1171,  1176,  1181,  1192,  1207,
-    1230,  1252,  1256,  1264,  1268,  1277,  1286,  1297,  1307,  1322,
-    1330
+     461,   466,   472,   483,   493,   510,   515,   522,   529,   534,
+     539,   544,   549,   554,   559,   566,   573,   580,   587,   594,
+     601,   607,   614,   621,   628,   634,   641,   648,   654,   661,
+     668,   675,   682,   689,   696,   703,   710,   720,   726,   732,
+     738,   747,   754,   761,   768,   775,   782,   789,   796,   803,
+     810,   817,   831,   836,   841,   846,   857,   864,   872,   886,
+     891,   904,   911,   918,   925,   932,   945,   950,   955,   960,
+     968,   974,   984,   990,  1000,  1006,  1019,  1024,  1032,  1042,
+    1053,  1066,  1071,  1076,  1081,  1086,  1091,  1100,  1105,  1115,
+    1127,  1133,  1139,  1149,  1160,  1172,  1177,  1182,  1193,  1208,
+    1231,  1253,  1257,  1265,  1269,  1278,  1287,  1298,  1308,  1323,
+    1331
 };
 #endif
 
@@ -1875,15 +1875,15 @@ yyreduce:
 
   case 3:
 #line 162 "parser/spp_parser.y" /* yacc.c:1646  */
-    { syntax_tree = new AbstractSyntaxTree((yyval.vnode)); }
+    { syntax_tree = new AbstractSyntaxTree((ASTNode*)(yyval.vnode)); }
 #line 1880 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
 #line 168 "parser/spp_parser.y" /* yacc.c:1646  */
     { 
-		(yyval.vnode) = new Scope;
-		(yyval.vnode)->add_child((yyvsp[0].vnode)); 
+		(yyval.vnode) = (void*) (new Scope);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode)); 
 	}
 #line 1889 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1891,8 +1891,8 @@ yyreduce:
   case 5:
 #line 176 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ScopeBody;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ScopeBody);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1898 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1900,9 +1900,9 @@ yyreduce:
   case 6:
 #line 181 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ScopeBody;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
+		(yyval.vnode) = (void*) (new ScopeBody);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 	}
 #line 1908 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1910,10 +1910,10 @@ yyreduce:
   case 7:
 #line 187 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ScopeBody;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ScopeBody);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1919 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1921,9 +1921,9 @@ yyreduce:
   case 8:
 #line 194 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ScopeBody;
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ScopeBody);
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1929 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1931,8 +1931,8 @@ yyreduce:
   case 9:
 #line 203 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ProgramElement;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ProgramElement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1938 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1940,8 +1940,8 @@ yyreduce:
   case 10:
 #line 208 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ProgramElement;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ProgramElement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1947 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1949,8 +1949,8 @@ yyreduce:
   case 11:
 #line 213 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ProgramElement;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ProgramElement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1956 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1958,9 +1958,9 @@ yyreduce:
   case 12:
 #line 224 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Declaration;
-		(yyval.vnode)->add_child(new K_Maki);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Declaration);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1966 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1968,9 +1968,9 @@ yyreduce:
   case 13:
 #line 230 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Declaration;
-		(yyval.vnode)->add_child(new K_Maki);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Declaration);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1976 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1978,8 +1978,8 @@ yyreduce:
   case 14:
 #line 240 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclVars;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new DeclVars);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1985 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1987,10 +1987,10 @@ yyreduce:
   case 15:
 #line 245 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclVars;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Virg);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new DeclVars);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1996 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -1998,11 +1998,11 @@ yyreduce:
   case 16:
 #line 252 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclVars;
-		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-		(yyval.vnode)->add_child(new Virg);
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new DeclVars);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2008 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2010,11 +2010,11 @@ yyreduce:
   case 17:
 #line 263 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclVar;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new DeclVar);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 		
 		// free semantic type of identifier
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
 #line 2020 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2022,13 +2022,13 @@ yyreduce:
   case 18:
 #line 271 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclVar;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-2].vstring)));
-		(yyval.vnode)->add_child(new Op_Assignment);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new DeclVar);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-2].vstring)));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 
 		// free semantic type of identifier
-		delete (yyvsp[-2].vstring);
+		//delete ((ASTNode*) $1);
 	}
 #line 2034 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2054,18 +2054,18 @@ yyreduce:
   case 21:
 #line 295 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DeclFunc;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-4].vstring)));
+		(yyval.vnode) = (void*) (new DeclFunc);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-4].vstring)));
 
-		if((yyvsp[-3].vnode) != nullptr) // if no parameters
-			(yyval.vnode)->add_child((yyvsp[-3].vnode));
+		if((ASTNode*)(yyvsp[-3].vnode) != nullptr) // if no parameters
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 
-		(yyval.vnode)->add_child(new Op_AssignFunc);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignFunc);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 
 		// free semantic type of identifier
-		delete (yyvsp[-4].vstring);
+		//delete ((ASTNode*) $1);
 	}
 #line 2071 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2081,10 +2081,10 @@ yyreduce:
   case 23:
 #line 318 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ParamList;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
+		(yyval.vnode) = (void*) (new ParamList);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		if((yyvsp[0].vnode) != nullptr)
-			(yyval.vnode)->add_child((yyvsp[0].vnode));
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2090 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2092,8 +2092,8 @@ yyreduce:
   case 24:
 #line 328 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Param;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new Param);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 	}
 #line 2099 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2101,15 +2101,15 @@ yyreduce:
   case 25:
 #line 333 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Param;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-3].vstring)));
-		(yyval.vnode)->add_child(new OpenChevr);
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-1].vstring))); /** Discriminate identifier for type */
-		(yyval.vnode)->add_child(new ClosingChevr);
+		(yyval.vnode) = (void*) (new Param);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-3].vstring)));
+		((ASTNode*)(yyval.vnode))->add_child(new OpenChevr);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring))); /** Discriminate identifier for type */
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingChevr);
 
 		// free semantic type of identifier
-		delete (yyvsp[-3].vstring);
-		delete (yyvsp[-1].vstring);
+		//delete ((ASTNode*) $1);
+		//delete ((ASTNode*) $3);
 	}
 #line 2115 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2117,14 +2117,14 @@ yyreduce:
   case 26:
 #line 352 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Param;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-1].vstring)));
+		(yyval.vnode) = (void*) (new Param);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring)));
 
 		if((yyvsp[0].vnode) != nullptr)
-			(yyval.vnode)->add_child((yyvsp[0].vnode));
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 
 		// free semantic type of identifier
-		delete (yyvsp[-1].vstring);
+		//delete ((ASTNode*) $1);
 	}
 #line 2130 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2140,11 +2140,11 @@ yyreduce:
   case 28:
 #line 370 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ArgList;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
+		(yyval.vnode) = (void*) (new ArgList);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 
 		if((yyvsp[0].vnode) != nullptr)
-			(yyval.vnode)->add_child((yyvsp[0].vnode));
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2150 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2152,11 +2152,11 @@ yyreduce:
   case 29:
 #line 381 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
 		// free semantic type of identifier
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
 #line 2162 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2164,8 +2164,8 @@ yyreduce:
   case 30:
 #line 389 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2171 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2173,10 +2173,10 @@ yyreduce:
   case 31:
 #line 394 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child(new OpenPar);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingPar);
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
 #line 2182 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2184,8 +2184,8 @@ yyreduce:
   case 32:
 #line 401 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2191 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2193,8 +2193,8 @@ yyreduce:
   case 33:
 #line 406 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2200 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2202,8 +2202,8 @@ yyreduce:
   case 34:
 #line 411 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Argument;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Argument);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2209 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2222,10 +2222,10 @@ yyreduce:
   case 36:
 #line 426 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new BracedFuncCall;
-		(yyval.vnode)->add_child(new OpenPar);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingPar);
+		(yyval.vnode) = (void*) (new BracedFuncCall);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
 #line 2231 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2233,10 +2233,10 @@ yyreduce:
   case 37:
 #line 441 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new FuncCallEol;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-1].vstring)));
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
-		delete (yyvsp[-1].vstring);
+		(yyval.vnode) = (void*) (new FuncCallEol);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring)));
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+		//delete ((ASTNode*) $1);
 	}
 #line 2242 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2244,9 +2244,9 @@ yyreduce:
   case 38:
 #line 448 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new FuncCallEol;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new FuncCallEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2252 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2263,8 +2263,8 @@ yyreduce:
   case 40:
 #line 462 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ArgListEol;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ArgListEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2270 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2272,9 +2272,9 @@ yyreduce:
   case 41:
 #line 467 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ArgListEol;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ArgListEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2280 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
@@ -2282,1170 +2282,1171 @@ yyreduce:
   case 42:
 #line 473 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ArgListEol;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
+		(yyval.vnode) = (void*) (new ArgListEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2290 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2291 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 483 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 484 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new SoyExpression;
-		(yyval.vnode)->add_child(new OpenPar);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingPar);
+		(yyval.vnode) = (void*) (new SoyExpression);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2301 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2302 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 493 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 494 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new SoyFunc;
-		(yyval.vnode)->add_child(new K_Soy);
+		(yyval.vnode) = (void*) (new SoyFunc);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Soy);
 
-		if((yyvsp[-2].vnode) != nullptr)
-			(yyval.vnode)->add_child((yyvsp[-2].vnode));
+		if((ASTNode*)(yyvsp[-2].vnode) != nullptr)
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 
-		(yyval.vnode)->add_child(new Op_AssignFunc);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignFunc);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2316 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2317 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 510 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 511 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2325 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2326 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 515 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 516 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child(new OpenPar);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingPar);
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2336 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2337 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 522 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 523 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2347 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2348 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 529 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 530 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2356 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2357 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 534 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 535 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2365 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2366 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 539 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 540 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2374 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2375 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 544 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 545 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2383 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2384 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 549 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 550 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2392 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2393 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 554 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 555 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2401 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2402 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 559 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 560 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Plus);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Plus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2412 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2413 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 566 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 567 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Minus);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Minus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2423 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2424 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 573 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 574 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Mult);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Mult);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2434 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2435 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 580 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 581 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Div);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Div);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2445 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2446 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 587 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 588 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Modulo);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Modulo);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2456 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2457 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 594 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 595 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Exponentiation);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Exponentiation);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2467 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2468 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 601 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 602 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child(new Op_UnaryMinus);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_UnaryMinus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2477 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2478 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 607 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 608 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_BitwiseOr);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseOr);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2488 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2489 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 614 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 615 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_BitwiseAnd);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseAnd);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2499 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2500 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 621 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 622 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_BitwiseXor);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseXor);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2510 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2511 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 628 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 629 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child(new Op_BitwiseNot);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseNot);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2520 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2521 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 634 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 635 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_LogicalOr);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalOr);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2531 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2532 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 641 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 642 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_LogicalAnd);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalAnd);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2542 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2543 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 648 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 649 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child(new Op_LogicalNot);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalNot);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2552 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2553 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 654 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 655 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompLessThan);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessThan);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2563 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2564 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 661 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 662 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompGreaterThan);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterThan);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2574 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2575 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 668 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 669 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompLessEqual);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2585 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2586 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 675 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 676 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompGreaterEqual);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2596 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2597 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 682 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 683 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompEqual);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2607 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2608 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 689 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 690 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_CompNotEqual);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompNotEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2618 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2619 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 696 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 697 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_RightShift);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_RightShift);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2629 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2630 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 703 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 704 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_LeftShift);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LeftShift);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2640 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2641 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 710 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 711 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Expression;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_StringConcat);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Expression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_StringConcat);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2651 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2652 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 720 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 721 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new IncrExpression;
-		(yyval.vnode)->add_child(new Op_PrefixIncrement);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new IncrExpression);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_PrefixIncrement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2661 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2662 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 726 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 727 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new IncrExpression;
-		(yyval.vnode)->add_child(new Op_PrefixDecrement);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new IncrExpression);
+		((ASTNode*)(yyval.vnode))->add_child(new Op_PrefixDecrement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2671 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2672 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 732 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 733 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new IncrExpression;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new Op_PostfixIncrement);
+		(yyval.vnode) = (void*) (new IncrExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_PostfixIncrement);
 	}
-#line 2681 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2682 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 738 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 739 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new IncrExpression;
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new Op_PostfixDecrement);
+		(yyval.vnode) = (void*) (new IncrExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_PostfixDecrement);
 	}
-#line 2691 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2692 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 747 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 748 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_Assignment);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2702 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2703 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 754 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 755 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignPlus);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignPlus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2713 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2714 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 761 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 762 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignMinus);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMinus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2724 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2725 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 768 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 769 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignMult);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMult);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2735 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2736 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 775 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 776 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignDiv);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignDiv);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2746 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2747 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 782 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 783 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignExpo);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignExpo);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2757 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2758 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 789 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 790 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignMod);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMod);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2768 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2769 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 796 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 797 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignAnd);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignAnd);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2779 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2780 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 803 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 804 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignOr);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignOr);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2790 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2791 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 810 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 811 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignXor);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignXor);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2801 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2802 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 817 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 818 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Assignment;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Op_AssignConcat);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Assignment);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignConcat);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2812 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2813 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 831 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 832 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ModifyingExpression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ModifyingExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2821 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2822 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 836 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 837 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ModifyingExpression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ModifyingExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2830 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2831 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 841 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 842 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ModifyingExpression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ModifyingExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2839 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2840 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 846 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 847 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ModifyingExpression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ModifyingExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2848 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2849 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 857 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 858 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new AssignableExpression;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new AssignableExpression);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2859 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2860 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 864 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 865 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new AssignableExpression;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new AssignableExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2868 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2869 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 872 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 873 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new DatastructureAccess;
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-3].vstring)));
-		(yyval.vnode)->add_child(new OpenBrace);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingBrace);
+		(yyval.vnode) = (void*) (new DatastructureAccess);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-3].vstring)));
+		((ASTNode*)(yyval.vnode))->add_child(new OpenBrace);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingBrace);
 
-		delete (yyvsp[-3].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2882 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2883 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 886 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 887 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ExpressionList;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ExpressionList);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2891 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2892 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 891 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 892 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ExpressionList;
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new Virg);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ExpressionList);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2902 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2903 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 904 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 905 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new NT_Constant;
-		(yyval.vnode)->add_child(new Integer(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new NT_Constant);
+		((ASTNode*)(yyval.vnode))->add_child(new Integer(*(yyvsp[0].vstring)));
 		
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2913 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2914 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 911 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 912 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new NT_Constant;
-		(yyval.vnode)->add_child(new Float(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new NT_Constant);
+		((ASTNode*)(yyval.vnode))->add_child(new Float(*(yyvsp[0].vstring)));
 		
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2924 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2925 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 918 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 919 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new NT_Constant;
-		(yyval.vnode)->add_child(new String(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new NT_Constant);
+		((ASTNode*)(yyval.vnode))->add_child(new String(*(yyvsp[0].vstring)));
 		
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2935 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2936 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 925 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 926 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new NT_Constant;
-		(yyval.vnode)->add_child(new Bool(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new NT_Constant);
+		((ASTNode*)(yyval.vnode))->add_child(new Bool(*(yyvsp[0].vstring)));
 		
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2946 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2947 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 932 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 933 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new NT_Constant;
-		(yyval.vnode)->add_child(new Character(*(yyvsp[0].vstring)));
+		(yyval.vnode) = (void*) (new NT_Constant);
+		((ASTNode*)(yyval.vnode))->add_child(new Character(*(yyvsp[0].vstring)));
 		
-		delete (yyvsp[0].vstring);
+		//delete ((ASTNode*) $1);
 	}
-#line 2957 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2958 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 945 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 946 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Datastructure;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Datastructure);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2966 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2967 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 950 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 951 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Datastructure;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Datastructure);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2975 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2976 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 955 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 956 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Datastructure;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Datastructure);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2984 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2985 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 960 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 961 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Datastructure;
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Datastructure);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2993 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2994 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 968 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 969 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Array;
-		(yyval.vnode)->add_child(new ArrayBeg);
-		(yyval.vnode)->add_child(new ArrayEnd);
+		(yyval.vnode) = (void*) (new Array);
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg);
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd);
 	}
-#line 3003 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3004 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 974 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 975 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Array;
-		(yyval.vnode)->add_child(new ArrayBeg);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ArrayEnd);
+		(yyval.vnode) = (void*) (new Array);
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd);
 	}
-#line 3014 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3015 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 984 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 985 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Array;
-		(yyval.vnode)->add_child(new OpenAcc);
-		(yyval.vnode)->add_child(new ClosingAcc);
+		(yyval.vnode) = (void*) (new Array);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc);
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc);
 	}
-#line 3024 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3025 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 990 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 991 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Array;
-		(yyval.vnode)->add_child(new OpenAcc);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingAcc);
+		(yyval.vnode) = (void*) (new Array);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc);
 	}
-#line 3035 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3036 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1000 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1001 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Tuple;
-		(yyval.vnode)->add_child(new TupleBeg);
-		(yyval.vnode)->add_child(new TupleEnd);
+		(yyval.vnode) = (void*) (new Tuple);
+		((ASTNode*)(yyval.vnode))->add_child(new TupleBeg);
+		((ASTNode*)(yyval.vnode))->add_child(new TupleEnd);
 	}
-#line 3045 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3046 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1006 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1007 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Tuple;
-		(yyval.vnode)->add_child(new TupleBeg);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new TupleEnd);
+		(yyval.vnode) = (void*) (new Tuple);
+		((ASTNode*)(yyval.vnode))->add_child(new TupleBeg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new TupleEnd);
 	}
-#line 3056 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3057 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1019 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1020 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MakeSequence();
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new MakeSequence);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3065 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3066 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1024 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1025 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-	 	(yyval.vnode) = new MakeSequence();
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+	 	(yyval.vnode) = (void*) (new MakeSequence);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	 }
-#line 3074 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3075 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 1032 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1033 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MakeSequenceList();
-		(yyval.vnode)->add_child(new OpenAcc());
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ClosingAcc());
+		(yyval.vnode) = (void*) (new MakeSequenceList);
+		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc());
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc());
 	}
-#line 3085 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3086 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 1042 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1043 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MakeSequenceArray();
-		(yyval.vnode)->add_child(new ArrayBeg());
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new ArrayEnd());
+		(yyval.vnode) = (void*) (new MakeSequenceArray);
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg());
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd());
 
 	}
-#line 3097 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3098 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 1053 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1054 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new SeqExpression();
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new K_To());
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new SeqExpression);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new K_To());
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3108 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3109 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 1066 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1067 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+  		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3117 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3118 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 1071 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1072 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3126 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3127 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 1076 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1077 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3135 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3136 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 1081 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1082 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child(new K_Continue);
+		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Continue);
 	}
-#line 3144 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3145 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 1086 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1087 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child(new K_Break);
+		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Break);
 	}
-#line 3153 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3154 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 1091 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1092 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Statement();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Statement);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3162 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3163 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 1100 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1101 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = new Return();
-  		(yyval.vnode)->add_child(new K_Nori);
+  		(yyval.vnode) = (void*) (new Return);
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Nori);
   	}
-#line 3171 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3172 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 1105 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1106 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Return();
-  		(yyval.vnode)->add_child(new K_Nori);
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Return);
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Nori);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3181 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3182 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 1115 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1116 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Menu();
-		(yyval.vnode)->add_child(new K_Menu);
-		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new Menu);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Menu);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3194 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3195 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 1127 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1128 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MenuBody();
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
+		(yyval.vnode) = (void*) (new MenuBody);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 	}
-#line 3204 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3205 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 1133 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1134 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MenuBody();
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
+		(yyval.vnode) = (void*) (new MenuBody);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 	}
-#line 3214 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3215 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 1139 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1140 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MenuBody();
-		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new MenuBody);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3225 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3226 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 1149 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1150 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MenuCase();
-		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-		(yyval.vnode)->add_child(new Arrow);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new MenuCase);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Arrow);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3237 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3238 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 1160 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1161 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new MenuDef();
-		(yyval.vnode)->add_child(new Underscore);
-		(yyval.vnode)->add_child(new Arrow);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new MenuDef);
+		((ASTNode*)(yyval.vnode))->add_child(new Underscore);
+		((ASTNode*)(yyval.vnode))->add_child(new Arrow);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3249 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3250 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 1172 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1173 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = new Loop();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+  		(yyval.vnode) = (void*) (new Loop);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3258 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3259 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 1177 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1178 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Loop();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Loop);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3267 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3268 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 1182 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1183 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Loop();
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Loop);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3276 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3277 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 1193 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1194 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Roll();
-		(yyval.vnode)->add_child(new K_Roll);
-		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new Roll);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Roll);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3289 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3290 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 1208 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1209 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Foreach();
-		(yyval.vnode)->add_child(new K_Foreach);
-		(yyval.vnode)->add_child((yyvsp[-5].vnode));
-		(yyval.vnode)->add_child(new K_As);
-		(yyval.vnode)->add_child(new Identifier(*(yyvsp[-3].vstring)));
-		(yyval.vnode)->add_child(new DelimEol);
-		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-		(yyval.vnode)->add_child(new DelimEos);
-		delete (yyvsp[-5].vnode);
+		(yyval.vnode) = (void*) (new Foreach);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Foreach);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new K_As);
+		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-3].vstring)));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
+		//delete ((ASTNode*) $2);
 	}
-#line 3305 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3306 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 1231 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1232 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-			(yyval.vnode) = new For();
-			(yyval.vnode)->add_child(new K_For);
+			(yyval.vnode) = (void*) (new For);
+			((ASTNode*)(yyval.vnode))->add_child(new K_For);
 
-			if((yyvsp[-7].vnode) != nullptr)
-				(yyval.vnode)->add_child((yyvsp[-7].vnode));
+			if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
+				((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-7].vnode));
 
-			(yyval.vnode)->add_child(new Virg);
-			(yyval.vnode)->add_child((yyvsp[-5].vnode));
-			(yyval.vnode)->add_child(new Virg);
+			((ASTNode*)(yyval.vnode))->add_child(new Virg);
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
+			((ASTNode*)(yyval.vnode))->add_child(new Virg);
 
-			if((yyvsp[-7].vnode) != nullptr)
-				(yyval.vnode)->add_child((yyvsp[-3].vnode));
+			if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
+				((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 
-			(yyval.vnode)->add_child(new DelimEol);
-			(yyval.vnode)->add_child((yyvsp[-1].vnode));
-			(yyval.vnode)->add_child(new DelimEos);
+			((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+			((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 		}
-#line 3328 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3329 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 1253 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1254 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 3336 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3337 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 1257 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1258 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ForInitializer();
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ForInitializer);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3345 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3346 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 1265 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1266 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 3353 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3354 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 1269 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1270 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new ForUpdate();
-		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new ForUpdate);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3362 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3363 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 1278 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1279 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = new Conditional();
-  		(yyval.vnode)->add_child(new K_If);
-  		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child(new DelimEos);
+  		(yyval.vnode) = (void*) (new Conditional);
+  		((ASTNode*)(yyval.vnode))->add_child(new K_If);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
   	}
-#line 3375 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3376 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 1287 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1288 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Conditional();
-		(yyval.vnode)->add_child(new K_If);
-  		(yyval.vnode)->add_child((yyvsp[-5].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-  		(yyval.vnode)->add_child(new K_Else);
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new Conditional);
+		((ASTNode*)(yyval.vnode))->add_child(new K_If);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Else);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3390 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3391 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 1298 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1299 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Conditional();
-		(yyval.vnode)->add_child(new K_If);
-  		(yyval.vnode)->add_child((yyvsp[-4].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new Conditional);
+		((ASTNode*)(yyval.vnode))->add_child(new K_If);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-4].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3404 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3405 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 1308 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1309 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Conditional();
-		(yyval.vnode)->add_child(new K_If);
-  		(yyval.vnode)->add_child((yyvsp[-6].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[-4].vnode));
-  		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-  		(yyval.vnode)->add_child(new K_Else);
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child(new DelimEos);
+		(yyval.vnode) = (void*) (new Conditional);
+		((ASTNode*)(yyval.vnode))->add_child(new K_If);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-6].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-4].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new K_Else);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3420 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3421 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 1323 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1324 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Elseif();
-		(yyval.vnode)->add_child(new K_Elseif);
-  		(yyval.vnode)->add_child((yyvsp[-2].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Elseif);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Elseif);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3432 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3433 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 1331 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1332 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = new Elseif();
-		(yyval.vnode)->add_child(new K_Elseif);
-  		(yyval.vnode)->add_child((yyvsp[-3].vnode));
-  		(yyval.vnode)->add_child(new DelimEol);
-  		(yyval.vnode)->add_child((yyvsp[-1].vnode));
-  		(yyval.vnode)->add_child((yyvsp[0].vnode));
+		(yyval.vnode) = (void*) (new Elseif);
+		((ASTNode*)(yyval.vnode))->add_child(new K_Elseif);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+  		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3445 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3446 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 3449 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3450 "parser/sushipp.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3680,7 +3681,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1341 "parser/spp_parser.y" /* yacc.c:1906  */
+#line 1342 "parser/spp_parser.y" /* yacc.c:1906  */
 
 
 static void yyerror(const char *s)

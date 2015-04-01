@@ -18,6 +18,8 @@ namespace ast
 		// additionnal arguments are for location (see ast node constructors for ordering)
 		NonTerminal(const std::string&,int,int,int,int);
 		NonTerminal(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

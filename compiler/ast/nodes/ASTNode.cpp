@@ -98,6 +98,7 @@ void ASTNode::add_child(ASTNode* child)
 {
 	if(child == nullptr)
 		return;
+
 	children.push_back(child);
 	child->father = this;
 
@@ -106,6 +107,8 @@ void ASTNode::add_child(ASTNode* child)
 
 void ASTNode::delete_child(size_t index)
 {
+	if(index >= children.size())
+		return; 
 	ASTNode* ch = children.at(index);
 	ch->decr_depth();
 	children.erase(next(children.begin(), index));

@@ -318,7 +318,7 @@ param-list:
 	{
 		$$ = (void*) (new ParamList);
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		if((ASTNode*)$2 != nullptr)
+		if($2 != nullptr)
 			((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
@@ -353,7 +353,7 @@ func-call:
 		$$ = (void*) (new Param);
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		if((ASTNode*)$2 != nullptr)
+		if($2 != nullptr)
 			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
 		// free semantic type of identifier
@@ -371,7 +371,7 @@ arg-list:
 		$$ = (void*) (new ArgList);
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 
-		if((ASTNode*)$2 != nullptr)
+		if($2 != nullptr)
 			((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
@@ -474,6 +474,7 @@ arg-list-eol:
 		$$ = (void*) (new ArgListEol);
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 

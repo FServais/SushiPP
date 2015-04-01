@@ -1,4 +1,5 @@
 #include "NT_Declaration.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 using namespace std;
@@ -18,6 +19,13 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 
 }
 
+void NT_Declaration::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /** (NT_)Declaration derived classes **/
 /* Declaration */
 Declaration::Declaration() : NT_Declaration("declaration") { }
@@ -31,6 +39,13 @@ Declaration::Declaration(int first_line, int last_line, int first_column, int la
 Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("declaration", node_loc)
 {
 
+}
+
+void Declaration::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 /* DeclFunc */
@@ -47,6 +62,14 @@ DeclFunc::DeclFunc(const NodeLocation& node_loc) : NT_Declaration("declfunc", no
 
 }
 
+void DeclFunc::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* DeclVars */
 DeclVars::DeclVars() : NT_Declaration("declvars") { }
 
@@ -60,6 +83,14 @@ DeclVars::DeclVars(const NodeLocation& node_loc) : NT_Declaration("declvars", no
 {
 
 }
+
+void DeclVars::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* DeclVar */
 DeclVar::DeclVar() : NT_Declaration("declvar") { }
@@ -75,6 +106,14 @@ DeclVar::DeclVar(const NodeLocation& node_loc) : NT_Declaration("declvar", node_
 
 }
 
+void DeclVar::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* Param */
 Param::Param() : NT_Declaration("param") { }
 
@@ -89,6 +128,13 @@ Param::Param(const NodeLocation& node_loc) : NT_Declaration("param", node_loc)
 
 }
 
+void Param::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* ParamList */
 ParamList::ParamList() : NT_Declaration("param list") { }
 
@@ -101,4 +147,11 @@ ParamList::ParamList(int first_line, int last_line, int first_column, int last_c
 ParamList::ParamList(const NodeLocation& node_loc) : NT_Declaration("param list", node_loc)
 {
 
+}
+
+void ParamList::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }

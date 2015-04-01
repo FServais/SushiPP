@@ -1,4 +1,5 @@
 #include "NT_Datastructure.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -17,6 +18,13 @@ NT_Datastructure::NT_Datastructure(const std::string& node_name, const NodeLocat
 
 }
 
+void NT_Datastructure::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /** (NT_)Datastructure derived classes **/
 /* Datastructure */
 Datastructure::Datastructure() : NT_Datastructure("datastructure") { }
@@ -30,6 +38,13 @@ Datastructure::Datastructure(int first_line, int last_line, int first_column, in
 Datastructure::Datastructure(const NodeLocation& node_loc) : NT_Datastructure("datastructure", node_loc)
 {
 
+}
+
+void Datastructure::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 /* Array */
@@ -46,6 +61,13 @@ Array::Array(const NodeLocation& node_loc) : NT_Datastructure("array", node_loc)
 
 }
 
+void Array::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* List */
 List::List() : NT_Datastructure("list") { }
 
@@ -58,6 +80,13 @@ List::List(int first_line, int last_line, int first_column, int last_column)
 List::List(const NodeLocation& node_loc) : NT_Datastructure("list", node_loc)
 {
 
+}
+
+void List::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 /* Tuple */
@@ -74,6 +103,13 @@ Tuple::Tuple(const NodeLocation& node_loc) : NT_Datastructure("tuple", node_loc)
 
 }
 
+void Tuple::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* MakeSequence */
 MakeSequence::MakeSequence() : NT_Datastructure("makesequence") { }
 
@@ -86,6 +122,13 @@ MakeSequence::MakeSequence(int first_line, int last_line, int first_column, int 
 MakeSequence::MakeSequence(const NodeLocation& node_loc) : NT_Datastructure("makesequence", node_loc)
 {
 
+}
+
+void MakeSequence::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 /* MakeSequenceList */
@@ -102,6 +145,13 @@ MakeSequenceList::MakeSequenceList(const NodeLocation& node_loc) : NT_Datastruct
 
 }
 
+void MakeSequenceList::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* MakeSequenceArray */
 MakeSequenceArray::MakeSequenceArray() : NT_Datastructure("makesequencearray") { }
 
@@ -116,6 +166,13 @@ MakeSequenceArray::MakeSequenceArray(const NodeLocation& node_loc) : NT_Datastru
 
 }
 
+void MakeSequenceArray::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* SeqExpression */
 SeqExpression::SeqExpression() : NT_Datastructure("seqexpression") { }
 
@@ -128,6 +185,13 @@ SeqExpression::SeqExpression(int first_line, int last_line, int first_column, in
 SeqExpression::SeqExpression(const NodeLocation& node_loc) : NT_Datastructure("seqexpression", node_loc)
 {
 
+}
+
+void SeqExpression::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 

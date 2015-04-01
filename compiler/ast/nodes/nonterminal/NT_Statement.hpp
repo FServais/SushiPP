@@ -15,6 +15,8 @@ namespace ast
 		NT_Statement(const std::string&);
 		NT_Statement(const std::string&,int,int,int,int);
 		NT_Statement(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/***********************************
@@ -27,6 +29,8 @@ namespace ast
 		Statement();
 		Statement(int,int,int,int);
 		Statement(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Return : public NT_Statement
@@ -36,6 +40,8 @@ namespace ast
 		Return();
 		Return(int,int,int,int);
 		Return(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Menu : public NT_Statement
@@ -45,6 +51,8 @@ namespace ast
 		Menu();
 		Menu(int,int,int,int);
 		Menu(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MenuBody : public NT_Statement
@@ -54,6 +62,8 @@ namespace ast
 		MenuBody();
 		MenuBody(int,int,int,int);
 		MenuBody(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MenuCase : public NT_Statement
@@ -63,6 +73,8 @@ namespace ast
 		MenuCase();
 		MenuCase(int,int,int,int);
 		MenuCase(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class MenuDef : public NT_Statement
@@ -72,6 +84,8 @@ namespace ast
 		MenuDef();
 		MenuDef(int,int,int,int);
 		MenuDef(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Loop : public NT_Statement
@@ -81,6 +95,8 @@ namespace ast
 		Loop();
 		Loop(int,int,int,int);
 		Loop(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Roll : public NT_Statement
@@ -90,6 +106,8 @@ namespace ast
 		Roll();
 		Roll(int,int,int,int);
 		Roll(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Foreach : public NT_Statement
@@ -99,6 +117,8 @@ namespace ast
 		Foreach();
 		Foreach(int,int,int,int);
 		Foreach(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class For : public NT_Statement
@@ -108,6 +128,8 @@ namespace ast
 		For();
 		For(int,int,int,int);
 		For(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ForInitializer : public NT_Statement
@@ -117,6 +139,8 @@ namespace ast
 		ForInitializer();
 		ForInitializer(int,int,int,int);
 		ForInitializer(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ForUpdate : public NT_Statement
@@ -126,6 +150,8 @@ namespace ast
 		ForUpdate();
 		ForUpdate(int,int,int,int);
 		ForUpdate(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Conditional : public NT_Statement
@@ -135,6 +161,8 @@ namespace ast
 		Conditional();
 		Conditional(int,int,int,int);
 		Conditional(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Elseif : public NT_Statement
@@ -144,6 +172,8 @@ namespace ast
 		Elseif();
 		Elseif(int,int,int,int);
 		Elseif(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

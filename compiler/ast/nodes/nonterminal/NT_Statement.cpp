@@ -1,4 +1,5 @@
 #include "NT_Statement.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -17,6 +18,14 @@ NT_Statement::NT_Statement(const std::string& node_name, const NodeLocation& nod
 
 }
 
+void NT_Statement::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /** (NT_)Program derived classes **/
 
 /* Statement */
@@ -33,6 +42,14 @@ Statement::Statement(const NodeLocation& node_loc) : NT_Statement("statement", n
 
 }
 
+void Statement::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* Return */
 Return::Return() : NT_Statement("return") { }
 
@@ -46,6 +63,14 @@ Return::Return(const NodeLocation& node_loc) : NT_Statement("return", node_loc)
 {
 
 }
+
+void Return::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* Menu */
 Menu::Menu() : NT_Statement("menu") { }
@@ -61,6 +86,14 @@ Menu::Menu(const NodeLocation& node_loc) : NT_Statement("menu", node_loc)
 
 }
 
+void Menu::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* MenuBody */
 MenuBody::MenuBody() : NT_Statement("menu body") { }
 
@@ -74,6 +107,14 @@ MenuBody::MenuBody(const NodeLocation& node_loc) : NT_Statement("menu body", nod
 {
 
 }
+
+void MenuBody::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* MenuCase */
 MenuCase::MenuCase() : NT_Statement("menu case") { }
@@ -89,6 +130,14 @@ MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("menu case", nod
 
 }
 
+void MenuCase::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* MenuDef */
 MenuDef::MenuDef() : NT_Statement("menudef") { }
 
@@ -102,6 +151,14 @@ MenuDef::MenuDef(const NodeLocation& node_loc) : NT_Statement("menudef", node_lo
 {
 
 }
+
+void MenuDef::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* Loop */
 Loop::Loop() : NT_Statement("loop") { }
@@ -117,6 +174,14 @@ Loop::Loop(const NodeLocation& node_loc) : NT_Statement("loop", node_loc)
 
 }
 
+void Loop::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* Roll */
 Roll::Roll() : NT_Statement("roll") { }
 
@@ -130,6 +195,14 @@ Roll::Roll(const NodeLocation& node_loc) : NT_Statement("roll", node_loc)
 {
 
 }
+
+void Roll::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* Foreach */
 Foreach::Foreach() : NT_Statement("foreach") { }
@@ -145,6 +218,14 @@ Foreach::Foreach(const NodeLocation& node_loc) : NT_Statement("foreach", node_lo
 
 }
 
+void Foreach::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* For */
 For::For() : NT_Statement("for") { }
 
@@ -158,6 +239,14 @@ For::For(const NodeLocation& node_loc) : NT_Statement("for", node_loc)
 {
 
 }
+
+void For::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* ForInitializer */
 ForInitializer::ForInitializer() : NT_Statement("forinitializer") { }
@@ -173,6 +262,14 @@ ForInitializer::ForInitializer(const NodeLocation& node_loc) : NT_Statement("for
 
 }
 
+void ForInitializer::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* ForUpdate */
 ForUpdate::ForUpdate() : NT_Statement("forupdate") { }
 
@@ -186,6 +283,14 @@ ForUpdate::ForUpdate(const NodeLocation& node_loc) : NT_Statement("forupdate", n
 {
 
 }
+
+void ForUpdate::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 
 /* Conditional */
 Conditional::Conditional() : NT_Statement("conditional") { }
@@ -201,6 +306,14 @@ Conditional::Conditional(const NodeLocation& node_loc) : NT_Statement("condition
 
 }
 
+void Conditional::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+
 /* Elseif */
 Elseif::Elseif() : NT_Statement("elseif") { }
 
@@ -214,3 +327,11 @@ Elseif::Elseif(const NodeLocation& node_loc) : NT_Statement("elseif", node_loc)
 {
 
 }
+
+void Elseif::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+

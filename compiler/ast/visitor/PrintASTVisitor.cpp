@@ -3,7 +3,7 @@
 using namespace std;
 
 // Constructor
-PrintASTVisitor::PrintASTVisitor() : length_line(12) { }
+PrintASTVisitor::PrintASTVisitor() : length_line(2) { }
 
 
 void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )
@@ -292,7 +292,7 @@ void PrintASTVisitor::visit( ast::Op_AssignPlus& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void PrintASTVisitor::visit( ast::Op_AssignLess& token )
+void PrintASTVisitor::visit( ast::Op_AssignMinus& token )
 {
 	print_single(token.node_name(), token.depth());
 }

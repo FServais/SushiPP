@@ -15,6 +15,8 @@ namespace ast
 		Delimiter(const std::string&);
 		Delimiter(const std::string&,int,int,int,int);
 		Delimiter(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/** Delimiter derived class */
@@ -25,6 +27,8 @@ namespace ast
 		DelimEol();
 		DelimEol(int,int,int,int);
 		DelimEol(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class DelimEos : public Delimiter
@@ -34,6 +38,8 @@ namespace ast
 		DelimEos();
 		DelimEos(int,int,int,int);
 		DelimEos(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class TupleBeg : public Delimiter
@@ -43,6 +49,8 @@ namespace ast
 		TupleBeg();
 		TupleBeg(int,int,int,int);
 		TupleBeg(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class TupleEnd: public Delimiter
@@ -52,6 +60,8 @@ namespace ast
 		TupleEnd();
 		TupleEnd(int,int,int,int);
 		TupleEnd(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ArrayBeg : public Delimiter
@@ -61,6 +71,8 @@ namespace ast
 		ArrayBeg();
 		ArrayBeg(int,int,int,int);
 		ArrayBeg(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ArrayEnd : public Delimiter
@@ -70,6 +82,8 @@ namespace ast
 		ArrayEnd();
 		ArrayEnd(int,int,int,int);
 		ArrayEnd(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Arrow : public Delimiter
@@ -79,6 +93,8 @@ namespace ast
 		Arrow();
 		Arrow(int,int,int,int);
 		Arrow(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Virg : public Delimiter
@@ -88,6 +104,8 @@ namespace ast
 		Virg();
 		Virg(int,int,int,int);
 		Virg(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class OpenPar : public Delimiter
@@ -97,6 +115,8 @@ namespace ast
 		OpenPar();
 		OpenPar(int,int,int,int);
 		OpenPar(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ClosingPar : public Delimiter
@@ -106,6 +126,8 @@ namespace ast
 		ClosingPar();
 		ClosingPar(int,int,int,int);
 		ClosingPar(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class OpenBrace : public Delimiter
@@ -115,6 +137,8 @@ namespace ast
 		OpenBrace();
 		OpenBrace(int,int,int,int);
 		OpenBrace(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ClosingBrace : public Delimiter
@@ -124,6 +148,8 @@ namespace ast
 		ClosingBrace();
 		ClosingBrace(int,int,int,int);
 		ClosingBrace(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class OpenChevr : public Delimiter
@@ -133,6 +159,8 @@ namespace ast
 		OpenChevr();
 		OpenChevr(int,int,int,int);
 		OpenChevr(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ClosingChevr : public Delimiter
@@ -142,6 +170,8 @@ namespace ast
 		ClosingChevr();
 		ClosingChevr(int,int,int,int);
 		ClosingChevr(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class OpenAcc : public Delimiter
@@ -151,6 +181,8 @@ namespace ast
 		OpenAcc();
 		OpenAcc(int,int,int,int);
 		OpenAcc(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ClosingAcc : public Delimiter
@@ -160,6 +192,8 @@ namespace ast
 		ClosingAcc();
 		ClosingAcc(int,int,int,int);
 		ClosingAcc(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Underscore : public Delimiter
@@ -169,6 +203,8 @@ namespace ast
 		Underscore();
 		Underscore(int,int,int,int);
 		Underscore(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 #endif

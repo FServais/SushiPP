@@ -15,6 +15,8 @@ namespace ast
 		NT_Expression(const std::string&);
 		NT_Expression(const std::string&,int,int,int,int);
 		NT_Expression(const std::string&,const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	/************************************
@@ -38,6 +40,8 @@ namespace ast
 		IncrExpression();
 		IncrExpression(int,int,int,int);
 		IncrExpression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Assignment : public NT_Expression
@@ -47,6 +51,8 @@ namespace ast
 		Assignment();
 		Assignment(int,int,int,int);
 		Assignment(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ModifyingExpression : public NT_Expression
@@ -56,6 +62,8 @@ namespace ast
 		ModifyingExpression();
 		ModifyingExpression(int,int,int,int);
 		ModifyingExpression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class AssignableExpression : public NT_Expression
@@ -65,6 +73,8 @@ namespace ast
 		AssignableExpression();
 		AssignableExpression(int,int,int,int);
 		AssignableExpression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class DatastructureAccess : public NT_Expression
@@ -74,6 +84,8 @@ namespace ast
 		DatastructureAccess();
 		DatastructureAccess(int,int,int,int);
 		DatastructureAccess(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ExpressionList : public NT_Expression
@@ -83,6 +95,8 @@ namespace ast
 		ExpressionList();
 		ExpressionList(int,int,int,int);
 		ExpressionList(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

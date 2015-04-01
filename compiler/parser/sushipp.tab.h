@@ -109,7 +109,6 @@ extern int yydebug;
   };
 #endif
 
-#include "../ast/nodes/ASTNode.hpp"
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE YYSTYPE;
@@ -118,7 +117,7 @@ union YYSTYPE
 #line 43 "parser/spp_parser.y" /* yacc.c:1909  */
 
 	std::string* vstring;
-	ast::ASTNode* vnode;
+	void* vnode;
 
 #line 123 "parser/sushipp.tab.h" /* yacc.c:1909  */
 };
