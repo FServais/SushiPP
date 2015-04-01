@@ -1,9 +1,7 @@
 #ifndef NT_EXPRESSION_HPP_DEFINED
 #define NT_EXPRESSION_HPP_DEFINED
 
-#include <string>
 #include "NonTerminal.hpp"
-#include "../NodeLocation.hpp"
 
 namespace ast
 {
@@ -29,6 +27,8 @@ namespace ast
 		Expression();
 		Expression(int,int,int,int);
 		Expression(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class IncrExpression : public NT_Expression

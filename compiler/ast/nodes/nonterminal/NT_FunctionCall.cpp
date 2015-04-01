@@ -1,4 +1,5 @@
 #include "NT_FunctionCall.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -129,5 +130,13 @@ SoyFunc::SoyFunc(int first_line, int last_line, int first_column, int last_colum
 
 SoyFunc::SoyFunc(const NodeLocation& node_loc) : NT_FunctionCall("soyfunc", node_loc)
 {
+
+}
+
+void SoyFunc::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 
 }

@@ -1,6 +1,6 @@
 
-#ifndef __visitor__PrintASTVisitor__
-#define __visitor__PrintASTVisitor__
+#ifndef PrintASTVisitor_HPP_DEFINED
+#define PrintASTVisitor_HPP_DEFINED
 
 #include <iostream>
 #include <string>
@@ -10,6 +10,8 @@
 class PrintASTVisitor : public ASTVisitor
 {
 public:
+	PrintASTVisitor();
+
 	/****************
 	 * 		Node    *
 	 ****************/
@@ -219,8 +221,8 @@ public:
 private:
 	int length_line;
 
-	void print_pair( std::string p_name, std::string p_value, int depth );
-	void print_single( std::string name, int depth );
+	void print_pair( std::string& p_name, std::string& p_value, int depth );
+	void print_single( std::string& name, int depth );
 };
 
 #endif

@@ -1,9 +1,7 @@
 #ifndef NT_FUNCTIONCALL_HPP_DEFINED
 #define NT_FUNCTIONCALL_HPP_DEFINED
 
-#include <string>
 #include "NonTerminal.hpp"
-#include "../NodeLocation.hpp"
 
 namespace ast
 {
@@ -92,6 +90,8 @@ namespace ast
 		SoyFunc();
 		SoyFunc(int,int,int,int);
 		SoyFunc(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 }
 

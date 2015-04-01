@@ -1,9 +1,6 @@
 #ifndef NT_CONSTANT_HPP_DEFINED
 #define NT_CONSTANT_HPP_DEFINED
 
-#include <string>
-#include "../NodeLocation.hpp"
-#include "../ASTNode.hpp"
 #include "NonTerminal.hpp"
 
 namespace ast

@@ -2,11 +2,10 @@
 #define NONTERMINAL_HPP_DEFINED
 
 #include <string>
-#include "../NodeLocation.hpp"
 #include "../ASTNode.hpp"
 
 namespace ast
-{
+{	
 	/********************************
 	 * Non-terminal node base class *
 	 ********************************/

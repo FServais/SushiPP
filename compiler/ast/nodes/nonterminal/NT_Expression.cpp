@@ -1,4 +1,5 @@
 #include "NT_Expression.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -30,6 +31,14 @@ Expression::Expression(int first_line, int last_line, int first_column, int last
 
 Expression::Expression(const NodeLocation& node_loc) : NT_Expression("expression", node_loc)
 {
+
+}
+
+void Expression::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 
 }
 

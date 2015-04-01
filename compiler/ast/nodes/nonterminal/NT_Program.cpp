@@ -1,4 +1,5 @@
 #include "NT_Program.hpp"
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -33,6 +34,13 @@ Program::Program(const NodeLocation& node_loc) : NT_Program("program", node_loc)
 
 }
 
+void Program::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
 /* ScopeBody */
 ScopeBody::ScopeBody() : NT_Program("scopebody") { }
 
@@ -59,6 +67,13 @@ ProgramElement::ProgramElement(int first_line, int last_line, int first_column, 
 ProgramElement::ProgramElement(const NodeLocation& node_loc) : NT_Program("programelement", node_loc)
 {
 
+}
+
+void ProgramElement::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 /* Scope */

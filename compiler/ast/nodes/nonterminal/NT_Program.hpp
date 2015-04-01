@@ -1,9 +1,7 @@
 #ifndef NT_PROGRAM_HPP_DEFINED
 #define NT_PROGRAM_HPP_DEFINED
 
-#include <string>
 #include "NonTerminal.hpp"
-#include "../NodeLocation.hpp"
 
 namespace ast
 {
@@ -29,6 +27,8 @@ namespace ast
 		Program();
 		Program(int,int,int,int);
 		Program(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class ScopeBody : public NT_Program
@@ -47,6 +47,8 @@ namespace ast
 		ProgramElement();
 		ProgramElement(int,int,int,int);
 		ProgramElement(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
 	};
 
 	class Scope : public NT_Program
