@@ -5,7 +5,6 @@
  *      Author: Floriane
  */
 
-
 #include <algorithm> // for_each
 #include <memory> // default_delete
 #include <iterator> // next

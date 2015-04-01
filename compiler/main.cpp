@@ -40,8 +40,11 @@ int main(int argc, char** argv)
 	if(yyparse())
 		cerr << "Parsing : failure..." << endl;
 	else
+	{
 		cout << "Parsing : success..." << endl;
-
+		PrintASTVisitor printer_v;
+		syntax_tree->accept(printer_v);
+	}
 	
 	return EXIT_SUCCESS;
 }
