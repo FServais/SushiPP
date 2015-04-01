@@ -425,15 +425,15 @@ Op_AssignPlus::Op_AssignPlus(const NodeLocation& node_loc) : Operator("+=", node
 }
 
 /* Operator : -= */
-Op_AssignLess::Op_AssignLess() : Operator("-=") { }
+Op_AssignMinus::Op_AssignMinus() : Operator("-=") { }
 
-Op_AssignLess::Op_AssignLess(int first_line, int last_line, int first_column, int last_column)
+Op_AssignMinus::Op_AssignMinus(int first_line, int last_line, int first_column, int last_column)
 	: Operator("-=", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Op_AssignLess::Op_AssignLess(const NodeLocation& node_loc) : Operator("-=", node_loc)
+Op_AssignMinus::Op_AssignMinus(const NodeLocation& node_loc) : Operator("-=", node_loc)
 {
 
 }

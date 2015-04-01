@@ -88,3 +88,17 @@ Param::Param(const NodeLocation& node_loc) : NT_Declaration("param", node_loc)
 {
 
 }
+
+/* ParamList */
+ParamList::ParamList() : NT_Declaration("param list") { }
+
+ParamList::ParamList(int first_line, int last_line, int first_column, int last_column)
+	: NT_Declaration("param list", first_line, last_line, first_column, last_column)
+{
+
+}
+
+ParamList::ParamList(const NodeLocation& node_loc) : NT_Declaration("param list", node_loc)
+{
+
+}

@@ -293,7 +293,7 @@ void visit( ast::Op_AssignPlus& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignLess& token )
+void visit( ast::Op_AssignMinus& token )
 {
 	print_single(token.node_name(), token.depth());
 }

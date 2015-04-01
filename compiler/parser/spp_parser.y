@@ -2,6 +2,7 @@
 	#include <iostream>
 	#include <string>
 	#include <sstream>
+	#include <cstddef>
 
 	/** AST includes*/
 	#include "../ast/AbstractSyntaxTree.hpp"
@@ -40,7 +41,7 @@
 
 %union
 {
-	string* vstring;
+	std::string* vstring;
 	ASTNode* vnode;
 }
 
@@ -253,7 +254,7 @@ decl-vars:
 		$$->add_child($1);
 		$$->add_child(new Virg);
 		$$->add_child(new DelimEol);
-		$$->add_child($3);
+		$$->add_child($4);
 	}
 ;
 
@@ -270,7 +271,7 @@ decl-var:
 	{
 		$$ = new DeclVar;
 		$$->add_child(new Identifier(*$1));
-		$$->add_child(new Op_Assign);
+		$$->add_child(new Op_Assignment);
 		$$->add_child($3);
 
 		// free semantic type of identifier
@@ -294,7 +295,10 @@ decl-func:
 	{
 		$$ = new DeclFunc;
 		$$->add_child(new Identifier(*$1));
-		$$->add_child($2);
+
+		if($2 != nullptr) // if no parameters
+			$$->add_child($2);
+
 		$$->add_child(new Op_AssignFunc);
 		$$->add_child($4);
 		$$->add_child(new DelimEos);
@@ -331,7 +335,7 @@ param:
 		$$->add_child(new Identifier(*$1));
 		$$->add_child(new OpenChevr);
 		$$->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
-		$$->add_child(new CloseChevr);
+		$$->add_child(new ClosingChevr);
 
 		// free semantic type of identifier
 		delete $1;
@@ -348,7 +352,9 @@ func-call:
 	{
 		$$ = new Param;
 		$$->add_child(new Identifier(*$1));
-		$$->add_child($2);
+
+		if($2 != nullptr)
+			$$->add_child($2);
 
 		// free semantic type of identifier
 		delete $1;
@@ -389,7 +395,7 @@ argument:
 		$$ = new Argument;
 		$$->add_child(new OpenPar);
 		$$->add_child($2);
-		$$->add_child(new ClosePar);
+		$$->add_child(new ClosingPar);
 	}
 | soy-expression
 	{
@@ -421,7 +427,7 @@ braced-func-call:
 		$$ = new BracedFuncCall;
 		$$->add_child(new OpenPar);
 		$$->add_child($2);
-		$$->add_child(new ClosePar);
+		$$->add_child(new ClosingPar);
 	}
 ;
 
@@ -434,7 +440,9 @@ func-call-eol:
   IDENTIFIER arg-list-eol
 	{
 		$$ = new FuncCallEol;
-		$$->add_child($1);
+		$$->add_child(new Identifier(*$1));
+		$$->add_child($2);
+		delete $1;
 	}
 | soy-expression arg-list-eol
 	{
@@ -476,7 +484,7 @@ soy-expression:
 		$$ = new SoyExpression;
 		$$->add_child(new OpenPar);
 		$$->add_child($2);
-		$$->add_child(new ClosePar);
+		$$->add_child(new ClosingPar);
 	}
 ;
 
@@ -485,7 +493,10 @@ soy-func:
 	{
 		$$ = new SoyFunc;
 		$$->add_child(new K_Soy);
-		$$->add_child($2);
+
+		if($2 != nullptr)
+			$$->add_child($2);
+
 		$$->add_child(new Op_AssignFunc);
 		$$->add_child($4);
 	}
@@ -505,7 +516,7 @@ expression:
 		$$ = new Expression;
 		$$->add_child(new OpenPar);
 		$$->add_child($2);
-		$$->add_child(new ClosePar);
+		$$->add_child(new ClosingPar);
 	}
 | IDENTIFIER
 	{
@@ -891,35 +902,35 @@ expression-list:
 constant:
   CONST_INT
     {
-		$$ = new Constant;
+		$$ = new NT_Constant;
 		$$->add_child(new Integer(*$1));
 		
 		delete $1;
 	}
 | CONST_FLOAT
     {
-		$$ = new Constant;
+		$$ = new NT_Constant;
 		$$->add_child(new Float(*$1));
 		
 		delete $1;
 	}
 | CONST_STRING
     {
-		$$ = new Constant;
+		$$ = new NT_Constant;
 		$$->add_child(new String(*$1));
 		
 		delete $1;
 	}
 | CONST_BOOL
     {
-		$$ = new Constant;
+		$$ = new NT_Constant;
 		$$->add_child(new Bool(*$1));
 		
 		delete $1;
 	}
 | CONST_CHAR
     {
-		$$ = new Constant;
+		$$ = new NT_Constant;
 		$$->add_child(new Character(*$1));
 		
 		delete $1;
@@ -957,14 +968,14 @@ array:
     {
 		$$ = new Array;
 		$$->add_child(new ArrayBeg);
-		$$->add_child(new ArrayClose);
+		$$->add_child(new ArrayEnd);
 	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
     {
 		$$ = new Array;
 		$$->add_child(new ArrayBeg);
 		$$->add_child($2);
-		$$->add_child(new ArrayClose);
+		$$->add_child(new ArrayEnd);
 	}
 ;
 
@@ -989,14 +1000,14 @@ tuple:
     {
 		$$ = new Tuple;
 		$$->add_child(new TupleBeg);
-		$$->add_child(new TupleClosing);
+		$$->add_child(new TupleEnd);
 	}
 | DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
     {
 		$$ = new Tuple;
 		$$->add_child(new TupleBeg);
 		$$->add_child($2);
-		$$->add_child(new TupleClosing);
+		$$->add_child(new TupleEnd);
 	}
 ;
 
@@ -1004,48 +1015,48 @@ tuple:
  * filled with increasing values (lists or arrays)
  */
 make-sequence: 
-	make-sequence-list
+  make-sequence-list
 	{
 		$$ = new MakeSequence();
 		$$->add_child($1);
 	}
- | 	make-sequence-array
+| make-sequence-array
 	 {
 	 	$$ = new MakeSequence();
 		$$->add_child($1);
 	 }
  ;
+
 make-sequence-list: 
-'{' seq-expression '}'
+  '{' seq-expression '}'
 	{
 		$$ = new MakeSequenceList();
 		$$->add_child(new OpenAcc());
-		$$->add_child($1);
+		$$->add_child($2);
 		$$->add_child(new ClosingAcc());
-
 	}
 ;
 
 make-sequence-array: 
-	DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
-		{
-			$$ = new MakeSequenceArray();
-			$$->add_child(new ArrayBeg());
-			$$->add_child($1);
-			$$->add_child(new ArrayEnd());
+  DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
+	{
+		$$ = new MakeSequenceArray();
+		$$->add_child(new ArrayBeg());
+		$$->add_child($2);
+		$$->add_child(new ArrayEnd());
 
-		}
-	;
+	}
+;
 
 seq-expression: 
-	expression KEYWORD_TO expression
-		{
-			$$ = new SeqExpression();
-			$$->add_child($1);
-			$$->add_child(new K_To());
-			$$->add_child($2);
-		}
-	;
+  expression KEYWORD_TO expression
+	{
+		$$ = new SeqExpression();
+		$$->add_child($1);
+		$$->add_child(new K_To());
+		$$->add_child($3);
+	}
+;
 
 /**************/
 /* Statements */
@@ -1074,7 +1085,7 @@ statement:
 | KEYWORD_BREAK
 	{
 		$$ = new Statement();
-  		$$->add_child(K_Break);
+  		$$->add_child(new K_Break);
 	}
 | conditional
 	{
@@ -1088,73 +1099,71 @@ return:
   KEYWORD_NORI
   	{
   		$$ = new Return();
-  		$$->add_child(K_Nori);
+  		$$->add_child(new K_Nori);
   	}
 | KEYWORD_NORI expression
 	{
 		$$ = new Return();
-  		$$->add_child(K_Nori);
-  		$$->add_child($1);
+  		$$->add_child(new K_Nori);
+  		$$->add_child($2);
 	}
 ;
 
 /* Switch */
 menu: 
-	KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
-		{
-			$$ = new Menu();
-			$$->add_child(new K_Menu);
-			$$->add_child($1);
-			$$->add_child(DelimEol);
-			$$->add_child($2);
-			$$->add_child(new DelimEos);
-		}
-	;
+  KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
+	{
+		$$ = new Menu();
+		$$->add_child(new K_Menu);
+		$$->add_child($2);
+		$$->add_child(new DelimEol);
+		$$->add_child($4);
+		$$->add_child(new DelimEos);
+	}
+;
 
 menu-body:
   menu-def DELIM_EOL
-  {
-  	$$ = new MenuBody();
-  	$$->add_child($1);
-  	$$->add_child(DelimEol);
-  }
+	{
+		$$ = new MenuBody();
+		$$->add_child($1);
+		$$->add_child(new DelimEol);
+	}
 | menu-case DELIM_EOL
 	{
 		$$ = new MenuBody();
   		$$->add_child($1);
-  		$$->add_child(DelimEol);
+  		$$->add_child(new DelimEol);
 	}
 | menu-case DELIM_EOL menu-body
-{
-	$$ = new MenuBody();
-	$$->add_child($1);
-	$$->add_child(DelimEol);
-	$$->add_child($2);
-}
-	
+	{
+		$$ = new MenuBody();
+		$$->add_child($1);
+		$$->add_child(new DelimEol);
+		$$->add_child($3);
+	}
 ;
 
 menu-case: 
-	expression DELIM_ARROW scope DELIM_EOS
-		{
-			$$ = new MenuCase();
-			$$->add_child($1);
-			$$->add_child(new Arrow());
-			$$->add_child($2);
- 			$$->add_child(new DelimEos);
-
-		}
+  expression DELIM_ARROW scope DELIM_EOS
+	{
+		$$ = new MenuCase();
+		$$->add_child($1);
+		$$->add_child(new Arrow);
+		$$->add_child($3);
+		$$->add_child(new DelimEos);
+	}
 ;
 
 menu-def:
  '_' DELIM_ARROW scope DELIM_EOS
- {
- 	$$ = new MenuDef();
- 	$$->add_child(new Underscore());
- 	$$->add_child(new Arrow());
- 	$$->add_child($1);
- 	$$->add_child(new DelimEos);
- }
+	{
+		$$ = new MenuDef();
+		$$->add_child(new Underscore);
+		$$->add_child(new Arrow);
+		$$->add_child($3);
+		$$->add_child(new DelimEos);
+	}
 ;
 
 /* Loop */
@@ -1174,42 +1183,40 @@ loop :
 		$$ = new Loop();
   		$$->add_child($1);
 	}
- ;
+;
 
 /* The roll loop is actually a while loop
  * The expression should be interpretable as a boolean value
  */
 roll : 
-	KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
-		{
-			$$ = new Roll();
-			$$->add_child(new K_Roll);
-			$$->add_child($1);
-			$$->add_child(new DelimEol);
-			$$->add_child($2);
-			$$->add_child(new DelimEos);
-
-		}
-	;
+  KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
+	{
+		$$ = new Roll();
+		$$->add_child(new K_Roll);
+		$$->add_child($2);
+		$$->add_child(new DelimEol);
+		$$->add_child($4);
+		$$->add_child(new DelimEos);
+	}
+;
 
 /* The foreach loop iterates over a list/array expression (so the expression part should be
  * interpretable as a list/array)
  */
 foreach: 
-	KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
-		{
-			$$ = new Foreach();
-			$$->add_child(new K_Foreach);
-			$$->add_child($1);
-			$$->add_child(new K_As);
-			$$->add_child(new Identifier(*$2));
-			$$->add_child(new DelimEol);
-			$$->add_child($3);
-			$$->add_child(new DelimEos);
-			delete $2;
-
-		}
-	;
+  KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
+	{
+		$$ = new Foreach();
+		$$->add_child(new K_Foreach);
+		$$->add_child($2);
+		$$->add_child(new K_As);
+		$$->add_child(new Identifier(*$4));
+		$$->add_child(new DelimEol);
+		$$->add_child($6);
+		$$->add_child(new DelimEos);
+		delete $2;
+	}
+;
 
 
 /* The for loop iterates until a condition becomes false
@@ -1224,19 +1231,28 @@ for:
 		{
 			$$ = new For();
 			$$->add_child(new K_For);
-			$$->add_child($1);
+
+			if($2 != nullptr)
+				$$->add_child($2);
+
 			$$->add_child(new Virg);
-			$$->add_child($2);
-			$$->add_child(new Virg);
-			$$->add_child($3);
-			$$->add_child(new DelimEol);
 			$$->add_child($4);
-			$$->add_child(DelimEos);
+			$$->add_child(new Virg);
+
+			if($2 != nullptr)
+				$$->add_child($6);
+
+			$$->add_child(new DelimEol);
+			$$->add_child($8);
+			$$->add_child(new DelimEos);
 		}
 	;
 
 for-initializer:
   %empty
+	{
+		$$ = nullptr;
+	}
 | assignment
 	{
 		$$ = new ForInitializer();
@@ -1246,6 +1262,9 @@ for-initializer:
 
 for-update:
   %empty
+	{
+		$$ = nullptr;
+	}
 | modifying-expression
 	{
 		$$ = new ForUpdate();
@@ -1259,64 +1278,64 @@ conditional:
   	{
   		$$ = new Conditional();
   		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
   		$$->add_child($2);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($4);
   		$$->add_child(new DelimEos);
   	}
 | KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
 	{
 		$$ = new Conditional();
 		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
   		$$->add_child($2);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($4);
   		$$->add_child(new K_Else);
-  		$$->add_child($3);
+  		$$->add_child($6);
   		$$->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
 	{
 		$$ = new Conditional();
 		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
   		$$->add_child($2);
-  		$$->add_child($3);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($4);
+  		$$->add_child($5);
   		$$->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
 	{
 		$$ = new Conditional();
 		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
   		$$->add_child($2);
-  		$$->add_child($3);
-  		$$->add_child(new K_Else);
+  		$$->add_child(new DelimEol);
   		$$->add_child($4);
+  		$$->add_child($5);
+  		$$->add_child(new K_Else);
+  		$$->add_child($7);
   		$$->add_child(new DelimEos);
 	}
 ;
 
 elseif:
-
   KEYWORD_ELSEIF expression DELIM_EOL scope-body
   	{
-  		$$ = new K_Elseif();
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
+		$$ = new Elseif();
+		$$->add_child(new K_Elseif);
   		$$->add_child($2);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($4);
   	}
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
 	{
-		$$ = new K_Elseif();
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
+		$$ = new Elseif();
+		$$->add_child(new K_Elseif);
   		$$->add_child($2);
-  		$$->add_child($3);
+  		$$->add_child(new DelimEol);
+  		$$->add_child($4);
+  		$$->add_child($5);
 	}
-
 ;
 
 %%

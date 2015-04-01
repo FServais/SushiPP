@@ -1,11 +1,13 @@
 #include "AbstractSyntaxTree.hpp"
 
+#include <cstddef>
+
 using namespace std;
 using namespace ast;
 
 AbstractSyntaxTree::AbstractSyntaxTree() : root_(nullptr)
 {
-
+ 
 }
 
 AbstractSyntaxTree::AbstractSyntaxTree(ASTNode* node) : root_(node)

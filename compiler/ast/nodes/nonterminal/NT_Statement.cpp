@@ -61,6 +61,34 @@ Menu::Menu(const NodeLocation& node_loc) : NT_Statement("menu", node_loc)
 
 }
 
+/* MenuBody */
+MenuBody::MenuBody() : NT_Statement("menu body") { }
+
+MenuBody::MenuBody(int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("menu body", first_line, last_line, first_column, last_column)
+{
+
+}
+
+MenuBody::MenuBody(const NodeLocation& node_loc) : NT_Statement("menu body", node_loc)
+{
+
+}
+
+/* MenuCase */
+MenuCase::MenuCase() : NT_Statement("menu case") { }
+
+MenuCase::MenuCase(int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("menu case", first_line, last_line, first_column, last_column)
+{
+
+}
+
+MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("menu case", node_loc)
+{
+
+}
+
 /* MenuDef */
 MenuDef::MenuDef() : NT_Statement("menudef") { }
 

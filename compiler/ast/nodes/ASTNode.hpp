@@ -11,7 +11,6 @@
 #include <string>
 
 #include "NodeLocation.hpp"
-#include "../visitor/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -76,7 +75,7 @@ namespace ast
 		void print(int);
 
 		// function for accepting a visitor
-		virtual void accept(ASTVisitor& v) = 0;
+		//virtual void accept(ASTVisitor& v) = 0;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */

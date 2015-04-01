@@ -62,43 +62,57 @@ Assignment::Assignment(const NodeLocation& node_loc) : NT_Expression("assignment
 }
 
 /* ModifyingExpression */
-ModifyingExpression::ModifyingExpression() : NT_Expression("modifyingexpression") { }
+ModifyingExpression::ModifyingExpression() : NT_Expression("modifying expression") { }
 
 ModifyingExpression::ModifyingExpression(int first_line, int last_line, int first_column, int last_column)
-	: NT_Expression("modifyingexpression", first_line, last_line, first_column, last_column)
+	: NT_Expression("modifying expression", first_line, last_line, first_column, last_column)
 {
 
 }
 
-ModifyingExpression::ModifyingExpression(const NodeLocation& node_loc) : NT_Expression("modifyingexpression", node_loc)
+ModifyingExpression::ModifyingExpression(const NodeLocation& node_loc) : NT_Expression("modifyinge xpression", node_loc)
 {
 
 }
 
 /* AssignableExpression */
-AssignableExpression::AssignableExpression() : NT_Expression("assignableexpression") { }
+AssignableExpression::AssignableExpression() : NT_Expression("assignable expression") { }
 
 AssignableExpression::AssignableExpression(int first_line, int last_line, int first_column, int last_column)
-	: NT_Expression("assignableexpression", first_line, last_line, first_column, last_column)
+	: NT_Expression("assignable expression", first_line, last_line, first_column, last_column)
 {
 
 }
 
-AssignableExpression::AssignableExpression(const NodeLocation& node_loc) : NT_Expression("assignableexpression", node_loc)
+AssignableExpression::AssignableExpression(const NodeLocation& node_loc) : NT_Expression("assignable expression", node_loc)
 {
 
 }
 
 /* DatastructureAccess */
-DatastructureAccess::DatastructureAccess() : NT_Expression("datastructureaccess") { }
+DatastructureAccess::DatastructureAccess() : NT_Expression("datastructure access") { }
 
 DatastructureAccess::DatastructureAccess(int first_line, int last_line, int first_column, int last_column)
-	: NT_Expression("datastructureaccess", first_line, last_line, first_column, last_column)
+	: NT_Expression("datastructure access", first_line, last_line, first_column, last_column)
 {
 
 }
 
-DatastructureAccess::DatastructureAccess(const NodeLocation& node_loc) : NT_Expression("datastructureaccess", node_loc)
+DatastructureAccess::DatastructureAccess(const NodeLocation& node_loc) : NT_Expression("datastructure access", node_loc)
+{
+
+}
+
+/* ExpressionList */
+ExpressionList::ExpressionList() : NT_Expression("expression list") { }
+
+ExpressionList::ExpressionList(int first_line, int last_line, int first_column, int last_column)
+	: NT_Expression("expression list", first_line, last_line, first_column, last_column)
+{
+
+}
+
+ExpressionList::ExpressionList(const NodeLocation& node_loc) : NT_Expression("expression list", node_loc)
 {
 
 }

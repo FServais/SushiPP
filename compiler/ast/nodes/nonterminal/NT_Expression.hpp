@@ -75,6 +75,15 @@ namespace ast
 		DatastructureAccess(int,int,int,int);
 		DatastructureAccess(const NodeLocation&);
 	};
+
+	class ExpressionList : public NT_Expression
+	{
+	public:
+		// Constructors
+		ExpressionList();
+		ExpressionList(int,int,int,int);
+		ExpressionList(const NodeLocation&);
+	};
 }
 
 #endif

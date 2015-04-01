@@ -49,6 +49,24 @@ namespace ast
 		Menu(const NodeLocation&);
 	};
 
+	class MenuBody : public NT_Statement
+	{
+	public:
+		// Constructors
+		MenuBody();
+		MenuBody(int,int,int,int);
+		MenuBody(const NodeLocation&);
+	};
+
+	class MenuCase : public NT_Statement
+	{
+	public:
+		// Constructors
+		MenuCase();
+		MenuCase(int,int,int,int);
+		MenuCase(const NodeLocation&);
+	};
+
 	class MenuDef : public NT_Statement
 	{
 	public:

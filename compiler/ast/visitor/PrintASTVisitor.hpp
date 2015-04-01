@@ -88,7 +88,7 @@ public:
 	virtual void visit( ast::Op_PostfixDecrement& );
 	virtual void visit( ast::Op_Assignment& );
 	virtual void visit( ast::Op_AssignPlus& );
-	virtual void visit( ast::Op_AssignLess& );
+	virtual void visit( ast::Op_AssignMinus& );
 	virtual void visit( ast::Op_AssignMult& );
 	virtual void visit( ast::Op_AssignDiv& );
 	virtual void visit( ast::Op_AssignExpo& );

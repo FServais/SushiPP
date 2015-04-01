@@ -279,13 +279,13 @@ namespace ast
 		Op_AssignPlus(const NodeLocation&);
 	};
 
-	class Op_AssignLess : public Operator
+	class Op_AssignMinus : public Operator
 	{
 	public:
 		// constructors
-		Op_AssignLess();
-		Op_AssignLess(int,int,int,int);
-		Op_AssignLess(const NodeLocation&);
+		Op_AssignMinus();
+		Op_AssignMinus(int,int,int,int);
+		Op_AssignMinus(const NodeLocation&);
 	};
 
 	class Op_AssignMult : public Operator

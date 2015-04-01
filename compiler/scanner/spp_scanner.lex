@@ -113,13 +113,12 @@ string                  { return IDENTIFIER; }
 array                   { return IDENTIFIER; }
 list                    { return IDENTIFIER; }
 tuple                   { return IDENTIFIER; }
-(false|FALSE)           { yylval.vbool = false; return CONST_BOOL; }
-(true|TRUE)             { yylval.vbool = true; return CONST_BOOL; }
+(false|FALSE|true|TRUE) { yylval.vstring = new string(yytext); return CONST_BOOL; }
 {ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext); return IDENTIFIER; }
-[+-]?{DIGIT}+           { yylval.vint = strtol(yytext, NULL, 10); return CONST_INT; }
-[+-]?{DIGIT}+\.{DIGIT}+ { yylval.vdouble = strtof(yytext, NULL); return CONST_FLOAT; }
+[+-]?{DIGIT}+           { yylval.vstring = new string(yytext); return CONST_INT; }
+[+-]?{DIGIT}+\.{DIGIT}+ { yylval.vstring = new string(yytext); return CONST_FLOAT; }
 \"(.|[^"])*\"           { yylval.vstring = new string(yytext); return CONST_STRING; }
-'(.|[^'])'              { yylval.vchar = yytext[1]; return CONST_CHAR; }
+'(.|[^'])'              { yylval.vstring = new string(yytext); return CONST_CHAR; }
 ({EOL}+|\$.*{EOL})      { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
 [ \t]+                  { }
 .                       {
