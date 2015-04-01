@@ -47,11 +47,10 @@ ASTNode::ASTNode(const string& name, int first_line, int last_line, int first_co
 
 ASTNode::ASTNode(const ASTNode& copy) : loc(copy.loc),node_name_(copy.node_name_)
 {
-	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) {
-		
+	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) 
+	{
       	ASTNode* ch = new ASTNode(**it);
-			add_child(ch);
-		
+		add_child(ch);
 	}
 }
 
@@ -62,18 +61,16 @@ ASTNode& ASTNode::operator=(const ASTNode& copy)
 	node_name_ = copy.node_name_;
 	loc = copy.loc;
 	
-	for(auto it = copy.get_children().begin(); it !=  copy.get_children().end(); it++) {
-			ASTNode* ch = new ASTNode(**it);
-			add_child(ch);
+	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) {
+		ASTNode* ch = new ASTNode(**it);
+		add_child(ch);
 	}
     return *this;
 }
 
 ASTNode::~ASTNode()
 {
-
 	for_each(children.begin(), children.end(), default_delete<ASTNode>());
-
 }
 
 const ASTNode& ASTNode::get_father() const
@@ -121,20 +118,10 @@ bool ASTNode::has_father() const
 
 string& ASTNode::node_name()
 {
-
+	return node_name_;
 }
 
 const string& ASTNode::node_name() const
 {
-
-}
-
-void ASTNode::print(int depht){
-	string s(depht*3, ' ');
-	std::cout<<s<<"name : "<<node_name_<<std::endl;
-	std::cout<<s<<"nb sons : "<<children.size()<<std::endl;
-	std::cout<<s<<"root's father :"<<father<<std::endl;
-	for( auto it = children.begin(); it != children.end(); it++){
-		(*it)->print(depht+1);
-	}
+	return node_name_;
 }

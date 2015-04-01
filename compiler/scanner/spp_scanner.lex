@@ -28,7 +28,6 @@
 	int compute_end_column(int first_col, const char* token, size_t token_len);
 
 	void update_yylloc();
-
 %}
 
 %option noyywrap

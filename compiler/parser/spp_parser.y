@@ -42,7 +42,7 @@
 %union
 {
 	std::string* vstring;
-	ASTNode* vnode;
+	void* vnode;
 }
 
 /* Keywords tokens */
@@ -159,60 +159,60 @@
 /*************************/
 program:
   %empty 		{ syntax_tree = new AbstractSyntaxTree; }
-| scope-body	{ syntax_tree = new AbstractSyntaxTree($$); }
+| scope-body	{ syntax_tree = new AbstractSyntaxTree((ASTNode*)$$); }
 ;
 
 /* Scope containing sushi++ code */
 scope: 
   scope-body 
 	{ 
-		$$ = new Scope;
-		$$->add_child($1); 
+		$$ = (void*) (new Scope);
+		((ASTNode*)$$)->add_child((ASTNode*)$1); 
 	}
 ;
 
 scope-body:
   program-element 
 	{
-		$$ = new ScopeBody;
-		$$->add_child($1);
+		$$ = (void*) (new ScopeBody);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | program-element DELIM_EOL
 	{
-		$$ = new ScopeBody;
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
+		$$ = (void*) (new ScopeBody);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 | program-element DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody;
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
-		$$->add_child($3);
+		$$ = (void*) (new ScopeBody);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody;
-		$$->add_child(new DelimEol);
-		$$->add_child($2);
+		$$ = (void*) (new ScopeBody);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
 program-element:
   statement
 	{
-		$$ = new ProgramElement;
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | modifying-expression
 	{
-		$$ = new ProgramElement;
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | declaration
 	{
-		$$ = new ProgramElement;
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -222,15 +222,15 @@ program-element:
 declaration:
   KEYWORD_MAKI decl-func
 	{
-		$$ = new Declaration;
-		$$->add_child(new K_Maki);
-		$$->add_child($2);
+		$$ = (void*) (new Declaration);
+		((ASTNode*)$$)->add_child(new K_Maki);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | KEYWORD_MAKI decl-vars
 	{
-		$$ = new Declaration;
-		$$->add_child(new K_Maki);
-		$$->add_child($2);
+		$$ = (void*) (new Declaration);
+		((ASTNode*)$$)->add_child(new K_Maki);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
@@ -238,44 +238,44 @@ declaration:
 decl-vars:
   decl-var
 	{
-		$$ = new DeclVars;
-		$$->add_child($1);
+		$$ = (void*) (new DeclVars);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | decl-var ',' decl-vars
 	{
-		$$ = new DeclVars;
-		$$->add_child($1);
-		$$->add_child(new Virg);
-		$$->add_child($3);
+		$$ = (void*) (new DeclVars);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
-		$$ = new DeclVars;
-		$$->add_child($1);
-		$$->add_child(new Virg);
-		$$->add_child(new DelimEol);
-		$$->add_child($4);
+		$$ = (void*) (new DeclVars);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
 	}
 ;
 
 decl-var:
   IDENTIFIER
 	{
-		$$ = new DeclVar;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new DeclVar);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 		
 		// free semantic type of identifier
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | IDENTIFIER '=' expression
 	{
-		$$ = new DeclVar;
-		$$->add_child(new Identifier(*$1));
-		$$->add_child(new Op_Assignment);
-		$$->add_child($3);
+		$$ = (void*) (new DeclVar);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new Op_Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 
 		// free semantic type of identifier
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | error '=' expression
 	{
@@ -293,18 +293,18 @@ decl-var:
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
 	{
-		$$ = new DeclFunc;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new DeclFunc);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		if($2 != nullptr) // if no parameters
-			$$->add_child($2);
+		if((ASTNode*)$2 != nullptr) // if no parameters
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
-		$$->add_child(new Op_AssignFunc);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);
+		((ASTNode*)$$)->add_child(new Op_AssignFunc);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
 
 		// free semantic type of identifier
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 ;
 
@@ -316,30 +316,30 @@ param-list:
 	}
 | param param-list
 	{
-		$$ = new ParamList;
-		$$->add_child($1);
-		if($2 != nullptr)
-			$$->add_child($2);
+		$$ = (void*) (new ParamList);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
 param:
   IDENTIFIER
 	{
-		$$ = new Param;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new Param);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 	}
 | IDENTIFIER '<' IDENTIFIER '>'
 	{
-		$$ = new Param;
-		$$->add_child(new Identifier(*$1));
-		$$->add_child(new OpenChevr);
-		$$->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
-		$$->add_child(new ClosingChevr);
+		$$ = (void*) (new Param);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new OpenChevr);
+		((ASTNode*)$$)->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
+		((ASTNode*)$$)->add_child(new ClosingChevr);
 
 		// free semantic type of identifier
-		delete $1;
-		delete $3;
+		//delete ((ASTNode*) $1);
+		//delete ((ASTNode*) $3);
 	}
 ;
 
@@ -350,14 +350,14 @@ param:
 func-call:
   IDENTIFIER arg-list
 	{
-		$$ = new Param;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new Param);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		if($2 != nullptr)
-			$$->add_child($2);
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
 		// free semantic type of identifier
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 ;
 
@@ -368,49 +368,49 @@ arg-list:
 	}
 | argument arg-list
 	{
-		$$ = new ArgList;
-		$$->add_child($1);
+		$$ = (void*) (new ArgList);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 
-		if($2 != nullptr)
-			$$->add_child($2);
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
 argument:
   IDENTIFIER
 	{
-		$$ = new Argument;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
 		// free semantic type of identifier
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | constant
 	{
-		$$ = new Argument;
-		$$->add_child($1);
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | '(' expression ')'
 	{
-		$$ = new Argument;
-		$$->add_child(new OpenPar);
-		$$->add_child($2);
-		$$->add_child(new ClosingPar);
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
 	}
 | soy-expression
 	{
-		$$ = new Argument;
-		$$->add_child($1);
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | datastructure-access
 	{
-		$$ = new Argument;
-		$$->add_child($1);
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | braced-func-call
 	{
-		$$ = new Argument;
-		$$->add_child($1);
+		$$ = (void*) (new Argument);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | error
 	{
@@ -424,10 +424,10 @@ argument:
 braced-func-call: 
   '(' func-call-eol ')'
 	{
-		$$ = new BracedFuncCall;
-		$$->add_child(new OpenPar);
-		$$->add_child($2);
-		$$->add_child(new ClosingPar);
+		$$ = (void*) (new BracedFuncCall);
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
 	}
 ;
 
@@ -439,16 +439,16 @@ braced-func-call:
 func-call-eol:
   IDENTIFIER arg-list-eol
 	{
-		$$ = new FuncCallEol;
-		$$->add_child(new Identifier(*$1));
-		$$->add_child($2);
-		delete $1;
+		$$ = (void*) (new FuncCallEol);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		//delete ((ASTNode*) $1);
 	}
 | soy-expression arg-list-eol
 	{
-		$$ = new FuncCallEol;
-		$$->add_child($1);
-		$$->add_child($2);
+		$$ = (void*) (new FuncCallEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | error arg-list-eol
 	{
@@ -460,20 +460,20 @@ func-call-eol:
 arg-list-eol:
   argument
 	{
-		$$ = new ArgListEol;
-		$$->add_child($1);
+		$$ = (void*) (new ArgListEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | argument arg-list-eol
 	{
-		$$ = new ArgListEol;
-		$$->add_child($1);
-		$$->add_child($2);
+		$$ = (void*) (new ArgListEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | argument DELIM_EOL arg-list-eol
 	{
-		$$ = new ArgListEol;
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
+		$$ = (void*) (new ArgListEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 ;
 
@@ -481,24 +481,24 @@ arg-list-eol:
 soy-expression: 
   '(' soy-func ')'
 	{
-		$$ = new SoyExpression;
-		$$->add_child(new OpenPar);
-		$$->add_child($2);
-		$$->add_child(new ClosingPar);
+		$$ = (void*) (new SoyExpression);
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
 	}
 ;
 
 soy-func: 
   KEYWORD_SOY param-list ':' scope
 	{
-		$$ = new SoyFunc;
-		$$->add_child(new K_Soy);
+		$$ = (void*) (new SoyFunc);
+		((ASTNode*)$$)->add_child(new K_Soy);
 
-		if($2 != nullptr)
-			$$->add_child($2);
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
-		$$->add_child(new Op_AssignFunc);
-		$$->add_child($4);
+		((ASTNode*)$$)->add_child(new Op_AssignFunc);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
 	}
 ;
 
@@ -508,317 +508,317 @@ soy-func:
 expression:
   constant
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | '(' expression ')'
 	{
-		$$ = new Expression;
-		$$->add_child(new OpenPar);
-		$$->add_child($2);
-		$$->add_child(new ClosingPar);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
 	}
 | IDENTIFIER
 	{
-		$$ = new Expression;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | datastructure
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | soy-expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | datastructure-access
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | incr-expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | assignment
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | braced-func-call
 	{
-		$$ = new Expression;
-		$$->add_child($1);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | expression '+' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Plus);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Plus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '-' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Minus);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Minus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '*' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Mult);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Mult);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '/' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Div);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Div);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '%' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Modulo);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Modulo);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_ARITH_EXPO expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_Exponentiation);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Exponentiation);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | '-' expression %prec UNARY_MINUS
 	{
-		$$ = new Expression;
-		$$->add_child(new Op_UnaryMinus);
-		$$->add_child($2);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child(new Op_UnaryMinus);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | expression '|' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_BitwiseOr);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '&' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_BitwiseAnd);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '^' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_BitwiseXor);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseXor);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | '~' expression
 	{
-		$$ = new Expression;
-		$$->add_child(new Op_BitwiseNot);
-		$$->add_child($2);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child(new Op_BitwiseNot);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | expression OP_LOGIC_OR expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_LogicalOr);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LogicalOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_LOGIC_AND expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_LogicalAnd);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LogicalAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | '!' expression
 	{
-		$$ = new Expression;
-		$$->add_child(new Op_LogicalNot);
-		$$->add_child($2);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child(new Op_LogicalNot);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | expression '<' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompLessThan);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompLessThan);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '>' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompGreaterThan);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompGreaterThan);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_COMP_LEQ expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompLessEqual);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompLessEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_COMP_GEQ expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompGreaterEqual);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompGreaterEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_COMP_EQ  expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompEqual);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_COMP_NEQ expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_CompNotEqual);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompNotEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_LSHIFT expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_RightShift);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_RightShift);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression OP_RSHIFT expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_LeftShift);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LeftShift);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | expression '.' expression
 	{
-		$$ = new Expression;
-		$$->add_child($1);
-		$$->add_child(new Op_StringConcat);
-		$$->add_child($3);
+		$$ = (void*) (new Expression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_StringConcat);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 
 incr-expression:
   OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
 	{
-		$$ = new IncrExpression;
-		$$->add_child(new Op_PrefixIncrement);
-		$$->add_child($2);
+		$$ = (void*) (new IncrExpression);
+		((ASTNode*)$$)->add_child(new Op_PrefixIncrement);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
 	{
-		$$ = new IncrExpression;
-		$$->add_child(new Op_PrefixDecrement);
-		$$->add_child($2);
+		$$ = (void*) (new IncrExpression);
+		((ASTNode*)$$)->add_child(new Op_PrefixDecrement);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 | assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
 	{
-		$$ = new IncrExpression;
-		$$->add_child($1);
-		$$->add_child(new Op_PostfixIncrement);
+		$$ = (void*) (new IncrExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_PostfixIncrement);
 	}
 | assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
 	{
-		$$ = new IncrExpression;
-		$$->add_child($1);
-		$$->add_child(new Op_PostfixDecrement);
+		$$ = (void*) (new IncrExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_PostfixDecrement);
 	}
 ;
 
 assignment:
   assignable-expression '=' expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_Assignment);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_PLUS expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignPlus);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignPlus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MINUS expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignMinus);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMinus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MULT expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignMult);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMult);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_DIV expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignDiv);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignDiv);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_EXPO expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignExpo);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignExpo);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MOD expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignMod);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMod);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_AND expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignAnd);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_OR expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignOr);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_XOR expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignXor);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignXor);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_CONCAT expression
 	{
-		$$ = new Assignment;
-		$$->add_child($1);
-		$$->add_child(new Op_AssignConcat);
-		$$->add_child($3);
+		$$ = (void*) (new Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignConcat);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 
@@ -829,23 +829,23 @@ assignment:
 modifying-expression:
   assignment
   	{
-		$$ = new ModifyingExpression;
-		$$->add_child($1);
+		$$ = (void*) (new ModifyingExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | incr-expression
   	{
-		$$ = new ModifyingExpression;
-		$$->add_child($1);
+		$$ = (void*) (new ModifyingExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | braced-func-call
   	{
-		$$ = new ModifyingExpression;
-		$$->add_child($1);
+		$$ = (void*) (new ModifyingExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | func-call
   	{
-		$$ = new ModifyingExpression;
-		$$->add_child($1);
+		$$ = (void*) (new ModifyingExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -855,28 +855,28 @@ modifying-expression:
 assignable-expression:
   IDENTIFIER
     {
-		$$ = new AssignableExpression;
-		$$->add_child(new Identifier(*$1));
+		$$ = (void*) (new AssignableExpression);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | datastructure-access
   	{
-		$$ = new AssignableExpression;
-		$$->add_child($1);
+		$$ = (void*) (new AssignableExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
 datastructure-access: 
   IDENTIFIER '[' expression ']'
     {
-		$$ = new DatastructureAccess;
-		$$->add_child(new Identifier(*$1));
-		$$->add_child(new OpenBrace);
-		$$->add_child($3);
-		$$->add_child(new ClosingBrace);
+		$$ = (void*) (new DatastructureAccess);
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new OpenBrace);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new ClosingBrace);
 
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 ;
 
@@ -884,15 +884,15 @@ datastructure-access:
 expression-list:
   expression
 	{
-		$$ = new ExpressionList;
-		$$->add_child($1);
+		$$ = (void*) (new ExpressionList);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | expression ',' expression-list
 	{
-		$$ = new ExpressionList;
-		$$->add_child($1);
-		$$->add_child(new Virg);
-		$$->add_child($3);
+		$$ = (void*) (new ExpressionList);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 
@@ -902,38 +902,38 @@ expression-list:
 constant:
   CONST_INT
     {
-		$$ = new NT_Constant;
-		$$->add_child(new Integer(*$1));
+		$$ = (void*) (new NT_Constant);
+		((ASTNode*)$$)->add_child(new Integer(*$1));
 		
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | CONST_FLOAT
     {
-		$$ = new NT_Constant;
-		$$->add_child(new Float(*$1));
+		$$ = (void*) (new NT_Constant);
+		((ASTNode*)$$)->add_child(new Float(*$1));
 		
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | CONST_STRING
     {
-		$$ = new NT_Constant;
-		$$->add_child(new String(*$1));
+		$$ = (void*) (new NT_Constant);
+		((ASTNode*)$$)->add_child(new String(*$1));
 		
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | CONST_BOOL
     {
-		$$ = new NT_Constant;
-		$$->add_child(new Bool(*$1));
+		$$ = (void*) (new NT_Constant);
+		((ASTNode*)$$)->add_child(new Bool(*$1));
 		
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 | CONST_CHAR
     {
-		$$ = new NT_Constant;
-		$$->add_child(new Character(*$1));
+		$$ = (void*) (new NT_Constant);
+		((ASTNode*)$$)->add_child(new Character(*$1));
 		
-		delete $1;
+		//delete ((ASTNode*) $1);
 	}
 ;
 
@@ -943,71 +943,71 @@ constant:
 datastructure:
   array
     {
-		$$ = new Datastructure;
-		$$->add_child($1);
+		$$ = (void*) (new Datastructure);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | list
     {
-		$$ = new Datastructure;
-		$$->add_child($1);
+		$$ = (void*) (new Datastructure);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | tuple
     {
-		$$ = new Datastructure;
-		$$->add_child($1);
+		$$ = (void*) (new Datastructure);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | make-sequence
     {
-		$$ = new Datastructure;
-		$$->add_child($1);
+		$$ = (void*) (new Datastructure);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
 array:
   DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
     {
-		$$ = new Array;
-		$$->add_child(new ArrayBeg);
-		$$->add_child(new ArrayEnd);
+		$$ = (void*) (new Array);
+		((ASTNode*)$$)->add_child(new ArrayBeg);
+		((ASTNode*)$$)->add_child(new ArrayEnd);
 	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
     {
-		$$ = new Array;
-		$$->add_child(new ArrayBeg);
-		$$->add_child($2);
-		$$->add_child(new ArrayEnd);
+		$$ = (void*) (new Array);
+		((ASTNode*)$$)->add_child(new ArrayBeg);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ArrayEnd);
 	}
 ;
 
 list:
   '{' '}' /* empty list */
     {
-		$$ = new Array;
-		$$->add_child(new OpenAcc);
-		$$->add_child(new ClosingAcc);
+		$$ = (void*) (new Array);
+		((ASTNode*)$$)->add_child(new OpenAcc);
+		((ASTNode*)$$)->add_child(new ClosingAcc);
 	}
 | '{' expression-list '}'
     {
-		$$ = new Array;
-		$$->add_child(new OpenAcc);
-		$$->add_child($2);
-		$$->add_child(new ClosingAcc);
+		$$ = (void*) (new Array);
+		((ASTNode*)$$)->add_child(new OpenAcc);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingAcc);
 	}
 ;
 
 tuple:
   DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
     {
-		$$ = new Tuple;
-		$$->add_child(new TupleBeg);
-		$$->add_child(new TupleEnd);
+		$$ = (void*) (new Tuple);
+		((ASTNode*)$$)->add_child(new TupleBeg);
+		((ASTNode*)$$)->add_child(new TupleEnd);
 	}
 | DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
     {
-		$$ = new Tuple;
-		$$->add_child(new TupleBeg);
-		$$->add_child($2);
-		$$->add_child(new TupleEnd);
+		$$ = (void*) (new Tuple);
+		((ASTNode*)$$)->add_child(new TupleBeg);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new TupleEnd);
 	}
 ;
 
@@ -1017,33 +1017,33 @@ tuple:
 make-sequence: 
   make-sequence-list
 	{
-		$$ = new MakeSequence();
-		$$->add_child($1);
+		$$ = (void*) (new MakeSequence);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | make-sequence-array
 	 {
-	 	$$ = new MakeSequence();
-		$$->add_child($1);
+	 	$$ = (void*) (new MakeSequence);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	 }
  ;
 
 make-sequence-list: 
   '{' seq-expression '}'
 	{
-		$$ = new MakeSequenceList();
-		$$->add_child(new OpenAcc());
-		$$->add_child($2);
-		$$->add_child(new ClosingAcc());
+		$$ = (void*) (new MakeSequenceList);
+		((ASTNode*)$$)->add_child(new OpenAcc());
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingAcc());
 	}
 ;
 
 make-sequence-array: 
   DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
 	{
-		$$ = new MakeSequenceArray();
-		$$->add_child(new ArrayBeg());
-		$$->add_child($2);
-		$$->add_child(new ArrayEnd());
+		$$ = (void*) (new MakeSequenceArray);
+		((ASTNode*)$$)->add_child(new ArrayBeg());
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ArrayEnd());
 
 	}
 ;
@@ -1051,10 +1051,10 @@ make-sequence-array:
 seq-expression: 
   expression KEYWORD_TO expression
 	{
-		$$ = new SeqExpression();
-		$$->add_child($1);
-		$$->add_child(new K_To());
-		$$->add_child($3);
+		$$ = (void*) (new SeqExpression);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new K_To());
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 
@@ -1064,33 +1064,33 @@ seq-expression:
 statement:
   return
   	{
-  		$$ = new Statement();
-  		$$->add_child($1);
+  		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
   	}
 | menu
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | loop
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | KEYWORD_CONTINUE
 	{
-		$$ = new Statement();
-  		$$->add_child(new K_Continue);
+		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child(new K_Continue);
 	}
 | KEYWORD_BREAK
 	{
-		$$ = new Statement();
-  		$$->add_child(new K_Break);
+		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child(new K_Break);
 	}
 | conditional
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -1098,14 +1098,14 @@ statement:
 return:
   KEYWORD_NORI
   	{
-  		$$ = new Return();
-  		$$->add_child(new K_Nori);
+  		$$ = (void*) (new Return);
+  		((ASTNode*)$$)->add_child(new K_Nori);
   	}
 | KEYWORD_NORI expression
 	{
-		$$ = new Return();
-  		$$->add_child(new K_Nori);
-  		$$->add_child($2);
+		$$ = (void*) (new Return);
+  		((ASTNode*)$$)->add_child(new K_Nori);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
@@ -1113,56 +1113,56 @@ return:
 menu: 
   KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
 	{
-		$$ = new Menu();
-		$$->add_child(new K_Menu);
-		$$->add_child($2);
-		$$->add_child(new DelimEol);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);
+		$$ = (void*) (new Menu);
+		((ASTNode*)$$)->add_child(new K_Menu);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
 menu-body:
   menu-def DELIM_EOL
 	{
-		$$ = new MenuBody();
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
+		$$ = (void*) (new MenuBody);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 | menu-case DELIM_EOL
 	{
-		$$ = new MenuBody();
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
+		$$ = (void*) (new MenuBody);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
+  		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 | menu-case DELIM_EOL menu-body
 	{
-		$$ = new MenuBody();
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
-		$$->add_child($3);
+		$$ = (void*) (new MenuBody);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
 	}
 ;
 
 menu-case: 
   expression DELIM_ARROW scope DELIM_EOS
 	{
-		$$ = new MenuCase();
-		$$->add_child($1);
-		$$->add_child(new Arrow);
-		$$->add_child($3);
-		$$->add_child(new DelimEos);
+		$$ = (void*) (new MenuCase);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Arrow);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
 menu-def:
  '_' DELIM_ARROW scope DELIM_EOS
 	{
-		$$ = new MenuDef();
-		$$->add_child(new Underscore);
-		$$->add_child(new Arrow);
-		$$->add_child($3);
-		$$->add_child(new DelimEos);
+		$$ = (void*) (new MenuDef);
+		((ASTNode*)$$)->add_child(new Underscore);
+		((ASTNode*)$$)->add_child(new Arrow);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
@@ -1170,18 +1170,18 @@ menu-def:
 loop :
   foreach
   	{
-  		$$ = new Loop();
-  		$$->add_child($1);
+  		$$ = (void*) (new Loop);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
   	}
 | for
 	{
-		$$ = new Loop();
-  		$$->add_child($1);
+		$$ = (void*) (new Loop);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | roll
 	{
-		$$ = new Loop();
-  		$$->add_child($1);
+		$$ = (void*) (new Loop);
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -1191,12 +1191,12 @@ loop :
 roll : 
   KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
 	{
-		$$ = new Roll();
-		$$->add_child(new K_Roll);
-		$$->add_child($2);
-		$$->add_child(new DelimEol);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);
+		$$ = (void*) (new Roll);
+		((ASTNode*)$$)->add_child(new K_Roll);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
@@ -1206,15 +1206,15 @@ roll :
 foreach: 
   KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
 	{
-		$$ = new Foreach();
-		$$->add_child(new K_Foreach);
-		$$->add_child($2);
-		$$->add_child(new K_As);
-		$$->add_child(new Identifier(*$4));
-		$$->add_child(new DelimEol);
-		$$->add_child($6);
-		$$->add_child(new DelimEos);
-		delete $2;
+		$$ = (void*) (new Foreach);
+		((ASTNode*)$$)->add_child(new K_Foreach);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new K_As);
+		((ASTNode*)$$)->add_child(new Identifier(*$4));
+		((ASTNode*)$$)->add_child(new DelimEol);
+		((ASTNode*)$$)->add_child((ASTNode*)$6);
+		((ASTNode*)$$)->add_child(new DelimEos);
+		//delete ((ASTNode*) $2);
 	}
 ;
 
@@ -1229,22 +1229,22 @@ foreach:
 for: 
 	KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
 		{
-			$$ = new For();
-			$$->add_child(new K_For);
+			$$ = (void*) (new For);
+			((ASTNode*)$$)->add_child(new K_For);
 
-			if($2 != nullptr)
-				$$->add_child($2);
+			if((ASTNode*)$2 != nullptr)
+				((ASTNode*)$$)->add_child((ASTNode*)$2);
 
-			$$->add_child(new Virg);
-			$$->add_child($4);
-			$$->add_child(new Virg);
+			((ASTNode*)$$)->add_child(new Virg);
+			((ASTNode*)$$)->add_child((ASTNode*)$4);
+			((ASTNode*)$$)->add_child(new Virg);
 
-			if($2 != nullptr)
-				$$->add_child($6);
+			if((ASTNode*)$2 != nullptr)
+				((ASTNode*)$$)->add_child((ASTNode*)$6);
 
-			$$->add_child(new DelimEol);
-			$$->add_child($8);
-			$$->add_child(new DelimEos);
+			((ASTNode*)$$)->add_child(new DelimEol);
+			((ASTNode*)$$)->add_child((ASTNode*)$8);
+			((ASTNode*)$$)->add_child(new DelimEos);
 		}
 	;
 
@@ -1255,8 +1255,8 @@ for-initializer:
 	}
 | assignment
 	{
-		$$ = new ForInitializer();
-		$$->add_child($1);
+		$$ = (void*) (new ForInitializer);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -1267,8 +1267,8 @@ for-update:
 	}
 | modifying-expression
 	{
-		$$ = new ForUpdate();
-		$$->add_child($1);
+		$$ = (void*) (new ForUpdate);
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -1276,65 +1276,65 @@ for-update:
 conditional:
   KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
   	{
-  		$$ = new Conditional();
-  		$$->add_child(new K_If);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
-  		$$->add_child(new DelimEos);
+  		$$ = (void*) (new Conditional);
+  		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child(new DelimEos);
   	}
 | KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
-  		$$->add_child(new K_Else);
-  		$$->add_child($6);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child(new K_Else);
+  		((ASTNode*)$$)->add_child((ASTNode*)$6);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
-  		$$->add_child($5);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
-  		$$->add_child($5);
-  		$$->add_child(new K_Else);
-  		$$->add_child($7);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
+  		((ASTNode*)$$)->add_child(new K_Else);
+  		((ASTNode*)$$)->add_child((ASTNode*)$7);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
 elseif:
   KEYWORD_ELSEIF expression DELIM_EOL scope-body
   	{
-		$$ = new Elseif();
-		$$->add_child(new K_Elseif);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
+		$$ = (void*) (new Elseif);
+		((ASTNode*)$$)->add_child(new K_Elseif);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
   	}
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
 	{
-		$$ = new Elseif();
-		$$->add_child(new K_Elseif);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($4);
-  		$$->add_child($5);
+		$$ = (void*) (new Elseif);
+		((ASTNode*)$$)->add_child(new K_Elseif);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+  		((ASTNode*)$$)->add_child(new DelimEol);
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
 	}
 ;
 
