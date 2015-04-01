@@ -543,22 +543,22 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   161,   161,   162,   167,   175,   180,   186,   193,   202,
-     207,   212,   223,   229,   239,   244,   251,   262,   270,   280,
-     285,   294,   313,   317,   327,   332,   351,   365,   369,   380,
-     388,   393,   400,   405,   410,   415,   425,   440,   447,   453,
-     461,   466,   472,   483,   493,   510,   515,   522,   529,   534,
-     539,   544,   549,   554,   559,   566,   573,   580,   587,   594,
-     601,   607,   614,   621,   628,   634,   641,   648,   654,   661,
-     668,   675,   682,   689,   696,   703,   710,   720,   726,   732,
-     738,   747,   754,   761,   768,   775,   782,   789,   796,   803,
-     810,   817,   831,   836,   841,   846,   857,   864,   872,   886,
-     891,   904,   911,   918,   925,   932,   945,   950,   955,   960,
-     968,   974,   984,   990,  1000,  1006,  1019,  1024,  1032,  1042,
-    1053,  1066,  1071,  1076,  1081,  1086,  1091,  1100,  1105,  1115,
-    1127,  1133,  1139,  1149,  1160,  1172,  1177,  1182,  1193,  1208,
-    1231,  1253,  1257,  1265,  1269,  1278,  1287,  1298,  1308,  1323,
-    1331
+       0,   161,   161,   162,   167,   182,   194,   207,   221,   237,
+     249,   261,   279,   292,   309,   321,   335,   353,   368,   385,
+     390,   399,   425,   431,   448,   460,   486,   507,   513,   531,
+     546,   558,   572,   584,   596,   608,   618,   640,   654,   667,
+     675,   687,   700,   718,   735,   759,   771,   785,   799,   811,
+     823,   835,   847,   859,   871,   885,   899,   913,   927,   941,
+     955,   968,   982,   996,  1010,  1023,  1037,  1051,  1064,  1078,
+    1092,  1106,  1120,  1134,  1148,  1162,  1176,  1193,  1206,  1219,
+    1232,  1248,  1262,  1276,  1290,  1304,  1318,  1332,  1346,  1360,
+    1374,  1388,  1409,  1421,  1433,  1445,  1463,  1477,  1492,  1513,
+    1525,  1545,  1559,  1573,  1587,  1601,  1621,  1633,  1645,  1657,
+    1672,  1685,  1702,  1715,  1732,  1745,  1765,  1777,  1793,  1810,
+    1828,  1848,  1861,  1873,  1885,  1897,  1909,  1925,  1938,  1955,
+    1974,  1987,  2000,  2017,  2035,  2054,  2067,  2079,  2097,  2119,
+    2149,  2178,  2184,  2199,  2205,  2221,  2238,  2256,  2273,  2295,
+    2310
 };
 #endif
 
@@ -1883,146 +1883,251 @@ yyreduce:
 #line 168 "parser/spp_parser.y" /* yacc.c:1646  */
     { 
 		(yyval.vnode) = (void*) (new Scope);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode)); 
 	}
-#line 1889 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 1896 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 176 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 183 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ScopeBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 1898 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 1912 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 181 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 195 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ScopeBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
-	}
-#line 1908 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 7:
-#line 187 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new ScopeBody);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 1919 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 8:
-#line 194 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new ScopeBody);
-		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1929 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 9:
-#line 203 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new ProgramElement);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 1938 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 10:
+  case 7:
 #line 208 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = (void*) (new ProgramElement);
+		(yyval.vnode) = (void*) (new ScopeBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1947 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 11:
-#line 213 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 8:
+#line 222 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new ScopeBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 1964 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 238 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ProgramElement);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 1956 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 1980 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 12:
-#line 224 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 10:
+#line 250 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-		(yyval.vnode) = (void*) (new Declaration);
-		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 1966 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
+		(yyval.vnode) = (void*) (new ProgramElement);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
-  case 13:
-#line 230 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Declaration);
-		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 1976 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 14:
-#line 240 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new DeclVars);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 1985 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 15:
-#line 245 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new DeclVars);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Virg);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 1996 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 16:
-#line 252 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 11:
+#line 262 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new ProgramElement);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2012 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 280 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Declaration);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2029 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 293 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Declaration);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new K_Maki);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2046 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 310 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new DeclVars);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2062 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 322 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new DeclVars);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2080 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 336 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new DeclVars);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Virg);
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2008 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2099 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 263 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 354 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new DeclVar);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 		
 		// free semantic type of identifier
 		//delete ((ASTNode*) $1);
 	}
-#line 2020 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2118 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 271 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 369 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new DeclVar);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-2].vstring)));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_Assignment);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
@@ -2030,31 +2135,38 @@ yyreduce:
 		// free semantic type of identifier
 		//delete ((ASTNode*) $1);
 	}
-#line 2034 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2139 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 281 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 386 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		//cerr << " Details : a valid identifier name was exptected as left-hand-side item." << endl;
 		yyerrok;
 	}
-#line 2043 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2148 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 286 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 391 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		//cerr << " Details : a valid expression was exptected as right-hand-side item." << endl;
 		yyerrok;
 	}
-#line 2052 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2157 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 295 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 400 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new DeclFunc);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-4].vstring)));
 
 		if((ASTNode*)(yyvsp[-3].vnode) != nullptr) // if no parameters
@@ -2067,41 +2179,62 @@ yyreduce:
 		// free semantic type of identifier
 		//delete ((ASTNode*) $1);
 	}
-#line 2071 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2183 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 314 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 426 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 2079 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2191 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 318 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 432 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ParamList);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		if((yyvsp[0].vnode) != nullptr)
 			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2090 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2209 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 328 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 449 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Param);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 	}
-#line 2099 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2225 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 333 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 461 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Param);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-3].vstring)));
 		((ASTNode*)(yyval.vnode))->add_child(new OpenChevr);
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring))); /** Discriminate identifier for type */
@@ -2111,13 +2244,20 @@ yyreduce:
 		//delete ((ASTNode*) $1);
 		//delete ((ASTNode*) $3);
 	}
-#line 2115 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2248 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 352 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 487 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Param);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring)));
 
 		if((yyvsp[0].vnode) != nullptr)
@@ -2126,185 +2266,290 @@ yyreduce:
 		// free semantic type of identifier
 		//delete ((ASTNode*) $1);
 	}
-#line 2130 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2270 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 366 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 508 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 2138 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2278 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 370 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 514 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ArgList);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 
 		if((yyvsp[0].vnode) != nullptr)
 			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2150 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2297 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 381 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 532 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
 		// free semantic type of identifier
 		//delete ((ASTNode*) $1);
 	}
-#line 2162 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2316 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 389 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 547 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2171 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2332 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 394 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 559 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2182 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2350 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 401 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 573 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2191 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2366 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 406 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 585 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2200 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2382 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 411 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 597 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Argument);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2209 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2398 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 416 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 609 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		/*cerr << " Details : the argument is invalid. It should be either " << endl
 			 << "    a constant, a braced expression, an anonymous soy function, " << endl
 			 << "    a datastructure access or a variable." << endl; */
 		yyclearin;
 	}
-#line 2220 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2409 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 426 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 619 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new BracedFuncCall);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2231 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2427 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 441 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 641 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new FuncCallEol);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-1].vstring)));
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 		//delete ((ASTNode*) $1);
 	}
-#line 2242 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2445 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 448 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 655 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new FuncCallEol);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2252 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2462 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 454 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 668 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
 		yyclearin;
 	}
-#line 2261 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2471 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 462 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 676 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ArgListEol);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2270 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2487 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 467 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 688 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ArgListEol);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2280 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2504 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 473 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 701 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ArgListEol);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2291 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2522 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 484 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 719 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new SoyExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2302 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2540 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 494 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 736 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new SoyFunc);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Soy);
 
 		if((ASTNode*)(yyvsp[-2].vnode) != nullptr)
@@ -2313,565 +2558,943 @@ yyreduce:
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignFunc);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2317 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2562 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 511 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 760 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2326 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2578 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 516 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 772 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenPar);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingPar);
 	}
-#line 2337 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2596 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 523 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 786 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
 		//delete ((ASTNode*) $1);
 	}
-#line 2348 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2614 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 530 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 800 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2357 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
-  case 49:
-#line 535 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2366 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 540 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2375 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 545 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2384 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 52:
-#line 550 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2393 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 555 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2402 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 560 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Plus);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2413 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 567 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Minus);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2424 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 574 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Mult);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2435 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 581 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Div);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2446 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 588 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Modulo);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2457 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 595 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_Exponentiation);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2468 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 602 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child(new Op_UnaryMinus);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2478 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 608 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseOr);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2489 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 62:
-#line 615 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseAnd);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2500 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 63:
-#line 622 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseXor);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2511 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 64:
-#line 629 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseNot);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2521 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 65:
-#line 635 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalOr);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2532 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 66:
-#line 642 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalAnd);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2543 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 67:
-#line 649 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalNot);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2553 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 68:
-#line 655 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessThan);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2564 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 662 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterThan);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2575 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 669 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessEqual);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2586 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 676 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterEqual);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2597 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 72:
-#line 683 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompEqual);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2608 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 73:
-#line 690 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_CompNotEqual);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2619 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 74:
-#line 697 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_RightShift);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2630 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 75:
-#line 704 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 49:
+#line 812 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_LeftShift);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2641 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 2646 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 76:
-#line 711 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 50:
+#line 824 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Expression);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
-		((ASTNode*)(yyval.vnode))->add_child(new Op_StringConcat);
-		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
-	}
-#line 2652 "parser/sushipp.tab.c" /* yacc.c:1646  */
-    break;
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
-  case 77:
-#line 721 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-		(yyval.vnode) = (void*) (new IncrExpression);
-		((ASTNode*)(yyval.vnode))->add_child(new Op_PrefixIncrement);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
 #line 2662 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
-  case 78:
-#line 727 "parser/spp_parser.y" /* yacc.c:1646  */
+  case 51:
+#line 836 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2678 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 848 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2694 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 860 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2710 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 872 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Plus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2728 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 886 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Minus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2746 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 900 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Mult);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2764 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 914 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Div);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2782 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 928 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Modulo);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2800 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 942 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_Exponentiation);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2818 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 956 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new Op_UnaryMinus);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2835 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 969 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseOr);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2853 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 62:
+#line 983 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseAnd);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2871 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 997 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseXor);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2889 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 1011 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new Op_BitwiseNot);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2906 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 1024 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalOr);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2924 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 66:
+#line 1038 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalAnd);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2942 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 67:
+#line 1052 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LogicalNot);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2959 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 1065 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessThan);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2977 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 1079 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterThan);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 2995 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 1093 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompLessEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3013 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 1107 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompGreaterEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3031 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 72:
+#line 1121 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3049 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 73:
+#line 1135 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_CompNotEqual);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3067 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 74:
+#line 1149 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_RightShift);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3085 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 75:
+#line 1163 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_LeftShift);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3103 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 76:
+#line 1177 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new Expression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Op_StringConcat);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3121 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 77:
+#line 1194 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new IncrExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)(yyval.vnode))->add_child(new Op_PrefixIncrement);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
+	}
+#line 3138 "parser/sushipp.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 78:
+#line 1207 "parser/spp_parser.y" /* yacc.c:1646  */
+    {
+		(yyval.vnode) = (void*) (new IncrExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Op_PrefixDecrement);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2672 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3155 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 733 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1220 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new IncrExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_PostfixIncrement);
 	}
-#line 2682 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3172 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 739 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1233 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new IncrExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_PostfixDecrement);
 	}
-#line 2692 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3189 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 748 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1249 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_Assignment);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2703 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3207 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 755 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1263 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignPlus);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2714 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3225 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 762 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1277 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMinus);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2725 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3243 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 769 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1291 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMult);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2736 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3261 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 776 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1305 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignDiv);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2747 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3279 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 783 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1319 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignExpo);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2758 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3297 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 790 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1333 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignMod);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2769 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3315 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 797 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1347 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignAnd);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2780 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3333 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 804 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1361 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignOr);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2791 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3351 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 811 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1375 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignXor);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2802 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3369 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 818 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1389 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Assignment);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Op_AssignConcat);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2813 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3387 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 832 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1410 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ModifyingExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2822 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3403 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 837 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1422 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ModifyingExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2831 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3419 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 842 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1434 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ModifyingExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2840 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3435 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 847 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1446 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ModifyingExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2849 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3451 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 858 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1464 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new AssignableExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[0].vstring)));
 
 		//delete ((ASTNode*) $1);
 	}
-#line 2860 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3469 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 865 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1478 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new AssignableExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2869 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3485 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 873 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1493 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new DatastructureAccess);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Identifier(*(yyvsp[-3].vstring)));
 		((ASTNode*)(yyval.vnode))->add_child(new OpenBrace);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
@@ -2879,420 +3502,711 @@ yyreduce:
 
 		//delete ((ASTNode*) $1);
 	}
-#line 2883 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3506 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 887 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1514 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ExpressionList);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2892 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3522 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 892 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1526 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ExpressionList);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Virg);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2903 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3540 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 905 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1546 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new NT_Constant);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Integer(*(yyvsp[0].vstring)));
 		
 		//delete ((ASTNode*) $1);
 	}
-#line 2914 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3558 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 912 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1560 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new NT_Constant);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Float(*(yyvsp[0].vstring)));
 		
 		//delete ((ASTNode*) $1);
 	}
-#line 2925 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3576 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 919 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1574 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new NT_Constant);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new String(*(yyvsp[0].vstring)));
 		
 		//delete ((ASTNode*) $1);
 	}
-#line 2936 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3594 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 926 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1588 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new NT_Constant);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Bool(*(yyvsp[0].vstring)));
 		
 		//delete ((ASTNode*) $1);
 	}
-#line 2947 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3612 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 933 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1602 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new NT_Constant);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Character(*(yyvsp[0].vstring)));
 		
 		//delete ((ASTNode*) $1);
 	}
-#line 2958 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3630 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 946 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1622 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Datastructure);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2967 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3646 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 951 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1634 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Datastructure);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2976 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3662 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 956 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1646 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Datastructure);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2985 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3678 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 961 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1658 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Datastructure);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 2994 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3694 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 969 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1673 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Array);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg);
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd);
 	}
-#line 3004 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3711 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 975 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1686 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Array);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd);
 	}
-#line 3015 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3729 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 985 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1703 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Array);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc);
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc);
 	}
-#line 3025 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3746 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 991 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1716 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Array);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc);
 	}
-#line 3036 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3764 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1001 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1733 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Tuple);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new TupleBeg);
 		((ASTNode*)(yyval.vnode))->add_child(new TupleEnd);
 	}
-#line 3046 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3781 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1007 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1746 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Tuple);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new TupleBeg);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new TupleEnd);
 	}
-#line 3057 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3799 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1020 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1766 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MakeSequence);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3066 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3815 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1025 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1778 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-	 	(yyval.vnode) = (void*) (new MakeSequence);
+	 	
+(yyval.vnode) = (void*) (new MakeSequence);
+
+if((yyval.vnode) == nullptr)
+{
+	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	 }
-#line 3075 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3832 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 1033 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1794 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MakeSequenceList);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new OpenAcc());
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ClosingAcc());
 	}
-#line 3086 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3850 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 1043 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1811 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MakeSequenceArray);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayBeg());
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new ArrayEnd());
 
 	}
-#line 3098 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3869 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 1054 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1829 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new SeqExpression);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new K_To());
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3109 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3887 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 1067 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1849 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = (void*) (new Statement);
+  		
+ (yyval.vnode) = (void*) (new Statement);
+ 
+ if((yyval.vnode) == nullptr)
+ {
+ 	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3118 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3904 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 1072 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1862 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Statement);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3127 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3920 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 1077 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1874 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Statement);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3136 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3936 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 1082 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1886 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Statement);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child(new K_Continue);
 	}
-#line 3145 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3952 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 1087 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1898 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Statement);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child(new K_Break);
 	}
-#line 3154 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3968 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 1092 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1910 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Statement);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3163 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 3984 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 1101 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1926 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = (void*) (new Return);
+  		
+ (yyval.vnode) = (void*) (new Return);
+ 
+ if((yyval.vnode) == nullptr)
+ {
+ 	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child(new K_Nori);
   	}
-#line 3172 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4001 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 1106 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1939 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Return);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child(new K_Nori);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3182 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4018 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 1116 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1956 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Menu);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Menu);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3195 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4038 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 1128 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1975 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MenuBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 	}
-#line 3205 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4055 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 1134 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 1988 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MenuBody);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 	}
-#line 3215 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4072 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 1140 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2001 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MenuBody);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3226 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4090 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 1150 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2018 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MenuCase);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new Arrow);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3238 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4109 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 1161 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2036 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new MenuDef);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new Underscore);
 		((ASTNode*)(yyval.vnode))->add_child(new Arrow);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3250 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4128 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 1173 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2055 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = (void*) (new Loop);
+  		
+ (yyval.vnode) = (void*) (new Loop);
+ 
+ if((yyval.vnode) == nullptr)
+ {
+ 	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3259 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4145 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 1178 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2068 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Loop);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3268 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4161 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 1183 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2080 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Loop);
+  		
+  		if((yyval.vnode) == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3277 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4177 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 1194 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2098 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Roll);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Roll);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3290 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4197 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 1209 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2120 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Foreach);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Foreach);
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
 		((ASTNode*)(yyval.vnode))->add_child(new K_As);
@@ -3302,83 +4216,119 @@ yyreduce:
 		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 		//delete ((ASTNode*) $2);
 	}
-#line 3306 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4220 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 1232 "parser/spp_parser.y" /* yacc.c:1646  */
-    {
-			(yyval.vnode) = (void*) (new For);
-			((ASTNode*)(yyval.vnode))->add_child(new K_For);
+#line 2150 "parser/spp_parser.y" /* yacc.c:1646  */
+    {	
+		(yyval.vnode) = (void*) (new For);
 
-			if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
-				((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-7].vnode));
-
-			((ASTNode*)(yyval.vnode))->add_child(new Virg);
-			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
-			((ASTNode*)(yyval.vnode))->add_child(new Virg);
-
-			if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
-				((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
-
-			((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
-			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
-			((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-#line 3329 "parser/sushipp.tab.c" /* yacc.c:1646  */
+
+		((ASTNode*)(yyval.vnode))->add_child(new K_For);
+
+		if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-7].vnode));
+
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new Virg);
+
+		if((ASTNode*)(yyvsp[-7].vnode) != nullptr)
+			((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
+
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
+		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
+		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
+	}
+#line 4250 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 1254 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2179 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 3337 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4258 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 1258 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2185 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ForInitializer);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3346 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4274 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 1266 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2200 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = nullptr;
 	}
-#line 3354 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4282 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 1270 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2206 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new ForUpdate);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3363 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4298 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 1279 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2222 "parser/spp_parser.y" /* yacc.c:1646  */
     {
-  		(yyval.vnode) = (void*) (new Conditional);
+  		
+ (yyval.vnode) = (void*) (new Conditional);
+ 
+ if((yyval.vnode) == nullptr)
+ {
+ 	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
   		((ASTNode*)(yyval.vnode))->add_child(new K_If);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
   	}
-#line 3376 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4319 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 1288 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2239 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Conditional);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_If);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-5].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
@@ -3387,13 +4337,20 @@ yyreduce:
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3391 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4341 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 1299 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2257 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Conditional);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_If);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-4].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
@@ -3401,13 +4358,20 @@ yyreduce:
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3405 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4362 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 1309 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2274 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Conditional);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_If);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-6].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
@@ -3417,36 +4381,50 @@ yyreduce:
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEos);
 	}
-#line 3421 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4385 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 1324 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2296 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Elseif);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Elseif);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-2].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
   	}
-#line 3433 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4404 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 1332 "parser/spp_parser.y" /* yacc.c:1646  */
+#line 2311 "parser/spp_parser.y" /* yacc.c:1646  */
     {
 		(yyval.vnode) = (void*) (new Elseif);
+		
+		if((yyval.vnode) == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
 		((ASTNode*)(yyval.vnode))->add_child(new K_Elseif);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-3].vnode));
   		((ASTNode*)(yyval.vnode))->add_child(new DelimEol);
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[-1].vnode));
   		((ASTNode*)(yyval.vnode))->add_child((ASTNode*)(yyvsp[0].vnode));
 	}
-#line 3446 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4424 "parser/sushipp.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 3450 "parser/sushipp.tab.c" /* yacc.c:1646  */
+#line 4428 "parser/sushipp.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3681,7 +4659,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1342 "parser/spp_parser.y" /* yacc.c:1906  */
+#line 2328 "parser/spp_parser.y" /* yacc.c:1906  */
 
 
 static void yyerror(const char *s)
