@@ -15,6 +15,22 @@ AbstractSyntaxTree::AbstractSyntaxTree(ASTNode* node) : root_(node)
 
 }
 
+AbstractSyntaxTree::AbstractSyntaxTree(const AbstractSyntaxTree& copy) : root_(new ASTNode(*(copy.root_)))
+{
+
+}
+
+AbstractSyntaxTree::~AbstractSyntaxTree()
+{
+	clear();
+}
+
+AbstractSyntaxTree& AbstractSyntaxTree::operator=(const AbstractSyntaxTree& copy)
+{
+	clear();
+	root_ = new ASTNode(*(copy.root_));
+}
+
 // accessors
 bool AbstractSyntaxTree::empty() const
 {
@@ -43,4 +59,5 @@ void AbstractSyntaxTree::set_root(ASTNode* node)
 void AbstractSyntaxTree::clear()
 {
 	delete root_;
+	root_ = nullptr;
 }
