@@ -27,15 +27,15 @@ void NT_Program::accept(ASTVisitor& visitor)
 
 /** (NT_)Program derived classes **/
 /* Program */
-Program::Program() : NT_Program("program") { }
+Program::Program() : NT_Program("Program") { }
 
 Program::Program(int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("program", first_line, last_line, first_column, last_column)
+	: NT_Program("Program", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Program::Program(const NodeLocation& node_loc) : NT_Program("program", node_loc)
+Program::Program(const NodeLocation& node_loc) : NT_Program("Program", node_loc)
 {
 
 }
@@ -48,15 +48,15 @@ void Program::accept(ASTVisitor& visitor)
 }
 
 /* ScopeBody */
-ScopeBody::ScopeBody() : NT_Program("scopebody") { }
+ScopeBody::ScopeBody() : NT_Program("Scope body") { }
 
 ScopeBody::ScopeBody(int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("scopebody", first_line, last_line, first_column, last_column)
+	: NT_Program("Scope body", first_line, last_line, first_column, last_column)
 {
 
 }
 
-ScopeBody::ScopeBody(const NodeLocation& node_loc) : NT_Program("scopebody", node_loc)
+ScopeBody::ScopeBody(const NodeLocation& node_loc) : NT_Program("Scope body", node_loc)
 {
 
 }
@@ -68,15 +68,15 @@ void ScopeBody::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 /* ProgramElement */
-ProgramElement::ProgramElement() : NT_Program("programelement") { }
+ProgramElement::ProgramElement() : NT_Program("Program element") { }
 
 ProgramElement::ProgramElement(int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("programelement", first_line, last_line, first_column, last_column)
+	: NT_Program("Program element", first_line, last_line, first_column, last_column)
 {
 
 }
 
-ProgramElement::ProgramElement(const NodeLocation& node_loc) : NT_Program("programelement", node_loc)
+ProgramElement::ProgramElement(const NodeLocation& node_loc) : NT_Program("Program element", node_loc)
 {
 
 }
@@ -89,15 +89,15 @@ void ProgramElement::accept(ASTVisitor& visitor)
 }
 
 /* Scope */
-Scope::Scope() : NT_Program("scope") { }
+Scope::Scope() : NT_Program("Scope") { }
 
 Scope::Scope(int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("scope", first_line, last_line, first_column, last_column)
+	: NT_Program("Scope", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Scope::Scope(const NodeLocation& node_loc) : NT_Program("scope", node_loc)
+Scope::Scope(const NodeLocation& node_loc) : NT_Program("Scope", node_loc)
 {
 
 }

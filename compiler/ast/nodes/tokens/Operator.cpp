@@ -111,15 +111,15 @@ void Op_Div::accept(ASTVisitor& visitor)
 }
 
 /* Operator : % */
-Op_Modulo::Op_Modulo() : Operator("%%") { }
+Op_Modulo::Op_Modulo() : Operator("%") { }
 
 Op_Modulo::Op_Modulo(int first_line, int last_line, int first_column, int last_column)
-	: Operator("%%", first_line, last_line, first_column, last_column)
+	: Operator("%", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Op_Modulo::Op_Modulo(const NodeLocation& node_loc) : Operator("%%", node_loc)
+Op_Modulo::Op_Modulo(const NodeLocation& node_loc) : Operator("%", node_loc)
 {
 
 }

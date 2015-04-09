@@ -16,7 +16,7 @@ void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )
 void PrintASTVisitor::print_single( string& name, int depth )
 {
 	string tab_line = string(depth * length_line, '-') + "˧";
-	cout << tab_line << " (" << name << ")" << endl;
+	cout << tab_line << " " << name << endl;
 }
 
 /*****************************

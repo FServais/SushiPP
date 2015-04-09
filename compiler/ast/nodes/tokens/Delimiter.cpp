@@ -27,15 +27,15 @@ void Delimiter::accept(ASTVisitor& visitor)
 
 /** Delimiter derived classes
  Delimiter : DelimEol */
-DelimEol::DelimEol() : Delimiter("eol") { }
+DelimEol::DelimEol() : Delimiter("EOL") { }
 
 DelimEol::DelimEol(int first_line, int last_line, int first_column, int last_column)
-	: Delimiter("eol", first_line, last_line, first_column, last_column)
+	: Delimiter("EOL", first_line, last_line, first_column, last_column)
 {
 
 }
 
-DelimEol::DelimEol(const NodeLocation& node_loc) : Delimiter("eol", node_loc)
+DelimEol::DelimEol(const NodeLocation& node_loc) : Delimiter("EOL", node_loc)
 {
 
 }

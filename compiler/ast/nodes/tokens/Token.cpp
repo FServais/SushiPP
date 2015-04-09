@@ -25,17 +25,17 @@ Token::Token(const std::string& node_name, const NodeLocation& node_loc)
  ***********************************/
 
 /** Identifier */
-Identifier::Identifier(const std::string& id) : Token("identifier"), id_(id) {}
+Identifier::Identifier(const std::string& id) : Token("Identifier"), id_(id) {}
 
 Identifier::Identifier(const std::string& id, int first_line, int last_line, int first_column, int last_column)
-	: Token("identifier", first_line, last_line, first_column, last_column),
+	: Token("Identifier", first_line, last_line, first_column, last_column),
 	  id_(id)
 {
 
 }
 
 Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
-	: Token("identifier", node_loc),
+	: Token("Identifier", node_loc),
 	  id_(id)
 {
 

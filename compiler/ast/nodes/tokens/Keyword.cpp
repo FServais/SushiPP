@@ -321,15 +321,15 @@ void K_Else::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_int */
-Type_Int::Type_Int() : Keyword("type_int") { }
+Type_Int::Type_Int() : Keyword("Type (int)") { }
 
 Type_Int::Type_Int(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_int", first_line, last_line, first_column, last_column)
+	: Keyword("Type (int)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Int::Type_Int(const NodeLocation& node_loc) : Keyword("type_int", node_loc)
+Type_Int::Type_Int(const NodeLocation& node_loc) : Keyword("Type (int)", node_loc)
 {
 
 }
@@ -342,15 +342,15 @@ void Type_Int::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_float */
-Type_Float::Type_Float() : Keyword("type_float") { }
+Type_Float::Type_Float() : Keyword("Type (float)") { }
 
 Type_Float::Type_Float(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_float", first_line, last_line, first_column, last_column)
+	: Keyword("Type (float)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Float::Type_Float(const NodeLocation& node_loc) : Keyword("type_float", node_loc)
+Type_Float::Type_Float(const NodeLocation& node_loc) : Keyword("Type (float)", node_loc)
 {
 
 }
@@ -363,15 +363,15 @@ void Type_Float::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_bool */
-Type_Bool::Type_Bool() : Keyword("type_bool") { }
+Type_Bool::Type_Bool() : Keyword("Type (bool)") { }
 
 Type_Bool::Type_Bool(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_bool", first_line, last_line, first_column, last_column)
+	: Keyword("Type (bool)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Bool::Type_Bool(const NodeLocation& node_loc) : Keyword("type_bool", node_loc)
+Type_Bool::Type_Bool(const NodeLocation& node_loc) : Keyword("Type (bool)", node_loc)
 {
 
 }
@@ -384,15 +384,15 @@ void Type_Bool::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_bool */
-Type_Char::Type_Char() : Keyword("type_char") { }
+Type_Char::Type_Char() : Keyword("Type (char)") { }
 
 Type_Char::Type_Char(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_char", first_line, last_line, first_column, last_column)
+	: Keyword("Type (char)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Char::Type_Char(const NodeLocation& node_loc) : Keyword("type_char", node_loc)
+Type_Char::Type_Char(const NodeLocation& node_loc) : Keyword("Type (char)", node_loc)
 {
 
 }
@@ -405,15 +405,15 @@ void Type_Char::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_string */
-Type_String::Type_String() : Keyword("type_string") { }
+Type_String::Type_String() : Keyword("Type (string)") { }
 
 Type_String::Type_String(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_string", first_line, last_line, first_column, last_column)
+	: Keyword("Type (string)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_String::Type_String(const NodeLocation& node_loc) : Keyword("type_string", node_loc)
+Type_String::Type_String(const NodeLocation& node_loc) : Keyword("Type (string)", node_loc)
 {
 
 }
@@ -426,15 +426,15 @@ void Type_String::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : ] */
-Type_Array::Type_Array() : Keyword("type_array") { }
+Type_Array::Type_Array() : Keyword("Type (array)") { }
 
 Type_Array::Type_Array(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_array", first_line, last_line, first_column, last_column)
+	: Keyword("Type (array)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Array::Type_Array(const NodeLocation& node_loc) : Keyword("type_array", node_loc)
+Type_Array::Type_Array(const NodeLocation& node_loc) : Keyword("Type (array)", node_loc)
 {
 
 }
@@ -447,15 +447,15 @@ void Type_Array::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_list */
-Type_List::Type_List() : Keyword("type_list") { }
+Type_List::Type_List() : Keyword("Type (list)") { }
 
 Type_List::Type_List(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_list", first_line, last_line, first_column, last_column)
+	: Keyword("Type (list)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_List::Type_List(const NodeLocation& node_loc) : Keyword("type_list", node_loc)
+Type_List::Type_List(const NodeLocation& node_loc) : Keyword("Type (list)", node_loc)
 {
 
 }
@@ -468,15 +468,15 @@ void Type_List::accept(ASTVisitor& visitor)
 }
 
 /* Keyword : type_tuple */
-Type_Tuple::Type_Tuple() : Keyword("type_tuple") { }
+Type_Tuple::Type_Tuple() : Keyword("Type (tuple)") { }
 
 Type_Tuple::Type_Tuple(int first_line, int last_line, int first_column, int last_column)
-	: Keyword("type_tuple", first_line, last_line, first_column, last_column)
+	: Keyword("Type (tuple)", first_line, last_line, first_column, last_column)
 {
 
 }
 
-Type_Tuple::Type_Tuple(const NodeLocation& node_loc) : Keyword("type_tuple", node_loc)
+Type_Tuple::Type_Tuple(const NodeLocation& node_loc) : Keyword("Type (tuple)", node_loc)
 {
 
 }
