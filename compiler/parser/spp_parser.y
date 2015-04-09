@@ -41,11 +41,22 @@
 	extern AbstractSyntaxTree* syntax_tree;
 	// true if an error occurred -> used for exiting yyparse with correct code if the parser
 	// reaches the end of file after error recovery
-	bool error_occurred = false;
+	bool error_occurred;
 %}
 
 %define parse.error verbose
 %locations
+
+%initial-action
+{
+	if(syntax_tree != nullptr)
+	{
+		delete syntax_tree;
+		syntax_tree = nullptr;
+	}
+
+	error_occurred = false;
+}
 
 %union
 {
@@ -175,7 +186,7 @@ program:
 		if(error_occurred)
 		{
 			syntax_tree = nullptr;
-			delete ((ASTNode*) $1);
+			delete ((ScopeBody*) $1);
 			YYABORT;
 		}
 
@@ -247,7 +258,7 @@ scope-body:
 		((ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$3);
+		delete ((ScopeBody*)$3);
 	}
 | DELIM_EOL scope-body
 	{
@@ -262,7 +273,7 @@ scope-body:
 		((ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$2);
+		delete ((ScopeBody*)$2);
 	}
 ;
 
@@ -366,7 +377,7 @@ decl-vars:
 		((ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$3);
+		delete ((DeclVars*)$3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
@@ -383,7 +394,7 @@ decl-vars:
 		((ASTNode*)$$)->add_children(children($4));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$4);
+		delete ((DeclVars*)$4);
 	}
 ;
 
@@ -450,7 +461,7 @@ decl-func:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		if((ASTNode*)$2 != nullptr) // if no parameters
+		if($2 != nullptr) // if no parameters
 			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
 		((ASTNode*)$$)->add_child(new Op_AssignFunc);
@@ -485,7 +496,7 @@ param-list:
 			((ASTNode*)$$)->add_children(children($2));
 			
 			// delete remaining node (which has no children)
-			delete ((ASTNode*)$2);
+			delete ((ParamList*)$2);
 		}
 	}
 ;
@@ -576,7 +587,7 @@ arg-list:
 			((ASTNode*)$$)->add_children(children($2));
 			
 			// delete remaining node (which has no children)
-			delete ((ASTNode*)$2);
+			delete ((ArgList*)$2);
 		}
 	}
 ;
@@ -768,7 +779,7 @@ arg-list-eol:
 		((ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$2);
+		delete ((ArgListEol*)$2);
 	}
 | argument DELIM_EOL arg-list-eol
 	{
@@ -784,7 +795,7 @@ arg-list-eol:
 		((ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$3);
+		delete ((ArgListEol*)$3);
 	}
 ;
 
@@ -1615,7 +1626,7 @@ expression-list:
 		((ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$3);
+		delete ((ExpressionList*)$3);
 	}
 ;
 
@@ -2093,7 +2104,7 @@ menu-body:
 		((ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ASTNode*)$3);
+		delete ((MenuBody*)$3);
 	}
 ;
 
