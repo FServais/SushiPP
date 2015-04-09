@@ -41,7 +41,11 @@ namespace ast
 		ASTNode(const std::string&, int, int, int, int);
 
 		/** Rule of the Big Three */
-		// copy constructor : deep copy
+		/**
+		 * @brief Copy constructor
+		 * The new node is constructed as a standalone one : depth 0 and has therefore no parent (then considered as root). 
+		 * To change these properties it has to be added as a child of another node.
+		 */
 		ASTNode(const ASTNode&);
 
 		// assignment operator
@@ -58,11 +62,15 @@ namespace ast
 		std::vector<ASTNode*>& get_children();
 		const std::vector<ASTNode*>& get_children() const;
 
-		// add a child to the node
+		// add a child(ren) to the node
 		void add_child(ASTNode*);
+		void add_children(const std::vector<ASTNode*>&);
 
 		// delete a child at the given index
-		void delete_child(size_t);
+		// the ownership of the memory allocated for the child node and its descendents
+		// is tranferred to the calling context
+		ASTNode* delete_child(size_t);
+		std::vector<ASTNode*> delete_children();
 
 		// check wheter the node has at least a child
 		bool has_child() const;
@@ -77,12 +85,8 @@ namespace ast
 		// function for accepting a visitor
 		virtual void accept(ASTVisitor&);
 
-		int depth();
-		const int depth() const;
-
-		void incr_depth();
-		void decr_depth();
-
+		// return the depth of the tree
+		int depth() const;
 
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
@@ -90,6 +94,15 @@ namespace ast
 		NodeLocation loc; /* Node location */
 		std::string node_name_; /* Node name */
 		int depth_;
+
+		// set the depth of the node and its child
+		void set_depth(int);
+
+		// free recursively  the memory associated to the current node (memory of the children is freed too)
+		void free_node();
+
+		// free the memory allocated to the children and remove them from the children vector
+		void clear_children();
 	};
 }
 

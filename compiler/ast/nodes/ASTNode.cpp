@@ -46,32 +46,37 @@ ASTNode::ASTNode(const string& name, int first_line, int last_line, int first_co
 
 }
 
-ASTNode::ASTNode(const ASTNode& copy) : loc(copy.loc),node_name_(copy.node_name_), depth_(copy.depth())
+ASTNode::ASTNode(const ASTNode& copy) : loc(copy.loc), node_name_(copy.node_name_), depth_(0)
 {
-	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) 
+	for(ASTNode* node : copy.get_children()) 
 	{
-      	ASTNode* ch = new ASTNode(**it);
-		add_child(ch);
+		ASTNode* new_child = new ASTNode(*node);
+		add_child(new_child);
 	}
 }
 
 ASTNode& ASTNode::operator=(const ASTNode& copy)
 {
-	for_each(children.begin(), children.end(), default_delete<ASTNode>());
-	children.clear();
+	// free the memory previously allocated to the current node
+	clear_children();
+
+	// copy the properties
 	node_name_ = copy.node_name_;
 	loc = copy.loc;
 	
-	for(auto it = copy.get_children().begin(); it != copy.get_children().end(); it++) {
-		ASTNode* ch = new ASTNode(**it);
-		add_child(ch);
+	// and the child
+	for(ASTNode* node : copy.get_children()) 
+	{
+		ASTNode* new_child = new ASTNode(*node);
+		add_child(new_child);
 	}
-    return *this;
+
+	return *this;
 }
 
 ASTNode::~ASTNode()
 {
-	for_each(children.begin(), children.end(), default_delete<ASTNode>());
+	free_node();
 }
 
 const ASTNode& ASTNode::get_father() const
@@ -101,17 +106,30 @@ void ASTNode::add_child(ASTNode* child)
 
 	children.push_back(child);
 	child->father = this;
-
-	child->incr_depth();
+	child->set_depth(depth_ + 1); // the depth of the new childern is the current + 1
 }
 
-void ASTNode::delete_child(size_t index)
+void ASTNode::add_children(const std::vector<ASTNode*>& new_children)
+{
+	for(ASTNode* child : new_children)
+		add_child(child);
+}
+
+ASTNode* ASTNode::delete_child(size_t index)
 {
 	if(index >= children.size())
-		return; 
-	ASTNode* ch = children.at(index);
-	ch->decr_depth();
+		return nullptr; 
+	
+	ASTNode* child_to_remove = children[index];
 	children.erase(next(children.begin(), index));
+	return child_to_remove;
+}
+
+std::vector<ASTNode*> ASTNode::delete_children()
+{
+	std::vector<ASTNode*> children_to_return(children);
+	children.clear();
+	return children_to_return;
 }
 
 bool ASTNode::has_child() const
@@ -141,27 +159,26 @@ void ASTNode::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-int ASTNode::depth()
+int ASTNode::depth() const
 {
 	return depth_;
 }
 
-const int ASTNode::depth() const
+void ASTNode::set_depth(int new_depth)
 {
-	return depth_;
-}
+	depth_ = new_depth;
 
-void ASTNode::incr_depth()
-{
-	++depth_;
 	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->incr_depth();
+		(*it)->set_depth(new_depth + 1);
 }
 
-void ASTNode::decr_depth()
+void ASTNode::free_node()
 {
-	--depth_;
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->decr_depth();
+	for_each(children.begin(), children.end(), default_delete<ASTNode>());
 }
 
+void ASTNode::clear_children()
+{
+	free_node();
+	children.clear();
+}
