@@ -11,8 +11,8 @@ CCFLAGS = --std=c++11 -g
 all: sushipp
 
 sushipp: ast.o node nonterminal tokens print_visitor sushipp.tab.o sushipp.yy.o main.o 
-	$(CC) $(PARSER_PATH)sushipp.tab.o $(SCANNER_PATH)sushipp.yy.o main.o \
-		  $(AST_PATH)ast.o $(NODES_PATH)node_location.o $(NODES_PATH)ast_node.o \
+	$(CC) $(PARSER_PATH)sushipp.tab.o $(SCANNER_PATH)sushipp.yy.o main.o $(AST_PATH)ast.o \
+		  $(NODES_PATH)node_location.o $(NODES_PATH)ast_node.o $(NODES_PATH)error_node.o \
 		  $(NONTERMINAL_PATH)nt_terminal.o $(NONTERMINAL_PATH)nt_datastructure.o \
 		  $(NONTERMINAL_PATH)nt_statement.o $(NONTERMINAL_PATH)nt_program.o \
 		  $(NONTERMINAL_PATH)nt_expression.o $(NONTERMINAL_PATH)nt_declaration.o \
@@ -26,11 +26,11 @@ main.o: sushipp.tab.o
 	$(CC) -c main.cpp -o main.o $(CCFLAGS)
 
 # scanner and parser
-sushipp.tab.o: $(PARSER_PATH)spp_parser.y 
+sushipp.tab.o: $(PARSER_PATH)spp_parser.y
 	bison -d $(PARSER_PATH)spp_parser.y -b $(PARSER_PATH)sushipp
 	$(CC) -c $(PARSER_PATH)sushipp.tab.c -o $(PARSER_PATH)sushipp.tab.o $(CCFLAGS)
 
-sushipp.yy.o: $(SCANNER_PATH)spp_scanner.lex sushipp.tab.o
+sushipp.yy.o: $(SCANNER_PATH)spp_scanner.lex $(PARSER_PATH)sushipp.tab.h
 	flex -o $(SCANNER_PATH)sushipp.yy.c $(SCANNER_PATH)spp_scanner.lex 
 	$(CC) -c $(SCANNER_PATH)sushipp.yy.c -o $(SCANNER_PATH)sushipp.yy.o $(CCFLAGS)
 
@@ -39,13 +39,16 @@ ast.o: $(AST_PATH)AbstractSyntaxTree.cpp $(AST_PATH)AbstractSyntaxTree.hpp $(NOD
 	$(CC) -c $(AST_PATH)AbstractSyntaxTree.cpp -o $(AST_PATH)ast.o $(CCFLAGS)
 
 # Node #
-node: ast_node.o node_location.o
+node: ast_node.o node_location.o error_node.o
 
 ast_node.o: $(NODES_PATH)ASTNode.cpp $(NODES_PATH)ASTNode.hpp $(NODES_PATH)NodeLocation.hpp
 	$(CC) -c $(NODES_PATH)ASTNode.cpp -o $(NODES_PATH)ast_node.o $(CCFLAGS)
 
 node_location.o: $(NODES_PATH)NodeLocation.cpp $(NODES_PATH)NodeLocation.hpp 
 	$(CC) -c $(NODES_PATH)NodeLocation.cpp -o $(NODES_PATH)node_location.o $(CCFLAGS)
+
+error_node.o: $(NODES_PATH)ErrorNode.cpp $(NODES_PATH)ErrorNode.hpp 
+	$(CC) -c $(NODES_PATH)ErrorNode.cpp -o $(NODES_PATH)error_node.o $(CCFLAGS)
 
 # Non terminal #
 nonterminal: nt_terminal.o nt_datastructure.o nt_statement.o nt_program.o nt_expression.o nt_declaration.o nt_constant.o nt_functioncall.o
