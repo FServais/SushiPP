@@ -6,8 +6,10 @@
 
 	/** AST includes*/
 	#include "../ast/AbstractSyntaxTree.hpp"
+
 	#include "../ast/nodes/ASTNode.hpp"
 	#include "../ast/nodes/NodeLocation.hpp"
+	#include "../ast/nodes/ErrorNode.hpp"
 
 	#include "../ast/nodes/tokens/Token.hpp"
 	#include "../ast/nodes/tokens/Operator.hpp"
@@ -24,6 +26,9 @@
 	#include "../ast/nodes/nonterminal/NT_Program.hpp"
 	#include "../ast/nodes/nonterminal/NT_Statement.hpp"
 
+	/* Macro for getting the children of a ASTNode* of type void* */
+	#define children(node) ((ASTNode*)node)->delete_children()
+
 	using namespace std;
 	using namespace ast;
 
@@ -34,6 +39,9 @@
 
 	// will store a pointer to the abstract syntax tree constructed by the parser
 	extern AbstractSyntaxTree* syntax_tree;
+	// true if an error occurred -> used for exiting yyparse with correct code if the parser
+	// reaches the end of file after error recovery
+	bool error_occurred = false;
 %}
 
 %define parse.error verbose
@@ -44,6 +52,9 @@
 	std::string* vstring;
 	void* vnode;
 }
+
+%destructor { delete $$; } <vstring>
+%destructor { delete ((ASTNode*)$$); } <vnode>
 
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
@@ -142,7 +153,7 @@
 %token <vstring> IDENTIFIER
 
 /* Non terminal types */
-%type <vnode> program scope-body program-element scope
+%type <vnode> scope-body program-element scope
 %type <vnode> declaration decl-vars decl-var decl-func param param-list
 %type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
@@ -158,8 +169,27 @@
 /* Program general rules */
 /*************************/
 program:
-  %empty 		{ syntax_tree = new AbstractSyntaxTree; }
-| scope-body	{ syntax_tree = new AbstractSyntaxTree((ASTNode*)$$); }
+  %empty 		{ syntax_tree = new AbstractSyntaxTree(new Program); }
+| scope-body	
+	{
+		if(error_occurred)
+		{
+			syntax_tree = nullptr;
+			delete ((ASTNode*) $1);
+			YYABORT;
+		}
+
+		ASTNode* prog = new Program;
+
+		if(prog == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		prog->add_child((ASTNode*)$1);
+		syntax_tree = new AbstractSyntaxTree(prog); 
+	}
 ;
 
 /* Scope containing sushi++ code */
@@ -202,7 +232,6 @@ scope-body:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 | program-element DELIM_EOL scope-body
 	{
@@ -215,8 +244,10 @@ scope-body:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child(new DelimEol);
-		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$3);
 	}
 | DELIM_EOL scope-body
 	{
@@ -228,8 +259,10 @@ scope-body:
 			return 1;
 		}
 
-		((ASTNode*)$$)->add_child(new DelimEol);
-		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_children(children($2));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$2);
 	}
 ;
 
@@ -330,7 +363,10 @@ decl-vars:
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 		((ASTNode*)$$)->add_child(new Virg);
-		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
@@ -344,8 +380,10 @@ decl-vars:
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 		((ASTNode*)$$)->add_child(new Virg);
-		((ASTNode*)$$)->add_child(new DelimEol);
-		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_children(children($4));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$4);
 	}
 ;
 
@@ -362,8 +400,8 @@ decl-var:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 		
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | IDENTIFIER '=' expression
 	{
@@ -379,16 +417,20 @@ decl-var:
 		((ASTNode*)$$)->add_child(new Op_Assignment);
 		((ASTNode*)$$)->add_child((ASTNode*)$3);
 
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | error '=' expression
 	{
+		$$ = (void*) (new ErrorNode);
 		//cerr << " Details : a valid identifier name was exptected as left-hand-side item." << endl;
 		yyerrok;
 	}
 | IDENTIFIER '=' error
 	{
+		$$ = (void*) (new ErrorNode);
+		// delete the memory allocated for the string
+		delete $1;
 		//cerr << " Details : a valid expression was exptected as right-hand-side item." << endl;
 		yyerrok;
 	}
@@ -415,8 +457,8 @@ decl-func:
 		((ASTNode*)$$)->add_child((ASTNode*)$4);
 		((ASTNode*)$$)->add_child(new DelimEos);
 
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 ;
 
@@ -426,8 +468,6 @@ param-list:
 	{
 		$$ = nullptr;
 	}
-
-
 | param param-list
 	{
 		$$ = (void*) (new ParamList);
@@ -439,8 +479,14 @@ param-list:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
+
 		if($2 != nullptr)
-			((ASTNode*)$$)->add_child((ASTNode*)$2);
+		{
+			((ASTNode*)$$)->add_children(children($2));
+			
+			// delete remaining node (which has no children)
+			delete ((ASTNode*)$2);
+		}
 	}
 ;
 
@@ -456,6 +502,9 @@ param:
 		}
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | IDENTIFIER '<' IDENTIFIER '>'
 	{
@@ -472,9 +521,9 @@ param:
 		((ASTNode*)$$)->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
 		((ASTNode*)$$)->add_child(new ClosingChevr);
 
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
-		//delete ((ASTNode*) $3);
+		// delete the memory allocated for the string
+		delete $1;
+		delete $3;
 	}
 ;
 
@@ -485,7 +534,7 @@ param:
 func-call:
   IDENTIFIER arg-list
 	{
-		$$ = (void*) (new Param);
+		$$ = (void*) (new FuncCall);
 		
 		if($$ == nullptr)
 		{
@@ -498,8 +547,8 @@ func-call:
 		if($2 != nullptr)
 			((ASTNode*)$$)->add_child((ASTNode*)$2);
 
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 ;
 
@@ -523,7 +572,12 @@ arg-list:
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 
 		if($2 != nullptr)
-			((ASTNode*)$$)->add_child((ASTNode*)$2);
+		{
+			((ASTNode*)$$)->add_children(children($2));
+			
+			// delete remaining node (which has no children)
+			delete ((ASTNode*)$2);
+		}
 	}
 ;
 
@@ -540,13 +594,25 @@ argument:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		// free semantic type of identifier
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | constant
 	{
 		$$ = (void*) (new Argument);
 		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
+| datastructure
+	{
+		$$ = (void*) (new Argument);
+
 		if($$ == nullptr)
 		{
 			yyerror("Cannot allocate a new node");
@@ -607,6 +673,7 @@ argument:
 	}
 | error
 	{
+		$$ = new ErrorNode();
 		/*cerr << " Details : the argument is invalid. It should be either " << endl
 			 << "    a constant, a braced expression, an anonymous soy function, " << endl
 			 << "    a datastructure access or a variable." << endl; */
@@ -649,7 +716,9 @@ func-call-eol:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 		((ASTNode*)$$)->add_child((ASTNode*)$2);
-		//delete ((ASTNode*) $1);
+
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | soy-expression arg-list-eol
 	{
@@ -666,8 +735,9 @@ func-call-eol:
 	}
 | error arg-list-eol
 	{
+		$$ = (void*) (new ErrorNode);
 		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
-		yyclearin;
+		yyerrok;
 	}
 ;
 
@@ -695,7 +765,10 @@ arg-list-eol:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_children(children($2));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$2);
 	}
 | argument DELIM_EOL arg-list-eol
 	{
@@ -708,8 +781,10 @@ arg-list-eol:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child(new DelimEol);
-		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$3);
 	}
 ;
 
@@ -794,7 +869,8 @@ expression:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | datastructure
 	{
@@ -1472,7 +1548,8 @@ assignable-expression:
 
 		((ASTNode*)$$)->add_child(new Identifier(*$1));
 
-		//delete ((ASTNode*) $1);
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | datastructure-access
   	{
@@ -1504,7 +1581,8 @@ datastructure-access:
 		((ASTNode*)$$)->add_child((ASTNode*)$3);
 		((ASTNode*)$$)->add_child(new ClosingBrace);
 
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 ;
 
@@ -1534,7 +1612,10 @@ expression-list:
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 		((ASTNode*)$$)->add_child(new Virg);
-		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$3);
 	}
 ;
 
@@ -1554,7 +1635,8 @@ constant:
 
 		((ASTNode*)$$)->add_child(new Integer(*$1));
 		
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 | CONST_FLOAT
     {
@@ -1568,7 +1650,8 @@ constant:
 
 		((ASTNode*)$$)->add_child(new Float(*$1));
 		
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 | CONST_STRING
     {
@@ -1582,7 +1665,8 @@ constant:
 
 		((ASTNode*)$$)->add_child(new String(*$1));
 		
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 | CONST_BOOL
     {
@@ -1596,7 +1680,8 @@ constant:
 
 		((ASTNode*)$$)->add_child(new Bool(*$1));
 		
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 | CONST_CHAR
     {
@@ -1610,7 +1695,8 @@ constant:
 
 		((ASTNode*)$$)->add_child(new Character(*$1));
 		
-		//delete ((ASTNode*) $1);
+		// delete allocated string
+		delete $1;
 	}
 ;
 
@@ -1701,7 +1787,7 @@ array:
 list:
   '{' '}' /* empty list */
     {
-		$$ = (void*) (new Array);
+		$$ = (void*) (new List);
 		
 		if($$ == nullptr)
 		{
@@ -1714,7 +1800,7 @@ list:
 	}
 | '{' expression-list '}'
     {
-		$$ = (void*) (new Array);
+		$$ = (void*) (new List);
 		
 		if($$ == nullptr)
 		{
@@ -1775,19 +1861,18 @@ make-sequence:
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | make-sequence-array
-	 {
-	 	
-$$ = (void*) (new MakeSequence);
+	{	
+		$$ = (void*) (new MakeSequence);
 
-if($$ == nullptr)
-{
-	yyerror("Cannot allocate a new node");
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 1;
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	 }
- ;
+;
 
 make-sequence-list: 
   '{' seq-expression '}'
@@ -1924,12 +2009,11 @@ statement:
 return:
   KEYWORD_NORI
   	{
-  		
- $$ = (void*) (new Return);
- 
- if($$ == nullptr)
- {
- 	yyerror("Cannot allocate a new node");
+		$$ = (void*) (new Return);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 1;
 		}
 
@@ -1964,7 +2048,6 @@ menu:
 
 		((ASTNode*)$$)->add_child(new K_Menu);
 		((ASTNode*)$$)->add_child((ASTNode*)$2);
-		((ASTNode*)$$)->add_child(new DelimEol);
 		((ASTNode*)$$)->add_child((ASTNode*)$4);
 		((ASTNode*)$$)->add_child(new DelimEos);
 	}
@@ -1982,7 +2065,6 @@ menu-body:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child(new DelimEol);
 	}
 | menu-case DELIM_EOL
 	{
@@ -1995,7 +2077,7 @@ menu-body:
 		}
 
   		((ASTNode*)$$)->add_child((ASTNode*)$1);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
 	}
 | menu-case DELIM_EOL menu-body
 	{
@@ -2008,8 +2090,10 @@ menu-body:
 		}
 
 		((ASTNode*)$$)->add_child((ASTNode*)$1);
-		((ASTNode*)$$)->add_child(new DelimEol);
-		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ASTNode*)$3);
 	}
 ;
 
@@ -2053,12 +2137,11 @@ menu-def:
 loop :
   foreach
   	{
-  		
- $$ = (void*) (new Loop);
- 
- if($$ == nullptr)
- {
- 	yyerror("Cannot allocate a new node");
+		$$ = (void*) (new Loop);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 1;
 		}
 
@@ -2106,7 +2189,6 @@ roll :
 
 		((ASTNode*)$$)->add_child(new K_Roll);
 		((ASTNode*)$$)->add_child((ASTNode*)$2);
-		((ASTNode*)$$)->add_child(new DelimEol);
 		((ASTNode*)$$)->add_child((ASTNode*)$4);
 		((ASTNode*)$$)->add_child(new DelimEos);
 	}
@@ -2130,10 +2212,11 @@ foreach:
 		((ASTNode*)$$)->add_child((ASTNode*)$2);
 		((ASTNode*)$$)->add_child(new K_As);
 		((ASTNode*)$$)->add_child(new Identifier(*$4));
-		((ASTNode*)$$)->add_child(new DelimEol);
 		((ASTNode*)$$)->add_child((ASTNode*)$6);
 		((ASTNode*)$$)->add_child(new DelimEos);
-		//delete ((ASTNode*) $2);
+
+		// delete the memory allocated for the string
+		delete $4;
 	}
 ;
 
@@ -2168,7 +2251,6 @@ KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_
 		if((ASTNode*)$2 != nullptr)
 			((ASTNode*)$$)->add_child((ASTNode*)$6);
 
-		((ASTNode*)$$)->add_child(new DelimEol);
 		((ASTNode*)$$)->add_child((ASTNode*)$8);
 		((ASTNode*)$$)->add_child(new DelimEos);
 	}
@@ -2179,8 +2261,6 @@ for-initializer:
 	{
 		$$ = nullptr;
 	}
-
-
 | assignment
 	{
 		$$ = (void*) (new ForInitializer);
@@ -2200,8 +2280,6 @@ for-update:
 	{
 		$$ = nullptr;
 	}
-
-
 | modifying-expression
 	{
 		$$ = (void*) (new ForUpdate);
@@ -2221,17 +2299,17 @@ conditional:
   KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
   	{
   		
- $$ = (void*) (new Conditional);
- 
- if($$ == nullptr)
- {
- 	yyerror("Cannot allocate a new node");
+		$$ = (void*) (new Conditional);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 1;
 		}
 
   		((ASTNode*)$$)->add_child(new K_If);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   		((ASTNode*)$$)->add_child(new DelimEos);
   	}
@@ -2247,7 +2325,7 @@ conditional:
 
 		((ASTNode*)$$)->add_child(new K_If);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   		((ASTNode*)$$)->add_child(new K_Else);
   		((ASTNode*)$$)->add_child((ASTNode*)$6);
@@ -2265,7 +2343,7 @@ conditional:
 
 		((ASTNode*)$$)->add_child(new K_If);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   		((ASTNode*)$$)->add_child((ASTNode*)$5);
   		((ASTNode*)$$)->add_child(new DelimEos);
@@ -2282,7 +2360,7 @@ conditional:
 
 		((ASTNode*)$$)->add_child(new K_If);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   		((ASTNode*)$$)->add_child((ASTNode*)$5);
   		((ASTNode*)$$)->add_child(new K_Else);
@@ -2304,7 +2382,7 @@ elseif:
 
 		((ASTNode*)$$)->add_child(new K_Elseif);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   	}
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
@@ -2319,7 +2397,7 @@ elseif:
 
 		((ASTNode*)$$)->add_child(new K_Elseif);
   		((ASTNode*)$$)->add_child((ASTNode*)$2);
-  		((ASTNode*)$$)->add_child(new DelimEol);
+ 
   		((ASTNode*)$$)->add_child((ASTNode*)$4);
   		((ASTNode*)$$)->add_child((ASTNode*)$5);
 	}
@@ -2329,6 +2407,7 @@ elseif:
 
 static void yyerror(const char *s)
 {
+	error_occurred = true;
 	cerr << "[Error] " << s << curr_line_row() << endl;
 }
 

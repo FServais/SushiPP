@@ -45,7 +45,10 @@ int main(int argc, char** argv)
 		cout << "Parsing : success..." << endl;
 		PrintASTVisitor printer_v;
 		syntax_tree->root().accept(printer_v);
+		delete syntax_tree;
 	}
+
+
 	
 	return EXIT_SUCCESS;
 }

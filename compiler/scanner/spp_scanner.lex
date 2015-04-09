@@ -104,20 +104,20 @@ as                      { return KEYWORD_AS; }
 if                      { return KEYWORD_IF; }
 elseif                  { return KEYWORD_ELSEIF; }
 else                    { return KEYWORD_ELSE; }
-char                    { return IDENTIFIER; }
-int                     { return IDENTIFIER; }
-float                   { return IDENTIFIER; }
-bool                    { return IDENTIFIER; }
-string                  { return IDENTIFIER; }
-array                   { return IDENTIFIER; }
-list                    { return IDENTIFIER; }
-tuple                   { return IDENTIFIER; }
-(false|FALSE|true|TRUE) { yylval.vstring = new string(yytext); return CONST_BOOL; }
-{ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext); return IDENTIFIER; }
-[+-]?{DIGIT}+           { yylval.vstring = new string(yytext); return CONST_INT; }
-[+-]?{DIGIT}+\.{DIGIT}+ { yylval.vstring = new string(yytext); return CONST_FLOAT; }
-\"(.|[^"])*\"           { yylval.vstring = new string(yytext); return CONST_STRING; }
-'(.|[^'])'              { yylval.vstring = new string(yytext); return CONST_CHAR; }
+char                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+int                     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+float                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+bool                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+string                  { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+array                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+list                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+tuple                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+(false|FALSE|true|TRUE) { yylval.vstring = new string(yytext, yyleng); return CONST_BOOL; }
+{ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+[+-]?{DIGIT}+           { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }
+[+-]?{DIGIT}+\.{DIGIT}+ { yylval.vstring = new string(yytext, yyleng); return CONST_FLOAT; }
+\"[^"]*\"               { yylval.vstring = new string(yytext, yyleng); return CONST_STRING; }
+'[^']'                  { yylval.vstring = new string(yytext, yyleng); return CONST_CHAR; }
 ({EOL}+|\$.*{EOL})      { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
 [ \t]+                  { }
 .                       {
