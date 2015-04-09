@@ -35,7 +35,7 @@ maki func a<int> v<float> :
 	maki a = 2, a = 3,
 			b = 2
 
-	a = 25 - 36,25
+	a = 25 - 36.25
 	func b[2] 2
 
 	func (func b[2] a) c
