@@ -5,16 +5,17 @@ NODES_PATH = $(AST_PATH)nodes/
 NONTERMINAL_PATH = $(NODES_PATH)nonterminal/
 TOKENS_PATH = $(NODES_PATH)tokens/
 VISITOR_PATH= $(AST_PATH)visitor/
+EXC_PATH=exceptions/
 CC = g++
 CCFLAGS = --std=c++11 -g
 
 all: sushipp
 
-sushipp: ast.o node nonterminal tokens print_visitor sushipp.tab.o sushipp.yy.o main.o 
+sushipp: ast.o node nonterminal tokens print_visitor sushipp.tab.o sushipp.yy.o main.o exceptions.o
 	$(CC) $(PARSER_PATH)sushipp.tab.o $(SCANNER_PATH)sushipp.yy.o main.o $(AST_PATH)ast.o \
 		  $(NODES_PATH)node_location.o $(NODES_PATH)ast_node.o $(NODES_PATH)error_node.o \
 		  $(NONTERMINAL_PATH)nt_terminal.o $(NONTERMINAL_PATH)nt_datastructure.o \
-		  $(NONTERMINAL_PATH)nt_statement.o $(NONTERMINAL_PATH)nt_program.o \
+		  $(NONTERMINAL_PATH)nt_statement.o $(NONTERMINAL_PATH)nt_program.o exceptions.o \
 		  $(NONTERMINAL_PATH)nt_expression.o $(NONTERMINAL_PATH)nt_declaration.o \
 		  $(NONTERMINAL_PATH)nt_constant.o $(NONTERMINAL_PATH)nt_functioncall.o  \
 		  $(TOKENS_PATH)token.o $(TOKENS_PATH)constanttoken.o $(TOKENS_PATH)delimiter.o \
@@ -97,10 +98,12 @@ operator.o: $(TOKENS_PATH)Operator.cpp $(TOKENS_PATH)Operator.hpp $(NODES_PATH)N
 	$(CC) -c $(TOKENS_PATH)Operator.cpp -o $(TOKENS_PATH)operator.o $(CCFLAGS)
 
 # Visitor #
-
 print_visitor:$(VISITOR_PATH)ASTVisitor.hpp $(VISITOR_PATH)PrintASTVisitor.cpp $(VISITOR_PATH)PrintASTVisitor.hpp  $(NODES_PATH)ASTNode.hpp
 	$(CC) -c $(VISITOR_PATH)PrintASTVisitor.cpp -o $(VISITOR_PATH)print_visitor.o $(CCFLAGS)
 
+# Exceptions #
+exceptions.o: $(EXC_PATH)Exceptions.cpp $(EXC_PATH)Exceptions.hpp
+	$(CC) -c $(EXC_PATH)Exceptions.cpp -o $(EXC_PATH)exceptions.o $(CCFLAGS)
 # clean 
 clean: 
 	rm -rf *.o
