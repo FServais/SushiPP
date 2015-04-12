@@ -4,6 +4,8 @@
 #include "settings/CompilerSettings.hpp"
 #include "ast/AbstractSyntaxTree.hpp"
 #include "ast/nodes/ASTNode.hpp"
+#include "symb/SymbolTable.hpp"
+#include "symb/SymbolInfo.hpp"
 
 namespace compiler
 {
@@ -28,6 +30,8 @@ namespace compiler
 	private:
 		settings::CompilerSettings config;
 		ast::AbstractSyntaxTree syntax_tree;
+		symb::SymbolTable<symb::FunctionInfo> function_table;
+		symb::SymbolTable<symb::VariableInfo> variable_table;
 
 		/** 
 		 * @brief Initialize the compiler for execution

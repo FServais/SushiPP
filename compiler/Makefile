@@ -8,7 +8,7 @@ PATH_NONTERMINAL = $(PATH_NODES)nonterminal/
 PATH_TOKENS 	 = $(PATH_NODES)tokens/
 PATH_VISITOR	 = $(PATH_AST)visitor/
 PATH_EXCEP		 = exceptions/
-PATH_SYMB		 = symbol_table/
+PATH_SYMB		 = symb/
 PATH_SETTINGS    = settings/
 
 PATH_OBJS		 = obj/
@@ -26,8 +26,10 @@ OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o
 OBJS_COMP	  = $(PATH_OBJS)SppCompiler.o
 OBJS_SCANNER  = $(PATH_OBJS)sushipp.yy.o
 OBJS_SETTINGS = $(PATH_OBJS)CompilerSettings.o
+OBJS_UTIL	  = $(PATH_OBJS)util.o
+OBJS_SYMB	  = $(PATH_OBJS)SymbolInfo.o
 
-OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS)
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL)
 
 # dependecies #
 # DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
@@ -45,7 +47,7 @@ DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
 
-DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp
+DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB)SymbolInfo.hpp
 DEP_COMP				 = SppCompiler.hpp
 DEP_EXCEP				 = $(PATH_EXCEP)Exceptions.hpp
 DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp
@@ -66,7 +68,7 @@ sushipp: $(OBJS)
 	$(CC) $(OBJS) -o $(EXE) $(LDFLAGS)
 
 # Main #
-$(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST) $(DEP_EXCEP) $(DEP_COMP) $(DEP_SETTINGS)
+$(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST) $(DEP_EXCEP) $(DEP_COMP) $(DEP_SETTINGS) $(DEP_SYMB)
 	$(CC) -c main.cpp -o $@ $(CCFLAGS)
 
 # Parser #
@@ -150,11 +152,19 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Compiler #
-$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # CompilerSettings #
 $(PATH_OBJS)CompilerSettings.o: $(PATH_SETTINGS)CompilerSettings.cpp $(PATH_SETTINGS)CompilerSettings.hpp $(PATH_EXCEP)Exceptions.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+# Symbols #
+$(PATH_OBJS)SymbolInfo.o: $(PATH_SYMB)SymbolInfo.cpp $(PATH_SYMB)SymbolInfo.hpp $(PATH_UTIL)util.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+# Util #
+$(PATH_OBJS)util.o: $(PATH_UTIL)util.cpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 ###########################################################

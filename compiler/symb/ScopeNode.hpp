@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <iterator>
+#include <algorithm>
 #include <memory>
 
 #include "../exceptions/Exceptions.hpp"
@@ -15,8 +16,8 @@ namespace symb
 	class ScopeNode 
 	{
 	public:
-		// constructors
-		ScopeNode(unsigned int scope_id);
+		// constructors, param : scope id
+		ScopeNode(size_t);
 
 		// copy constructor and assignment operator perform a deep copy
 		ScopeNode(const ScopeNode&);
@@ -61,30 +62,30 @@ namespace symb
 
 		/**
 		 * @brief Create a new child scope 
+		 * @retval size_t The new identifier of the node
 		 * @param int pos The position at which the new scope must be inserted (optionnal, default: inserted as last child)
-		 * @retval unsigned long The new identifier of the node
 		 * @throw out_of_range If the given position is invalid
 		 */
-		unsigned long create_child_scope(int);
+		size_t create_child_scope(size_t, int = -1);
 
 		/**
 		 * @brief Find and return the scope having the given scope id 
-		 * @param unsigned int id The scope id
+		 * @param size_t id The scope id
 		 * @retval ScopeNode& The scope node having the given id
 		 * @note The scope node is searched recursively in the children 
 		 * @throw UndefinedScopeException If the scope is not found
 		 */
-		ScopeNode<S>& find_scope(unsigned int);
+		ScopeNode<S>& find_scope(size_t);
 
 		/**
 		 * @brief See the non*const version of the find_scope function
 		 */
-		const ScopeNode<S>& find_scope(unsigned int) const;
+		const ScopeNode<S>& find_scope(size_t) const;
 
 		/**
 		 * @brief Return the identifier of the node
 		 */
-		unsigned long get_id() const;
+		size_t get_id() const;
 
 		/**
 		 * @brief Return the parent of the given scope node
@@ -105,7 +106,7 @@ namespace symb
 		 * @param int pos The position of the child to return (in [0, size[)
 		 */
 		ScopeNode<S>& get_child(int pos);
-		const ScopeNode& get_child(int pos);
+		const ScopeNode& get_child(int pos) const;
 
 
 	private:
@@ -120,7 +121,7 @@ namespace symb
 		std::unordered_map<std::string, S> map;
 		std::vector<ScopeNode*> children;
 		ScopeNode* parent; 
-		unsigned long scope_id;
+		size_t scope_id;
 
 		/**
 		 * @brief Free the memory allocated for the children
@@ -131,13 +132,13 @@ namespace symb
 
 
 	template <class S>
-	ScopeNode<S>::ScopeNode(unsigned long scope_id_) : parent(nullptr), scope_id(scope_id_)
+	ScopeNode<S>::ScopeNode(size_t scope_id_) : parent(nullptr), scope_id(scope_id_)
 	{
 
 	}
 
 	template <class S>
-	ScopeNode<S>::ScopeNode(const ScopeNode& copy) 
+	ScopeNode<S>::ScopeNode(const ScopeNode<S>& copy) 
 	  : map(copy.map),
 		parent(nullptr),
 		scope_id(copy.scope_id)
@@ -150,7 +151,7 @@ namespace symb
 	}
 
 	template <class S>
-	ScopeNode<S>::ScopeNode& operator=(const ScopeNode& copy)
+	ScopeNode<S>& ScopeNode<S>::operator=(const ScopeNode& copy)
 	{
 		// free the memory allocated for the current ScopeNode
 		free_children();
@@ -184,16 +185,16 @@ namespace symb
 	S& ScopeNode<S>::symbol_info(const std::string& symb_name)
 	{
 		if(!symbol_exists(symb_name))
-			throw UndefinedSymbolException(symb_name);
+			throw except::UndefinedSymbolException(symb_name);
 
 		return *(map.find(symb_name));
 	}
 
 	template <class S>
-	const S& ScopeNode<S>::symbol_info(const std::string&) const
+	const S& ScopeNode<S>::symbol_info(const std::string& symb_name) const
 	{
 		if(!symbol_exists(symb_name))
-			throw UndefinedSymbolException(symb_name);
+			throw except::UndefinedSymbolException(symb_name);
 
 		return *(map.find(symb_name));		
 	}
@@ -211,7 +212,7 @@ namespace symb
 	}
 
 	template <class S>
-	unsigned long ScopeNode<S>::create_child_scope(unsigned long scope_id_, int pos = -1)
+	size_t ScopeNode<S>::create_child_scope(size_t scope_id_, int pos)
 	{
 		if(pos > children.size() || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
@@ -226,7 +227,7 @@ namespace symb
 	}
 
 	template <class S>
-	ScopeNode<S>& ScopeNode<S>::find_scope(unsigned int id)
+	ScopeNode<S>& ScopeNode<S>::find_scope(size_t id)
 	{
 		if(id == scope_id)
 			return *this;
@@ -237,14 +238,14 @@ namespace symb
 			{
 				return child->find_scope(id);
 			}
-			catch(exceptions::UndefinedScopeException& e) { }
+			catch(except::UndefinedScopeException& e) { }
 		}
 
-		throw exceptions::UndefinedScopeException(id);
+		throw except::UndefinedScopeException(id);
 	}
 
 	template <class S>
-	const ScopeNode<S>& ScopeNode<S>::find_scope(unsigned int) const
+	const ScopeNode<S>& ScopeNode<S>::find_scope(size_t id) const
 	{
 		if(id == scope_id)
 			return *this;
@@ -255,44 +256,44 @@ namespace symb
 			{
 				return child->find_scope(id);
 			}
-			catch(exceptions::UndefinedScopeException& e) { }
+			catch(except::UndefinedScopeException& e) { }
 		}
 
-		throw exceptions::UndefinedScopeException(id);
+		throw except::UndefinedScopeException(id);
 	}
 
 	template <class S>
-	const void ScopeNode<S>::free_children()
+	void ScopeNode<S>::free_children()
 	{
 		std::for_each(children.begin(), children.end(), std::default_delete<ScopeNode>());
 	}
 
 	template <class S>
-	unsigned long ScopeNode<S>::get_id() const
+	size_t ScopeNode<S>::get_id() const
 	{
 		return scope_id;
 	}
 
 	template <class S>
-	ScopeNode<S>& ScopeNode::<S>get_parent()
+	ScopeNode<S>& ScopeNode<S>::get_parent()
 	{
 		if(parent == nullptr)
-			throw exceptions::UndefinedScopeException();
+			throw except::UndefinedScopeException();
 		
 		return *parent;
 	}
 
 	template <class S>
-	const ScopeNode<S>& ScopeNode::<S>get_parent() const
+	const ScopeNode<S>& ScopeNode<S>::get_parent() const
 	{
 		if(parent == nullptr)
-			throw exceptions::UndefinedScopeException();
+			throw except::UndefinedScopeException();
 
 		return *parent;
 	}
 
 	template <class S>
-	ScopeNode<S>& ScopeNode::<S>get_child(int pos)
+	ScopeNode<S>& ScopeNode<S>::get_child(int pos)
 	{
 		if(pos >= children.size() || pos < 0)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
@@ -301,7 +302,7 @@ namespace symb
 	}
 
 	template <class S>
-	const ScopeNode<S>& ScopeNode::<S>get_child(int pos)
+	const ScopeNode<S>& ScopeNode<S>::get_child(int pos) const
 	{
 		if(pos >= children.size() || pos < 0)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
