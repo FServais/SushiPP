@@ -3,20 +3,21 @@
 using namespace std;
 
 // Constructor
-PrintASTVisitor::PrintASTVisitor() : length_line(2) { }
+PrintASTVisitor::PrintASTVisitor() : length_line(2), out_(cout) { }
+PrintASTVisitor::PrintASTVisitor(std::ostream& out) : length_line(2), out_(out);
 
 
 void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )
 {
 	string tab_line = string(depth * length_line, '-') + "˧";
-	cout << tab_line << " <" << p_name << " ; " << p_value << ">" << endl;
+	out_ << tab_line << " <" << p_name << " ; " << p_value << ">" << endl;
 }
 
 
 void PrintASTVisitor::print_single( string& name, int depth )
 {
 	string tab_line = string(depth * length_line, '-') + "˧";
-	cout << tab_line << " " << name << endl;
+	out_ << tab_line << " " << name << endl;
 }
 
 /*****************************

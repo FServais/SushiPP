@@ -11,6 +11,7 @@ class PrintASTVisitor : public ASTVisitor
 {
 public:
 	PrintASTVisitor();
+	PrintASTVisitor(std::ostream&); // arg: the stream in which to output the tree
 
 	/****************
 	 * 		Node    *
@@ -220,6 +221,7 @@ public:
 
 private:
 	int length_line;
+	std::ostream& out_; // stream in which to write
 
 	void print_pair( std::string& p_name, std::string& p_value, int depth );
 	void print_single( std::string& name, int depth );
