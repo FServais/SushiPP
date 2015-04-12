@@ -1,15 +1,17 @@
 ###########################################################
 # various path #
-PATH_PARSER = parser/
-PATH_SCANNER = scanner/
-PATH_AST = ast/
-PATH_NODES = $(PATH_AST)nodes/
+PATH_PARSER		 = parser/
+PATH_SCANNER	 = scanner/
+PATH_AST		 = ast/
+PATH_NODES	  	 = $(PATH_AST)nodes/
 PATH_NONTERMINAL = $(PATH_NODES)nonterminal/
-PATH_TOKENS = $(PATH_NODES)tokens/
-PATH_VISITOR= $(PATH_AST)visitor/
-PATH_EXCEP=Exceptions/
+PATH_TOKENS 	 = $(PATH_NODES)tokens/
+PATH_VISITOR	 = $(PATH_AST)visitor/
+PATH_EXCEP		 = exceptions/
+PATH_SYMB		 = symbol_table/
+PATH_SETTINGS    = settings/
 
-PATH_OBJS=obj/
+PATH_OBJS		 = obj/
 
 # objects #
 OBJS_NODES    = $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
@@ -20,10 +22,12 @@ OBJS_AST 	  = $(PATH_OBJS)AbstractSyntaxTree.o
 OBJS_VST	  = $(PATH_OBJS)PrintASTVisitor.o
 OBJS_EXCEP    = $(PATH_OBJS)Exceptions.o
 OBJS_MAIN 	  = $(PATH_OBJS)main.o
-OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o  
+OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o
+OBJS_COMP	  = SPPCompiler.o
 OBJS_SCANNER  = $(PATH_OBJS)sushipp.yy.o
+OBJS_SETTINGS = $(PATH_OBJS)CompilerSettings.o
 
-OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER)
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS)
 
 # dependecies #
 # DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
@@ -41,13 +45,16 @@ DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
 
+DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp
+DEP_COMP				 = SPPCompiler.hpp
+ 
 # compilation and linking flags #
 CC = g++
 DEBUG = -g
 CCFLAGS = -c --std=c++11 $(DEBUG) 
 LDFLAGS = 
 EXE = sushipp
-BISON_FLAGS = -d -b $(PATH_PARSER)sushipp
+BISON_FLAGS = -d -b $(PATH_PARSER)$(EXE)
 TARGETS = sushipp
 
 ###########################################################
@@ -140,6 +147,12 @@ $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS
 # Exceptions #
 $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
+
+# Compiler #
+$(PATH_OBJS)SPPCompiler.o: SPPCompiler.cpp SPPCompiler.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+###########################################################
 
 # clean 
 clean: 
