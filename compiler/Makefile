@@ -1,120 +1,152 @@
-PARSER_PATH = parser/
-SCANNER_PATH = scanner/
-AST_PATH = ast/
-NODES_PATH = $(AST_PATH)nodes/
-NONTERMINAL_PATH = $(NODES_PATH)nonterminal/
-TOKENS_PATH = $(NODES_PATH)tokens/
-VISITOR_PATH= $(AST_PATH)visitor/
-EXC_PATH=exceptions/
+###########################################################
+# various path #
+PATH_PARSER = parser/
+PATH_SCANNER = scanner/
+PATH_AST = ast/
+PATH_NODES = $(PATH_AST)nodes/
+PATH_NONTERMINAL = $(PATH_NODES)nonterminal/
+PATH_TOKENS = $(PATH_NODES)tokens/
+PATH_VISITOR= $(PATH_AST)visitor/
+PATH_EXCEP=Exceptions/
+
+PATH_OBJS=obj/
+
+# objects #
+OBJS_NODES    = $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
+OBJS_TOKENS   = $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o $(PATH_OBJS)Delimiter.o $(PATH_OBJS)Keyword.o
+OBJS_NONTERMS = $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)NT_Constant.o $(PATH_OBJS)NT_Functioncall.o
+OBJS_NODE_ALL = $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
+OBJS_AST 	  = $(PATH_OBJS)AbstractSyntaxTree.o
+OBJS_VST	  = $(PATH_OBJS)PrintASTVisitor.o
+OBJS_EXCEP    = $(PATH_OBJS)Exceptions.o
+OBJS_MAIN 	  = $(PATH_OBJS)main.o
+OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o  
+OBJS_SCANNER  = $(PATH_OBJS)sushipp.yy.o
+
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER)
+
+# dependecies #
+# DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
+# DEP_ASTNODE_DEEP_VISITOR : DEP_ASTNODE_DEEP + visitor base class header
+# DEP_ASTNODE_SHALLOW : only ASTNode and NodeLocation header
+# DEP_VISITORS : every visitor header (base or derived class)
+# DEP_AST : every header needed by the AbstractSyntaxTree class
+# DEP_AST_ALL : every header related to the AST (AST itself, nodes, NodeLocation)
+# DEP_AST_ALL_VISITOR : DEP_AST_ALL + DEP_VISITORS
+DEP_ASTNODE_DEEP 		 = $(PATH_NODES)*.hpp $(PATH_TOKENS)*.hpp $(PATH_NONTERMINAL)*.hpp
+DEP_ASTNODE_DEEP_VISITOR = $(DEP_ASTNODE_DEEP) $(PATH_VISITOR)ASTVisitor.hpp
+DEP_ASTNODE_SHALLOW 	 = $(PATH_NODES)ASTNode.hpp $(PATH_NODES)NodeLocation.hpp
+DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp
+DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
+DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
+DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
+
+# compilation and linking flags #
 CC = g++
-CCFLAGS = --std=c++11 -g
+DEBUG = -g
+CCFLAGS = -c --std=c++11 $(DEBUG) 
+LDFLAGS = 
+EXE = sushipp
+BISON_FLAGS = -d -b $(PATH_PARSER)sushipp
+TARGETS = sushipp
 
-all: sushipp
+###########################################################
 
-sushipp: ast.o node nonterminal tokens print_visitor sushipp.tab.o sushipp.yy.o main.o exceptions.o
-	$(CC) $(PARSER_PATH)sushipp.tab.o $(SCANNER_PATH)sushipp.yy.o main.o $(AST_PATH)ast.o \
-		  $(NODES_PATH)node_location.o $(NODES_PATH)ast_node.o $(NODES_PATH)error_node.o \
-		  $(NONTERMINAL_PATH)nt_terminal.o $(NONTERMINAL_PATH)nt_datastructure.o \
-		  $(NONTERMINAL_PATH)nt_statement.o $(NONTERMINAL_PATH)nt_program.o exceptions.o \
-		  $(NONTERMINAL_PATH)nt_expression.o $(NONTERMINAL_PATH)nt_declaration.o \
-		  $(NONTERMINAL_PATH)nt_constant.o $(NONTERMINAL_PATH)nt_functioncall.o  \
-		  $(TOKENS_PATH)token.o $(TOKENS_PATH)constanttoken.o $(TOKENS_PATH)delimiter.o \
-		   $(TOKENS_PATH)keyword.o $(TOKENS_PATH)operator.o	$(VISITOR_PATH)print_visitor.o \
-		  -o sushipp $(CCFLAGS)
+all: $(TARGETS)
 
-# main
-main.o: sushipp.tab.o
-	$(CC) -c main.cpp -o main.o $(CCFLAGS)
+sushipp: $(OBJS)
+	$(CC) $(OBJS) -o $(EXE) $(LDFLAGS)
 
-# scanner and parser
-sushipp.tab.o: $(PARSER_PATH)spp_parser.y
-	bison -d $(PARSER_PATH)spp_parser.y -b $(PARSER_PATH)sushipp
-	$(CC) -c $(PARSER_PATH)sushipp.tab.c -o $(PARSER_PATH)sushipp.tab.o $(CCFLAGS)
+# Main #
+$(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST_ALL)
+	$(CC) -c main.cpp -o $@ $(CCFLAGS)
 
-sushipp.yy.o: $(SCANNER_PATH)spp_scanner.lex $(PARSER_PATH)sushipp.tab.h
-	flex -o $(SCANNER_PATH)sushipp.yy.c $(SCANNER_PATH)spp_scanner.lex 
-	$(CC) -c $(SCANNER_PATH)sushipp.yy.c -o $(SCANNER_PATH)sushipp.yy.o $(CCFLAGS)
+# Parser #
+$(PATH_OBJS)sushipp.tab.o: $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h $(DEP_AST_ALL)
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_PARSER)sushipp.tab.h: $(PATH_PARSER)spp_parser.y 
+	bison $< $(BISON_FLAGS)
+
+$(PATH_PARSER)sushipp.tab.c: $(PATH_PARSER)spp_parser.y 
+	bison $< $(BISON_FLAGS)
+
+# Scanner #
+$(PATH_OBJS)sushipp.yy.o: $(PATH_SCANNER)sushipp.yy.c
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_SCANNER)sushipp.yy.c: $(PATH_SCANNER)spp_scanner.lex
+	flex -o $(PATH_SCANNER)sushipp.yy.c $<
 
 # AST #
-ast.o: $(AST_PATH)AbstractSyntaxTree.cpp $(AST_PATH)AbstractSyntaxTree.hpp $(NODES_PATH)ASTNode.hpp
-	$(CC) -c $(AST_PATH)AbstractSyntaxTree.cpp -o $(AST_PATH)ast.o $(CCFLAGS)
+$(PATH_OBJS)AbstractSyntaxTree.o: $(PATH_AST)AbstractSyntaxTree.cpp $(DEP_AST)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-# Node #
-node: ast_node.o node_location.o error_node.o
+# Nodes #
+$(PATH_OBJS)AstNode.o: $(PATH_NODES)ASTNode.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-ast_node.o: $(NODES_PATH)ASTNode.cpp $(NODES_PATH)ASTNode.hpp $(NODES_PATH)NodeLocation.hpp
-	$(CC) -c $(NODES_PATH)ASTNode.cpp -o $(NODES_PATH)ast_node.o $(CCFLAGS)
+$(PATH_OBJS)NodeLocation.o: $(PATH_NODES)NodeLocation.cpp $(PATH_NODES)/NodeLocation.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
 
-node_location.o: $(NODES_PATH)NodeLocation.cpp $(NODES_PATH)NodeLocation.hpp 
-	$(CC) -c $(NODES_PATH)NodeLocation.cpp -o $(NODES_PATH)node_location.o $(CCFLAGS)
+$(PATH_OBJS)ErrorNode.o: $(PATH_NODES)ErrorNode.cpp $(DEP_ASTNODE_SHALLOW)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-error_node.o: $(NODES_PATH)ErrorNode.cpp $(NODES_PATH)ErrorNode.hpp 
-	$(CC) -c $(NODES_PATH)ErrorNode.cpp -o $(NODES_PATH)error_node.o $(CCFLAGS)
+# Non terminal nodes #
+$(PATH_OBJS)NonTerminal.o: $(PATH_NONTERMINAL)NonTerminal.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-# Non terminal #
-nonterminal: nt_terminal.o nt_datastructure.o nt_statement.o nt_program.o nt_expression.o nt_declaration.o nt_constant.o nt_functioncall.o
+$(PATH_OBJS)NT_Datastructure.o: $(PATH_NONTERMINAL)NT_Datastructure.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_terminal.o: $(NONTERMINAL_PATH)NonTerminal.cpp $(NONTERMINAL_PATH)NonTerminal.hpp  $(NODES_PATH)NodeLocation.hpp $(NODES_PATH)ASTNode.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NonTerminal.cpp -o $(NONTERMINAL_PATH)nt_terminal.o $(CCFLAGS)
+$(PATH_OBJS)NT_Statement.o: $(PATH_NONTERMINAL)NT_Statement.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_datastructure.o: $(NONTERMINAL_PATH)NT_Datastructure.cpp $(NONTERMINAL_PATH)NT_Datastructure.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Datastructure.cpp -o $(NONTERMINAL_PATH)nt_datastructure.o $(CCFLAGS) 
+$(PATH_OBJS)NT_Program.o: $(PATH_NONTERMINAL)NT_Program.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_statement.o: $(NONTERMINAL_PATH)NT_Statement.cpp $(NONTERMINAL_PATH)NT_Statement.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Statement.cpp -o $(NONTERMINAL_PATH)nt_statement.o $(CCFLAGS)
+$(PATH_OBJS)NT_Expression.o: $(PATH_NONTERMINAL)NT_Expression.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_program.o: $(NONTERMINAL_PATH)NT_Program.cpp $(NONTERMINAL_PATH)NT_Program.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Program.cpp -o $(NONTERMINAL_PATH)nt_program.o $(CCFLAGS)
+$(PATH_OBJS)NT_Declaration.o: $(PATH_NONTERMINAL)NT_Declaration.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_expression.o: $(NONTERMINAL_PATH)NT_Expression.cpp $(NONTERMINAL_PATH)NT_Expression.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Expression.cpp -o $(NONTERMINAL_PATH)nt_expression.o $(CCFLAGS)
+$(PATH_OBJS)NT_Constant.o: $(PATH_NONTERMINAL)NT_Constant.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-nt_declaration.o: $(NONTERMINAL_PATH)NT_Declaration.cpp $(NONTERMINAL_PATH)NT_Declaration.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Declaration.cpp -o $(NONTERMINAL_PATH)nt_declaration.o $(CCFLAGS)
-
-nt_constant.o: $(NONTERMINAL_PATH)NT_Constant.cpp $(NONTERMINAL_PATH)NT_Constant.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_Constant.cpp -o $(NONTERMINAL_PATH)nt_constant.o $(CCFLAGS)
-
-nt_functioncall.o: $(NONTERMINAL_PATH)NT_FunctionCall.cpp $(NONTERMINAL_PATH)NT_FunctionCall.hpp $(NODES_PATH)NodeLocation.hpp $(NONTERMINAL_PATH)NonTerminal.hpp
-	$(CC) -c $(NONTERMINAL_PATH)NT_FunctionCall.cpp -o $(NONTERMINAL_PATH)nt_functioncall.o $(CCFLAGS)
-
+$(PATH_OBJS)NT_Functioncall.o: $(PATH_NONTERMINAL)NT_FunctionCall.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
 # Tokens #
-tokens: token.o constanttoken.o delimiter.o keyword.o operator.o
+$(PATH_OBJS)Token.o: $(PATH_TOKENS)Token.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-token.o: $(TOKENS_PATH)Token.cpp $(TOKENS_PATH)Token.hpp $(NODES_PATH)NodeLocation.hpp $(NODES_PATH)ASTNode.hpp
-	$(CC) -c $(TOKENS_PATH)Token.cpp -o $(TOKENS_PATH)token.o $(CCFLAGS)
+$(PATH_OBJS)ConstantToken.o: $(PATH_TOKENS)ConstantToken.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-constanttoken.o: $(TOKENS_PATH)ConstantToken.cpp $(TOKENS_PATH)ConstantToken.hpp $(NODES_PATH)NodeLocation.hpp $(TOKENS_PATH)Token.hpp 
-	$(CC) -c $(TOKENS_PATH)ConstantToken.cpp -o $(TOKENS_PATH)constanttoken.o $(CCFLAGS)
+$(PATH_OBJS)Delimiter.o: $(PATH_TOKENS)Delimiter.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-delimiter.o: $(TOKENS_PATH)Delimiter.cpp $(TOKENS_PATH)Delimiter.hpp $(NODES_PATH)NodeLocation.hpp $(TOKENS_PATH)Token.hpp 
-	$(CC) -c $(TOKENS_PATH)Delimiter.cpp -o $(TOKENS_PATH)delimiter.o $(CCFLAGS)
+$(PATH_OBJS)Keyword.o: $(PATH_TOKENS)Keyword.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
-keyword.o: $(TOKENS_PATH)Keyword.cpp $(TOKENS_PATH)Keyword.hpp $(NODES_PATH)NodeLocation.hpp $(TOKENS_PATH)Token.hpp 
-	$(CC) -c $(TOKENS_PATH)Keyword.cpp -o $(TOKENS_PATH)keyword.o $(CCFLAGS)
-
-operator.o: $(TOKENS_PATH)Operator.cpp $(TOKENS_PATH)Operator.hpp $(NODES_PATH)NodeLocation.hpp $(TOKENS_PATH)Token.hpp 
-	$(CC) -c $(TOKENS_PATH)Operator.cpp -o $(TOKENS_PATH)operator.o $(CCFLAGS)
+$(PATH_OBJS)Operator.o: $(PATH_TOKENS)Operator.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+	$(CC) $< -o $@ $(CCFLAGS)
 
 # Visitor #
-print_visitor:$(VISITOR_PATH)ASTVisitor.hpp $(VISITOR_PATH)PrintASTVisitor.cpp $(VISITOR_PATH)PrintASTVisitor.hpp  $(NODES_PATH)ASTNode.hpp
-	$(CC) -c $(VISITOR_PATH)PrintASTVisitor.cpp -o $(VISITOR_PATH)print_visitor.o $(CCFLAGS)
+$(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
+	$(CC) $< -o $@ $(CCFLAGS)
 
 # Exceptions #
-exceptions.o: $(EXC_PATH)Exceptions.cpp $(EXC_PATH)Exceptions.hpp
-	$(CC) -c $(EXC_PATH)Exceptions.cpp -o $(EXC_PATH)exceptions.o $(CCFLAGS)
+$(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
 # clean 
 clean: 
-	rm -rf *.o
-	rm -rf $(PARSER_PATH)*.o $(SCANNER_PATH)*.o $(NODES_PATH)*.o $(NONTERMINAL_PATH)*.o $(TOKENS_PATH)*.o $(VISITOR_PATH)print_visitor.o
-	rm -rf *~
-	rm -rf $(PARSER_PATH)*.output
-	rm -rf sushipp
+	rm obj/*.o
+	rm sushipp
+	rm $(PATH_PARSER)*.output
 
 clean-hard: clean
-	rm -f $(SCANNER_PATH)sushipp.yy.c 
-	rm -f $(PARSER_PATH)sushipp.tab.c $(PARSER_PATH)sushipp.tab.h 
-
-
-	
+	rm -f $(PATH_SCANNER)sushipp.yy.c 
+	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h 

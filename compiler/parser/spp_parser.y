@@ -176,9 +176,9 @@
 
 %%
 
-/*************************/
-/* Program general rules */
-/*************************/
+/***************************/
+/*  Program general rules  */
+/***************************/
 program:
   %empty 		{ syntax_tree = new AbstractSyntaxTree(new Program); }
 | scope-body	
