@@ -56,3 +56,15 @@ BadInputParameterException::BadInputParameterException(const std::string& detail
 {
 
 }
+
+ParsingException::ParsingException()
+	: runtime_error("The parser has encountered an error while parsing the code.")
+{
+
+}
+
+ParsingException::ParsingException(const std::string& details)
+	: runtime_error("The parser has encountered an error while parsing the code : " + details)
+{
+
+}

@@ -37,6 +37,14 @@ namespace except
 		// param : some detail about the error
 		explicit BadInputParameterException(const std::string&);
 	};
+
+	class ParsingException : public std::runtime_error
+	{
+	public:
+		ParsingException();
+		// param : some detail about the parsing error
+		explicit ParsingException(const std::string&);
+	};
 }
 
 #endif // EXCEPTIONS_HPP_DEFINED
