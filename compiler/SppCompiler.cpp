@@ -4,6 +4,8 @@
 #include <iostream> // ostream
 #include <fstream> // ofstream
 #include <cstddef> // nullptr
+#include <cstdlib> // srand
+#include <ctime> // time
 
 #include "ast/visitor/PrintASTVisitor.hpp"
 #include "parser/sushipp.tab.h"
@@ -20,14 +22,19 @@ using namespace std;
 
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv)
 {
-
+	srand(time(NULL));
 }
 
 void SppCompiler::execute()
 {
-	init();
-	parse();
-	terminate();
+	if(config.do_dump_help())
+		settings::CompilerSettings::print_help();
+	else
+	{
+		init();
+		parse();
+		terminate();
+	}
 }
 
 void SppCompiler::init()
@@ -75,6 +82,7 @@ void SppCompiler::parse()
 	case 2:
 		if(config.is_verbose())
 			cerr << "Parsing : failure..." << endl;
+		break;
 	default:
 		if(config.is_verbose())
 			cout << "Parsing : success..." << endl;

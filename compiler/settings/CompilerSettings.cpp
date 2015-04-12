@@ -32,14 +32,14 @@ void CompilerSettings::print_help()
 {
 	cout << "USAGE :           " << endl;
 	cout << "  -i filename     " << endl;
-	cout << "		Input source : specify the file from which the input program to compile should be read" << endl;
+	cout << "     Input source : specify the file from which the input program to compile should be read" << endl;
 	cout << "  -h 			   " << endl;
-	cout << "		Help : the compiler will only print a help message detailing program usage" << endl;
+	cout << "     Help : the compiler will only print a help message detailing program usage" << endl;
 	cout << "  -d [ filename ] " << endl;
-	cout << "		Dump : specify if the ast must printed out as soon as it is built. If a filename is " << endl;
-	cout << "		  provided, the AST is printed out in this file" << endl;
+	cout << "     Dump : specify if the ast must printed out as soon as it is built. If a filename is " << endl;
+	cout << "     provided, the AST is printed out in this file" << endl;
 	cout << "  -v              " << endl;
-	cout << "		Verbose : the compiler emits messages detailing its execution" << endl;
+	cout << "     Verbose : the compiler emits messages detailing its execution" << endl;
 	cout << endl;
 }
 
