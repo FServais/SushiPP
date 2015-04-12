@@ -50,10 +50,31 @@ namespace symb
 		void move_to_child_scope(int child_number);
 		void move_to_root_scope();
 
+		/**
+		 * @brief Generate a brand new unique scope identifier
+		 * @retval unsigned long The scope identifier
+		 */
+		static unsigned long new_scope_id();
+
 	private:
+		/** 
+		 * root_scope : the root scope object
+		 * current_scope : a reference to the scope the symbol table is currently in
+		 * scope_id_counter : a counter for generating unique scope identifiers
+		 */
 		ScopeNode root_scope;
 		ScopeNode& current_scope;
+		static unsigned long scope_id_counter;
 	};
+
+	template <class S>
+	unsigned long SymbolTable<S>::scope_id_counter = 1;
+
+	template <class S>
+	unsigned long SymbolTable<S>::new_scope_id() 
+	{
+		return scope_id_counter++;
+	}
 
 	template <class S>
 	SymbolTable<S>::SymbolTable() : root_scope(), current_scope(root_scope)

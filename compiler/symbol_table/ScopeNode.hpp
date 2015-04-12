@@ -16,7 +16,7 @@ namespace symb
 	{
 	public:
 		// constructors
-		ScopeNode();
+		ScopeNode(unsigned int scope_id);
 
 		// copy constructor and assignment operator perform a deep copy
 		ScopeNode(const ScopeNode&);
@@ -108,7 +108,6 @@ namespace symb
 		const ScopeNode& get_child(int pos);
 
 
-
 	private:
 		/**
 		 * map : structure mapping symbols with symbol data
@@ -117,17 +116,11 @@ namespace symb
 		 * children : children scopes
 		 * parent : parent scope
 		 */
-		static unsigned long scope_id_counter;
+
 		std::unordered_map<std::string, S> map;
 		std::vector<ScopeNode*> children;
 		ScopeNode* parent; 
 		unsigned long scope_id;
-
-		/**
-		 * @brief Generate a brand new unique scope identifier
-		 * @retval unsigned long The scope identifier
-		 */
-		static unsigned long new_scope_id();
 
 		/**
 		 * @brief Free the memory allocated for the children
@@ -135,17 +128,10 @@ namespace symb
 		void free_children();
 	};
 
-	template <class S>
-	unsigned long ScopeNode<S>::scope_id_counter = 1;
+
 
 	template <class S>
-	unsigned long ScopeNode<S>::new_scope_id() 
-	{
-		return scope_id_counter++;
-	}
-
-	template <class S>
-	ScopeNode<S>::ScopeNode() : parent(nullptr), scope_id(new_scope_id())
+	ScopeNode<S>::ScopeNode(unsigned long scope_id_) : parent(nullptr), scope_id(scope_id_)
 	{
 
 	}
@@ -154,7 +140,7 @@ namespace symb
 	ScopeNode<S>::ScopeNode(const ScopeNode& copy) 
 	  : map(copy.map),
 		parent(nullptr),
-		scope_id(new_scope_id())
+		scope_id(copy.scope_id)
 	{
 		for(ScopeNode* scope : copy.children)
 		{
@@ -170,7 +156,11 @@ namespace symb
 		free_children();
 		children.clear();
 
-		// copy the child
+		map = copy.map;
+		scope_id = copy.scope_id;
+		parent = nullptr;
+
+		// copy the children
 		for(ScopeNode* scope : copy.children)
 		{
 			ScopeNode* new_scope = new ScopeNode(*scope);
@@ -221,7 +211,7 @@ namespace symb
 	}
 
 	template <class S>
-	unsigned long ScopeNode<S>::create_child_scope(int pos = -1)
+	unsigned long ScopeNode<S>::create_child_scope(unsigned long scope_id_, int pos = -1)
 	{
 		if(pos > children.size() || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
@@ -229,10 +219,10 @@ namespace symb
 		if(pos == -1)
 			pos = children.size();
 
-		ScopeNode* new_scope = new ScopeNode;
+		ScopeNode* new_scope = new ScopeNode(scope_id);
 		children.insert(std::next(children.begin(), pos), new_scope);
 		new_scope->parent = this;
-		return children.at(pos).get_id();
+		return new_scope->get_id();
 	}
 
 	template <class S>
@@ -247,10 +237,7 @@ namespace symb
 			{
 				return child->find_scope(id);
 			}
-			catch(exceptions::UndefinedScopeException& e)
-			{
-
-			}
+			catch(exceptions::UndefinedScopeException& e) { }
 		}
 
 		throw exceptions::UndefinedScopeException(id);
