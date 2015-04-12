@@ -1,8 +1,9 @@
-#include "SPPCompiler.hpp"
+#include "SppCompiler.hpp"
 
 #include <cstdio> // FILE*, stdin
 #include <iostream> // ostream
-#include <fstream>
+#include <fstream> // ofstream
+#include <cstddef> // nullptr
 
 #include "ast/visitor/PrintASTVisitor.hpp"
 #include "parser/sushipp.tab.h"
@@ -17,9 +18,9 @@ using namespace compiler;
 using namespace ast;
 using namespace std;
 
-SppCompiler::SppCompiler(int argc, char** argv) : syntax_tree(nullptr), config(argc, argv)
+SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv)
 {
-	
+
 }
 
 void SppCompiler::execute()
@@ -35,7 +36,7 @@ void SppCompiler::init()
 	if(config.read_from_file())
 	{
 		if(config.is_verbose())
-			cout << "Compiling from file '" << config.get_input_file() "'..." << endl;
+			cout << "Compiling from file '" << config.get_input_file() << "'..." << endl;
 
 		// tough we use c++, we use FILE* here to 
 		// provide the file input to the yyin scanner input stream
@@ -43,7 +44,7 @@ void SppCompiler::init()
 
 		if(!input)
 		{
-			cerr << "[IO Error] Cannot open the file '" << argv[1] << "'..." << endl;
+			cerr << "[IO Error] Cannot open the file '" << config.get_input_file()  << "'..." << endl;
 			return;
 		}
 
@@ -59,7 +60,7 @@ void SppCompiler::terminate()
 		fclose(yyin);
 }
 
-void SPPCompiler::set_syntax_tree_root(ASTNode* root)
+void SppCompiler::set_syntax_tree_root(ASTNode* root)
 {
 	syntax_tree.set_root(root);
 }
@@ -78,31 +79,30 @@ void SppCompiler::parse()
 		if(config.is_verbose())
 			cout << "Parsing : success..." << endl;
 
-		if(config.dump_ast())
+		if(config.do_dump_ast())
 			print_ast();
 	}
 }
 
-void SPPCompiler::print_ast()
+void SppCompiler::print_ast()
 {
-	ostream& out = cout;
-
-	if(config.dump_ast_in_dile())
+	if(config.do_dump_ast_in_file())
 	{
-		ofstream file(config.get_ast_dump_file());
+		ofstream file(config.get_ast_dump_file().c_str());
 
 		if(!file.is_open())
 		{
-			cerr << "[IO Error] Cannot open the file '" << argv[1] << "'..." << endl;
+			cerr << "[IO Error] Cannot open the file '" << config.get_ast_dump_file() << "'..." << endl;
 			return;
 		}
 
-		out = file;
+		PrintASTVisitor visitor(file);
+		syntax_tree.root().accept(visitor);
+		file.close();
 	}
-
-	PrintASTVisitor visitor(out);
-	syntax_tree.get_root().accept(visitor);
-
-	if(config.dump_ast_in_file())
-		dynamic_cast<ofstream>(file).close();
+	else
+	{
+		PrintASTVisitor visitor(cout);
+		syntax_tree.root().accept(visitor);
+	}
 }

@@ -31,14 +31,14 @@ UndefinedScopeException::UndefinedScopeException(unsigned long id)
 
 }
 
-BadSettingExecption::BadSettingExecption() 
+BadSettingException::BadSettingException() 
 	: runtime_error("The settings configuration are such that these data are not available.")
 {
 
 
 }
 
-BadSettingExecption::BadSettingExecption(const std::string& details) 
+BadSettingException::BadSettingException(const std::string& details) 
 	: runtime_error("The settings configuration are such that these data are not available : " + details)
 {
 
@@ -47,6 +47,12 @@ BadSettingExecption::BadSettingExecption(const std::string& details)
 
 BadInputParameterException::BadInputParameterException()
 	: runtime_error("The program input parameters are not formatted correctly.")
+{
+
+}
+
+BadInputParameterException::BadInputParameterException(char c)
+	: runtime_error("The program detected an invalid parameter '" + string(c, 1) + "'")
 {
 
 }

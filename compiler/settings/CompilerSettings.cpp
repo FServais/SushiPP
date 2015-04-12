@@ -4,7 +4,7 @@
 #include <cctype>
 
 using namespace settings;
-using namespace exceptions;
+using namespace except;
 using namespace std;
 
 CompilerSettings::CompilerSettings() 
@@ -12,22 +12,17 @@ CompilerSettings::CompilerSettings()
 	set_default();
 }	
 
-enum ExecutionMode { PRINT_HELP, COMPILE }
-	enum VerboseMode { QUIET, VERBOSE };
-	enum DumpAST { DUMP_FILE, DUMP_STDOUT, NO_DUMP };
-	enum ProgramSource { STDIN, FILE };
-
 CompilerSettings::CompilerSettings(int argc, char** argv)
 {
-	build_map(); // build the parameter map
+	build_map(argc, argv); // build the parameter map
 
 	// set up the settings
 	exec_mode = param_map.count('h') ? PRINT_HELP : COMPILE;
 
 	if(param_map.count('d'))
-		ast_dump = param_map['d'].empty() ? DUMP_STDOUT : DUMP_FILE;
+		dump_ast = param_map['d'].empty() ? DUMP_STDOUT : DUMP_FILE;
 	else
-		ast_dump = NO_DUMP;
+		dump_ast = NO_DUMP;
 
 	prog_source = param_map.count('i') ? FILE : STDIN;
 	verbose_mode = param_map.count('v') ? VERBOSE : QUIET;
@@ -50,17 +45,18 @@ void CompilerSettings::print_help()
 
 void CompilerSettings::print_settings() const
 {
+	cout << "Compiler settings : " << endl;
 	cout << "	- Verbose mode   : " << (verbose_mode == QUIET ? "off" : "on") << endl;
 	cout << "	- Program source : " << (prog_source == STDIN ? "standard input" : "from file '" + param_map.at('i') + "'") << endl;
-	cout << "	- Dump AST 		 : ";
+	cout << "	- Dump AST       : ";
 
 	switch(dump_ast)
 	{
 	case DUMP_STDOUT:
-		case << "on (in standard output)" << endl;
+		cout << "on (in standard output)" << endl;
 		break;
 	case DUMP_FILE:
-		case << "on (in file '" << param_map.at('d') << "')" << endl;
+		cout << "on (in file '" << param_map.at('d') << "')" << endl;
 		break;
 	default:// NO DUMP
 		cout << "off" << endl;
@@ -76,7 +72,7 @@ void CompilerSettings::build_map(int argc, char** argv)
 
 	for(int i = 1; i < argc; ++i)
 	{
-		string current(argv[i]);
+		string current = argv[i];
 		
 		// check whether there is a '-'
 		size_t hyphen = current.find_first_of('-');
@@ -100,8 +96,15 @@ void CompilerSettings::build_map(int argc, char** argv)
 			if(!valid_param_id(param))
 				throw BadInputParameterException("reading a unauthorized parameter, parameter of type '-[vhdi]' expected.");
 
-			param = param_str[0];
 			reading_parameter = true;
+
+			if(i == argc - 1) // last parameter
+			{
+				if(param != 'i') // because i except a value
+					param_map[param] = "";
+				else
+					throw BadInputParameterException("paramater 'i' expect a argument speciying the input file");
+			}
 		}
 		else // reading a value
 		{
@@ -122,9 +125,7 @@ void CompilerSettings::set_default()
 	exec_mode = COMPILE;
 }
 
-bool valid_param_id(char c)
+bool CompilerSettings::valid_param_id(char c)
 {
 	return c == 'v' || c == 'h' || c == 'd' || c == 'i';
 }
-
-#endif // COMPILER_SETTINGS_HPP_DEFINED

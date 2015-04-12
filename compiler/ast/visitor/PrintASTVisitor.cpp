@@ -4,7 +4,7 @@ using namespace std;
 
 // Constructor
 PrintASTVisitor::PrintASTVisitor() : length_line(2), out_(cout) { }
-PrintASTVisitor::PrintASTVisitor(std::ostream& out) : length_line(2), out_(out);
+PrintASTVisitor::PrintASTVisitor(ostream& out) : length_line(2), out_(out) { }
 
 
 void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )

@@ -8,7 +8,7 @@
 
 namespace settings
 {
-	enum ExecutionMode { PRINT_HELP, COMPILE }
+	enum ExecutionMode { PRINT_HELP, COMPILE };
 	enum VerboseMode { QUIET, VERBOSE };
 	enum DumpAST { DUMP_FILE, DUMP_STDOUT, NO_DUMP };
 	enum ProgramSource { STDIN, FILE };
@@ -55,12 +55,12 @@ namespace settings
 
 		// getters and setters 
 		void set_verbose_mode(VerboseMode verbose_mode_) { verbose_mode = verbose_mode_; };
-		void set_dump_ast(DumpAST dump_ast_) { dump_ast = dump_ast_; };
+		void set_do_dump_ast(DumpAST dump_ast_) { dump_ast = dump_ast_; };
 		void set_program_source(ProgramSource prog_source_) { prog_source = prog_source_; };
 		void set_execution_mode(ExecutionMode exec_mode_) { exec_mode = exec_mode_; };
 
 		VerboseMode get_verbose_mode() const { return verbose_mode; };
-		DumpAST get_dump_ast() const { return dump_ast; };
+		DumpAST get_do_dump_ast() const { return dump_ast; };
 		ProgramSource get_program_source() const { return prog_source; }; 
 		ExecutionMode get_execution_mode() const { return exec_mode; };
 
@@ -70,15 +70,15 @@ namespace settings
 
 		// check whether the VerboseMode setting was set to verbose
 		bool is_verbose() const { return verbose_mode == VERBOSE; };
-		bool dump_ast() const { return dump_ast != NO_DUMP; };
-		bool dump_ast_in_file() const { return dump_ast == DUMP_FILE; };
-		bool dump_ast_in_stdout() const { return dump_ast == DUMP_STDOUT; };
+		bool do_dump_ast() const { return dump_ast != NO_DUMP; };
+		bool do_dump_ast_in_file() const { return dump_ast == DUMP_FILE; };
+		bool do_dump_ast_in_stdout() const { return dump_ast == DUMP_STDOUT; };
 		bool read_from_file() const { return prog_source == FILE; };
 
 		// print the compiler program usage to the standard output
 		static void print_help();
 		// print the compiler settings to the standard output
-		void print_settings();
+		void print_settings() const;
 
 	private:
 		/** settings */

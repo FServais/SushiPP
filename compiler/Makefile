@@ -23,7 +23,7 @@ OBJS_VST	  = $(PATH_OBJS)PrintASTVisitor.o
 OBJS_EXCEP    = $(PATH_OBJS)Exceptions.o
 OBJS_MAIN 	  = $(PATH_OBJS)main.o
 OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o
-OBJS_COMP	  = SPPCompiler.o
+OBJS_COMP	  = $(PATH_OBJS)SppCompiler.o
 OBJS_SCANNER  = $(PATH_OBJS)sushipp.yy.o
 OBJS_SETTINGS = $(PATH_OBJS)CompilerSettings.o
 
@@ -46,11 +46,12 @@ DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
 
 DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp
-DEP_COMP				 = SPPCompiler.hpp
- 
+DEP_COMP				 = SppCompiler.hpp
+DEP_EXCEP				 = $(PATH_EXCEP)Exceptions.hpp
+DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp
 # compilation and linking flags #
-CC = g++
-DEBUG = -g
+CC = clang++
+DEBUG =
 CCFLAGS = -c --std=c++11 $(DEBUG) 
 LDFLAGS = 
 EXE = sushipp
@@ -65,7 +66,7 @@ sushipp: $(OBJS)
 	$(CC) $(OBJS) -o $(EXE) $(LDFLAGS)
 
 # Main #
-$(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST_ALL)
+$(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST) $(DEP_EXCEP) $(DEP_COMP) $(DEP_SETTINGS)
 	$(CC) -c main.cpp -o $@ $(CCFLAGS)
 
 # Parser #
@@ -149,16 +150,20 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Compiler #
-$(PATH_OBJS)SPPCompiler.o: SPPCompiler.cpp SPPCompiler.hpp
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h
+	$(CC) $< -o $@ $(CCFLAGS)
+
+# CompilerSettings #
+$(PATH_OBJS)CompilerSettings.o: $(PATH_SETTINGS)CompilerSettings.cpp $(PATH_SETTINGS)CompilerSettings.hpp $(PATH_EXCEP)Exceptions.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 ###########################################################
 
 # clean 
 clean: 
-	rm obj/*.o
-	rm sushipp
-	rm $(PATH_PARSER)*.output
+	rm -f obj/*.o
+	rm -f sushipp
+	rm -f $(PATH_PARSER)*.output
 
 clean-hard: clean
 	rm -f $(PATH_SCANNER)sushipp.yy.c 

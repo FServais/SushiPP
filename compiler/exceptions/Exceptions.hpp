@@ -34,6 +34,8 @@ namespace except
 	{
 	public:
 		BadInputParameterException();
+		// param : the invalid parameter
+		BadInputParameterException(char);
 		// param : some detail about the error
 		explicit BadInputParameterException(const std::string&);
 	};

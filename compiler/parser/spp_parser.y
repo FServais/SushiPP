@@ -8,7 +8,7 @@
 	#include "../SppCompiler.hpp"
 	#include "../ast/AbstractSyntaxTree.hpp"
 
-	#include "../ast/nodes/ast::ASTNode.hpp"
+	#include "../ast/nodes/ASTNode.hpp"
 	#include "../ast/nodes/NodeLocation.hpp"
 	#include "../ast/nodes/ErrorNode.hpp"
 
@@ -37,7 +37,7 @@
 	static std::string curr_line_row();
 
 	// pointer to 
-	extern compiler::SppCompiler* comp;
+	extern compiler::SppCompiler* g_compiler;
 	// true if an error occurred -> used for exiting yyparse with correct code if the parser
 	// reaches the end of file after error recovery
 	bool error_occurred;
@@ -173,12 +173,12 @@
 /*  Program general rules  */
 /***************************/
 program:
-  %empty 		{ comp->set_syntax_tree_root(new ast::Program); }
+  %empty 		{ g_compiler->set_syntax_tree_root(new ast::Program); }
 | scope-body	
 	{
 		if(error_occurred)
 		{
-			delete ((ASTNode*) $1);
+			delete ((ast::ASTNode*) $1);
 			YYABORT;
 		}
 
@@ -191,7 +191,7 @@ program:
 		}
 
 		prog->add_child((ast::ASTNode*)$1);
-		comp->set_syntax_tree_root(prog); 
+		g_compiler->set_syntax_tree_root(prog); 
 	}
 ;
 
@@ -250,7 +250,7 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ScopeBody*)$3);
+		delete ((ast::ScopeBody*)$3);
 	}
 | DELIM_EOL scope-body
 	{
@@ -265,7 +265,7 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ScopeBody*)$2);
+		delete ((ast::ScopeBody*)$2);
 	}
 ;
 
@@ -369,7 +369,7 @@ decl-vars:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((DeclVars*)$3);
+		delete ((ast::DeclVars*)$3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
@@ -386,7 +386,7 @@ decl-vars:
 		((ast::ASTNode*)$$)->add_children(children($4));
 
 		// delete remaining node (which has no children)
-		delete ((DeclVars*)$4);
+		delete ((ast::DeclVars*)$4);
 	}
 ;
 
@@ -488,7 +488,7 @@ param-list:
 			((ast::ASTNode*)$$)->add_children(children($2));
 			
 			// delete remaining node (which has no children)
-			delete ((ParamList*)$2);
+			delete ((ast::ParamList*)$2);
 		}
 	}
 ;
@@ -579,7 +579,7 @@ arg-list:
 			((ast::ASTNode*)$$)->add_children(children($2));
 			
 			// delete remaining node (which has no children)
-			delete ((ArgList*)$2);
+			delete ((ast::ArgList*)$2);
 		}
 	}
 ;
@@ -676,7 +676,7 @@ argument:
 	}
 | error
 	{
-		$$ = new ErrorNode();
+		$$ = (void*) (new ast::ErrorNode);
 		/*cerr << " Details : the argument is invalid. It should be either " << endl
 			 << "    a constant, a braced expression, an anonymous soy function, " << endl
 			 << "    a datastructure access or a variable." << endl; */
@@ -771,7 +771,7 @@ arg-list-eol:
 		((ast::ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ArgListEol*)$2);
+		delete ((ast::ArgListEol*)$2);
 	}
 | argument DELIM_EOL arg-list-eol
 	{
@@ -787,7 +787,7 @@ arg-list-eol:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ArgListEol*)$3);
+		delete ((ast::ArgListEol*)$3);
 	}
 ;
 
@@ -1618,7 +1618,7 @@ expression-list:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ExpressionList*)$3);
+		delete ((ast::ExpressionList*)$3);
 	}
 ;
 
@@ -2096,7 +2096,7 @@ menu-body:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((MenuBody*)$3);
+		delete ((ast::MenuBody*)$3);
 	}
 ;
 
@@ -2411,10 +2411,10 @@ elseif:
 static void yyerror(const char *s)
 {
 	error_occurred = true;
-	cerr << "[Error] " << s << curr_line_row() << endl;
+	std::cerr << "[Error] " << s << curr_line_row() << std::endl;
 }
 
-static string curr_line_row()
+static std::string curr_line_row()
 {
 	std::stringstream ss;
 	ss << " at line " << yylloc.first_line << " (column " << yylloc.first_column << ")";

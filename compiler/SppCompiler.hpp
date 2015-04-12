@@ -23,7 +23,7 @@ namespace compiler
 		 * @param ASTNode* root A pointer to the root node of the syntax tree to create
 		 * @note Any node previously given to this function is freed
 		 */
-		void set_syntax_tree_root(ASTNode*);
+		void set_syntax_tree_root(ast::ASTNode*);
 
 	private:
 		settings::CompilerSettings config;
