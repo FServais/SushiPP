@@ -70,8 +70,10 @@ namespace settings
 
 		// check whether the VerboseMode setting was set to verbose
 		bool is_verbose() const { return verbose_mode == VERBOSE; };
+		bool dump_ast() const { return dump_ast != NO_DUMP; };
 		bool dump_ast_in_file() const { return dump_ast == DUMP_FILE; };
 		bool dump_ast_in_stdout() const { return dump_ast == DUMP_STDOUT; };
+		bool read_from_file() const { return prog_source == FILE; };
 
 		// print the compiler program usage to the standard output
 		static void print_help();
