@@ -3,28 +3,27 @@
 using namespace std;
 
 // Constructor
-PrintASTVisitor::PrintASTVisitor() : length_line(5) { }
+PrintASTVisitor::PrintASTVisitor() : length_line(2) { }
 
 
-void PrintASTVisitor::print_pair( string p_name&, string p_value&, int depth )
+void PrintASTVisitor::print_pair( string& p_name, string& p_value, int depth )
 {
-	string tab_line = string(depth * length_line, "-") + "˧";
-	cout << tab_line << " <" << token.node_name() << " ; " << token.id() << ">" << endl;
+	string tab_line = string(depth * length_line, '-') + "˧";
+	cout << tab_line << " <" << p_name << " ; " << p_value << ">" << endl;
 }
 
 
-void PrintASTVisitor::print_single( string name&, int depth )
+void PrintASTVisitor::print_single( string& name, int depth )
 {
-	string tab_line = string(depth * length_line, "-") + "˧";
-	cout << tab_line << " (" << nonterminal.node_name() << ")" << endl;
+	string tab_line = string(depth * length_line, '-') + "˧";
+	cout << tab_line << " " << name << endl;
 }
-
 
 /*****************************
  * 		Identifier token    *
  *****************************/
 
-void visit( ast::Identifier& token )
+void PrintASTVisitor::visit( ast::Identifier& token )
 {
 	print_pair(token.node_name(), token.id(), token.depth());
 }
@@ -33,112 +32,112 @@ void visit( ast::Identifier& token )
 /*************************
  * 		Keyword token    *
  *************************/
-void visit( ast::K_Maki& token )
+void PrintASTVisitor::visit( ast::K_Maki& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_To& token )
+void PrintASTVisitor::visit( ast::K_To& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Soy& token )
+void PrintASTVisitor::visit( ast::K_Soy& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Nori& token )
+void PrintASTVisitor::visit( ast::K_Nori& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Menu& token )
+void PrintASTVisitor::visit( ast::K_Menu& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_For& token )
+void PrintASTVisitor::visit( ast::K_For& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Roll& token )
+void PrintASTVisitor::visit( ast::K_Roll& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Break& token )
+void PrintASTVisitor::visit( ast::K_Break& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Continue& token )
+void PrintASTVisitor::visit( ast::K_Continue& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Foreach& token )
+void PrintASTVisitor::visit( ast::K_Foreach& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_As& token )
+void PrintASTVisitor::visit( ast::K_As& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_If& token )
+void PrintASTVisitor::visit( ast::K_If& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Elseif& token )
+void PrintASTVisitor::visit( ast::K_Elseif& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::K_Else& token )
+void PrintASTVisitor::visit( ast::K_Else& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Int& token )
+void PrintASTVisitor::visit( ast::Type_Int& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Float& token )
+void PrintASTVisitor::visit( ast::Type_Float& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Char& token )
+void PrintASTVisitor::visit( ast::Type_Char& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_String& token )
+void PrintASTVisitor::visit( ast::Type_String& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Array& token )
+void PrintASTVisitor::visit( ast::Type_Array& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_List& token )
+void PrintASTVisitor::visit( ast::Type_List& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Tuple& token )
+void PrintASTVisitor::visit( ast::Type_Tuple& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Type_Bool& token )
+void PrintASTVisitor::visit( ast::Type_Bool& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -148,192 +147,192 @@ void visit( ast::Type_Bool& token )
  * 		Operator token      *
  ****************************/
 
-void visit( ast::Op_Plus& token )
+void PrintASTVisitor::visit( ast::Op_Plus& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Minus& token )
+void PrintASTVisitor::visit( ast::Op_Minus& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Mult& token )
+void PrintASTVisitor::visit( ast::Op_Mult& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Div& token )
+void PrintASTVisitor::visit( ast::Op_Div& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Modulo& token )
+void PrintASTVisitor::visit( ast::Op_Modulo& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Exponentiation& token )
+void PrintASTVisitor::visit( ast::Op_Exponentiation& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_UnaryMinus& token )
+void PrintASTVisitor::visit( ast::Op_UnaryMinus& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_BitwiseOr& token )
+void PrintASTVisitor::visit( ast::Op_BitwiseOr& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_BitwiseAnd& token )
+void PrintASTVisitor::visit( ast::Op_BitwiseAnd& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_BitwiseXor& token )
+void PrintASTVisitor::visit( ast::Op_BitwiseXor& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_BitwiseNot& token )
+void PrintASTVisitor::visit( ast::Op_BitwiseNot& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_LogicalOr& token )
+void PrintASTVisitor::visit( ast::Op_LogicalOr& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_LogicalAnd& token )
+void PrintASTVisitor::visit( ast::Op_LogicalAnd& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_LogicalNot& token )
+void PrintASTVisitor::visit( ast::Op_LogicalNot& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompLessThan& token )
+void PrintASTVisitor::visit( ast::Op_CompLessThan& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompGreaterThan& token )
+void PrintASTVisitor::visit( ast::Op_CompGreaterThan& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompLessEqual& token )
+void PrintASTVisitor::visit( ast::Op_CompLessEqual& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompGreaterEqual& token )
+void PrintASTVisitor::visit( ast::Op_CompGreaterEqual& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompEqual& token )
+void PrintASTVisitor::visit( ast::Op_CompEqual& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_CompNotEqual& token )
+void PrintASTVisitor::visit( ast::Op_CompNotEqual& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_LeftShift& token )
+void PrintASTVisitor::visit( ast::Op_LeftShift& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_RightShift& token )
+void PrintASTVisitor::visit( ast::Op_RightShift& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_StringConcat& token )
+void PrintASTVisitor::visit( ast::Op_StringConcat& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_PrefixIncrement& token )
+void PrintASTVisitor::visit( ast::Op_PrefixIncrement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_PrefixDecrement& token )
+void PrintASTVisitor::visit( ast::Op_PrefixDecrement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_PostfixIncrement& token )
+void PrintASTVisitor::visit( ast::Op_PostfixIncrement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_PostfixDecrement& token )
+void PrintASTVisitor::visit( ast::Op_PostfixDecrement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_Assignment& token )
+void PrintASTVisitor::visit( ast::Op_Assignment& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignPlus& token )
+void PrintASTVisitor::visit( ast::Op_AssignPlus& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignLess& token )
+void PrintASTVisitor::visit( ast::Op_AssignMinus& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignMult& token )
+void PrintASTVisitor::visit( ast::Op_AssignMult& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignDiv& token )
+void PrintASTVisitor::visit( ast::Op_AssignDiv& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignExpo& token )
+void PrintASTVisitor::visit( ast::Op_AssignExpo& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignMod& token )
+void PrintASTVisitor::visit( ast::Op_AssignMod& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignAnd& token )
+void PrintASTVisitor::visit( ast::Op_AssignAnd& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignOr& token )
+void PrintASTVisitor::visit( ast::Op_AssignOr& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignXor& token )
+void PrintASTVisitor::visit( ast::Op_AssignXor& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Op_AssignConcat& token )
+void PrintASTVisitor::visit( ast::Op_AssignConcat& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -343,77 +342,77 @@ void visit( ast::Op_AssignConcat& token )
  * 		Delimiter token    *
  **************************/
 
-void visit( ast::DelimEol& token )
+void PrintASTVisitor::visit( ast::DelimEol& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::DelimEos& token )
+void PrintASTVisitor::visit( ast::DelimEos& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::TupleBeg& token )
+void PrintASTVisitor::visit( ast::TupleBeg& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::TupleEnd& token )
+void PrintASTVisitor::visit( ast::TupleEnd& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ArrayBeg& token )
+void PrintASTVisitor::visit( ast::ArrayBeg& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ArrayEnd& token )
+void PrintASTVisitor::visit( ast::ArrayEnd& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Arrow& token )
+void PrintASTVisitor::visit( ast::Arrow& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Virg& token )
+void PrintASTVisitor::visit( ast::Virg& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::OpenPar& token )
+void PrintASTVisitor::visit( ast::OpenPar& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ClosingPar& token )
+void PrintASTVisitor::visit( ast::ClosingPar& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::OpenBrace& token )
+void PrintASTVisitor::visit( ast::OpenBrace& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ClosingBrace& token )
+void PrintASTVisitor::visit( ast::ClosingBrace& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::OpenAcc& token )
+void PrintASTVisitor::visit( ast::OpenAcc& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ClosingAcc& token )
+void PrintASTVisitor::visit( ast::ClosingAcc& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Underscore& token )
+void PrintASTVisitor::visit( ast::Underscore& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -423,29 +422,33 @@ void visit( ast::Underscore& token )
  * 		Constant token    *
  **************************/
 
-void visit( ast::String& token )
+void PrintASTVisitor::visit( ast::String& token )
 {
 	print_pair(token.node_name(), token.value(), token.depth());
 }
 
-void visit( ast::Character& token )
+void PrintASTVisitor::visit( ast::Character& token )
 {
-	print_pair(token.node_name(), token.value(), token.depth());
+	string value = string(1,token.value());
+	print_pair(token.node_name(), value, token.depth());
 }
 
-void visit( ast::Integer& token )
+void PrintASTVisitor::visit( ast::Integer& token )
 {
-	print_pair(token.node_name(), token.value(), token.depth());
+	string value = to_string(token.value());
+	print_pair(token.node_name(), value, token.depth());
 }
 
-void visit( ast::Float& token )
+void PrintASTVisitor::visit( ast::Float& token )
 {
-	print_pair(token.node_name(), token.value(), token.depth());
+	string value = to_string(token.value());
+	print_pair(token.node_name(), value, token.depth());
 }
 
-void visit( ast::Bool& token )
+void PrintASTVisitor::visit( ast::Bool& token )
 {
-	print_pair(token.node_name(), token.value(), token.depth());
+	string value = token.value() ? "true" : "false";
+	print_pair(token.node_name(), value, token.depth());
 }
 
 
@@ -453,7 +456,7 @@ void visit( ast::Bool& token )
 /*********************************
  * 		Constant non-terminal    *
  *********************************/
-void visit( ast::NT_Constant& token )
+void PrintASTVisitor::visit( ast::NT_Constant& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -463,42 +466,42 @@ void visit( ast::NT_Constant& token )
  * 		Datastructure non-terminal    *
  **************************************/
 
-void visit( ast::Datastructure& token )
+void PrintASTVisitor::visit( ast::Datastructure& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Array& token )
+void PrintASTVisitor::visit( ast::Array& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::List& token )
+void PrintASTVisitor::visit( ast::List& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Tuple& token )
+void PrintASTVisitor::visit( ast::Tuple& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::MakeSequence& token )
+void PrintASTVisitor::visit( ast::MakeSequence& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::MakeSequenceList& token )
+void PrintASTVisitor::visit( ast::MakeSequenceList& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::MakeSequenceArray& token )
+void PrintASTVisitor::visit( ast::MakeSequenceArray& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::SeqExpression& token )
+void PrintASTVisitor::visit( ast::SeqExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -508,32 +511,32 @@ void visit( ast::SeqExpression& token )
  * 		Declaration non-terminal    *
  ************************************/
 
-void visit( ast::Declaration& token )
+void PrintASTVisitor::visit( ast::Declaration& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::DeclFunc& token )
+void PrintASTVisitor::visit( ast::DeclFunc& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::DeclVars& token )
+void PrintASTVisitor::visit( ast::DeclVars& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::DeclVar& token )
+void PrintASTVisitor::visit( ast::DeclVar& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ParamList& token )
+void PrintASTVisitor::visit( ast::ParamList& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Param& token )
+void PrintASTVisitor::visit( ast::Param& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -543,32 +546,32 @@ void visit( ast::Param& token )
  * 		Expression non-terminal    *
  ***********************************/
 
-void visit( ast::Expression& token )
+void PrintASTVisitor::visit( ast::Expression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::IncrExpression& token )
+void PrintASTVisitor::visit( ast::IncrExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Assignment& token )
+void PrintASTVisitor::visit( ast::Assignment& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ModifyingExpression& token )
+void PrintASTVisitor::visit( ast::ModifyingExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::AssignableExpression& token )
+void PrintASTVisitor::visit( ast::AssignableExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::DatastructureAccess& token )
+void PrintASTVisitor::visit( ast::DatastructureAccess& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -578,42 +581,42 @@ void visit( ast::DatastructureAccess& token )
  * 		FunctionCall non-terminal    *
  *************************************/
 
-void visit( ast::FuncCall& token )
+void PrintASTVisitor::visit( ast::FuncCall& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ArgList& token )
+void PrintASTVisitor::visit( ast::ArgList& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Argument& token )
+void PrintASTVisitor::visit( ast::Argument& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::BracedFuncCall& token )
+void PrintASTVisitor::visit( ast::BracedFuncCall& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::FuncCallEol& token )
+void PrintASTVisitor::visit( ast::FuncCallEol& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ArgListEol& token )
+void PrintASTVisitor::visit( ast::ArgListEol& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::SoyExpression& token )
+void PrintASTVisitor::visit( ast::SoyExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::SoyFunc& token )
+void PrintASTVisitor::visit( ast::SoyFunc& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -623,22 +626,22 @@ void visit( ast::SoyFunc& token )
  * 		Program non-terminal    *
  ********************************/
 
-void visit( ast::Program& token )
+void PrintASTVisitor::visit( ast::Program& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ScopeBody& token )
+void PrintASTVisitor::visit( ast::ScopeBody& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ProgramElement& token )
+void PrintASTVisitor::visit( ast::ProgramElement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Scope& token )
+void PrintASTVisitor::visit( ast::Scope& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -648,62 +651,62 @@ void visit( ast::Scope& token )
  * 		Statement non-terminal    *
  **********************************/
 
-void visit( ast::Statement& token )
+void PrintASTVisitor::visit( ast::Statement& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Return& token )
+void PrintASTVisitor::visit( ast::Return& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Menu& token )
+void PrintASTVisitor::visit( ast::Menu& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::MenuDef& token )
+void PrintASTVisitor::visit( ast::MenuDef& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Loop& token )
+void PrintASTVisitor::visit( ast::Loop& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Roll& token )
+void PrintASTVisitor::visit( ast::Roll& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Foreach& token )
+void PrintASTVisitor::visit( ast::Foreach& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::For& token )
+void PrintASTVisitor::visit( ast::For& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ForInitializer& token )
+void PrintASTVisitor::visit( ast::ForInitializer& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::ForUpdate& token )
+void PrintASTVisitor::visit( ast::ForUpdate& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Conditional& token )
+void PrintASTVisitor::visit( ast::Conditional& token )
 {
 	print_single(token.node_name(), token.depth());
 }
 
-void visit( ast::Elseif& token )
+void PrintASTVisitor::visit( ast::Elseif& token )
 {
 	print_single(token.node_name(), token.depth());
 }
@@ -711,9 +714,9 @@ void visit( ast::Elseif& token )
 /************************
  * 		Default case    *
  ************************/
-
-void visit( ast::ASTNode& token )
+void PrintASTVisitor::visit( ast::ASTNode& token )
 {
-	print_single("Unknown", token.detph());
+	string name = "Unknown";
+	print_single(token.node_name(), token.depth());
 }
 

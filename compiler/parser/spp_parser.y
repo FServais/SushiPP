@@ -2,11 +2,14 @@
 	#include <iostream>
 	#include <string>
 	#include <sstream>
+	#include <cstddef>
 
 	/** AST includes*/
 	#include "../ast/AbstractSyntaxTree.hpp"
+
 	#include "../ast/nodes/ASTNode.hpp"
 	#include "../ast/nodes/NodeLocation.hpp"
+	#include "../ast/nodes/ErrorNode.hpp"
 
 	#include "../ast/nodes/tokens/Token.hpp"
 	#include "../ast/nodes/tokens/Operator.hpp"
@@ -23,6 +26,9 @@
 	#include "../ast/nodes/nonterminal/NT_Program.hpp"
 	#include "../ast/nodes/nonterminal/NT_Statement.hpp"
 
+	/* Macro for getting the children of a ASTNode* of type void* */
+	#define children(node) ((ASTNode*)node)->delete_children()
+
 	using namespace std;
 	using namespace ast;
 
@@ -33,16 +39,33 @@
 
 	// will store a pointer to the abstract syntax tree constructed by the parser
 	extern AbstractSyntaxTree* syntax_tree;
+	// true if an error occurred -> used for exiting yyparse with correct code if the parser
+	// reaches the end of file after error recovery
+	bool error_occurred;
 %}
 
 %define parse.error verbose
 %locations
 
+%initial-action
+{
+	if(syntax_tree != nullptr)
+	{
+		delete syntax_tree;
+		syntax_tree = nullptr;
+	}
+
+	error_occurred = false;
+}
+
 %union
 {
-	string* vstring;
-	ASTNode* vnode;
+	std::string* vstring;
+	void* vnode;
 }
+
+%destructor { delete $$; } <vstring>
+%destructor { delete ((ASTNode*)$$); } <vnode>
 
 /* Keywords tokens */
 %token KEYWORD_MAKI "maki"
@@ -141,7 +164,7 @@
 %token <vstring> IDENTIFIER
 
 /* Non terminal types */
-%type <vnode> program scope-body program-element scope
+%type <vnode> scope-body program-element scope
 %type <vnode> declaration decl-vars decl-var decl-func param param-list
 %type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
@@ -157,61 +180,139 @@
 /* Program general rules */
 /*************************/
 program:
-  %empty 		{ syntax_tree = new AbstractSyntaxTree(); }
-| scope-body	{ syntax_tree = new AbstractSyntaxTree($$); }
+  %empty 		{ syntax_tree = new AbstractSyntaxTree(new Program); }
+| scope-body	
+	{
+		if(error_occurred)
+		{
+			syntax_tree = nullptr;
+			delete ((ScopeBody*) $1);
+			YYABORT;
+		}
+
+		ASTNode* prog = new Program;
+
+		if(prog == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		prog->add_child((ASTNode*)$1);
+		syntax_tree = new AbstractSyntaxTree(prog); 
+	}
 ;
 
 /* Scope containing sushi++ code */
 scope: 
   scope-body 
 	{ 
-		$$ = new Scope();
-		$$->add_child($1); 
+		$$ = (void*) (new Scope);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1); 
 	}
 ;
 
 scope-body:
   program-element 
 	{
-		$$ = new ScopeBody();
-		$$->add_child($1);
+		$$ = (void*) (new ScopeBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | program-element DELIM_EOL
 	{
-		$$ = new ScopeBody();
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
+		$$ = (void*) (new ScopeBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | program-element DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody();
-		$$->add_child($1);
-		$$->add_child(new DelimEol);
-		$$->add_child($3);
+		$$ = (void*) (new ScopeBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ScopeBody*)$3);
 	}
 | DELIM_EOL scope-body
 	{
-		$$ = new ScopeBody();
-		$$->add_child(new DelimEol);
-		$$->add_child($2);
+		$$ = (void*) (new ScopeBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_children(children($2));
+
+		// delete remaining node (which has no children)
+		delete ((ScopeBody*)$2);
 	}
 ;
 
 program-element:
   statement
 	{
-		$$ = new ProgramElement();
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | modifying-expression
 	{
-		$$ = new ProgramElement();
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | declaration
 	{
-		$$ = new ProgramElement();
-		$$->add_child($1);
+		$$ = (void*) (new ProgramElement);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -220,16 +321,30 @@ program-element:
 /***************/
 declaration:
   KEYWORD_MAKI decl-func
-  	{
-  		$$ = new Declaration();
-  		$$->add_child(new K_Maki);
-  		$$->add_child($2);
-  	}
+	{
+		$$ = (void*) (new Declaration);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_Maki);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | KEYWORD_MAKI decl-vars
 	{
-		$$ = new Declaration();
-		$$->add_child(new K_Maki);
-		$$->add_child($2);
+		$$ = (void*) (new Declaration);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_Maki);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
@@ -237,46 +352,96 @@ declaration:
 decl-vars:
   decl-var
 	{
-		$$ = new DeclVars();
-		$$->add_child($1);
+		$$ = (void*) (new DeclVars);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | decl-var ',' decl-vars
 	{
-		$$ = new DeclVars();
-		$$->add_child($1);
-		$$->add_child(new Virg);
-		$$->add_child($3);
+		$$ = (void*) (new DeclVars);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((DeclVars*)$3);
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
-		$$ = new DeclVars();
-		$$->add_child($1);
-		$$->add_child(new Virg);
-		$$->add_child(new DelimEol);
-		$$->add_child($3);
+		$$ = (void*) (new DeclVars);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_children(children($4));
+
+		// delete remaining node (which has no children)
+		delete ((DeclVars*)$4);
 	}
 ;
 
 decl-var:
   IDENTIFIER
 	{
-		$$ = new DeclVar();
-		$$->add_child(new Identifier($1));
+		$$ = (void*) (new DeclVar);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | IDENTIFIER '=' expression
 	{
-		$$ = new DeclVar();
-		$$->add_child(new Identifier($1));
-		$$->add_child(new Op_Assign);
-		$$->add_child($3);
+		$$ = (void*) (new DeclVar);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new Op_Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+
+		// delete the memory allocated for the string
+		delete $1;
 	}
 | error '=' expression
 	{
+		$$ = (void*) (new ErrorNode);
 		//cerr << " Details : a valid identifier name was exptected as left-hand-side item." << endl;
 		yyerrok;
 	}
 | IDENTIFIER '=' error
 	{
+		$$ = (void*) (new ErrorNode);
+		// delete the memory allocated for the string
+		delete $1;
 		//cerr << " Details : a valid expression was exptected as right-hand-side item." << endl;
 		yyerrok;
 	}
@@ -286,32 +451,91 @@ decl-var:
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
 	{
-		$$ = new DeclFunc();
-		$$->add_child(new Identifier($1));
-		$$->add_child($2);
-		$$->add_child(new Op_AssignFunc);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);
+		$$ = (void*) (new DeclFunc);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		if($2 != nullptr) // if no parameters
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
+
+		((ASTNode*)$$)->add_child(new Op_AssignFunc);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
+
+		// delete the memory allocated for the string
+		delete $1;
 	}
 ;
 
 /* function's parameters list */
 param-list:
   %empty
+	{
+		$$ = nullptr;
+	}
 | param param-list
 	{
-		$$ = new DeclFunc();
-		$$->add_child(new Identifier($1));
-		$$->add_child($2);
-		$$->add_child(new Op_AssignFunc);
-		$$->add_child($4);
-		$$->add_child(new DelimEos);		
+		$$ = (void*) (new ParamList);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+
+		if($2 != nullptr)
+		{
+			((ASTNode*)$$)->add_children(children($2));
+			
+			// delete remaining node (which has no children)
+			delete ((ParamList*)$2);
+		}
 	}
 ;
 
 param:
   IDENTIFIER
+	{
+		$$ = (void*) (new Param);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
 | IDENTIFIER '<' IDENTIFIER '>'
+	{
+		$$ = (void*) (new Param);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new OpenChevr);
+		((ASTNode*)$$)->add_child(new Identifier(*$3)); /** Discriminate identifier for type */
+		((ASTNode*)$$)->add_child(new ClosingChevr);
+
+		// delete the memory allocated for the string
+		delete $1;
+		delete $3;
+	}
 ;
 
 /******************/
@@ -320,22 +544,147 @@ param:
 
 func-call:
   IDENTIFIER arg-list
+	{
+		$$ = (void*) (new FuncCall);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		if($2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
 ;
 
 arg-list:
   %empty
+	{
+		$$ = nullptr;
+	}
+
+
 | argument arg-list
+	{
+		$$ = (void*) (new ArgList);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+
+		if($2 != nullptr)
+		{
+			((ASTNode*)$$)->add_children(children($2));
+			
+			// delete remaining node (which has no children)
+			delete ((ArgList*)$2);
+		}
+	}
 ;
 
 argument:
   IDENTIFIER
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
 | constant
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
+| datastructure
+	{
+		$$ = (void*) (new Argument);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | '(' expression ')'
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
+	}
 | soy-expression
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | datastructure-access
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | braced-func-call
+	{
+		$$ = (void*) (new Argument);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | error
 	{
+		$$ = new ErrorNode();
 		/*cerr << " Details : the argument is invalid. It should be either " << endl
 			 << "    a constant, a braced expression, an anonymous soy function, " << endl
 			 << "    a datastructure access or a variable." << endl; */
@@ -343,7 +692,22 @@ argument:
 	}
 ;
 
-braced-func-call: '(' func-call-eol ')';
+braced-func-call: 
+  '(' func-call-eol ')'
+	{
+		$$ = (void*) (new BracedFuncCall);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
+	}
+;
 
 /*
  * The func call eol is introduced to allow programmers to write
@@ -352,81 +716,776 @@ braced-func-call: '(' func-call-eol ')';
  */
 func-call-eol:
   IDENTIFIER arg-list-eol
+	{
+		$$ = (void*) (new FuncCallEol);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
 | soy-expression arg-list-eol
+	{
+		$$ = (void*) (new FuncCallEol);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | error arg-list-eol
 	{
+		$$ = (void*) (new ErrorNode);
 		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
-		yyclearin;
+		yyerrok;
 	}
 ;
 
 arg-list-eol:
   argument
+	{
+		$$ = (void*) (new ArgListEol);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | argument arg-list-eol
+	{
+		$$ = (void*) (new ArgListEol);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_children(children($2));
+
+		// delete remaining node (which has no children)
+		delete ((ArgListEol*)$2);
+	}
 | argument DELIM_EOL arg-list-eol
+	{
+		$$ = (void*) (new ArgListEol);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ArgListEol*)$3);
+	}
 ;
 
 /* Anonymous functions */
-soy-expression: '(' soy-func ')';
-soy-func: KEYWORD_SOY param-list ':' scope;
+soy-expression: 
+  '(' soy-func ')'
+	{
+		$$ = (void*) (new SoyExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
+	}
+;
+
+soy-func: 
+  KEYWORD_SOY param-list ':' scope
+	{
+		$$ = (void*) (new SoyFunc);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_Soy);
+
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
+
+		((ASTNode*)$$)->add_child(new Op_AssignFunc);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+	}
+;
 
 /***************/
 /* Expressions */
 /***************/
 expression:
   constant
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | '(' expression ')'
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenPar);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingPar);
+	}
 | IDENTIFIER
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
 | datastructure
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | soy-expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | datastructure-access
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | incr-expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | assignment
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | braced-func-call
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | expression '+' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Plus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '-' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Minus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '*' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Mult);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '/' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Div);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '%' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Modulo);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_ARITH_EXPO expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Exponentiation);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | '-' expression %prec UNARY_MINUS
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Op_UnaryMinus);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | expression '|' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '&' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '^' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_BitwiseXor);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | '~' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Op_BitwiseNot);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | expression OP_LOGIC_OR expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LogicalOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_LOGIC_AND expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LogicalAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | '!' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Op_LogicalNot);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | expression '<' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompLessThan);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '>' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompGreaterThan);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_COMP_LEQ expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompLessEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_COMP_GEQ expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompGreaterEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_COMP_EQ  expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_COMP_NEQ expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_CompNotEqual);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_LSHIFT expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_RightShift);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression OP_RSHIFT expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_LeftShift);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | expression '.' expression
+	{
+		$$ = (void*) (new Expression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_StringConcat);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 ;
 
 incr-expression:
   OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
+	{
+		$$ = (void*) (new IncrExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Op_PrefixIncrement);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
+	{
+		$$ = (void*) (new IncrExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Op_PrefixDecrement);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+	}
 | assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
+	{
+		$$ = (void*) (new IncrExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_PostfixIncrement);
+	}
 | assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
+	{
+		$$ = (void*) (new IncrExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_PostfixDecrement);
+	}
 ;
 
 assignment:
   assignable-expression '=' expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_Assignment);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_PLUS expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignPlus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_MINUS expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMinus);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_MULT expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMult);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_DIV expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignDiv);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_EXPO expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignExpo);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_MOD expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignMod);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_AND expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignAnd);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_OR expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignOr);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_XOR expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignXor);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 | assignable-expression OP_ASSIGN_CONCAT expression
+	{
+		$$ = (void*) (new Assignment);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Op_AssignConcat);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
 ;
 
 /* A modifying expression is an expression that could bring about
@@ -435,9 +1494,53 @@ assignment:
  */
 modifying-expression:
   assignment
+  	{
+		$$ = (void*) (new ModifyingExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | incr-expression
+  	{
+		$$ = (void*) (new ModifyingExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | braced-func-call
+  	{
+		$$ = (void*) (new ModifyingExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | func-call
+  	{
+		$$ = (void*) (new ModifyingExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 ;
 
 /* An assignable expression is an expression that represents a
@@ -445,14 +1548,86 @@ modifying-expression:
  */
 assignable-expression:
   IDENTIFIER
-| datastructure-access;
+    {
+		$$ = (void*) (new AssignableExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
-datastructure-access: IDENTIFIER '[' expression ']';
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
+| datastructure-access
+  	{
+		$$ = (void*) (new AssignableExpression);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
+;
+
+datastructure-access: 
+  IDENTIFIER '[' expression ']'
+    {
+		$$ = (void*) (new DatastructureAccess);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Identifier(*$1));
+		((ASTNode*)$$)->add_child(new OpenBrace);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new ClosingBrace);
+
+		// delete allocated string
+		delete $1;
+	}
+;
 
 /* Comma-separated expression list */
 expression-list:
   expression
+	{
+		$$ = (void*) (new ExpressionList);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | expression ',' expression-list
+	{
+		$$ = (void*) (new ExpressionList);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((ExpressionList*)$3);
+	}
 ;
 
 /*************/
@@ -460,10 +1635,80 @@ expression-list:
 /*************/
 constant:
   CONST_INT
+    {
+		$$ = (void*) (new NT_Constant);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Integer(*$1));
+		
+		// delete allocated string
+		delete $1;
+	}
 | CONST_FLOAT
+    {
+		$$ = (void*) (new NT_Constant);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Float(*$1));
+		
+		// delete allocated string
+		delete $1;
+	}
 | CONST_STRING
+    {
+		$$ = (void*) (new NT_Constant);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new String(*$1));
+		
+		// delete allocated string
+		delete $1;
+	}
 | CONST_BOOL
+    {
+		$$ = (void*) (new NT_Constant);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Bool(*$1));
+		
+		// delete allocated string
+		delete $1;
+	}
 | CONST_CHAR
+    {
+		$$ = (void*) (new NT_Constant);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Character(*$1));
+		
+		// delete allocated string
+		delete $1;
+	}
 ;
 
 /******************/
@@ -471,72 +1716,226 @@ constant:
 /******************/
 datastructure:
   array
+    {
+		$$ = (void*) (new Datastructure);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | list
+    {
+		$$ = (void*) (new Datastructure);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | tuple
+    {
+		$$ = (void*) (new Datastructure);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | make-sequence
+    {
+		$$ = (void*) (new Datastructure);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 ;
 
 array:
   DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
+    {
+		$$ = (void*) (new Array);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new ArrayBeg);
+		((ASTNode*)$$)->add_child(new ArrayEnd);
+	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
+    {
+		$$ = (void*) (new Array);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new ArrayBeg);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ArrayEnd);
+	}
 ;
 
 list:
   '{' '}' /* empty list */
+    {
+		$$ = (void*) (new List);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenAcc);
+		((ASTNode*)$$)->add_child(new ClosingAcc);
+	}
 | '{' expression-list '}'
+    {
+		$$ = (void*) (new List);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenAcc);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingAcc);
+	}
 ;
 
 tuple:
   DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
+    {
+		$$ = (void*) (new Tuple);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new TupleBeg);
+		((ASTNode*)$$)->add_child(new TupleEnd);
+	}
 | DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
+    {
+		$$ = (void*) (new Tuple);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new TupleBeg);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new TupleEnd);
+	}
 ;
 
 /* The make sequence list allows to create datastructures
  * filled with increasing values (lists or arrays)
  */
 make-sequence: 
-	make-sequence-list
+  make-sequence-list
 	{
-		$$ = new MakeSequence();
-		$$->add_child($1);
-	}
- | 	make-sequence-array
-	 {
-	 	$$ = new MakeSequence();
-		$$->add_child($1);
-	 }
- ;
-make-sequence-list: 
-'{' seq-expression '}'
-	{
-		$$ = new MakeSequenceList();
-		$$->add_child(new OpenAcc());
-		$$->add_child($1);
-		$$->add_child(new ClosingAcc());
+		$$ = (void*) (new MakeSequence);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
+| make-sequence-array
+	{	
+		$$ = (void*) (new MakeSequence);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	 }
+;
+
+make-sequence-list: 
+  '{' seq-expression '}'
+	{
+		$$ = (void*) (new MakeSequenceList);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new OpenAcc());
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ClosingAcc());
 	}
 ;
 
 make-sequence-array: 
-	DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
+  DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
+	{
+		$$ = (void*) (new MakeSequenceArray);
+		
+		if($$ == nullptr)
 		{
-			$$ = new MakeSequenceArray();
-			$$->add_child(new ArrayBeg());
-			$$->add_child($1);
-			$$->add_child(new ArrayEnd());
-
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child(new ArrayBeg());
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new ArrayEnd());
+
+	}
+;
 
 seq-expression: 
-	expression KEYWORD_TO expression
+  expression KEYWORD_TO expression
+	{
+		$$ = (void*) (new SeqExpression);
+		
+		if($$ == nullptr)
 		{
-			$$ = new SeqExpression();
-			$$->add_child($1);
-			$$->add_child(new K_To());
-			$$->add_child($2);
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new K_To());
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+	}
+;
 
 /**************/
 /* Statements */
@@ -544,33 +1943,76 @@ seq-expression:
 statement:
   return
   	{
-  		$$ = new Statement();
-  		$$->add_child($1);
+  		
+ $$ = (void*) (new Statement);
+ 
+ if($$ == nullptr)
+ {
+ 	yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
   	}
 | menu
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | loop
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | KEYWORD_CONTINUE
 	{
-		$$ = new Statement();
-  		$$->add_child(new K_Continue);
+		$$ = (void*) (new Statement);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child(new K_Continue);
 	}
 | KEYWORD_BREAK
 	{
-		$$ = new Statement();
-  		$$->add_child(K_Break);
+		$$ = (void*) (new Statement);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child(new K_Break);
 	}
 | conditional
 	{
-		$$ = new Statement();
-  		$$->add_child($1);
+		$$ = (void*) (new Statement);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -578,129 +2020,216 @@ statement:
 return:
   KEYWORD_NORI
   	{
-  		$$ = new Return();
-  		$$->add_child(K_Nori);
+		$$ = (void*) (new Return);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child(new K_Nori);
   	}
 | KEYWORD_NORI expression
 	{
-		$$ = new Return();
-  		$$->add_child(K_Nori);
-  		$$->add_child($1);
+		$$ = (void*) (new Return);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child(new K_Nori);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
 	}
 ;
 
 /* Switch */
 menu: 
-	KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
+  KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
+	{
+		$$ = (void*) (new Menu);
+		
+		if($$ == nullptr)
 		{
-			$$ = new Menu();
-			$$->add_child(new K_Menu);
-			$$->add_child($1);
-			$$->add_child(DelimEol);
-			$$->add_child($2);
-			$$->add_child(new DelimEos);
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child(new K_Menu);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
+	}
+;
 
 menu-body:
   menu-def DELIM_EOL
-  {
-  	$$ = new MenuBody();
-  	$$->add_child($1);
-  	$$->add_child(DelimEol);
-  }
+	{
+		$$ = (void*) (new MenuBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+	}
 | menu-case DELIM_EOL
 	{
-		$$ = new MenuBody();
-  		$$->add_child($1);
-  		$$->add_child(DelimEol);
+		$$ = (void*) (new MenuBody);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
+ 
 	}
 | menu-case DELIM_EOL menu-body
-{
-	$$ = new MenuBody();
-	$$->add_child($1);
-	$$->add_child(DelimEol);
-	$$->add_child($2);
-}
-	
+	{
+		$$ = (void*) (new MenuBody);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_children(children($3));
+
+		// delete remaining node (which has no children)
+		delete ((MenuBody*)$3);
+	}
 ;
 
 menu-case: 
-	expression DELIM_ARROW scope DELIM_EOS
+  expression DELIM_ARROW scope DELIM_EOS
+	{
+		$$ = (void*) (new MenuCase);
+		
+		if($$ == nullptr)
 		{
-			$$ = new MenuCase();
-			$$->add_child($1);
-			$$->add_child(new Arrow());
-			$$->add_child($2);
- 			$$->add_child(new DelimEos);
-
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
+		((ASTNode*)$$)->add_child(new Arrow);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new DelimEos);
+	}
 ;
 
 menu-def:
  '_' DELIM_ARROW scope DELIM_EOS
- {
- 	$$ = new MenuDef();
- 	$$->add_child(new Underscore());
- 	$$->add_child(new Arrow());
- 	$$->add_child($1);
- 	$$->add_child(new DelimEos);
- }
+	{
+		$$ = (void*) (new MenuDef);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new Underscore);
+		((ASTNode*)$$)->add_child(new Arrow);
+		((ASTNode*)$$)->add_child((ASTNode*)$3);
+		((ASTNode*)$$)->add_child(new DelimEos);
+	}
 ;
 
 /* Loop */
 loop :
   foreach
   	{
-  		$$ = new Loop();
-  		$$->add_child($1);
+		$$ = (void*) (new Loop);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
   	}
 | for
 	{
-		$$ = new Loop();
-  		$$->add_child($1);
+		$$ = (void*) (new Loop);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 | roll
 	{
-		$$ = new Loop();
-  		$$->add_child($1);
+		$$ = (void*) (new Loop);
+  		
+  		if($$ == nullptr)
+  		{
+  			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
- ;
+;
 
 /* The roll loop is actually a while loop
  * The expression should be interpretable as a boolean value
  */
 roll : 
-	KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
+  KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
+	{
+		$$ = (void*) (new Roll);
+		
+		if($$ == nullptr)
 		{
-			$$ = new Roll();
-			$$->add_child(new K_Roll);
-			$$->add_child($1);
-			$$->add_child(new DelimEol);
-			$$->add_child($2);
-			$$->add_child(new DelimEos);
-
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child(new K_Roll);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new DelimEos);
+	}
+;
 
 /* The foreach loop iterates over a list/array expression (so the expression part should be
  * interpretable as a list/array)
  */
 foreach: 
-	KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
+  KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
+	{
+		$$ = (void*) (new Foreach);
+		
+		if($$ == nullptr)
 		{
-			$$ = new Foreach();
-			$$->add_child(new K_Foreach);
-			$$->add_child($1);
-			$$->add_child(new K_As);
-			$$->add_child(new Identifier(*$2));
-			$$->add_child(new DelimEol);
-			$$->add_child($3);
-			$$->add_child(new DelimEos);
-			delete $2;
-
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child(new K_Foreach);
+		((ASTNode*)$$)->add_child((ASTNode*)$2);
+		((ASTNode*)$$)->add_child(new K_As);
+		((ASTNode*)$$)->add_child(new Identifier(*$4));
+		((ASTNode*)$$)->add_child((ASTNode*)$6);
+		((ASTNode*)$$)->add_child(new DelimEos);
+
+		// delete the memory allocated for the string
+		delete $4;
+	}
+;
 
 
 /* The for loop iterates until a condition becomes false
@@ -711,36 +2240,68 @@ foreach:
  * for iterating (or contain nothing)
  */
 for: 
-	KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
+KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
+	{	
+		$$ = (void*) (new For);
+
+		if($$ == nullptr)
 		{
-			$$ = new For();
-			$$->add_child(new K_For);
-			$$->add_child($1);
-			$$->add_child(new Virg);
-			$$->add_child($2);
-			$$->add_child(new Virg);
-			$$->add_child($3);
-			$$->add_child(new DelimEol);
-			$$->add_child($4);
-			$$->add_child(DelimEos);
+			yyerror("Cannot allocate a new node");
+			return 1;
 		}
-	;
+
+		((ASTNode*)$$)->add_child(new K_For);
+
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$2);
+
+		((ASTNode*)$$)->add_child(new Virg);
+		((ASTNode*)$$)->add_child((ASTNode*)$4);
+		((ASTNode*)$$)->add_child(new Virg);
+
+		if((ASTNode*)$2 != nullptr)
+			((ASTNode*)$$)->add_child((ASTNode*)$6);
+
+		((ASTNode*)$$)->add_child((ASTNode*)$8);
+		((ASTNode*)$$)->add_child(new DelimEos);
+	}
+;
 
 for-initializer:
   %empty
+	{
+		$$ = nullptr;
+	}
 | assignment
 	{
-		$$ = new ForInitializer();
-		$$->add_child($1);
+		$$ = (void*) (new ForInitializer);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
 for-update:
   %empty
+	{
+		$$ = nullptr;
+	}
 | modifying-expression
 	{
-		$$ = new ForUpdate();
-		$$->add_child($1);
+		$$ = (void*) (new ForUpdate);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child((ASTNode*)$1);
 	}
 ;
 
@@ -748,72 +2309,116 @@ for-update:
 conditional:
   KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
   	{
-  		$$ = new Conditional();
-  		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
-  		$$->add_child(new DelimEos);
+  		
+		$$ = (void*) (new Conditional);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+  		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child(new DelimEos);
   	}
 | KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
-  		$$->add_child(new K_Else);
-  		$$->add_child($3);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child(new K_Else);
+  		((ASTNode*)$$)->add_child((ASTNode*)$6);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
-  		$$->add_child($3);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 | KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
 	{
-		$$ = new Conditional();
-		$$->add_child(new K_If);
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
-  		$$->add_child($3);
-  		$$->add_child(new K_Else);
-  		$$->add_child($4);
-  		$$->add_child(new DelimEos);
+		$$ = (void*) (new Conditional);
+		
+		if($$ == nullptr)
+		{
+			yyerror("cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_If);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
+  		((ASTNode*)$$)->add_child(new K_Else);
+  		((ASTNode*)$$)->add_child((ASTNode*)$7);
+  		((ASTNode*)$$)->add_child(new DelimEos);
 	}
 ;
 
 elseif:
-
   KEYWORD_ELSEIF expression DELIM_EOL scope-body
   	{
-  		$$ = new K_Elseif();
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
+		$$ = (void*) (new Elseif);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
+
+		((ASTNode*)$$)->add_child(new K_Elseif);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
   	}
 | KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
 	{
-		$$ = new K_Elseif();
-  		$$->add_child($1);
-  		$$->add_child(new DelimEol);
-  		$$->add_child($2);
-  		$$->add_child($3);
-	}
+		$$ = (void*) (new Elseif);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 1;
+		}
 
+		((ASTNode*)$$)->add_child(new K_Elseif);
+  		((ASTNode*)$$)->add_child((ASTNode*)$2);
+ 
+  		((ASTNode*)$$)->add_child((ASTNode*)$4);
+  		((ASTNode*)$$)->add_child((ASTNode*)$5);
+	}
 ;
 
 %%
 
 static void yyerror(const char *s)
 {
+	error_occurred = true;
 	cerr << "[Error] " << s << curr_line_row() << endl;
 }
 

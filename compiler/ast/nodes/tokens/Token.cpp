@@ -1,6 +1,5 @@
 #include "Token.hpp"
-#include <iostream>
-#include <string>
+#include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
 
@@ -26,36 +25,27 @@ Token::Token(const std::string& node_name, const NodeLocation& node_loc)
  ***********************************/
 
 /** Identifier */
-Identifier::Identifier(const std::string& id) : Token("identifier"), id_(id) {}
+Identifier::Identifier(const std::string& id) : Token("Identifier"), id_(id) {}
 
 Identifier::Identifier(const std::string& id, int first_line, int last_line, int first_column, int last_column)
-	: Token("identifier", first_line, last_line, first_column, last_column),
+	: Token("Identifier", first_line, last_line, first_column, last_column),
 	  id_(id)
 {
 
 }
 
 Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
-	: Token("identifier", node_loc),
+	: Token("Identifier", node_loc),
 	  id_(id)
 {
 
 }
 
-void Identifier::print(int depth)
+void Identifier::accept(ASTVisitor& visitor)
 {
-	string s("");
-	string t("");
-	if(depth > 2)
-		 s = string((depth-1)*3, ' ');
-	
-	if(depth > 1)
-		t = string("|___");
-	
-	std::cout<<s<<t<<node_name_<<std::endl;
-	for( auto it = children.begin(); it != children.end(); it++){
-		(*it)->print(depth+1);
-	}
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
 }
 
 std::string& Identifier::id()

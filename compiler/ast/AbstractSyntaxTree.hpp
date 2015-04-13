@@ -13,6 +13,11 @@ namespace ast
 		AbstractSyntaxTree();
 		AbstractSyntaxTree(ASTNode* node);
 
+		// Rule of the big three
+		AbstractSyntaxTree(const AbstractSyntaxTree&);
+		AbstractSyntaxTree& operator=(const AbstractSyntaxTree&);
+		~AbstractSyntaxTree();
+
 		// accessors
 		bool empty() const;
 		const ASTNode& root() const;

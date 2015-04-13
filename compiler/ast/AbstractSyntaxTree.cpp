@@ -1,16 +1,34 @@
 #include "AbstractSyntaxTree.hpp"
 
+#include <cstddef>
+
 using namespace std;
 using namespace ast;
 
 AbstractSyntaxTree::AbstractSyntaxTree() : root_(nullptr)
 {
-
+ 
 }
 
 AbstractSyntaxTree::AbstractSyntaxTree(ASTNode* node) : root_(node)
 {
 
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree(const AbstractSyntaxTree& copy) : root_(new ASTNode(*(copy.root_)))
+{
+
+}
+
+AbstractSyntaxTree::~AbstractSyntaxTree()
+{
+	clear();
+}
+
+AbstractSyntaxTree& AbstractSyntaxTree::operator=(const AbstractSyntaxTree& copy)
+{
+	clear();
+	root_ = new ASTNode(*(copy.root_));
 }
 
 // accessors
@@ -41,4 +59,5 @@ void AbstractSyntaxTree::set_root(ASTNode* node)
 void AbstractSyntaxTree::clear()
 {
 	delete root_;
+	root_ = nullptr;
 }

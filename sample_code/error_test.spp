@@ -2,8 +2,6 @@ maki condition-test :
 	maki a = 3
 	if a < 4
 		print "Yes"
-	else if a == 4
-		print "Equal"
 	else
 		print "Nope."
 	;;
