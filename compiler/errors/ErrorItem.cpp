@@ -9,7 +9,7 @@ void ErrorItem::print_location_error() const
 	std::cout << context << std::endl;
 	for(int i = 0 ; i < context.size() ; ++i)
 	{
-		if(i+1 == line)
+		if(i+1 == col)
 			std::cout << "^";
 		else
 			std::cout << "_";

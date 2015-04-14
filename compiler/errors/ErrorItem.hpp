@@ -9,7 +9,7 @@ namespace errors
 	class ErrorItem
 	{
 	protected:
-		ErrorItem(const std::string& _context, int _col, int _line, const std::string& _file, const std::string& _additional_desc) : context(_context), col(_col), line(_line), file(_file), additional_desc(_additional_desc) { }
+		ErrorItem(const std::string& _context, int _line, int _col, const std::string& _file, const std::string& _additional_desc) : context(_context), line(_line), col(_col), file(_file), additional_desc(_additional_desc) { }
 
 		static std::string error_flag;
 
