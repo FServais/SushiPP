@@ -157,7 +157,7 @@
 %token <vstring> IDENTIFIER
 
 /* Non terminal types */
-%type <vnode> scope-body program-element scope
+%type <vnode> scope program-element
 %type <vnode> declaration decl-vars decl-var decl-func param param-list
 %type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
@@ -174,7 +174,7 @@
 /***************************/
 program:
   %empty 		{ g_compiler->set_syntax_tree_root(new ast::Program); }
-| scope-body	
+| scope	
 	{
 		if(error_occurred)
 		{
@@ -196,25 +196,11 @@ program:
 ;
 
 /* Scope containing sushi++ code */
-scope: 
-  scope-body 
-	{ 
-		$$ = (void*) (new ast::Scope);
-		
-		if($$ == nullptr)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
 
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1); 
-	}
-;
-
-scope-body:
+scope:
   program-element 
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{	
@@ -226,7 +212,7 @@ scope-body:
 	}
 | program-element DELIM_EOL
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -236,9 +222,9 @@ scope-body:
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
-| program-element DELIM_EOL scope-body
+| program-element DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -250,11 +236,11 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ast::ScopeBody*)$3);
+		delete ((ast::Scope*)$3);
 	}
-| DELIM_EOL scope-body
+| DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -265,7 +251,7 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ast::ScopeBody*)$2);
+		delete ((ast::Scope*)$2);
 	}
 ;
 
@@ -2299,7 +2285,7 @@ for-update:
 
 /* Conditionnal */
 conditional:
-  KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
+  KEYWORD_IF expression DELIM_EOL scope DELIM_EOS
   	{
   		
 		$$ = (void*) (new ast::Conditional);
@@ -2316,7 +2302,7 @@ conditional:
   		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
   		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
   	}
-| KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope KEYWORD_ELSE scope DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2334,7 +2320,7 @@ conditional:
   		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
   		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
-| KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope elseif DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2351,7 +2337,7 @@ conditional:
   		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
   		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
-| KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope elseif KEYWORD_ELSE scope DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2373,7 +2359,7 @@ conditional:
 ;
 
 elseif:
-  KEYWORD_ELSEIF expression DELIM_EOL scope-body
+  KEYWORD_ELSEIF expression DELIM_EOL scope
   	{
 		$$ = (void*) (new ast::Elseif);
 		
@@ -2388,7 +2374,7 @@ elseif:
  
   		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
   	}
-| KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
+| KEYWORD_ELSEIF expression DELIM_EOL scope elseif
 	{
 		$$ = (void*) (new ast::Elseif);
 		

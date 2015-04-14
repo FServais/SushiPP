@@ -33,17 +33,6 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class ScopeBody : public NT_Program
-	{
-	public:
-		// Constructors
-		ScopeBody();
-		ScopeBody(int,int,int,int);
-		ScopeBody(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
 	class ProgramElement : public NT_Program
 	{
 	public:

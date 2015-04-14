@@ -47,26 +47,6 @@ void Program::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-/* ScopeBody */
-ScopeBody::ScopeBody() : NT_Program("Scope body") { }
-
-ScopeBody::ScopeBody(int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("Scope body", first_line, last_line, first_column, last_column)
-{
-
-}
-
-ScopeBody::ScopeBody(const NodeLocation& node_loc) : NT_Program("Scope body", node_loc)
-{
-
-}
-
-void ScopeBody::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
 /* ProgramElement */
 ProgramElement::ProgramElement() : NT_Program("Program element") { }
 
