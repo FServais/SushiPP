@@ -21,8 +21,7 @@ Operator::Operator(const std::string& node_name, const NodeLocation& node_loc)
 void Operator::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /** Operator derived classes */
@@ -43,8 +42,7 @@ Op_Plus::Op_Plus(const NodeLocation& node_loc) : Operator("+", node_loc)
 void Op_Plus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : - */
@@ -64,8 +62,7 @@ Op_Minus::Op_Minus(const NodeLocation& node_loc) : Operator("-", node_loc)
 void Op_Minus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : * */
@@ -85,8 +82,7 @@ Op_Mult::Op_Mult(const NodeLocation& node_loc) : Operator("*", node_loc)
 void Op_Mult::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : / */
@@ -106,8 +102,7 @@ Op_Div::Op_Div(const NodeLocation& node_loc) : Operator("/", node_loc)
 void Op_Div::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : % */
@@ -127,8 +122,7 @@ Op_Modulo::Op_Modulo(const NodeLocation& node_loc) : Operator("%", node_loc)
 void Op_Modulo::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ** */
@@ -148,8 +142,7 @@ Op_Exponentiation::Op_Exponentiation(const NodeLocation& node_loc) : Operator("*
 void Op_Exponentiation::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : -1 */
@@ -169,8 +162,7 @@ Op_UnaryMinus::Op_UnaryMinus(const NodeLocation& node_loc) : Operator("-", node_
 void Op_UnaryMinus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator :| */
@@ -190,8 +182,7 @@ Op_BitwiseOr::Op_BitwiseOr(const NodeLocation& node_loc) : Operator("|", node_lo
 void Op_BitwiseOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : & */
@@ -211,8 +202,7 @@ Op_BitwiseAnd::Op_BitwiseAnd(const NodeLocation& node_loc) : Operator("&", node_
 void Op_BitwiseAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ^*/
@@ -232,8 +222,7 @@ Op_BitwiseXor::Op_BitwiseXor(const NodeLocation& node_loc) : Operator("^", node_
 void Op_BitwiseXor::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ~ */
@@ -253,8 +242,7 @@ Op_BitwiseNot::Op_BitwiseNot(const NodeLocation& node_loc) : Operator("~", node_
 void Op_BitwiseNot::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : || */
@@ -274,8 +262,7 @@ Op_LogicalOr::Op_LogicalOr(const NodeLocation& node_loc) : Operator("||", node_l
 void Op_LogicalOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : && */
@@ -295,8 +282,7 @@ Op_LogicalAnd::Op_LogicalAnd(const NodeLocation& node_loc) : Operator("&&", node
 void Op_LogicalAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ! */
@@ -316,8 +302,7 @@ Op_LogicalNot::Op_LogicalNot(const NodeLocation& node_loc) : Operator("!", node_
 void Op_LogicalNot::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : < */
@@ -337,8 +322,7 @@ Op_CompLessThan::Op_CompLessThan(const NodeLocation& node_loc) : Operator("<", n
 void Op_CompLessThan::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : > */
@@ -358,8 +342,7 @@ Op_CompGreaterThan::Op_CompGreaterThan(const NodeLocation& node_loc) : Operator(
 void Op_CompGreaterThan::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : <= */
@@ -379,8 +362,7 @@ Op_CompLessEqual::Op_CompLessEqual(const NodeLocation& node_loc) : Operator("<="
 void Op_CompLessEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : >= */
@@ -400,8 +382,7 @@ Op_CompGreaterEqual::Op_CompGreaterEqual(const NodeLocation& node_loc) : Operato
 void Op_CompGreaterEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : == */
@@ -421,8 +402,7 @@ Op_CompEqual::Op_CompEqual(const NodeLocation& node_loc) : Operator("==", node_l
 void Op_CompEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : != */
@@ -442,8 +422,7 @@ Op_CompNotEqual::Op_CompNotEqual(const NodeLocation& node_loc) : Operator("!=", 
 void Op_CompNotEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : << */
@@ -463,8 +442,7 @@ Op_LeftShift::Op_LeftShift(const NodeLocation& node_loc) : Operator("<<", node_l
 void Op_LeftShift::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : >> */
@@ -484,8 +462,7 @@ Op_RightShift::Op_RightShift(const NodeLocation& node_loc) : Operator(">>", node
 void Op_RightShift::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : . */
@@ -505,8 +482,7 @@ Op_StringConcat::Op_StringConcat(const NodeLocation& node_loc) : Operator(".", n
 void Op_StringConcat::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ++ prefix */
@@ -526,8 +502,7 @@ Op_PrefixIncrement::Op_PrefixIncrement(const NodeLocation& node_loc) : Operator(
 void Op_PrefixIncrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : -- prefix*/
@@ -547,8 +522,7 @@ Op_PrefixDecrement::Op_PrefixDecrement(const NodeLocation& node_loc) : Operator(
 void Op_PrefixDecrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ++ postfix */
@@ -568,8 +542,7 @@ Op_PostfixIncrement::Op_PostfixIncrement(const NodeLocation& node_loc) : Operato
 void Op_PostfixIncrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : -- postfix */
@@ -589,8 +562,7 @@ Op_PostfixDecrement::Op_PostfixDecrement(const NodeLocation& node_loc) : Operato
 void Op_PostfixDecrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : = */
@@ -610,8 +582,7 @@ Op_Assignment::Op_Assignment(const NodeLocation& node_loc) : Operator("=", node_
 void Op_Assignment::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : += */
@@ -631,8 +602,7 @@ Op_AssignPlus::Op_AssignPlus(const NodeLocation& node_loc) : Operator("+=", node
 void Op_AssignPlus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : -= */
@@ -652,8 +622,7 @@ Op_AssignMinus::Op_AssignMinus(const NodeLocation& node_loc) : Operator("-=", no
 void Op_AssignMinus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : *= */
@@ -673,8 +642,7 @@ Op_AssignMult::Op_AssignMult(const NodeLocation& node_loc) : Operator("*=", node
 void Op_AssignMult::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : /= */
@@ -694,8 +662,7 @@ Op_AssignDiv::Op_AssignDiv(const NodeLocation& node_loc) : Operator("/=", node_l
 void Op_AssignDiv::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : **= */
@@ -715,8 +682,7 @@ Op_AssignExpo::Op_AssignExpo(const NodeLocation& node_loc) : Operator("**=", nod
 void Op_AssignExpo::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : %= */
@@ -736,8 +702,7 @@ Op_AssignMod::Op_AssignMod(const NodeLocation& node_loc) : Operator("%=", node_l
 void Op_AssignMod::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : &= */
@@ -757,8 +722,7 @@ Op_AssignAnd::Op_AssignAnd(const NodeLocation& node_loc) : Operator("&=", node_l
 void Op_AssignAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : |= */
@@ -778,8 +742,7 @@ Op_AssignOr::Op_AssignOr(const NodeLocation& node_loc) : Operator("|=", node_loc
 void Op_AssignOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : ^= */
@@ -799,8 +762,7 @@ Op_AssignXor::Op_AssignXor(const NodeLocation& node_loc) : Operator("^=", node_l
 void Op_AssignXor::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : .= */
@@ -820,8 +782,7 @@ Op_AssignConcat::Op_AssignConcat(const NodeLocation& node_loc) : Operator(".=", 
 void Op_AssignConcat::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Operator : : */
@@ -841,7 +802,6 @@ Op_AssignFunc::Op_AssignFunc(const NodeLocation& node_loc) : Operator(":", node_
 void Op_AssignFunc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 

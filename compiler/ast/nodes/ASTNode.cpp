@@ -155,8 +155,6 @@ const string& ASTNode::node_name() const
 void ASTNode::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 int ASTNode::depth() const

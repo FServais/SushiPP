@@ -21,8 +21,7 @@ Delimiter::Delimiter(const std::string& node_name, const NodeLocation& node_loc)
 void Delimiter::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /** Delimiter derived classes
@@ -43,8 +42,7 @@ DelimEol::DelimEol(const NodeLocation& node_loc) : Delimiter("EOL", node_loc)
 void DelimEol::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : eos */
@@ -64,8 +62,7 @@ DelimEos::DelimEos(const NodeLocation& node_loc) : Delimiter(";;", node_loc)
 void DelimEos::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : TupleBeg */
@@ -85,8 +82,7 @@ TupleBeg::TupleBeg(const NodeLocation& node_loc) : Delimiter("#{", node_loc)
 void TupleBeg::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : TupleEnd */
@@ -106,8 +102,7 @@ TupleEnd::TupleEnd(const NodeLocation& node_loc) : Delimiter("}#", node_loc)
 void TupleEnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : #[ */
@@ -127,8 +122,7 @@ ArrayBeg::ArrayBeg(const NodeLocation& node_loc) : Delimiter("#[", node_loc)
 void ArrayBeg::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : ]# */
@@ -148,8 +142,7 @@ ArrayEnd::ArrayEnd(const NodeLocation& node_loc) : Delimiter("]#", node_loc)
 void ArrayEnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : -> */
@@ -169,8 +162,7 @@ Arrow::Arrow(const NodeLocation& node_loc) : Delimiter("->", node_loc)
 void Arrow::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter :, */
@@ -190,8 +182,7 @@ Virg::Virg(const NodeLocation& node_loc) : Delimiter(",", node_loc)
 void Virg::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : ( */
@@ -211,8 +202,7 @@ OpenPar::OpenPar(const NodeLocation& node_loc) : Delimiter("(", node_loc)
 void OpenPar::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : ) */
@@ -232,8 +222,7 @@ ClosingPar::ClosingPar(const NodeLocation& node_loc) : Delimiter(")", node_loc)
 void ClosingPar::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : [ */
@@ -253,8 +242,7 @@ OpenBrace::OpenBrace(const NodeLocation& node_loc) : Delimiter("[", node_loc)
 void OpenBrace::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : ] */
@@ -274,8 +262,7 @@ ClosingBrace::ClosingBrace(const NodeLocation& node_loc) : Delimiter("]", node_l
 void ClosingBrace::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : [ */
@@ -295,8 +282,7 @@ OpenChevr::OpenChevr(const NodeLocation& node_loc) : Delimiter("<", node_loc)
 void OpenChevr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : ] */
@@ -316,8 +302,7 @@ ClosingChevr::ClosingChevr(const NodeLocation& node_loc) : Delimiter(">", node_l
 void ClosingChevr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -338,8 +323,7 @@ OpenAcc::OpenAcc(const NodeLocation& node_loc) : Delimiter("{", node_loc)
 void OpenAcc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : } */
@@ -359,8 +343,7 @@ ClosingAcc::ClosingAcc(const NodeLocation& node_loc) : Delimiter("}", node_loc)
 void ClosingAcc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Delimiter : _ */
@@ -380,7 +363,6 @@ Underscore::Underscore(const NodeLocation& node_loc) : Delimiter("_", node_loc)
 void Underscore::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 

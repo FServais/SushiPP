@@ -22,8 +22,7 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 void NT_Declaration::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /** (NT_)Declaration derived classes **/
@@ -44,8 +43,7 @@ Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("Declara
 void Declaration::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* DeclFunc */
@@ -65,8 +63,7 @@ DeclFunc::DeclFunc(const NodeLocation& node_loc) : NT_Declaration("Function decl
 void DeclFunc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -87,8 +84,7 @@ DeclVars::DeclVars(const NodeLocation& node_loc) : NT_Declaration("Variables dec
 void DeclVars::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -109,8 +105,7 @@ DeclVar::DeclVar(const NodeLocation& node_loc) : NT_Declaration("Variable declar
 void DeclVar::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -131,8 +126,7 @@ Param::Param(const NodeLocation& node_loc) : NT_Declaration("Parameter", node_lo
 void Param::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* ParamList */
@@ -152,6 +146,5 @@ ParamList::ParamList(const NodeLocation& node_loc) : NT_Declaration("Parameter l
 void ParamList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }

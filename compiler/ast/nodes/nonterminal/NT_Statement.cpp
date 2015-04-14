@@ -21,8 +21,7 @@ NT_Statement::NT_Statement(const std::string& node_name, const NodeLocation& nod
 void NT_Statement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -45,8 +44,7 @@ Statement::Statement(const NodeLocation& node_loc) : NT_Statement("Statement", n
 void Statement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -67,8 +65,7 @@ Return::Return(const NodeLocation& node_loc) : NT_Statement("Return", node_loc)
 void Return::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -89,8 +86,7 @@ Menu::Menu(const NodeLocation& node_loc) : NT_Statement("Menu", node_loc)
 void Menu::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -111,8 +107,7 @@ MenuBody::MenuBody(const NodeLocation& node_loc) : NT_Statement("Menu body", nod
 void MenuBody::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -133,8 +128,7 @@ MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("Menu case", nod
 void MenuCase::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -155,8 +149,7 @@ MenuDef::MenuDef(const NodeLocation& node_loc) : NT_Statement("Menu case definit
 void MenuDef::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -177,8 +170,7 @@ Loop::Loop(const NodeLocation& node_loc) : NT_Statement("Loop", node_loc)
 void Loop::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -199,8 +191,7 @@ Roll::Roll(const NodeLocation& node_loc) : NT_Statement("Roll", node_loc)
 void Roll::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -221,8 +212,7 @@ Foreach::Foreach(const NodeLocation& node_loc) : NT_Statement("Foreach", node_lo
 void Foreach::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -243,8 +233,7 @@ For::For(const NodeLocation& node_loc) : NT_Statement("For", node_loc)
 void For::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -265,8 +254,7 @@ ForInitializer::ForInitializer(const NodeLocation& node_loc) : NT_Statement("For
 void ForInitializer::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -287,8 +275,7 @@ ForUpdate::ForUpdate(const NodeLocation& node_loc) : NT_Statement("For update", 
 void ForUpdate::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -309,8 +296,7 @@ Conditional::Conditional(const NodeLocation& node_loc) : NT_Statement("Condition
 void Conditional::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -331,7 +317,6 @@ Elseif::Elseif(const NodeLocation& node_loc) : NT_Statement("Elseif", node_loc)
 void Elseif::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 

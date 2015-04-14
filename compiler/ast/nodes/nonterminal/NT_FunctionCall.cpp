@@ -21,8 +21,7 @@ NT_FunctionCall::NT_FunctionCall(const std::string& node_name, const NodeLocatio
 void NT_FunctionCall::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -45,8 +44,7 @@ FuncCall::FuncCall(const NodeLocation& node_loc) : NT_FunctionCall("Function cal
 void FuncCall::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -67,8 +65,7 @@ ArgList::ArgList(const NodeLocation& node_loc) : NT_FunctionCall("Argument list"
 void ArgList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -90,8 +87,7 @@ Argument::Argument(const NodeLocation& node_loc) : NT_FunctionCall("Argument", n
 void Argument::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -112,8 +108,7 @@ BracedFuncCall::BracedFuncCall(const NodeLocation& node_loc) : NT_FunctionCall("
 void BracedFuncCall::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -134,8 +129,7 @@ FuncCallEol::FuncCallEol(const NodeLocation& node_loc) : NT_FunctionCall("Functi
 void FuncCallEol::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -156,8 +150,7 @@ ArgListEol::ArgListEol(const NodeLocation& node_loc) : NT_FunctionCall("Argument
 void ArgListEol::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -178,8 +171,7 @@ SoyExpression::SoyExpression(const NodeLocation& node_loc) : NT_FunctionCall("So
 void SoyExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
@@ -201,7 +193,6 @@ SoyFunc::SoyFunc(const NodeLocation& node_loc) : NT_FunctionCall("Soy function",
 void SoyFunc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 
 }

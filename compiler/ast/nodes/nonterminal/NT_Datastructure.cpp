@@ -21,8 +21,7 @@ NT_Datastructure::NT_Datastructure(const std::string& node_name, const NodeLocat
 void NT_Datastructure::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /** (NT_)Datastructure derived classes **/
@@ -43,8 +42,7 @@ Datastructure::Datastructure(const NodeLocation& node_loc) : NT_Datastructure("D
 void Datastructure::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Array */
@@ -64,8 +62,7 @@ Array::Array(const NodeLocation& node_loc) : NT_Datastructure("Array", node_loc)
 void Array::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* List */
@@ -85,8 +82,7 @@ List::List(const NodeLocation& node_loc) : NT_Datastructure("List", node_loc)
 void List::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* Tuple */
@@ -106,8 +102,7 @@ Tuple::Tuple(const NodeLocation& node_loc) : NT_Datastructure("Tuple", node_loc)
 void Tuple::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* MakeSequence */
@@ -127,8 +122,7 @@ MakeSequence::MakeSequence(const NodeLocation& node_loc) : NT_Datastructure("Mak
 void MakeSequence::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* MakeSequenceList */
@@ -148,8 +142,7 @@ MakeSequenceList::MakeSequenceList(const NodeLocation& node_loc) : NT_Datastruct
 void MakeSequenceList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* MakeSequenceArray */
@@ -169,8 +162,7 @@ MakeSequenceArray::MakeSequenceArray(const NodeLocation& node_loc) : NT_Datastru
 void MakeSequenceArray::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 /* SeqExpression */
@@ -190,8 +182,7 @@ SeqExpression::SeqExpression(const NodeLocation& node_loc) : NT_Datastructure("S
 void SeqExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
+	 
 }
 
 
