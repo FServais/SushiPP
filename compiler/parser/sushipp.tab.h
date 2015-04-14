@@ -114,7 +114,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 43 "parser/spp_parser.y" /* yacc.c:1909  */
+#line 55 "parser/spp_parser.y" /* yacc.c:1909  */
 
 	std::string* vstring;
 	void* vnode;
