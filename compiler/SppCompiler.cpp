@@ -3,7 +3,6 @@
 #include <cstdio> // FILE*, stdin
 #include <iostream> // ostream
 #include <fstream> // ofstream
-#include <cstddef> // nullptr
 #include <cstdlib> // srand
 #include <ctime> // time
 
