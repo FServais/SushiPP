@@ -203,7 +203,6 @@ public:
 	//virtual void visit( ast::NT_Program& ) = 0;
 
 	virtual void visit( ast::Program& ) = 0;
-	virtual void visit( ast::ScopeBody& ) = 0;
 	virtual void visit( ast::ProgramElement& ) = 0;
 	virtual void visit( ast::Scope& ) = 0;
 

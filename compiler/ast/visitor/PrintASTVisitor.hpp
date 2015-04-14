@@ -197,7 +197,6 @@ public:
 	//virtual void visit( ast::NT_Program& );
 
 	virtual void visit( ast::Program& );
-	virtual void visit( ast::ScopeBody& );
 	virtual void visit( ast::ProgramElement& );
 	virtual void visit( ast::Scope& );
 

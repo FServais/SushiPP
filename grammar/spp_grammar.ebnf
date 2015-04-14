@@ -1,292 +1,162 @@
-(*---------------------------------------------------------------*)
-(*-                      Terminal symbols                       -*)
-(*-  Set of symbols for construction of basic chain like words  -*)
-(*---------------------------------------------------------------*)
+(* Main rules *)
+program = scope+ ;
+scope = ( program_element, [ EOL ] )+;
+scope = EOL, scope ;
 
-(* Tokens *)
-(* Keywords *) 
-T_KEYWORD_MAKI  = "maki";
-T_KEYWORD_NORI  = "nori";
-T_KEYWORD_FOR   = "for";
-T_KEYWORD_ROLL  = "roll";
-T_KEYWORD_MAT   = "mat"; 
-T_KEYWORD_IF    = "if";
-T_KEYWORD_ELIF  = "elseif";
-T_KEYWORD_ELSE  = "else";
-T_KEYWORD_TO    = "to";
-T_KEYWORD_SOY   = "soy";
-T_KEYWORD_MENU  = "menu";
-T_KEYWORD_INT   = "int";
-T_KEYWORD_FLOAT = "float";
-T_KEYWORD_TUPLE = "tuple";
-T_KEYWORD_ARRAY = "array";
-T_KEYWORD_LIST  = "list";
-T_KEYWORD_STR   = "string";
-T_KEYWORD_CONT  = "continue";
-T_KEYWORD_BREAK = "break";
+program-element = statement | modifying-expr | declaration ;
 
-type = T_KEYWORD_STR | T_KEYWORD_TUPLE | T_KEYWORD_ARRAY 
-		| T_KEYWORD_INT | T_KEYWORD_FLOAT | T_KEYWORD_LIST;
+(* Declarations *)
+declaration = KEYWORD_MAKI ( decl-func | decl-vars );
 
-(* Constant expression : integers, float,.. *)
-T_CONST_INT    = "int_val"; 
-T_CONST_FLOAT  = "float_val";
-T_CONST_STRING = "string_val";
+decl-vars = ( decl-var, [ ',', [ EOL ] ] )+ ;
+decl-var = IDENTIFIER, [ '=',  expr ] ;
 
-constant = T_CONST_STRING | T_CONST_FLOAT | T_CONST_INT;
-
-(* Identifier *)
-T_IDENTIFIER = "id";
-
-(* Operators *)
-(* Operator precedence : 
- *  level 13 : postfix ++ postfix -- (left associative)
- *  level 12 : prefix ++ prefix-- !  (right associative)
- *  level 11 : ** (right associative)
- *  level 10 : * / % (left associative)
- *  level 9  : + - (left associative)
- *  level 8  : << >> (left associative)
- *  level 7  : < <= > >= (left associative)
- *  level 6  : == != (left associative)
- *  level 5  : & (left associative)
- *  level 4  : ^ (left associative)
- *  level 3  : | (left associative)
- *  level 2  : && (left associative)
- *  level 1  : || (left associative)
- *  level 0  : = += -= *= /= %= &= ^= |= (right associative)
- *)
-(* Arithmetic *)
-T_OPERATOR_PLUS     = "+";
-T_OPERATOR_MINUS	= "-";
-T_OPERATOR_MULT		= "*";
-T_OPERATOR_DIVISION = "/";
-T_OPERATOR_MODULO   = "%";
-T_OPERATOR_EXP 		= "**";
-T_OPERATOR_INCR 	= "++";
-T_OPERATOR_DECR		= "--";
-
-T_OPERATOR_ARITH  = T_OPERATOR_PLUS | T_OPERATOR_MINUS | T_OPERATOR_MULT
-					| T_OPERATOR_DIVISION | T_OPERATOR_EXP 
-					| T_OPERATOR_INCR | T_OPERATOR_DECR | T_OPERATOR_MODULO;
-
-(* Bitwise *)
-T_OPERATOR_BITWISE_AND = "&";
-T_OPERATOR_BITWISE_OR  = "|";
-T_OPERATOR_BITWISE_XOR = "^";
-T_OPERATOR_BITWISE_LSH = "<<";
-T_OPERATOR_BITWISE_RSH = ">>";
-
-T_OPERATOR_BITWISE_SHIFT = T_OPERATOR_BITWISE_LSH | T_OPERATOR_BITWISE_RSH;
-
-T_OPERATOR_BITWISE = T_OPERATOR_BITWISE_XOR | T_OPERATOR_BITWISE_AND 
-						| T_OPERATOR_BITWISE_OR | T_OPERATOR_BITWISE_SHIFT;
-
-(* Logical *)
-T_OPERATOR_LOGICAL_AND = "&&";
-T_OPERATOR_LOGICAL_OR  = "||";
-T_OPERATOR_LOGICAL_NOT = "!";
-
-T_OPERATOR_LOGICAL = T_OPERATOR_LOGICAL_AND | T_OPERATOR_LOGICAL_OR;
-
-(* Comparison *)
-T_OPERATOR_COMP_LT  = "<";
-T_OPERATOR_COMP_GT 	= ">";
-T_OPERATOR_COMP_LEQ	= "<=";
-T_OPERATOR_COMP_GEQ = ">=";
-T_OPERATOR_COMP_EQ  = "==";
-T_OPERATOR_COMP_NEQ = "!=";
-
-T_OPERATOR_COMP_EQUALITY   = T_OPERATOR_COMP_EQ | T_OPERATOR_COMP_NEQ;
-T_OPERATOR_COMP_INEQUALITY = T_OPERATOR_COMP_LT | T_OPERATOR_COMP_GT 
-							| T_OPERATOR_COMP_LEQ | T_OPERATOR_COMP_GEQ;
-
-T_OPERATOR_COMP = T_OPERATOR_COMP_EQUALITY | T_OPERATOR_COMP_INEQUALITY;
-
-(* String *)
-T_OPERATOR_STR_CONCAT  = ".";
-
-T_OPERATOR_STRING = T_OPERATOR_STR_CONCAT;
-
-(* Variable assignment *)
-T_OPERATOR_ASSIGN_BASE   = "=";
-T_OPERATOR_ASSIGN_PLUS   = "+=";
-T_OPERATOR_ASSIGN_MINUS  = "-=";
-T_OPERATOR_ASSIGN_TIMES  = "*=";
-T_OPERATOR_ASSIGN_DIVIDE = "/=";
-T_OPERATOR_ASSIGN_MODULO = "%=";
-T_OPERATOR_ASSIGN_AND    = "&=";
-T_OPERATOR_ASSIGN_OR     = "|=";
-T_OPERATOR_ASSIGN_XOR    = "^="; 
-
-T_OPERATOR_ASSIGN_VAR = T_OPERATOR_ASSIGN_BASE | T_OPERATOR_ASSIGN_PLUS 
-						| T_OPERATOR_ASSIGN_MINUS | T_OPERATOR_ASSIGN_TIMES 
-						| T_OPERATOR_ASSIGN_DIVIDE | T_OPERATOR_ASSIGN_MODULO
-						| T_OPERATOR_ASSIGN_OR | T_OPERATOR_ASSIGN_AND 
-						| T_OPERATOR_ASSIGN_XOR;
-
-(* Function assignment *)
-T_OPERATOR_ASSIGN_FUNC = ":";
-
-(* Delimiters *)
-T_DELIM_COMMA      = ",";
-T_DELIM_EOL        = "\n";
-T_DELIM_EOS        = ";;";
-T_DELIM_PAREN_BEG  = "(";
-T_DELIM_PAREN_END  = ")";
-T_DELIM_BRACE_BEG  = "{";
-T_DELIM_BRACE_END  = "}";
-T_DELIM_BRACK_BEG  = "[";
-T_DELIM_BRACK_END  = "]";
-T_DELIM_CHEVR_BEG  = "<";
-T_DELIM_CHEVR_END  = ">";
-T_DELIM_ARROW      = "->";
-T_DELIM_UNDERSCORE = "_"
-
-(*---------------------------------------------------------------*)
-(*-                       Sushi++ syntax                        -*)
-(*-                      Syntactic rules                        -*)
-(*---------------------------------------------------------------*)
-
-(* General structure *)
-program = { program_item };
-program_item = declaration | expression_eol | statement;
-
-(* Declaration *)
-declaration = T_KEYWORD_MAKI, ( decl-func | decl-vars ), T_DELIM_EOL;
-
-(* Named functions *)
-decl-func = T_IDENTIFIER, param-list, T_OPERATOR_ASSIGN_FUNC, [T_DELIM_EOL], func-body, T_DELIM_EOS;
-param-list = { T_IDENTIFIER, [ T_DELIM_CHEVR_BEG, type, T_DELIM_CHEVR_END ] };
-
-func-body = program_item+;
-
-(* Variables *)
-decl-vars = assign-var, { T_DELIM_COMMA, [T_DELIM_EOL], assign-var };
-assign-var  = variable, T_OPERATOR_ASSIGN_VAR, ( expression | datastructure );
-variable  = T_IDENTIFIER;
-
-(* Expressions *)
-expression_eol = expression, T_DELIM_EOL;
-
-(* General expressions *)
-expression = braced-expression; 
-expression = soy-expression; 
-expression = constant;
-expression = func-call;
-expression = variable;
-expression = datastructure-access;
-
-(* Arithmetic, boolean, comparison and concatenation operations *)
-(* Chaining levels of precedence *)
-expression   = expression0;
-expression0  = expression1;
-expression1  = expression2;
-expression2  = expression3;
-expression3  = expression4;
-expression4  = expression5;
-expression5  = expression6;
-expression6  = expression7;
-expression7  = expression8;
-expression8  = expression9;
-expression9  = expression10;
-expression10 = expression11;
-expression11 = expression12;
-expression12 = expression13;
-
-expression13 = constant | braced-expression | variable 
-				| soy-expression | braced-func-call | datastructure-access;
-
-(* Precedence level 0 : assignement (right associative) *)
-expression0  = assignable-expression, T_OPERATOR_ASSIGN_VAR, expression1;
-(* Precedence level 1 : logical or (left associative) *)
-expression1  = expression1, T_OPERATOR_LOGICAL_OR, expression2;
-(* Precedence level 2 : logical and (left associative) *)
-expression2  = expression2, T_OPERATOR_LOGICAL_AND, expression3;
-(* Precedence level 3 : bitwise or (left associative) *)
-expression3  = expression3, T_OPERATOR_BITWISE_OR, expression4;
-(* Precedence level 4 : bitwise xor (left associative) *)
-expression4  = expression4, T_OPERATOR_BITWISE_XOR, expression5;
-(* Precedence level 5 : bitwise and (left associative) *)
-expression5  = expression5, T_OPERATOR_BITWISE_AND, expression6;
-(* Precedence level 6 : equality comparison (left associative) *)
-expression6  = expression6, T_OPERATOR_COMP_EQUALITY, expression7;
-(* Precedence level 7 : comparison (left associative) *)
-expression7  = expression7, T_OPERATOR_COMP_INEQUALITY, expression8;
-(* Precedence level 8 : right and left shift (left associative) *)
-expression8  = expression8, T_OPERATOR_BITWISE_SHIFT, expression9;
-(* Precedence level 9 : addition, substraction (left associative) *)
-expression9  = expression9, (T_OPERATOR_PLUS | T_OPERATOR_MINUS), expression10;
-(* Precedence level 10 : mutliplication, division, module (left associative) *)
-expression10 = expression10, (T_OPERATOR_MULT | T_OPERATOR_MODULO | T_OPERATOR_DIVISION), expression11;
-(* Precedence level 11 : exponentiation (right associative) *)
-expression11 = expression12, T_OPERATOR_EXP, expression11;
-(* Precedence level 12 : prefix ++, prefix --, ! (right associative) *)
-expression12 = T_OPERATOR_LOGICAL_NOT, expression12;
-expression12 = (T_OPERATOR_INCR | T_OPERATOR_DECR), assignable-expression;
-(* Precedence level 13 : postfix ++,  postfix -- (left associative) *)
-expression13 = assignable-expression, (T_OPERATOR_INCR | T_OPERATOR_DECR);
-
-(* Expression that can be assigned a value 
- * Braced expression : expression sourrounded with parenthesis *)
-assignable-expression = variable | datastructure-access;
-braced-expression = T_DELIM_PAREN_BEG, expression, T_DELIM_PAREN_END;
-
-expression = expression, T_OPERATOR_COMP, expression;
-expression = expression, T_OPERATOR_LOGICAL, expression;
-expression = expression, T_OPERATOR_CONCAT, expression;
-expression = T_OPERATOR_NEG, expression;
-expression = T_OPERATOR_INCR, expression;
-expression = T_OPERATOR_DECR, expression;
-expression = expression, T_OPERATOR_INCR;
-expression = expression, T_OPERATOR_DECR;
-expression = assignable-expression, T_OPERATOR_ASSIGN_VAR, expression;
+decl-func = IDENTIFIER, param-list, ':', scope, ";;" ;
+param-list = { param } ;
+param = IDENTIFIER, [ '<', type, '>' ] ;
 
 (* Function call *)
-braced-func-call = T_DELIM_PAREN_BEG, func-call, T_DELIM_PAREN_END;
-func-call 		 = ( T_IDENTIFIER | soy-expression ), { argument };
-argument 		 = variable | constant | datastructure | braced-expression | soy-expression;
+func-call = IDENTIFIER, arg-list ;
+arg-list = { argument } ;
 
-(* Anonymous function *)
-soy-expression = T_DELIM_PAREN_BEG, soy-func, T_DELIM_PAREN_END;
-soy-func 	   = T_KEYWORD_SOY, param-list, T_OPERATOR_ASSIGN_FUNC, func-body; 
+argument =
+  IDENTIFIER
+| constant
+| datastructure
+| '(', expr, ')'
+| soy-expr
+| datastructure-access
+| braced-func-call
+;
 
-(* Datastructure *)
-datastructure = array | list | tuple | make-sequence;
+braced-func-call = '(', func-call-eol, ')' ;
+func-call-eol = ( IDENTIFIER | soy-expr), arg-list-eol ;
+arg-list-eol = ( argument, [ EOL ] )+;
 
-array = T_DELIM_CHEVR_BEG, *{ expression }, T_DELIM_CHEVR_END;
-list  = T_DELIM_BRACE_BEG, *{ expression }, T_DELIM_BRACE_END;
-tuple = T_DELIM_UNDERSCORE, *{ expression }, T_DELIM_UNDERSCORE;
+soy-expr = '(', soy-func, ')' ;
+soy-func = KEYWORD_SOY, param-list, ':', scope ;
 
-datastructure-access = variable, T_DELIM_BRACK_BEG, expression, T_DELIM_BRACK_END;
+(* Expressions *)
+expr =
+  constant
+| '(', expr, ')'
+| IDENTIFIER
+| datastructure
+| soy-expr
+| datastructure-access
+| incr-expr
+| assign
+| braced-func-call
+| expr, '+', expr
+| expr, '-', expr
+| expr, '*', expr
+| expr, '/', expr
+| expr, '%', expr
+| expr, "**", expr
+| '-', expr 
+| expr, '|', expr
+| expr, '&', expr
+| expr, '^', expr
+| '~', expr
+| expr, "||", expr
+| expr, "&&", expr
+| '!', expr
+| expr, '<', expr
+| expr, '>', expr
+| expr, "<=", expr
+| expr, ">=", expr
+| expr, "==",  expr
+| expr, "!=", expr
+| expr, "<<", expr
+| expr, ">>", expr
+| expr, '.', expr
+;
 
-make-sequence = make-sequence-list | make-sequence-array;
-make-sequence-list  = T_DELIM_BRACE_BEG, seq-expression, T_DELIM_BRACE_END;
-make-sequence-array = T_DELIM_CHEVR_BEG, seq-expression, T_DELIM_CHEVR_END;
+incr-expr =
+  "++", assign-expr 
+| "--", assign-expr
+| assign-expr, "++"
+| assign-expr, "--"
+;
 
-seq-expression = T_CONST_INT, T_KEYWORD_TO, T_CONST_INT;
+assign =
+  assign-expr, '=', expr
+| assign-expr, "+=", expr
+| assign-expr, "-=", expr
+| assign-expr, "*=", expr
+| assign-expr, "/=", expr
+| assign-expr, "**=", expr
+| assign-expr, "%=", expr
+| assign-expr, "&=", expr
+| assign-expr, "|=", expr
+| assign-expr, "^=", expr
+| assign-expr, ".=", expr
+;
+
+modifying-expr =
+  assign
+| incr-expr
+| braced-func-call
+| func-call
+;
+
+assign-expr = IDENTIFIER | datastructure-access ;
+
+datastructure-access = IDENTIFIER '[', expr, ']' ;
+
+expr-list =  expr, [ ',', expr-list ];
+
+(* Constant *)
+constant =
+  CONST_INT
+| CONST_FLOAT
+| CONST_STRING
+| CONST_BOOL
+| CONST_CHAR
+;
+
+(* Datastructures *)
+datastructure =
+  array
+| list
+| tuple
+| make-sequence 
+;
+
+array = "#[", "]#" | "#[", expr-list, "]#"  ;
+list = '{' '}'  | '{', expr-list, '}' ;
+tuple = "#{", "}#" | "#{", expr-list, "}#" ;
+
+(* Sequence expression *)
+make-sequence = make-sequence-list | make-sequence-array ;
+make-sequence-list = '{', seq-expr, '}';
+make-sequence-array = "#[", seq-expr, "]#" ;
+seq-expr = expr, "to", expr;
 
 (* Statement *)
-statement = condition | loop | switch | return | T_CONTINUE;
+statement =
+  return
+| menu
+| loop
+| "continue"
+| "break"
+| conditional
+;
 
-(* Condition *)
-condition = T_KEYWORD_IF, expression_eol, program_item+, 
-			{ T_KEYWORD_ELIF, expression_eol, program_item+ }, 
-			[ T_KEYWORD_ELSE, [ T_DELIM_EOL ], program_item+ ], T_DELIM_EOS;
+return = "nori", [ expr ];
 
-(* Loops *)
-loop = for_list | for_cond | roll;
-for_list = T_KEYWORD_FOR, variable, T_OPERATOR_ASSIGN_VAR, expression_eol, { program_item }, T_DELIM_EOS;
-for_cond = T_KEYWORD_FOR, variable, T_OPERATOR_ASSIGN_VAR, expression, 
-					T_DELIM_COMMA, expression, 
-					T_DELIM_COMMA, expression_eol,
-					{ program_item },
-					T_DELIM_EOS;
+menu = "menu", expr EOL menu-body ";;";
+menu-body = menu-def EOL | menu-case EOL [ menu-body ] ;
+menu-case = expr, "->", scope, ";;" ;
+menu-def = '_', "->", scope, ";;" ;
 
-roll = T_KEYWORD_ROLL, expression_eol, { program_item }, T_DELIM_EOS;
+loop = foreach | for | roll ;
+roll = "roll", expr, EOL, scope, ";;";
+foreach = "foreach", expr, "as", IDENTIFIER, EOL, scope, ";;" ;
 
-(* Switch *)
-switch = T_KEYWORD_MENU, expression_eol, switch-body+, [ switch-default ], T_DELIM_EOS;
-switch-body = expression, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
-switch-default = T_DELIM_UNDERSCORE, T_DELIM_ARROW, { program_item }, T_DELIM_EOL;
+for = "for", for-initializer, ',', expr, ',', for-update, EOL, scope, ";;";
+for-initializer = assign+ ;
+for-update = modifying-expr+ ;
 
-
+conditional = "if", expr, EOL, scope, [ elseif ], [ KEYWORD_ELSE, scope ] ";;" ;
+elseif = "elseif", expr, EOL, scope, [ elseif ] ;

@@ -853,12 +853,6 @@ void PrintASTVisitor::visit( ast::Program& token )
 		(*it)->accept(*this);
 }
 
-void PrintASTVisitor::visit( ast::ScopeBody& token )
-{
-	print_single(token.node_name(), token.depth());
-	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
-		(*it)->accept(*this);
-}
 
 void PrintASTVisitor::visit( ast::ProgramElement& token )
 {

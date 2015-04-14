@@ -157,7 +157,7 @@
 %token <vstring> IDENTIFIER
 
 /* Non terminal types */
-%type <vnode> scope-body program-element scope
+%type <vnode> scope program-element
 %type <vnode> declaration decl-vars decl-var decl-func param param-list
 %type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
@@ -174,7 +174,7 @@
 /***************************/
 program:
   %empty 		{ g_compiler->set_syntax_tree_root(new ast::Program); }
-| scope-body	
+| scope	
 	{
 		if(error_occurred)
 		{
@@ -196,25 +196,11 @@ program:
 ;
 
 /* Scope containing sushi++ code */
-scope: 
-  scope-body 
-	{ 
-		$$ = (void*) (new ast::Scope);
-		
-		if($$ == nullptr)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
 
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1); 
-	}
-;
-
-scope-body:
+scope:
   program-element 
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{	
@@ -226,7 +212,7 @@ scope-body:
 	}
 | program-element DELIM_EOL
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -236,9 +222,9 @@ scope-body:
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
-| program-element DELIM_EOL scope-body
+| program-element DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -250,11 +236,11 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($3));
 
 		// delete remaining node (which has no children)
-		delete ((ast::ScopeBody*)$3);
+		delete ((ast::Scope*)$3);
 	}
-| DELIM_EOL scope-body
+| DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::ScopeBody);
+		$$ = (void*) (new ast::Scope);
 		
 		if($$ == nullptr)
 		{
@@ -265,7 +251,7 @@ scope-body:
 		((ast::ASTNode*)$$)->add_children(children($2));
 
 		// delete remaining node (which has no children)
-		delete ((ast::ScopeBody*)$2);
+		delete ((ast::Scope*)$2);
 	}
 ;
 
@@ -458,7 +444,7 @@ decl-func:
 
 		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignFunc);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -949,7 +935,7 @@ expression:
 	}
 | expression '+' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Plus);
 		
 		if($$ == nullptr)
 		{
@@ -958,12 +944,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Plus);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '-' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Minus);
 		
 		if($$ == nullptr)
 		{
@@ -972,12 +957,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Minus);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '*' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Mult);
 		
 		if($$ == nullptr)
 		{
@@ -986,12 +970,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Mult);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '/' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Div);
 		
 		if($$ == nullptr)
 		{
@@ -1000,12 +983,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Div);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '%' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Modulo);
 		
 		if($$ == nullptr)
 		{
@@ -1014,12 +996,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Modulo);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_ARITH_EXPO expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_Exponentiation);
 		
 		if($$ == nullptr)
 		{
@@ -1028,12 +1009,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Exponentiation);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | '-' expression %prec UNARY_MINUS
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_UnaryMinus);
 		
 		if($$ == nullptr)
 		{
@@ -1041,12 +1021,11 @@ expression:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::Op_UnaryMinus);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 | expression '|' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_BitwiseOr);
 		
 		if($$ == nullptr)
 		{
@@ -1055,12 +1034,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_BitwiseOr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '&' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_BitwiseAnd);
 		
 		if($$ == nullptr)
 		{
@@ -1069,12 +1047,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_BitwiseAnd);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '^' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_BitwiseXor);
 		
 		if($$ == nullptr)
 		{
@@ -1083,12 +1060,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_BitwiseXor);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | '~' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_BitwiseNot);
 		
 		if($$ == nullptr)
 		{
@@ -1096,12 +1072,11 @@ expression:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::Op_BitwiseNot);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 | expression OP_LOGIC_OR expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_LogicalOr);
 		
 		if($$ == nullptr)
 		{
@@ -1110,12 +1085,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_LogicalOr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_LOGIC_AND expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_LogicalAnd);
 		
 		if($$ == nullptr)
 		{
@@ -1124,12 +1098,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_LogicalAnd);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | '!' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_LogicalNot);
 		
 		if($$ == nullptr)
 		{
@@ -1137,12 +1110,11 @@ expression:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::Op_LogicalNot);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 | expression '<' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompLessThan);
 		
 		if($$ == nullptr)
 		{
@@ -1151,12 +1123,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompLessThan);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '>' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompGreaterThan);
 		
 		if($$ == nullptr)
 		{
@@ -1165,12 +1136,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompGreaterThan);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_COMP_LEQ expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompLessEqual);
 		
 		if($$ == nullptr)
 		{
@@ -1179,12 +1149,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompLessEqual);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_COMP_GEQ expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompGreaterEqual);
 		
 		if($$ == nullptr)
 		{
@@ -1193,12 +1162,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompGreaterEqual);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_COMP_EQ  expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompEqual);
 		
 		if($$ == nullptr)
 		{
@@ -1207,12 +1175,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompEqual);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_COMP_NEQ expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_CompNotEqual);
 		
 		if($$ == nullptr)
 		{
@@ -1221,12 +1188,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_CompNotEqual);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_LSHIFT expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_RightShift);
 		
 		if($$ == nullptr)
 		{
@@ -1235,12 +1201,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_RightShift);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression OP_RSHIFT expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_LeftShift);
 		
 		if($$ == nullptr)
 		{
@@ -1249,12 +1214,11 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_LeftShift);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | expression '.' expression
 	{
-		$$ = (void*) (new ast::Expression);
+		$$ = (void*) (new ast::Op_StringConcat);
 		
 		if($$ == nullptr)
 		{
@@ -1263,7 +1227,6 @@ expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_StringConcat);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 ;
@@ -1271,7 +1234,7 @@ expression:
 incr-expression:
   OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
 	{
-		$$ = (void*) (new ast::IncrExpression);
+		$$ = (void*) (new ast::Op_PrefixIncrement);
 		
 		if($$ == nullptr)
 		{
@@ -1279,12 +1242,11 @@ incr-expression:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::Op_PrefixIncrement);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 | OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
 	{
-		$$ = (void*) (new ast::IncrExpression);
+		$$ = (void*) (new ast::Op_PrefixDecrement);
 		
 		if($$ == nullptr)
 		{
@@ -1292,12 +1254,11 @@ incr-expression:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::Op_PrefixDecrement);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 | assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
 	{
-		$$ = (void*) (new ast::IncrExpression);
+		$$ = (void*) (new ast::Op_PostfixIncrement);
 		
 		if($$ == nullptr)
 		{
@@ -1306,11 +1267,10 @@ incr-expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_PostfixIncrement);
 	}
 | assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
 	{
-		$$ = (void*) (new ast::IncrExpression);
+		$$ = (void*) (new ast::Op_PostfixDecrement);
 		
 		if($$ == nullptr)
 		{
@@ -1319,14 +1279,13 @@ incr-expression:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_PostfixDecrement);
 	}
 ;
 
 assignment:
   assignable-expression '=' expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_Assignment);
 		
 		if($$ == nullptr)
 		{
@@ -1335,12 +1294,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_Assignment);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_PLUS expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignPlus);
 		
 		if($$ == nullptr)
 		{
@@ -1349,12 +1307,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignPlus);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MINUS expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignMinus);
 		
 		if($$ == nullptr)
 		{
@@ -1363,12 +1320,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignMinus);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MULT expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignMult);
 		
 		if($$ == nullptr)
 		{
@@ -1377,12 +1333,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignMult);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_DIV expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignDiv);
 		
 		if($$ == nullptr)
 		{
@@ -1391,12 +1346,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignDiv);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_EXPO expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignExpo);
 		
 		if($$ == nullptr)
 		{
@@ -1405,12 +1359,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignExpo);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_MOD expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignMod);
 		
 		if($$ == nullptr)
 		{
@@ -1419,12 +1372,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignMod);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_AND expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignAnd);
 		
 		if($$ == nullptr)
 		{
@@ -1433,12 +1385,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignAnd);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_OR expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignOr);
 		
 		if($$ == nullptr)
 		{
@@ -1447,12 +1398,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignOr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_XOR expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignXor);
 		
 		if($$ == nullptr)
 		{
@@ -1461,12 +1411,11 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignXor);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 | assignable-expression OP_ASSIGN_CONCAT expression
 	{
-		$$ = (void*) (new ast::Assignment);
+		$$ = (void*) (new ast::Op_AssignConcat);
 		
 		if($$ == nullptr)
 		{
@@ -1475,7 +1424,6 @@ assignment:
 		}
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(new ast::Op_AssignConcat);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
 	}
 ;
@@ -1486,7 +1434,7 @@ assignment:
  */
 modifying-expression:
   assignment
-  	{
+	{
 		$$ = (void*) (new ast::ModifyingExpression);
 		
 		if($$ == nullptr)
@@ -1498,7 +1446,7 @@ modifying-expression:
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | incr-expression
-  	{
+	{
 		$$ = (void*) (new ast::ModifyingExpression);
 		
 		if($$ == nullptr)
@@ -1510,7 +1458,7 @@ modifying-expression:
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | braced-func-call
-  	{
+	{
 		$$ = (void*) (new ast::ModifyingExpression);
 		
 		if($$ == nullptr)
@@ -1522,7 +1470,7 @@ modifying-expression:
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | func-call
-  	{
+	{
 		$$ = (void*) (new ast::ModifyingExpression);
 		
 		if($$ == nullptr)
@@ -1555,7 +1503,7 @@ assignable-expression:
 		delete $1;
 	}
 | datastructure-access
-  	{
+	{
 		$$ = (void*) (new ast::AssignableExpression);
 		
 		if($$ == nullptr)
@@ -1934,84 +1882,83 @@ seq-expression:
 /**************/
 statement:
   return
-  	{
-  		
- $$ = (void*) (new ast::Statement);
- 
- if($$ == nullptr)
- {
- 	yyerror("Cannot allocate a new node");
+	{	
+		$$ = (void*) (new ast::Statement);
+
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-  	}
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+	}
 | menu
 	{
 		$$ = (void*) (new ast::Statement);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | loop
 	{
 		$$ = (void*) (new ast::Statement);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | KEYWORD_CONTINUE
 	{
 		$$ = (void*) (new ast::Statement);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Continue);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Continue);
 	}
 | KEYWORD_BREAK
 	{
 		$$ = (void*) (new ast::Statement);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Break);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Break);
 	}
 | conditional
 	{
 		$$ = (void*) (new ast::Statement);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 ;
 
 /* Return */
 return:
   KEYWORD_NORI
-  	{
+	{
 		$$ = (void*) (new ast::Return);
 
 		if($$ == nullptr)
@@ -2020,20 +1967,20 @@ return:
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Nori);
-  	}
+		((ast::ASTNode*)$$)->add_child(new ast::K_Nori);
+	}
 | KEYWORD_NORI expression
 	{
 		$$ = (void*) (new ast::Return);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Nori);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Nori);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 	}
 ;
 
@@ -2052,7 +1999,7 @@ menu:
 		((ast::ASTNode*)$$)->add_child(new ast::K_Menu);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
@@ -2072,14 +2019,14 @@ menu-body:
 | menu-case DELIM_EOL
 	{
 		$$ = (void*) (new ast::MenuBody);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
  
 	}
 | menu-case DELIM_EOL menu-body
@@ -2114,7 +2061,7 @@ menu-case:
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 		((ast::ASTNode*)$$)->add_child(new ast::Arrow);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
@@ -2132,14 +2079,14 @@ menu-def:
 		((ast::ASTNode*)$$)->add_child(new ast::Underscore);
 		((ast::ASTNode*)$$)->add_child(new ast::Arrow);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
 /* Loop */
 loop :
   foreach
-  	{
+	{
 		$$ = (void*) (new ast::Loop);
 
 		if($$ == nullptr)
@@ -2148,31 +2095,31 @@ loop :
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-  	}
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+	}
 | for
 	{
 		$$ = (void*) (new ast::Loop);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 | roll
 	{
 		$$ = (void*) (new ast::Loop);
-  		
-  		if($$ == nullptr)
-  		{
-  			yyerror("Cannot allocate a new node");
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
 ;
 
@@ -2193,7 +2140,7 @@ roll :
 		((ast::ASTNode*)$$)->add_child(new ast::K_Roll);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
@@ -2216,7 +2163,7 @@ foreach:
 		((ast::ASTNode*)$$)->add_child(new ast::K_As);
 		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$4));
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 
 		// delete the memory allocated for the string
 		delete $4;
@@ -2255,7 +2202,7 @@ KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_
 			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$8);
-		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
@@ -2299,9 +2246,9 @@ for-update:
 
 /* Conditionnal */
 conditional:
-  KEYWORD_IF expression DELIM_EOL scope-body DELIM_EOS
-  	{
-  		
+  KEYWORD_IF expression DELIM_EOL scope DELIM_EOS
+	{
+		
 		$$ = (void*) (new ast::Conditional);
 
 		if($$ == nullptr)
@@ -2310,13 +2257,13 @@ conditional:
 			return 2;
 		}
 
-  		((ast::ASTNode*)$$)->add_child(new ast::K_If);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child(new ast::K_If);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
  
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
-  	}
-| KEYWORD_IF expression DELIM_EOL scope-body KEYWORD_ELSE scope-body DELIM_EOS
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+	}
+| KEYWORD_IF expression DELIM_EOL scope KEYWORD_ELSE scope DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2327,14 +2274,14 @@ conditional:
 		}
 
 		((ast::ASTNode*)$$)->add_child(new ast::K_If);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
  
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Else);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
-  		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Else);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
-| KEYWORD_IF expression DELIM_EOL scope-body elseif DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope elseif DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2345,13 +2292,13 @@ conditional:
 		}
 
 		((ast::ASTNode*)$$)->add_child(new ast::K_If);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
  
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
-  		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
-| KEYWORD_IF expression DELIM_EOL scope-body elseif KEYWORD_ELSE scope-body DELIM_EOS
+| KEYWORD_IF expression DELIM_EOL scope elseif KEYWORD_ELSE scope DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
 		
@@ -2362,33 +2309,18 @@ conditional:
 		}
 
 		((ast::ASTNode*)$$)->add_child(new ast::K_If);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
  
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
-  		((ast::ASTNode*)$$)->add_child(new ast::K_Else);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$7);
-  		((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Else);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$7);
+		//((ast::ASTNode*)$$)->add_child(new ast::DelimEos);
 	}
 ;
 
 elseif:
-  KEYWORD_ELSEIF expression DELIM_EOL scope-body
-  	{
-		$$ = (void*) (new ast::Elseif);
-		
-		if($$ == nullptr)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::K_Elseif);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
- 
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  	}
-| KEYWORD_ELSEIF expression DELIM_EOL scope-body elseif
+  KEYWORD_ELSEIF expression DELIM_EOL scope
 	{
 		$$ = (void*) (new ast::Elseif);
 		
@@ -2399,10 +2331,25 @@ elseif:
 		}
 
 		((ast::ASTNode*)$$)->add_child(new ast::K_Elseif);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
  
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-  		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+	}
+| KEYWORD_ELSEIF expression DELIM_EOL scope elseif
+	{
+		$$ = (void*) (new ast::Elseif);
+		
+		if($$ == nullptr)
+		{
+			yyerror("Cannot allocate a new node");
+			return 2;
+		}
+
+		((ast::ASTNode*)$$)->add_child(new ast::K_Elseif);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+ 
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
 	}
 ;
 

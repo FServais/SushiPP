@@ -45,16 +45,16 @@ namespace symb
 		const S& symbol_info(const std::string&) const;
 
 		// Displacement function : move_to another scope
-		void move_to_scope(unsigned long scope_id);
+		void move_to_scope(size_t scope_id);
 		void move_to_parent_scope();
 		void move_to_child_scope(int child_number);
 		void move_to_root_scope();
 
 		/**
 		 * @brief Generate a brand new unique scope identifier
-		 * @retval unsigned long The scope identifier
+		 * @retval size_t The scope identifier
 		 */
-		static unsigned long new_scope_id();
+		static size_t new_scope_id();
 
 	private:
 		/** 
@@ -64,14 +64,14 @@ namespace symb
 		 */
 		ScopeNode<S> root_scope;
 		ScopeNode<S>& current_scope;
-		static unsigned long scope_id_counter;
+		static size_t scope_id_counter;
 	};
 
 	template <class S>
-	unsigned long SymbolTable<S>::scope_id_counter = 1;
+	size_t SymbolTable<S>::scope_id_counter = 1;
 
 	template <class S>
-	unsigned long SymbolTable<S>::new_scope_id() 
+	size_t SymbolTable<S>::new_scope_id() 
 	{
 		return scope_id_counter++;
 	}
@@ -149,7 +149,7 @@ namespace symb
 	}
 
 	template <class S>
-	void SymbolTable<S>::move_to_scope(unsigned long scope_id)
+	void SymbolTable<S>::move_to_scope(size_t scope_id)
 	{
 		current_scope = root_scope.find_scope(scope_id);
 	}
