@@ -632,11 +632,6 @@ void PrintASTVisitor::visit( ast::Program& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void PrintASTVisitor::visit( ast::ScopeBody& token )
-{
-	print_single(token.node_name(), token.depth());
-}
-
 void PrintASTVisitor::visit( ast::ProgramElement& token )
 {
 	print_single(token.node_name(), token.depth());
