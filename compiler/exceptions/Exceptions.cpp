@@ -30,3 +30,47 @@ UndefinedScopeException::UndefinedScopeException(unsigned long id)
 
 
 }
+
+BadSettingException::BadSettingException() 
+	: runtime_error("The settings configuration are such that these data are not available.")
+{
+
+
+}
+
+BadSettingException::BadSettingException(const std::string& details) 
+	: runtime_error("The settings configuration are such that these data are not available : " + details)
+{
+
+
+}
+
+BadInputParameterException::BadInputParameterException()
+	: runtime_error("The program input parameters are not formatted correctly.")
+{
+
+}
+
+BadInputParameterException::BadInputParameterException(char c)
+	: runtime_error("The program detected an invalid parameter '" + string(c, 1) + "'")
+{
+
+}
+
+BadInputParameterException::BadInputParameterException(const std::string& details)
+	: runtime_error("The program input parameters are not formatted correctly : " + details)
+{
+
+}
+
+ParsingException::ParsingException()
+	: runtime_error("The parser has encountered an error while parsing the code.")
+{
+
+}
+
+ParsingException::ParsingException(const std::string& details)
+	: runtime_error("The parser has encountered an error while parsing the code : " + details)
+{
+
+}

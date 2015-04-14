@@ -29,6 +29,7 @@ AbstractSyntaxTree& AbstractSyntaxTree::operator=(const AbstractSyntaxTree& copy
 {
 	clear();
 	root_ = new ASTNode(*(copy.root_));
+	return *this;
 }
 
 // accessors

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "ScopdeNode.hpp"
+#include "ScopeNode.hpp"
 
 namespace symb
 {
@@ -50,13 +50,34 @@ namespace symb
 		void move_to_child_scope(int child_number);
 		void move_to_root_scope();
 
+		/**
+		 * @brief Generate a brand new unique scope identifier
+		 * @retval unsigned long The scope identifier
+		 */
+		static unsigned long new_scope_id();
+
 	private:
-		ScopeNode root_scope;
-		ScopeNode& current_scope;
+		/** 
+		 * root_scope : the root scope object
+		 * current_scope : a reference to the scope the symbol table is currently in
+		 * scope_id_counter : a counter for generating unique scope identifiers
+		 */
+		ScopeNode<S> root_scope;
+		ScopeNode<S>& current_scope;
+		static unsigned long scope_id_counter;
 	};
 
 	template <class S>
-	SymbolTable<S>::SymbolTable() : root_scope(), current_scope(root_scope)
+	unsigned long SymbolTable<S>::scope_id_counter = 1;
+
+	template <class S>
+	unsigned long SymbolTable<S>::new_scope_id() 
+	{
+		return scope_id_counter++;
+	}
+
+	template <class S>
+	SymbolTable<S>::SymbolTable() : root_scope(new_scope_id()), current_scope(root_scope)
 	{
 
 	}
@@ -73,7 +94,7 @@ namespace symb
 		if(current_scope.symbol_exists(symbol))
 			return true;
 
-		ScopeNode& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -82,7 +103,7 @@ namespace symb
 				return true;
 		}
 
-		return false
+		return false;
 	}
 
 	template <class S>
@@ -97,7 +118,7 @@ namespace symb
 		if(current_scope.symbol_exists(symbol))
 			return current_scope.symbol_info(symbol);
 
-		ScopeNode& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -106,7 +127,7 @@ namespace symb
 				return iter_scope.symbol_info(symbol);
 		}
 
-		throw exceptions::UndefinedSymbolException(symbol);
+		throw except::UndefinedSymbolException(symbol);
 	}
 
 	template <class S>
@@ -115,7 +136,7 @@ namespace symb
 		if(current_scope.symbol_exists(symbol))
 			return current_scope.symbol_info(symbol);
 
-		ScopeNode& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -124,13 +145,13 @@ namespace symb
 				return iter_scope.symbol_info(symbol);
 		}
 
-		throw exceptions::UndefinedSymbolException(symbol);
+		throw except::UndefinedSymbolException(symbol);
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_scope(unsigned long scope_id)
 	{
-		current_scope = root.find_scope(scope_id);
+		current_scope = root_scope.find_scope(scope_id);
 	}
 
 	template <class S>
@@ -148,7 +169,7 @@ namespace symb
 	template <class S>
 	void SymbolTable<S>::move_to_root_scope()
 	{
-		current_scope = root;
+		current_scope = root_scope;
 	}
 
 }
