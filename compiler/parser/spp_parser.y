@@ -30,11 +30,14 @@
 	/* Macro for getting the children of a ast::ASTNode* of type void* */
 	#define children(node) ((ast::ASTNode*)node)->delete_children()
 
-
 	extern "C" int yylex();
 
 	static void yyerror(const char*);
+
+	/** print the current location data */
 	static std::string curr_line_row();
+	/** Return a pointer to the type node for the given string*/
+	static ast::ASTNode* get_type_node(const std::string&);
 
 	// pointer to 
 	extern compiler::SppCompiler* g_compiler;
@@ -497,6 +500,8 @@ param:
 	}
 | IDENTIFIER '<' IDENTIFIER '>'
 	{
+		
+
 		$$ = (void*) (new ast::Param);
 		
 		if($$ == nullptr)
@@ -507,7 +512,25 @@ param:
 
 		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
 		((ast::ASTNode*)$$)->add_child(new ast::OpenChevr);
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$3)); /** Discriminate identifier for type */
+
+		// get the type 
+		ast::ASTNode* type = get_type_node(*$3);
+
+		if(!type)
+		{
+			// print the error
+			std::stringstream ss;
+			ss << "Invalid type string : given '" << *$3 << "', actual type expected";
+			yyerror(ss.str().c_str());
+
+			YYERROR; // signal a parsing error
+			yyerrok; // mark the error as ok, to continue parsing
+
+			((ast::ASTNode*)$$)->add_child(new ast::ErrorNode);
+		}
+		else
+			((ast::ASTNode*)$$)->add_child(type);
+		
 		((ast::ASTNode*)$$)->add_child(new ast::ClosingChevr);
 
 		// delete the memory allocated for the string
@@ -2366,4 +2389,23 @@ static std::string curr_line_row()
 	std::stringstream ss;
 	ss << " at line " << yylloc.first_line << " (column " << yylloc.first_column << ")";
 	return ss.str();
+}
+
+static ast::ASTNode* get_type_node(const std::string& type_string)
+{
+	if(!type_string.compare("int"))
+		return new ast::Type_Int;
+	else if(!type_string.compare("bool"))
+		return new ast::Type_Bool;
+	else if(!type_string.compare("float"))
+		return new ast::Type_Float;
+	else if(!type_string.compare("string"))
+		return new ast::Type_String;
+	else if(!type_string.compare("list"))
+		return new ast::Type_List;
+	else if(!type_string.compare("array"))
+		return new ast::Type_Array;
+	else if(!type_string.compare("tuple"))
+		return new ast::Type_Tuple;
+	else return nullptr;
 }
