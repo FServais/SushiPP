@@ -10,7 +10,7 @@ void ErrorItem::print_location_error() const
 	for(int i = 0 ; i < context.size() ; ++i)
 	{
 		if(i+1 == line)
-			std::cout << "▲";
+			std::cout << "^";
 		else
 			std::cout << "_";
 	}
