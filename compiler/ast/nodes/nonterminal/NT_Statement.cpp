@@ -335,3 +335,24 @@ void Elseif::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
+Else::Else() : NT_Statement("Else") { }
+
+Else::Else(int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("Else", first_line, last_line, first_column, last_column)
+{
+
+}
+
+Else::Else(const NodeLocation& node_loc) : NT_Statement("Else", node_loc)
+{
+
+}
+
+void Else::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+}
+
+

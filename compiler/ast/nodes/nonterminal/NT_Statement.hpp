@@ -175,6 +175,17 @@ namespace ast
 
 		virtual void accept(ASTVisitor&);
 	};
+
+	class Else : public NT_Statement
+	{
+	public:
+		// Constructors
+		Else();
+		Else(int,int,int,int);
+		Else(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
+	};
 }
 
 #endif
