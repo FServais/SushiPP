@@ -33,28 +33,14 @@ public:
 	 * 		Keyword token    *
 	 *************************/
 	//virtual void visit( ast::Keyword& );
-
-	virtual void visit( ast::K_Maki& );
-	virtual void visit( ast::K_To& );
-	virtual void visit( ast::K_Soy& );
-	virtual void visit( ast::K_Nori& );
-	virtual void visit( ast::K_Menu& );
-	virtual void visit( ast::K_For& );
-	virtual void visit( ast::K_Roll& );
 	virtual void visit( ast::K_Break& );
 	virtual void visit( ast::K_Continue& );
-	virtual void visit( ast::K_Foreach& );
-	virtual void visit( ast::K_As& );
-	virtual void visit( ast::K_If& );
-	virtual void visit( ast::K_Elseif& );
-	virtual void visit( ast::K_Else& );
 	virtual void visit( ast::Type_Int& );
 	virtual void visit( ast::Type_Float& );
 	virtual void visit( ast::Type_Char& );
 	virtual void visit( ast::Type_String& );
 	virtual void visit( ast::Type_Array& );
 	virtual void visit( ast::Type_List& );
-	virtual void visit( ast::Type_Tuple& );
 	virtual void visit( ast::Type_Bool& );
 
 	/**************************
@@ -102,27 +88,6 @@ public:
 	virtual void visit( ast::Op_AssignConcat& );
 	
 	/**************************
-	 * 		Delimiter token    *
-	 **************************/
-	//virtual void visit( ast::Delimiter& );
-
-	virtual void visit( ast::DelimEol& );
-	virtual void visit( ast::DelimEos& );
-	virtual void visit( ast::TupleBeg& );
-	virtual void visit( ast::TupleEnd& );
-	virtual void visit( ast::ArrayBeg& );
-	virtual void visit( ast::ArrayEnd& );
-	virtual void visit( ast::Arrow& );
-	virtual void visit( ast::Virg& );
-	virtual void visit( ast::OpenPar& );
-	virtual void visit( ast::ClosingPar& );
-	virtual void visit( ast::OpenBrace& );
-	virtual void visit( ast::ClosingBrace& );
-	virtual void visit( ast::OpenAcc& );
-	virtual void visit( ast::ClosingAcc& );
-	virtual void visit( ast::Underscore& );
-	
-	/**************************
 	 * 		Constant token    *
 	 **************************/
 	//virtual void visit( ast::ConstantToken& );
@@ -147,7 +112,6 @@ public:
 	virtual void visit( ast::Datastructure& );
 	virtual void visit( ast::Array& );
 	virtual void visit( ast::List& );
-	virtual void visit( ast::Tuple& );
 	virtual void visit( ast::MakeSequence& );
 	virtual void visit( ast::MakeSequenceList& );
 	virtual void visit( ast::MakeSequenceArray& );
@@ -158,7 +122,6 @@ public:
 	 ************************************/
 	//virtual void visit( ast::NT_Declaration& );
 
-	virtual void visit( ast::Declaration& );
 	virtual void visit( ast::DeclFunc& );
 	virtual void visit( ast::DeclVars& );
 	virtual void visit( ast::DeclVar& );
@@ -185,9 +148,6 @@ public:
 	virtual void visit( ast::FuncCall& );
 	virtual void visit( ast::ArgList& );
 	virtual void visit( ast::Argument& );
-	virtual void visit( ast::BracedFuncCall& );
-	virtual void visit( ast::FuncCallEol& );
-	virtual void visit( ast::ArgListEol& );
 	virtual void visit( ast::SoyExpression& );
 	virtual void visit( ast::SoyFunc& );
 
@@ -197,7 +157,6 @@ public:
 	//virtual void visit( ast::NT_Program& );
 
 	virtual void visit( ast::Program& );
-	virtual void visit( ast::ProgramElement& );
 	virtual void visit( ast::Scope& );
 
 	/**********************************

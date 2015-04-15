@@ -24,16 +24,6 @@ namespace ast
 	/*************************************
 	 * Declaration rules node base class *
 	 *************************************/
-	class Declaration : public NT_Declaration
-	{
-	public:
-		// Constructors
-		Declaration();
-		Declaration(int,int,int,int);
-		Declaration(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
 
 	class DeclFunc : public NT_Declaration
 	{

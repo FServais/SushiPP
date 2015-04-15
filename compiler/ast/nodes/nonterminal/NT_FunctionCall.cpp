@@ -94,73 +94,6 @@ void Argument::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-
-/* BracedFuncCall */
-BracedFuncCall::BracedFuncCall() : NT_FunctionCall("Braced function call") { }
-
-BracedFuncCall::BracedFuncCall(int first_line, int last_line, int first_column, int last_column)
-	: NT_FunctionCall("Braced function call", first_line, last_line, first_column, last_column)
-{
-
-}
-
-BracedFuncCall::BracedFuncCall(const NodeLocation& node_loc) : NT_FunctionCall("Braced function call", node_loc)
-{
-
-}
-
-void BracedFuncCall::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
-
-/* FuncCallEol */
-FuncCallEol::FuncCallEol() : NT_FunctionCall("Function call (with eol)") { }
-
-FuncCallEol::FuncCallEol(int first_line, int last_line, int first_column, int last_column)
-	: NT_FunctionCall("Function call (with eol)", first_line, last_line, first_column, last_column)
-{
-
-}
-
-FuncCallEol::FuncCallEol(const NodeLocation& node_loc) : NT_FunctionCall("Function call (with eol)", node_loc)
-{
-
-}
-
-void FuncCallEol::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
-
-/* ArgListEol */
-ArgListEol::ArgListEol() : NT_FunctionCall("Argument list (with eol)") { }
-
-ArgListEol::ArgListEol(int first_line, int last_line, int first_column, int last_column)
-	: NT_FunctionCall("Argument list (with eol)", first_line, last_line, first_column, last_column)
-{
-
-}
-
-ArgListEol::ArgListEol(const NodeLocation& node_loc) : NT_FunctionCall("Argument list (with eol)", node_loc)
-{
-
-}
-
-void ArgListEol::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
-
 /* SoyExpression */
 SoyExpression::SoyExpression() : NT_FunctionCall("Soy expression") { }
 
@@ -203,5 +136,4 @@ void SoyFunc::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 	for(auto it = children.begin() ; it != children.end() ; ++it)
 		(*it)->accept(visitor);
-
 }

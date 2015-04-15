@@ -4,7 +4,6 @@
 #include "../nodes/ASTNode.hpp"
 
 #include "../nodes/tokens/ConstantToken.hpp"
-#include "../nodes/tokens/Delimiter.hpp"
 #include "../nodes/tokens/Keyword.hpp"
 #include "../nodes/tokens/Operator.hpp"
 #include "../nodes/tokens/Token.hpp"
@@ -38,36 +37,21 @@ public:
 	/*************************
 	 * 		Keyword token    *
 	 *************************/
-	//virtual void visit( ast::Keyword& ) = 0;
 
-	virtual void visit( ast::K_Maki& ) = 0;
-	virtual void visit( ast::K_To& ) = 0;
-	virtual void visit( ast::K_Soy& ) = 0;
-	virtual void visit( ast::K_Nori& ) = 0;
-	virtual void visit( ast::K_Menu& ) = 0;
-	virtual void visit( ast::K_For& ) = 0;
-	virtual void visit( ast::K_Roll& ) = 0;
-	virtual void visit( ast::K_Break& ) = 0;
 	virtual void visit( ast::K_Continue& ) = 0;
-	virtual void visit( ast::K_Foreach& ) = 0;
-	virtual void visit( ast::K_As& ) = 0;
-	virtual void visit( ast::K_If& ) = 0;
-	virtual void visit( ast::K_Elseif& ) = 0;
-	virtual void visit( ast::K_Else& ) = 0;
+	virtual void visit( ast::K_Break& ) = 0;
 	virtual void visit( ast::Type_Int& ) = 0;
 	virtual void visit( ast::Type_Float& ) = 0;
 	virtual void visit( ast::Type_Char& ) = 0;
 	virtual void visit( ast::Type_String& ) = 0;
 	virtual void visit( ast::Type_Array& ) = 0;
 	virtual void visit( ast::Type_List& ) = 0;
-	virtual void visit( ast::Type_Tuple& ) = 0;
 	virtual void visit( ast::Type_Bool& ) = 0;
 
 	/**************************
 	 * 		Operator token    *
 	 **************************/
-	//virtual void visit( ast::Operator& ) = 0;
-
+	
 	virtual void visit( ast::Op_Plus& ) = 0;
 	virtual void visit( ast::Op_Minus& ) = 0;
 	virtual void visit( ast::Op_Mult& ) = 0;
@@ -108,27 +92,6 @@ public:
 	virtual void visit( ast::Op_AssignConcat& ) = 0;
 	
 	/**************************
-	 * 		Delimiter token    *
-	 **************************/
-	//virtual void visit( ast::Delimiter& ) = 0;
-
-	virtual void visit( ast::DelimEol& ) = 0;
-	virtual void visit( ast::DelimEos& ) = 0;
-	virtual void visit( ast::TupleBeg& ) = 0;
-	virtual void visit( ast::TupleEnd& ) = 0;
-	virtual void visit( ast::ArrayBeg& ) = 0;
-	virtual void visit( ast::ArrayEnd& ) = 0;
-	virtual void visit( ast::Arrow& ) = 0;
-	virtual void visit( ast::Virg& ) = 0;
-	virtual void visit( ast::OpenPar& ) = 0;
-	virtual void visit( ast::ClosingPar& ) = 0;
-	virtual void visit( ast::OpenBrace& ) = 0;
-	virtual void visit( ast::ClosingBrace& ) = 0;
-	virtual void visit( ast::OpenAcc& ) = 0;
-	virtual void visit( ast::ClosingAcc& ) = 0;
-	virtual void visit( ast::Underscore& ) = 0;
-	
-	/**************************
 	 * 		Constant token    *
 	 **************************/
 	//virtual void visit( ast::ConstantToken& ) = 0;
@@ -153,7 +116,6 @@ public:
 	virtual void visit( ast::Datastructure& ) = 0;
 	virtual void visit( ast::Array& ) = 0;
 	virtual void visit( ast::List& ) = 0;
-	virtual void visit( ast::Tuple& ) = 0;
 	virtual void visit( ast::MakeSequence& ) = 0;
 	virtual void visit( ast::MakeSequenceList& ) = 0;
 	virtual void visit( ast::MakeSequenceArray& ) = 0;
@@ -164,7 +126,6 @@ public:
 	 ************************************/
 	//virtual void visit( ast::NT_Declaration& ) = 0;
 
-	virtual void visit( ast::Declaration& ) = 0;
 	virtual void visit( ast::DeclFunc& ) = 0;
 	virtual void visit( ast::DeclVars& ) = 0;
 	virtual void visit( ast::DeclVar& ) = 0;
@@ -191,9 +152,6 @@ public:
 	virtual void visit( ast::FuncCall& ) = 0;
 	virtual void visit( ast::ArgList& ) = 0;
 	virtual void visit( ast::Argument& ) = 0;
-	virtual void visit( ast::BracedFuncCall& ) = 0;
-	virtual void visit( ast::FuncCallEol& ) = 0;
-	virtual void visit( ast::ArgListEol& ) = 0;
 	virtual void visit( ast::SoyExpression& ) = 0;
 	virtual void visit( ast::SoyFunc& ) = 0;
 
@@ -203,7 +161,6 @@ public:
 	//virtual void visit( ast::NT_Program& ) = 0;
 
 	virtual void visit( ast::Program& ) = 0;
-	virtual void visit( ast::ProgramElement& ) = 0;
 	virtual void visit( ast::Scope& ) = 0;
 
 	/**********************************

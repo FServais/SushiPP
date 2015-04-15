@@ -89,27 +89,6 @@ void List::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-/* Tuple */
-Tuple::Tuple() : NT_Datastructure("Tuple") { }
-
-Tuple::Tuple(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Tuple", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Tuple::Tuple(const NodeLocation& node_loc) : NT_Datastructure("Tuple", node_loc)
-{
-
-}
-
-void Tuple::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
 /* MakeSequence */
 MakeSequence::MakeSequence() : NT_Datastructure("Make sequence") { }
 

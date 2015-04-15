@@ -44,8 +44,6 @@ ALPHA      [a-zA-Z]
 \]                      { return ']'; }
 \{                      { return '{'; }
 \}                      { return '}'; }
-#\{                     { return DELIM_TUPLE_BEG; }
-\}#                     { return DELIM_TUPLE_END; }
 #\[                     { return DELIM_ARRAY_BEG; }
 \]#                     { return DELIM_ARRAY_END; }
 \(                      { return '('; }
@@ -111,7 +109,6 @@ bool                    { yylval.vstring = new string(yytext, yyleng); return ID
 string                  { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 array                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 list                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-tuple                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 (false|FALSE|true|TRUE) { yylval.vstring = new string(yytext, yyleng); return CONST_BOOL; }
 {ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 [+-]?{DIGIT}+           { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }

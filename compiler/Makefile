@@ -15,7 +15,7 @@ PATH_OBJS		 = obj/
 
 # objects #
 OBJS_NODES    = $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
-OBJS_TOKENS   = $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o $(PATH_OBJS)Delimiter.o $(PATH_OBJS)Keyword.o
+OBJS_TOKENS   = $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o  $(PATH_OBJS)Keyword.o
 OBJS_NONTERMS = $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)NT_Constant.o $(PATH_OBJS)NT_Functioncall.o
 OBJS_NODE_ALL = $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
 OBJS_AST 	  = $(PATH_OBJS)AbstractSyntaxTree.o
@@ -132,9 +132,6 @@ $(PATH_OBJS)Token.o: $(PATH_TOKENS)Token.cpp $(DEP_ASTNODE_DEEP_VISITOR)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)ConstantToken.o: $(PATH_TOKENS)ConstantToken.cpp $(DEP_ASTNODE_DEEP_VISITOR)
-	$(CC) $< -o $@ $(CCFLAGS)
-
-$(PATH_OBJS)Delimiter.o: $(PATH_TOKENS)Delimiter.cpp $(DEP_ASTNODE_DEEP_VISITOR)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)Keyword.o: $(PATH_TOKENS)Keyword.cpp $(DEP_ASTNODE_DEEP_VISITOR)

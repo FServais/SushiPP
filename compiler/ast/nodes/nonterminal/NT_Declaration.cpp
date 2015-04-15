@@ -27,26 +27,6 @@ void NT_Declaration::accept(ASTVisitor& visitor)
 }
 
 /** (NT_)Declaration derived classes **/
-/* Declaration */
-Declaration::Declaration() : NT_Declaration("Declaration") { }
-
-Declaration::Declaration(int first_line, int last_line, int first_column, int last_column)
-	: NT_Declaration("Declaration", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("Declaration", node_loc)
-{
-
-}
-
-void Declaration::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
 
 /* DeclFunc */
 DeclFunc::DeclFunc() : NT_Declaration("Function declaration") { }
@@ -68,7 +48,6 @@ void DeclFunc::accept(ASTVisitor& visitor)
 	for(auto it = children.begin() ; it != children.end() ; ++it)
 		(*it)->accept(visitor);
 }
-
 
 /* DeclVars */
 DeclVars::DeclVars() : NT_Declaration("Variables declaration") { }

@@ -15,7 +15,6 @@
 	#include "../ast/nodes/tokens/Token.hpp"
 	#include "../ast/nodes/tokens/Operator.hpp"
 	#include "../ast/nodes/tokens/ConstantToken.hpp"
-	#include "../ast/nodes/tokens/Delimiter.hpp"
 	#include "../ast/nodes/tokens/Keyword.hpp"
 
 	#include "../ast/nodes/nonterminal/NonTerminal.hpp"
@@ -86,7 +85,6 @@
 %token TYPE_STRING "string"
 %token TYPE_ARRAY "array"
 %token TYPE_LIST "list"
-%token TYPE_TUPLE "tuple"
 
 /* Operators */
 %token '='
@@ -139,8 +137,6 @@
 /* Delimiters */
 %token DELIM_EOL /* End of line */
 %token DELIM_EOS ";;" /* End of scope */
-%token DELIM_TUPLE_BEG "#{"
-%token DELIM_TUPLE_END "}#"
 %token DELIM_ARRAY_BEG "#["
 %token DELIM_ARRAY_END "]#"
 %token DELIM_ARROW "->"
@@ -165,7 +161,7 @@
 %type <vnode> func-call arg-list argument braced-func-call func-call-eol arg-list-eol soy-expression soy-func
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
 %type <vnode> constant
-%type <vnode> datastructure array list tuple make-sequence make-sequence-list make-sequence-array seq-expression
+%type <vnode> datastructure array list make-sequence make-sequence-list make-sequence-array seq-expression
 %type <vnode> statement return menu menu-body menu-case menu-def loop roll foreach for for-initializer for-update conditional elseif else
 
 %start program
@@ -1552,18 +1548,6 @@ datastructure:
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
-| tuple
-    {
-		$$ = (void*) (new ast::Datastructure);
-		
-		if(!$$)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
 | make-sequence
     {
 		$$ = (void*) (new ast::Datastructure);
@@ -1588,9 +1572,6 @@ array:
 			yyerror("Cannot allocate a new node");
 			return 2;
 		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayBeg);
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayEnd);
 	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
     {
@@ -1602,9 +1583,7 @@ array:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayBeg);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayEnd);
 	}
 ;
 
@@ -1618,9 +1597,6 @@ list:
 			yyerror("Cannot allocate a new node");
 			return 2;
 		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::OpenAcc);
-		((ast::ASTNode*)$$)->add_child(new ast::ClosingAcc);
 	}
 | '{' expression-list '}'
     {
@@ -1631,40 +1607,7 @@ list:
 			yyerror("Cannot allocate a new node");
 			return 2;
 		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::OpenAcc);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(new ast::ClosingAcc);
-	}
-;
-
-tuple:
-  DELIM_TUPLE_BEG DELIM_TUPLE_END /* empty tuple */
-    {
-		$$ = (void*) (new ast::Tuple);
-		
-		if(!$$)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::TupleBeg);
-		((ast::ASTNode*)$$)->add_child(new ast::TupleEnd);
-	}
-| DELIM_TUPLE_BEG expression-list DELIM_TUPLE_END
-    {
-		$$ = (void*) (new ast::Tuple);
-		
-		if(!$$)
-		{
-			yyerror("Cannot allocate a new node");
-			return 2;
-		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::TupleBeg);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(new ast::TupleEnd);
 	}
 ;
 
@@ -1709,9 +1652,7 @@ make-sequence-list:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::OpenAcc());
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(new ast::ClosingAcc());
 	}
 ;
 
@@ -1726,9 +1667,7 @@ make-sequence-array:
 			return 2;
 		}
 
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayBeg());
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(new ast::ArrayEnd());
 
 	}
 ;
@@ -1861,8 +1800,6 @@ return:
 			yyerror("Cannot allocate a new node");
 			return 2;
 		}
-
-		((ast::ASTNode*)$$)->add_child(new ast::K_Nori);
 	}
 | KEYWORD_NORI expression
 	{
@@ -1884,7 +1821,6 @@ return:
 		}
 
 		expr->add_child((ast::ASTNode*)$2);
-
 		((ast::ASTNode*)$$)->add_child(expr);
 	}
 ;
@@ -2415,7 +2351,5 @@ static ast::ASTNode* get_type_node(const std::string& type_string)
 		return new ast::Type_List;
 	else if(!type_string.compare("array"))
 		return new ast::Type_Array;
-	else if(!type_string.compare("tuple"))
-		return new ast::Type_Tuple;
 	else return nullptr;
 }
