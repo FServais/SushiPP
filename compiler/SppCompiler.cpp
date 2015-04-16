@@ -5,6 +5,7 @@
 #include <fstream> // ofstream
 #include <cstdlib> // srand
 #include <ctime> // time
+#include <ios> // failure
 
 #include "ast/visitor/PrintASTVisitor.hpp"
 #include "parser/sushipp.tab.h"
@@ -51,7 +52,7 @@ void SppCompiler::init()
 		if(!input)
 		{
 			cerr << "[IO Error] Cannot open the file '" << config.get_input_file()  << "'..." << endl;
-			return;
+			throw ios_base::failure("Cannot open the source file");
 		}
 
 		yyin = input;
