@@ -7,6 +7,7 @@ std::string ErrorItem::error_flag = "error";
 void ErrorItem::print_location_error() const
 {
 	std::cout << context << std::endl;
+	std::cout << GREEN;
 	for(int i = 0 ; i < context.size() ; ++i)
 	{
 		if(i+1 == col)
@@ -14,5 +15,5 @@ void ErrorItem::print_location_error() const
 		else
 			std::cout << "_";
 	}
-	std::cout << std::endl;
+	std::cout << RESET << std::endl;
 }

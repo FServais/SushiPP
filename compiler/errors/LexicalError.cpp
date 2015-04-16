@@ -11,7 +11,7 @@ void LexicalError::print(bool is_from_file) const
 		cout << "In file \"" << file << "\":";
 	else
 		cout << "Line ";
-	cout << line << ":" << col << ": "<< error_type << ": " << additional_desc << endl;
+	cout << line << ":" << col << ": " << BOLDRED << error_type << RESET << ": " << additional_desc << endl;
 	
 	print_location_error();
 }
