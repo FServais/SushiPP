@@ -1,17 +1,16 @@
 
-#ifndef PrintASTVisitor_HPP_DEFINED
-#define PrintASTVisitor_HPP_DEFINED
+#ifndef FunctionTableVisitor_HPP_DEFINED
+#define FunctionTableVisitor_HPP_DEFINED
 
 #include <iostream>
 #include <string>
 
 #include "ASTVisitor.hpp"
 
-class PrintASTVisitor : public ASTVisitor
+class FunctionTableVisitor : public ASTVisitor
 {
 public:
-	PrintASTVisitor();
-	PrintASTVisitor(std::ostream&); // arg: the stream in which to output the tree
+	FunctionTableVisitor();
 
 	/****************
 	 * 		Node    *
@@ -219,13 +218,7 @@ public:
 	virtual void visit( ast::Elseif& );
 
 private:
-	int length_line;
-	int depth_tree = 0;
-
-	std::ostream& out_; // stream in which to write
-
-	void print_pair( std::string& p_name, std::string& p_value, int depth );
-	void print_single( std::string& name, int depth );
+	
 };
 
 #endif
