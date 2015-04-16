@@ -42,25 +42,49 @@ namespace errors
 		 * @param   const std::string&  Line where the error occur.
 		 * @param   int					Line number.
 		 * @param   int					Column number.
-		 * @param   const std::string&  File name.
 		 * @param   const std::string&  Description of the error.
 		 */
-		void add_lex_error(const std::string&, int, int, const std::string&, const std::string& desc = "Lexical error");
+		void add_lex_error(const std::string&, int, int, const std::string& desc = "Lexical error");
 		void add_lex_error(LexicalError&);
 
-		
-		void add_synt_error(const std::string&, int, int, const std::string&, const std::string& desc = "Syntax error");
+		/**
+		 * Add a syntax error.
+		 * @param   const std::string&  Line where the error occur.
+		 * @param   int					Line number.
+		 * @param   int					Column number.
+		 * @param   const std::string&  Description of the error.
+		 */
+		void add_synt_error(const std::string&, int, int, const std::string& desc = "Syntax error");
 		void add_synt_error(SyntaxError&);
 
-		
-		void add_sem_error(const std::string&, int, int, const std::string&, const std::string& desc = "Semantic error");
+		/**
+		 * Add a semantic error.
+		 * @param   const std::string&  Line where the error occur.
+		 * @param   int					Line number.
+		 * @param   int					Column number.
+		 * @param   const std::string&  Description of the error.
+		 */
+		void add_sem_error(const std::string&, int, int, const std::string& desc = "Semantic error");
 		void add_sem_error(SemanticError&);
 
-		
-		void add_io_error(const std::string&, int, int, const std::string&, const std::string& desc = "IO error");
+		/**
+		 * Add a IO error.
+		 * @param   const std::string&  Line where the error occur.
+		 * @param   int					Line number.
+		 * @param   int					Column number.
+		 * @param   const std::string&  Description of the error.
+		 */
+		void add_io_error(const std::string&, int, int, const std::string& desc = "IO error");
 		void add_io_error(IOError&);
 		
-		void add_mem_error(const std::string&, int, int, const std::string&, const std::string& desc = "Memory error");
+		/**
+		 * Add a memory error.
+		 * @param   const std::string&  Line where the error occur.
+		 * @param   int					Line number.
+		 * @param   int					Column number.
+		 * @param   const std::string&  Description of the error.
+		 */
+		void add_mem_error(const std::string&, int, int, const std::string& desc = "Memory error");
 		void add_mem_error(MemoryError&);
 		
 

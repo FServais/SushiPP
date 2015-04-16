@@ -29,9 +29,9 @@ void ErrorHandler::print_errors() const
  *************************************** 
  */
 
-void ErrorHandler::add_lex_error(const string& context, int line, int col, const string& file, const string& desc)
+void ErrorHandler::add_lex_error(const string& context, int line, int col, const string& desc)
 {
-	errors.push_back(unique_ptr<LexicalError>(new LexicalError(context, line, col, file, desc)));
+	errors.push_back(unique_ptr<LexicalError>(new LexicalError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_lex_error(LexicalError& err)
@@ -45,9 +45,9 @@ void ErrorHandler::add_lex_error(LexicalError& err)
  *************************************** 
  */
 
-void ErrorHandler::add_synt_error(const string& context, int line, int col, const string& file, const string& desc)
+void ErrorHandler::add_synt_error(const string& context, int line, int col, const string& desc)
 {
-	errors.push_back(unique_ptr<SyntaxError>(new SyntaxError(context, line, col, file, desc)));
+	errors.push_back(unique_ptr<SyntaxError>(new SyntaxError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_synt_error(SyntaxError& err)
@@ -61,9 +61,9 @@ void ErrorHandler::add_synt_error(SyntaxError& err)
  *************************************** 
  */
 
-void ErrorHandler::add_sem_error(const string& context, int line, int col, const string& file, const string& desc)
+void ErrorHandler::add_sem_error(const string& context, int line, int col, const string& desc)
 {
-	errors.push_back(unique_ptr<SemanticError>(new SemanticError(context, line, col, file, desc)));
+	errors.push_back(unique_ptr<SemanticError>(new SemanticError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_sem_error(SemanticError& err)
@@ -77,9 +77,9 @@ void ErrorHandler::add_sem_error(SemanticError& err)
  *************************************** 
  */
 
-void ErrorHandler::add_io_error(const string& context, int line, int col, const string& file, const string& desc)
+void ErrorHandler::add_io_error(const string& context, int line, int col, const string& desc)
 {
-	errors.push_back(unique_ptr<IOError>(new IOError(context, line, col, file, desc)));
+	errors.push_back(unique_ptr<IOError>(new IOError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_io_error(IOError& err)
@@ -93,9 +93,9 @@ void ErrorHandler::add_io_error(IOError& err)
  *************************************** 
  */
 
-void ErrorHandler::add_mem_error(const string& context, int line, int col, const string& file, const string& desc)
+void ErrorHandler::add_mem_error(const string& context, int line, int col, const string& desc)
 {
-	errors.push_back(unique_ptr<MemoryError>(new MemoryError(context, line, col, file, desc)));
+	errors.push_back(unique_ptr<MemoryError>(new MemoryError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_mem_error(MemoryError& err)
