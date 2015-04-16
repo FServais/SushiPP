@@ -6,6 +6,7 @@
 	#define YY_DECL extern "C" int yylex()
 
 	extern void yyerror(const char*);
+	extern bool error_occurred;
 	#define YY_USER_ACTION update_yylloc();
 
 	/**
@@ -121,6 +122,7 @@ list                    { yylval.vstring = new string(yytext, yyleng); return ID
 							cerr << "[Error] lexical error, unrecognized sequence '" << yytext << "' at line "
 								 << yylloc.first_line << " (column " << yylloc.first_column
 								 << ")" << endl;
+							error_occurred = true; 
 						}
 
 %%

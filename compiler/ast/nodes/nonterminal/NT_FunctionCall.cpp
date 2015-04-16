@@ -94,28 +94,6 @@ void Argument::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-/* SoyExpression */
-SoyExpression::SoyExpression() : NT_FunctionCall("Soy expression") { }
-
-SoyExpression::SoyExpression(int first_line, int last_line, int first_column, int last_column)
-	: NT_FunctionCall("Soy expression", first_line, last_line, first_column, last_column)
-{
-
-}
-
-SoyExpression::SoyExpression(const NodeLocation& node_loc) : NT_FunctionCall("Soy expression", node_loc)
-{
-
-}
-
-void SoyExpression::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
-
 /* SoyFunc */
 SoyFunc::SoyFunc() : NT_FunctionCall("Soy function") { }
 

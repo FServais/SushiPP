@@ -307,16 +307,6 @@ void PrintASTVisitor::visit( ast::Bool& token )
 }
 
 
-
-/*********************************
- * 		Constant non-terminal    *
- *********************************/
-void PrintASTVisitor::visit( ast::NT_Constant& token )
-{
-	print_single(token.node_name(), token.depth());
-}
-
-
 /**************************************
  * 		Datastructure non-terminal    *
  **************************************/
@@ -437,11 +427,6 @@ void PrintASTVisitor::visit( ast::ArgList& token )
 }
 
 void PrintASTVisitor::visit( ast::Argument& token )
-{
-	print_single(token.node_name(), token.depth());
-}
-
-void PrintASTVisitor::visit( ast::SoyExpression& token )
 {
 	print_single(token.node_name(), token.depth());
 }

@@ -13,26 +13,17 @@ public:
 	PrintASTVisitor();
 	PrintASTVisitor(std::ostream&); // arg: the stream in which to output the tree
 
-	/****************
-	 * 		Node    *
-	 ****************/
 	virtual void visit( ast::ASTNode& );
 
-	/*****************************
-	 * 		Nonterminal/token    *
-	 *****************************/
-	//virtual void visit( ast::NonTerminal& );
-	//virtual void visit( ast::Token& );
-
 	/******************************
-	 * 		Identifier token    *
+	 * 		Identifier token      *
 	 ******************************/
 	virtual void visit( ast::Identifier& );
 
 	/*************************
 	 * 		Keyword token    *
 	 *************************/
-	//virtual void visit( ast::Keyword& );
+
 	virtual void visit( ast::K_Break& );
 	virtual void visit( ast::K_Continue& );
 	virtual void visit( ast::Type_Int& );
@@ -46,7 +37,6 @@ public:
 	/**************************
 	 * 		Operator token    *
 	 **************************/
-	//virtual void visit( ast::Operator& );
 
 	virtual void visit( ast::Op_Plus& );
 	virtual void visit( ast::Op_Minus& );
@@ -90,7 +80,6 @@ public:
 	/**************************
 	 * 		Constant token    *
 	 **************************/
-	//virtual void visit( ast::ConstantToken& );
 
 	virtual void visit( ast::String& );
 	virtual void visit( ast::Character& );
@@ -98,16 +87,9 @@ public:
 	virtual void visit( ast::Float& );
 	virtual void visit( ast::Bool& );
 
-
-	/*********************************
-	 * 		Constant non-terminal    *
-	 *********************************/
-	virtual void visit( ast::NT_Constant& );
-
 	/**************************************
 	 * 		Datastructure non-terminal    *
 	 **************************************/
-	//virtual void visit( ast::NT_Datastructure& );
 
 	virtual void visit( ast::Datastructure& );
 	virtual void visit( ast::Array& );
@@ -120,7 +102,6 @@ public:
 	/************************************
 	 * 		Declaration non-terminal    *
 	 ************************************/
-	//virtual void visit( ast::NT_Declaration& );
 
 	virtual void visit( ast::DeclFunc& );
 	virtual void visit( ast::DeclVars& );
@@ -131,7 +112,6 @@ public:
 	/***********************************
 	 * 		Expression non-terminal    *
 	 ***********************************/
-	//virtual void visit( ast::NT_Expression& );
 
 	virtual void visit( ast::Expression& );
 	virtual void visit( ast::IncrExpression& );
@@ -143,18 +123,15 @@ public:
 	/*************************************
 	 * 		FunctionCall non-terminal    *
 	 *************************************/
-	//virtual void visit( ast::NT_FunctionCall& );
 
 	virtual void visit( ast::FuncCall& );
 	virtual void visit( ast::ArgList& );
 	virtual void visit( ast::Argument& );
-	virtual void visit( ast::SoyExpression& );
 	virtual void visit( ast::SoyFunc& );
 
 	/********************************
 	 * 		Program non-terminal    *
 	 ********************************/
-	//virtual void visit( ast::NT_Program& );
 
 	virtual void visit( ast::Program& );
 	virtual void visit( ast::Scope& );
@@ -162,7 +139,6 @@ public:
 	/**********************************
 	 * 		Statement non-terminal    *
 	 **********************************/
-	//virtual void visit( ast::NT_Statement& );
 
 	virtual void visit( ast::Statement& );
 	virtual void visit( ast::Return& );

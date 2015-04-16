@@ -23,15 +23,10 @@ public:
 
 	virtual void visit( ast::ASTNode& ) = 0;
 
-	/*****************************
-	 * 		Nonterminal/token    *
-	 *****************************/
-	//virtual void visit( ast::NonTerminal& ) = 0;
-	//virtual void visit( ast::Token& ) = 0;
-
 	/******************************
 	 * 		Identifier token    *
 	 ******************************/
+	 
 	virtual void visit( ast::Identifier& ) = 0;
 
 	/*************************
@@ -94,7 +89,6 @@ public:
 	/**************************
 	 * 		Constant token    *
 	 **************************/
-	//virtual void visit( ast::ConstantToken& ) = 0;
 
 	virtual void visit( ast::String& ) = 0;
 	virtual void visit( ast::Character& ) = 0;
@@ -102,16 +96,9 @@ public:
 	virtual void visit( ast::Float& ) = 0;
 	virtual void visit( ast::Bool& ) = 0;
 
-
-	/*********************************
-	 * 		Constant non-terminal    *
-	 *********************************/
-	virtual void visit( ast::NT_Constant& ) = 0;
-
 	/**************************************
 	 * 		Datastructure non-terminal    *
 	 **************************************/
-	//virtual void visit( ast::NT_Datastructure& ) = 0;
 
 	virtual void visit( ast::Datastructure& ) = 0;
 	virtual void visit( ast::Array& ) = 0;
@@ -124,7 +111,6 @@ public:
 	/************************************
 	 * 		Declaration non-terminal    *
 	 ************************************/
-	//virtual void visit( ast::NT_Declaration& ) = 0;
 
 	virtual void visit( ast::DeclFunc& ) = 0;
 	virtual void visit( ast::DeclVars& ) = 0;
@@ -135,7 +121,6 @@ public:
 	/***********************************
 	 * 		Expression non-terminal    *
 	 ***********************************/
-	//virtual void visit( ast::NT_Expression& ) = 0;
 
 	virtual void visit( ast::Expression& ) = 0;
 	virtual void visit( ast::IncrExpression& ) = 0;
@@ -147,18 +132,15 @@ public:
 	/*************************************
 	 * 		FunctionCall non-terminal    *
 	 *************************************/
-	//virtual void visit( ast::NT_FunctionCall& ) = 0;
 
 	virtual void visit( ast::FuncCall& ) = 0;
 	virtual void visit( ast::ArgList& ) = 0;
 	virtual void visit( ast::Argument& ) = 0;
-	virtual void visit( ast::SoyExpression& ) = 0;
 	virtual void visit( ast::SoyFunc& ) = 0;
 
 	/********************************
 	 * 		Program non-terminal    *
 	 ********************************/
-	//virtual void visit( ast::NT_Program& ) = 0;
 
 	virtual void visit( ast::Program& ) = 0;
 	virtual void visit( ast::Scope& ) = 0;
@@ -166,7 +148,6 @@ public:
 	/**********************************
 	 * 		Statement non-terminal    *
 	 **********************************/
-	//virtual void visit( ast::NT_Statement& ) = 0;
 
 	virtual void visit( ast::Statement& ) = 0;
 	virtual void visit( ast::Return& ) = 0;

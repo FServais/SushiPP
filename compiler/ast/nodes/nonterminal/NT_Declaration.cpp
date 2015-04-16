@@ -1,4 +1,5 @@
 #include "NT_Declaration.hpp"
+#include "../tokens/Token.hpp"
 #include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
@@ -134,3 +135,21 @@ void ParamList::accept(ASTVisitor& visitor)
 	for(auto it = children.begin() ; it != children.end() ; ++it)
 		(*it)->accept(visitor);
 }
+
+const std::string& Param::get_param_name() const
+{
+	Identifier* identifier = dynamic_cast<Identifier*>(children[0]);
+	return identifier->id();
+}
+
+bool Param::has_type() const
+{
+	return children.size() == 2;
+}
+
+symb::Type Param::get_type() const
+{
+	Type* type_node = dynamic_cast<Type*>(children[1]);
+	return type_node->get_type();
+}
+

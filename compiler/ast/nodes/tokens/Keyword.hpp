@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Token.hpp"
+#include "../../../symb/SymbolInfo.hpp"
 #include "../NodeLocation.hpp"
 
 namespace ast
@@ -42,7 +43,18 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Int : public Keyword
+	class Type : public Keyword 
+	{
+	public:
+		// constructors
+		Type(const std::string&);
+		Type(const std::string&,int,int,int,int);
+		Type(const std::string&,const NodeLocation&);
+
+		virtual symb::Type get_type() const = 0;
+	};
+
+	class Type_Int : public Type
 	{
 	public:
 		// constructors
@@ -50,10 +62,12 @@ namespace ast
 		Type_Int(int,int,int,int);
 		Type_Int(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Float : public Keyword
+	class Type_Float : public Type
 	{
 	public:
 		// constructors
@@ -61,10 +75,12 @@ namespace ast
 		Type_Float(int,int,int,int);
 		Type_Float(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Char : public Keyword
+	class Type_Char : public Type
 	{
 	public:
 		// constructors
@@ -72,10 +88,12 @@ namespace ast
 		Type_Char(int,int,int,int);
 		Type_Char(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_String : public Keyword
+	class Type_String : public Type
 	{
 	public:
 		// constructors
@@ -83,10 +101,12 @@ namespace ast
 		Type_String(int,int,int,int);
 		Type_String(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Array : public Keyword
+	class Type_Array : public Type
 	{
 	public:
 		// constructors
@@ -94,10 +114,12 @@ namespace ast
 		Type_Array(int,int,int,int);
 		Type_Array(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_List : public Keyword
+	class Type_List : public Type
 	{
 	public:
 		// constructors
@@ -105,16 +127,20 @@ namespace ast
 		Type_List(int,int,int,int);
 		Type_List(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Bool : public Keyword
+	class Type_Bool : public Type
 	{
 	public:
 		// constructors
 		Type_Bool();
 		Type_Bool(int,int,int,int);
 		Type_Bool(const NodeLocation&);
+
+		virtual symb::Type get_type() const;
 
 		virtual void accept(ASTVisitor&);
 	};
