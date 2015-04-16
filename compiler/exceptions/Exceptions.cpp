@@ -74,3 +74,15 @@ ParsingException::ParsingException(const std::string& details)
 {
 
 }
+
+TypeSymbolResolutionException::TypeSymbolResolutionException()
+	: runtime_error("Cannot resolve a symbol type to a complete type.")
+{
+
+}
+
+TypeSymbolResolutionException::TypeSymbolResolutionException(const std::string& details)
+	: runtime_error("Cannot resolve a symbol type to a complete type : " + details)
+{
+
+}
