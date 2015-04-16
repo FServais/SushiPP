@@ -1017,12 +1017,7 @@ datastructure:
 
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
 	}
-| make-sequence
-    {
-		$$ = (void*) (new ast::Datastructure);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+| make-sequence { $$ = $1; }
 ;
 
 array:
@@ -1054,26 +1049,16 @@ list:
  * filled with increasing values (lists or arrays)
  */
 make-sequence: 
-  make-sequence-list
-	{
-		$$ = (void*) (new ast::MakeSequence);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| make-sequence-array
-	{	
-		$$ = (void*) (new ast::MakeSequence);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	 }
+  make-sequence-list { $$ = $1; }
+| make-sequence-array { $$ = $1; }
 ;
 
 make-sequence-list: 
   '{' seq-expression '}'
 	{
 		$$ = (void*) (new ast::MakeSequenceList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		((ast::ASTNode*)$$)->add_children(children($2));
+		delete ((ast::ASTNode*)$2);
 	}
 ;
 
@@ -1081,9 +1066,8 @@ make-sequence-array:
   DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
 	{
 		$$ = (void*) (new ast::MakeSequenceArray);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-
+		((ast::ASTNode*)$$)->add_children(children($2));
+		delete ((ast::ASTNode*)$2);
 	}
 ;
 
@@ -1347,22 +1331,27 @@ conditional:
 	{
 		
 		$$ = (void*) (new ast::Conditional);
-
+		ast::If* if_ = new ast::If;
 		ast::Expression* expr = new ast::Expression;
 
+
 		expr->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		if_->add_child(expr);
+		if_->add_child((ast::ASTNode*)$4);
+
+		((ast::ASTNode*)$$)->add_child(if_);
 	}
 | KEYWORD_IF expression DELIM_EOL scope else DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
-
+		ast::If* if_ = new ast::If;
 		ast::Expression* expr = new ast::Expression;
 
 		expr->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		if_->add_child(expr);
+		if_->add_child((ast::ASTNode*)$4);
+
+		((ast::ASTNode*)$$)->add_child(if_);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
 	}
 | KEYWORD_IF expression DELIM_EOL scope elseif DELIM_EOS
@@ -1370,11 +1359,13 @@ conditional:
 		$$ = (void*) (new ast::Conditional);
 
 		ast::Expression* expr = new ast::Expression;
+		ast::If* if_ = new ast::If;
 
 		expr->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(expr);
- 
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		if_->add_child(expr);
+		if_->add_child((ast::ASTNode*)$4);
+
+		((ast::ASTNode*)$$)->add_child(if_);
 		((ast::ASTNode*)$$)->add_children(children($5));
 
 		// delete the unused node
@@ -1383,13 +1374,15 @@ conditional:
 | KEYWORD_IF expression DELIM_EOL scope elseif else DELIM_EOS
 	{
 		$$ = (void*) (new ast::Conditional);
-
+		ast::If* if_ = new ast::If;
 		ast::Expression* expr = new ast::Expression;
 
 		expr->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(expr);
+		
+		if_->add_child(expr);
+		if_->add_child((ast::ASTNode*)$4);
 
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		((ast::ASTNode*)$$)->add_child(if_);
 		((ast::ASTNode*)$$)->add_children(children($5));
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
 

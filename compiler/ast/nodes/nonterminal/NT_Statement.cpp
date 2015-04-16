@@ -117,15 +117,15 @@ void MenuBody::accept(ASTVisitor& visitor)
 
 
 /* MenuCase */
-MenuCase::MenuCase() : NT_Statement("Menu case") { }
+MenuCase::MenuCase() : NT_Statement("Case") { }
 
 MenuCase::MenuCase(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Menu case", first_line, last_line, first_column, last_column)
+	: NT_Statement("Case", first_line, last_line, first_column, last_column)
 {
 
 }
 
-MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("Menu case", node_loc)
+MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("Case", node_loc)
 {
 
 }
@@ -139,15 +139,15 @@ void MenuCase::accept(ASTVisitor& visitor)
 
 
 /* MenuDef */
-MenuDef::MenuDef() : NT_Statement("Menu case definition") { }
+MenuDef::MenuDef() : NT_Statement("Default case") { }
 
 MenuDef::MenuDef(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Menu case definition", first_line, last_line, first_column, last_column)
+	: NT_Statement("Default case", first_line, last_line, first_column, last_column)
 {
 
 }
 
-MenuDef::MenuDef(const NodeLocation& node_loc) : NT_Statement("Menu case definition", node_loc)
+MenuDef::MenuDef(const NodeLocation& node_loc) : NT_Statement("Default case", node_loc)
 {
 
 }
@@ -313,6 +313,26 @@ void Conditional::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
+/* If */
+If::If() : NT_Statement("If") { }
+
+If::If(int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("If", first_line, last_line, first_column, last_column)
+{
+
+}
+
+If::If(const NodeLocation& node_loc) : NT_Statement("If", node_loc)
+{
+
+}
+
+void If::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+	for(auto it = children.begin() ; it != children.end() ; ++it)
+		(*it)->accept(visitor);
+} 
 
 /* Elseif */
 Elseif::Elseif() : NT_Statement("Elseif") { }

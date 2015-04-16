@@ -89,27 +89,6 @@ void List::accept(ASTVisitor& visitor)
 		(*it)->accept(visitor);
 }
 
-/* MakeSequence */
-MakeSequence::MakeSequence() : NT_Datastructure("Make sequence") { }
-
-MakeSequence::MakeSequence(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Make sequence", first_line, last_line, first_column, last_column)
-{
-
-}
-
-MakeSequence::MakeSequence(const NodeLocation& node_loc) : NT_Datastructure("Make sequence", node_loc)
-{
-
-}
-
-void MakeSequence::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
 /* MakeSequenceList */
 MakeSequenceList::MakeSequenceList() : NT_Datastructure("Make sequence (list)") { }
 

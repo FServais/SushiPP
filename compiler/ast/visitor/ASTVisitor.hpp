@@ -103,7 +103,6 @@ public:
 	virtual void visit( ast::Datastructure& ) = 0;
 	virtual void visit( ast::Array& ) = 0;
 	virtual void visit( ast::List& ) = 0;
-	virtual void visit( ast::MakeSequence& ) = 0;
 	virtual void visit( ast::MakeSequenceList& ) = 0;
 	virtual void visit( ast::MakeSequenceArray& ) = 0;
 	virtual void visit( ast::SeqExpression& ) = 0;

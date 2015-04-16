@@ -165,6 +165,17 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
+	class If : public NT_Statement
+	{
+	public:
+		// Constructors
+		If();
+		If(int,int,int,int);
+		If(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
+	};
+
 	class Elseif : public NT_Statement
 	{
 	public:

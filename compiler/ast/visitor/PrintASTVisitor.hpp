@@ -94,7 +94,6 @@ public:
 	virtual void visit( ast::Datastructure& );
 	virtual void visit( ast::Array& );
 	virtual void visit( ast::List& );
-	virtual void visit( ast::MakeSequence& );
 	virtual void visit( ast::MakeSequenceList& );
 	virtual void visit( ast::MakeSequenceArray& );
 	virtual void visit( ast::SeqExpression& );
