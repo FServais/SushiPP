@@ -6,6 +6,7 @@
 
 	/** Compiler and AST includes */
 	#include "../SppCompiler.hpp"
+	#include "../errors/ErrorHandler.hpp"
 	#include "../ast/AbstractSyntaxTree.hpp"
 
 	#include "../ast/nodes/ASTNode.hpp"
@@ -37,6 +38,8 @@
 	static std::string curr_line_row();
 	/** Return a pointer to the type node for the given string*/
 	static ast::ASTNode* get_type_node(const std::string&);
+	/** Add an error to the handler and invokes yyerror */
+	static void add_error(std::string, std::string);
 
 	// pointer to 
 	extern compiler::SppCompiler* g_compiler;
@@ -374,9 +377,15 @@ param:
 		if(!type)
 		{
 			// print the error
+			std::stringstream line;
+			line << *$1 << '<' << *$3 << '>';
+
 			std::stringstream ss;
 			ss << "Invalid type string : given '" << *$3 << "', actual type expected";
-			yyerror(ss.str().c_str());
+
+
+			add_error(line.str(), ss.str());
+			//yyerror(ss.str().c_str());
 
 			YYERROR; // signal a parsing error
 			yyerrok; // mark the error as ok, to continue parsing
@@ -1439,7 +1448,6 @@ else:
 static void yyerror(const char *s)
 {
 	error_occurred = true;
-	std::cerr << "[Error] " << s << curr_line_row() << std::endl;
 }
 
 static std::string curr_line_row()
@@ -1464,4 +1472,11 @@ static ast::ASTNode* get_type_node(const std::string& type_string)
 	else if(!type_string.compare("array"))
 		return new ast::Type_Array;
 	else return nullptr;
+}
+
+static void add_error(std::string context, std::string desc)
+{
+	errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
+	error_handler.add_synt_error(context, yylloc.first_line, yylloc.first_column, desc);
+	yyerror(desc.c_str());
 }
