@@ -3,6 +3,7 @@
 
 #include <string>
 #include "NonTerminal.hpp"
+#include "../../../symb/SymbolInfo.hpp"
 #include "../NodeLocation.hpp"
 
 namespace ast
@@ -24,16 +25,6 @@ namespace ast
 	/*************************************
 	 * Declaration rules node base class *
 	 *************************************/
-	class Declaration : public NT_Declaration
-	{
-	public:
-		// Constructors
-		Declaration();
-		Declaration(int,int,int,int);
-		Declaration(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
 
 	class DeclFunc : public NT_Declaration
 	{
@@ -86,6 +77,10 @@ namespace ast
 		Param();
 		Param(int,int,int,int);
 		Param(const NodeLocation&);
+
+		const std::string& get_param_name() const;
+		bool has_type() const;
+		symb::Type get_type() const;
 
 		virtual void accept(ASTVisitor&);
 	};

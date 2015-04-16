@@ -37,6 +37,7 @@ void PrintASTVisitor::visit( ast::Identifier& token )
 /*************************
  * 		Keyword token    *
  *************************/
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::K_Maki& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -99,6 +100,8 @@ void PrintASTVisitor::visit( ast::K_Roll& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::K_Break& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -117,6 +120,7 @@ void PrintASTVisitor::visit( ast::K_Continue& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::K_Foreach& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -162,6 +166,8 @@ void PrintASTVisitor::visit( ast::K_Else& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::Type_Int& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -216,6 +222,7 @@ void PrintASTVisitor::visit( ast::Type_List& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::Type_Tuple& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -225,6 +232,8 @@ void PrintASTVisitor::visit( ast::Type_Tuple& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::Type_Bool& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -581,6 +590,7 @@ void PrintASTVisitor::visit( ast::Op_AssignConcat& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 
 /**************************
  * 		Delimiter token    *
@@ -722,6 +732,8 @@ void PrintASTVisitor::visit( ast::Underscore& token )
 }
 
 
+=======
+>>>>>>> origin/ro_vm
 /**************************
  * 		Constant token    *
  **************************/
@@ -776,6 +788,7 @@ void PrintASTVisitor::visit( ast::Bool& token )
 }
 
 
+<<<<<<< HEAD
 
 /*********************************
  * 		Constant non-terminal    *
@@ -790,6 +803,8 @@ void PrintASTVisitor::visit( ast::NT_Constant& token )
 }
 
 
+=======
+>>>>>>> origin/ro_vm
 /**************************************
  * 		Datastructure non-terminal    *
  **************************************/
@@ -821,6 +836,7 @@ void PrintASTVisitor::visit( ast::List& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::Tuple& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -830,6 +846,8 @@ void PrintASTVisitor::visit( ast::Tuple& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::MakeSequence& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -871,6 +889,7 @@ void PrintASTVisitor::visit( ast::SeqExpression& token )
  * 		Declaration non-terminal    *
  ************************************/
 
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::Declaration& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -880,6 +899,8 @@ void PrintASTVisitor::visit( ast::Declaration& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::DeclFunc& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -1016,6 +1037,7 @@ void PrintASTVisitor::visit( ast::Argument& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 void PrintASTVisitor::visit( ast::BracedFuncCall& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -1052,6 +1074,8 @@ void PrintASTVisitor::visit( ast::SoyExpression& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::SoyFunc& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -1075,6 +1099,7 @@ void PrintASTVisitor::visit( ast::Program& token )
 	depth_tree--;
 }
 
+<<<<<<< HEAD
 
 void PrintASTVisitor::visit( ast::ProgramElement& token )
 {
@@ -1085,6 +1110,8 @@ void PrintASTVisitor::visit( ast::ProgramElement& token )
 	depth_tree--;
 }
 
+=======
+>>>>>>> origin/ro_vm
 void PrintASTVisitor::visit( ast::Scope& token )
 {
 	print_single(token.node_name(), token.depth());

@@ -33,17 +33,6 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class ProgramElement : public NT_Program
-	{
-	public:
-		// Constructors
-		ProgramElement();
-		ProgramElement(int,int,int,int);
-		ProgramElement(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
 	class Scope : public NT_Program
 	{
 	public:

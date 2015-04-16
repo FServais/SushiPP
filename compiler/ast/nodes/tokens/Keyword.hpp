@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Token.hpp"
+#include "../../../symb/SymbolInfo.hpp"
 #include "../NodeLocation.hpp"
 
 namespace ast
@@ -20,83 +21,6 @@ namespace ast
 	};
 
 	/** Keyword derived class */
-	class K_Maki : public Keyword
-	{
-	public:
-		// constructors
-		K_Maki();
-		K_Maki(int,int,int,int);
-		K_Maki(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_To : public Keyword
-	{
-	public:
-		// constructors
-		K_To();
-		K_To(int,int,int,int);
-		K_To(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Soy : public Keyword
-	{
-	public:
-		// constructors
-		K_Soy();
-		K_Soy(int,int,int,int);
-		K_Soy(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Nori: public Keyword
-	{
-	public:
-		// constructors
-		K_Nori();
-		K_Nori(int,int,int,int);
-		K_Nori(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Menu : public Keyword
-	{
-	public:
-		// constructors
-		K_Menu();
-		K_Menu(int,int,int,int);
-		K_Menu(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_For : public Keyword
-	{
-	public:
-		// constructors
-		K_For();
-		K_For(int,int,int,int);
-		K_For(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Roll : public Keyword
-	{
-	public:
-		// constructors
-		K_Roll();
-		K_Roll(int,int,int,int);
-		K_Roll(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
 	class K_Break : public Keyword
 	{
 	public:
@@ -119,62 +43,18 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class K_Foreach : public Keyword
+	class Type : public Keyword 
 	{
 	public:
 		// constructors
-		K_Foreach();
-		K_Foreach(int,int,int,int);
-		K_Foreach(const NodeLocation&);
+		Type(const std::string&);
+		Type(const std::string&,int,int,int,int);
+		Type(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual symb::Type get_type() const = 0;
 	};
 
-	class K_As : public Keyword
-	{
-	public:
-		// constructors
-		K_As();
-		K_As(int,int,int,int);
-		K_As(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_If : public Keyword
-	{
-	public:
-		// constructors
-		K_If();
-		K_If(int,int,int,int);
-		K_If(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Elseif : public Keyword
-	{
-	public:
-		// constructors
-		K_Elseif();
-		K_Elseif(int,int,int,int);
-		K_Elseif(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class K_Else : public Keyword
-	{
-	public:
-		// constructors
-		K_Else();
-		K_Else(int,int,int,int);
-		K_Else(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class Type_Int : public Keyword
+	class Type_Int : public Type
 	{
 	public:
 		// constructors
@@ -182,10 +62,12 @@ namespace ast
 		Type_Int(int,int,int,int);
 		Type_Int(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Float : public Keyword
+	class Type_Float : public Type
 	{
 	public:
 		// constructors
@@ -193,10 +75,12 @@ namespace ast
 		Type_Float(int,int,int,int);
 		Type_Float(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Char : public Keyword
+	class Type_Char : public Type
 	{
 	public:
 		// constructors
@@ -204,10 +88,12 @@ namespace ast
 		Type_Char(int,int,int,int);
 		Type_Char(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_String : public Keyword
+	class Type_String : public Type
 	{
 	public:
 		// constructors
@@ -215,10 +101,12 @@ namespace ast
 		Type_String(int,int,int,int);
 		Type_String(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Array : public Keyword
+	class Type_Array : public Type
 	{
 	public:
 		// constructors
@@ -226,10 +114,12 @@ namespace ast
 		Type_Array(int,int,int,int);
 		Type_Array(const NodeLocation&);
 
+		virtual symb::Type get_type() const;
+
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_List : public Keyword
+	class Type_List : public Type
 	{
 	public:
 		// constructors
@@ -237,27 +127,20 @@ namespace ast
 		Type_List(int,int,int,int);
 		Type_List(const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class Type_Tuple : public Keyword
-	{
-	public:
-		// constructors
-		Type_Tuple();
-		Type_Tuple(int,int,int,int);
-		Type_Tuple(const NodeLocation&);
+		virtual symb::Type get_type() const;
 
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Type_Bool : public Keyword
+	class Type_Bool : public Type
 	{
 	public:
 		// constructors
 		Type_Bool();
 		Type_Bool(int,int,int,int);
 		Type_Bool(const NodeLocation&);
+
+		virtual symb::Type get_type() const;
 
 		virtual void accept(ASTVisitor&);
 	};

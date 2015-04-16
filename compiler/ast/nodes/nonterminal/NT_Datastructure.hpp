@@ -55,17 +55,6 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Tuple : public NT_Datastructure
-	{
-	public:
-		// Constructors
-		Tuple();
-		Tuple(int,int,int,int);
-		Tuple(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
 	class MakeSequence : public NT_Datastructure
 	{
 	public:

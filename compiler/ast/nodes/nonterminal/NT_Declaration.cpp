@@ -1,4 +1,5 @@
 #include "NT_Declaration.hpp"
+#include "../tokens/Token.hpp"
 #include "../../visitor/ASTVisitor.hpp"
 
 using namespace ast;
@@ -25,26 +26,7 @@ void NT_Declaration::accept(ASTVisitor& visitor)
 	 
 }
 
-/** (NT_)Declaration derived classes **/
-/* Declaration */
-Declaration::Declaration() : NT_Declaration("Declaration") { }
 
-Declaration::Declaration(int first_line, int last_line, int first_column, int last_column)
-	: NT_Declaration("Declaration", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Declaration::Declaration(const NodeLocation& node_loc) : NT_Declaration("Declaration", node_loc)
-{
-
-}
-
-void Declaration::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	 
-}
 
 /* DeclFunc */
 DeclFunc::DeclFunc() : NT_Declaration("Function declaration") { }
@@ -65,7 +47,6 @@ void DeclFunc::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 	 
 }
-
 
 /* DeclVars */
 DeclVars::DeclVars() : NT_Declaration("Variables declaration") { }
@@ -148,3 +129,21 @@ void ParamList::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 	 
 }
+
+const std::string& Param::get_param_name() const
+{
+	Identifier* identifier = dynamic_cast<Identifier*>(children[0]);
+	return identifier->id();
+}
+
+bool Param::has_type() const
+{
+	return children.size() == 2;
+}
+
+symb::Type Param::get_type() const
+{
+	Type* type_node = dynamic_cast<Type*>(children[1]);
+	return type_node->get_type();
+}
+

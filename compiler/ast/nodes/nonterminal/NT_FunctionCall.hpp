@@ -54,51 +54,7 @@ namespace ast
 
 		virtual void accept(ASTVisitor&);
 	};
-
-	class BracedFuncCall : public NT_FunctionCall
-	{
-	public:
-		// Constructors
-		BracedFuncCall();
-		BracedFuncCall(int,int,int,int);
-		BracedFuncCall(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class FuncCallEol : public NT_FunctionCall
-	{
-	public:
-		// Constructors
-		FuncCallEol();
-		FuncCallEol(int,int,int,int);
-		FuncCallEol(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class ArgListEol : public NT_FunctionCall
-	{
-	public:
-		// Constructors
-		ArgListEol();
-		ArgListEol(int,int,int,int);
-		ArgListEol(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class SoyExpression : public NT_FunctionCall
-	{
-	public:
-		// Constructors
-		SoyExpression();
-		SoyExpression(int,int,int,int);
-		SoyExpression(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
+	
 	class SoyFunc : public NT_FunctionCall
 	{
 	public:
