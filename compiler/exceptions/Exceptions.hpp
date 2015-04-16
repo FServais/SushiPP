@@ -47,6 +47,14 @@ namespace except
 		// param : some detail about the parsing error
 		explicit ParsingException(const std::string&);
 	};
+
+	class TypeSymbolResolutionException : public std::runtime_error
+	{
+	public:
+		TypeSymbolResolutionException();
+		// param : some more details about the error
+		explicit TypeSymbolResolutionException(const std::string&);
+	};
 }
 
 #endif // EXCEPTIONS_HPP_DEFINED
