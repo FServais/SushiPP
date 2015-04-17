@@ -49,7 +49,7 @@ void Statement::accept(ASTVisitor& visitor)
 
 ASTNode& Statement::get_statement()
 {
-	return children[0];
+	return *children[0];
 }
 		
 /* Return */
@@ -90,8 +90,8 @@ bool Return::empty_nori()
 ASTNode& Return::get_returned_expression()
 {
 	if(empty_nori())
-		throw NoSuchChildException(" this nori is an empty nori");
-	return children[0];
+		throw NoSuchChildException("this nori is an empty nori");
+	return *children[0];
 }
 
 void Return::accept(ASTVisitor& visitor)
