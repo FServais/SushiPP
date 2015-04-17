@@ -128,9 +128,6 @@ list                    { yylval.vstring = new string(yytext, yyleng); return ID
 							ss << "unrecognized sequence '" << yytext << "'";
 							errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
 							error_handler.add_lex_error(yytext, yylloc.first_line, yylloc.first_column, ss.str());
-							/* cerr << "[Error] lexical error, unrecognized sequence '" << yytext << "' at line "
-								 << yylloc.first_line << " (column " << yylloc.first_column
-								 << ")" << endl; */
 							error_occurred = true; 
 						}
 
