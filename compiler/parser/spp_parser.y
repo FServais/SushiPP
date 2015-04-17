@@ -278,7 +278,7 @@ decl-var:
 	{
 		$$ = (void*) (new ast::DeclVar);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 		
 		// delete the memory allocated for the string
 		delete $1;
@@ -293,7 +293,7 @@ decl-var:
 
 		expr->add_child((ast::ASTNode*)$3);
 		
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 		((ast::ASTNode*)$$)->add_child(expr);
 
 		// delete the memory allocated for the string
@@ -322,7 +322,7 @@ decl-func:
 	{
 		$$ = (void*) (new ast::DeclFunc);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 
 		if($2 != nullptr) // if no parameters
 			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
@@ -361,7 +361,7 @@ param:
 	{
 		$$ = (void*) (new ast::Param);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -372,7 +372,7 @@ param:
 
 		$$ = (void*) (new ast::Param);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 
 		// get the type 
 		ast::ASTNode* type = get_type_node(*$3);
@@ -414,7 +414,7 @@ func-call:
 	{
 		$$ = (void*) (new ast::FuncCall);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 
 		if($2 != nullptr)
 			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
@@ -452,7 +452,7 @@ argument:
 	{
 		$$ = (void*) (new ast::Argument);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -521,7 +521,7 @@ func-call-eol:
 	{
 		$$ = (void*) (new ast::FuncCall);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 
 		// delete the memory allocated for the string
@@ -691,7 +691,7 @@ modifying-expression:
 assignable-expression:
   IDENTIFIER
     {
-		$$ = new ast::Identifier(*$1);
+		$$ = new ast::Identifier(*$1, curr_loc());
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -707,7 +707,7 @@ datastructure-access:
 		ast::Expression* expr = new ast::Expression;
 
 		expr->add_child((ast::ASTNode*)$3);
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 		((ast::ASTNode*)$$)->add_child(expr);
 		
 		// delete allocated string
@@ -749,7 +749,7 @@ constant:
     {
 		$$ = (void*) (new ast::NT_Constant);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Integer(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Integer(*$1, curr_loc()));
 		
 		// delete allocated string
 		delete $1;
@@ -758,7 +758,7 @@ constant:
     {
 		$$ = (void*) (new ast::NT_Constant);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Float(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Float(*$1, curr_loc()));
 		
 		// delete allocated string
 		delete $1;
@@ -767,7 +767,7 @@ constant:
     {
 		$$ = (void*) (new ast::NT_Constant);
 
-		((ast::ASTNode*)$$)->add_child(new ast::String(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::String(*$1, curr_loc()));
 		
 		// delete allocated string
 		delete $1;
@@ -776,7 +776,7 @@ constant:
     {
 		$$ = (void*) (new ast::NT_Constant);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Bool(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Bool(*$1, curr_loc()));
 		
 		// delete allocated string
 		delete $1;
@@ -785,7 +785,7 @@ constant:
     {
 		$$ = (void*) (new ast::NT_Constant);
 
-		((ast::ASTNode*)$$)->add_child(new ast::Character(*$1));
+		((ast::ASTNode*)$$)->add_child(new ast::Character(*$1, curr_loc()));
 		
 		// delete allocated string
 		delete $1;
@@ -905,13 +905,13 @@ statement:
 	{
 		$$ = (void*) (new ast::Statement);
 
-		((ast::ASTNode*)$$)->add_child(new ast::K_Continue);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Continue(curr_loc()));
 	}
 | KEYWORD_BREAK
 	{
 		$$ = (void*) (new ast::Statement);
 
-		((ast::ASTNode*)$$)->add_child(new ast::K_Break);
+		((ast::ASTNode*)$$)->add_child(new ast::K_Break(curr_loc()));
 	}
 | conditional
 	{
@@ -1039,7 +1039,7 @@ foreach:
 		expr->add_child((ast::ASTNode*)$2);
 
 		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$4));
+		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$4, curr_loc()));
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
 
 		// delete the memory allocated for the string
@@ -1220,17 +1220,17 @@ static std::string curr_line_row()
 static ast::ASTNode* get_type_node(const std::string& type_string)
 {
 	if(!type_string.compare("int"))
-		return new ast::Type_Int;
+		return new ast::Type_Int(curr_loc());
 	else if(!type_string.compare("bool"))
-		return new ast::Type_Bool;
+		return new ast::Type_Bool(curr_loc());
 	else if(!type_string.compare("float"))
-		return new ast::Type_Float;
+		return new ast::Type_Float(curr_loc());
 	else if(!type_string.compare("string"))
-		return new ast::Type_String;
+		return new ast::Type_String(curr_loc());
 	else if(!type_string.compare("list"))
-		return new ast::Type_List;
+		return new ast::Type_List(curr_loc());
 	else if(!type_string.compare("array"))
-		return new ast::Type_Array;
+		return new ast::Type_Array(curr_loc());
 	else return nullptr;
 }
 
