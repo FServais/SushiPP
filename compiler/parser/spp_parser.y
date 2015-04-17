@@ -747,45 +747,35 @@ expression-list:
 constant:
   CONST_INT
     {
-		$$ = (void*) (new ast::NT_Constant);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Integer(*$1, curr_loc()));
+		$$ = (void*) (new ast::NT_Constant(new ast::Integer(*$1, curr_loc()), curr_loc()));
 		
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
-		$$ = (void*) (new ast::NT_Constant);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Float(*$1, curr_loc()));
+		$$ = (void*) (new ast::NT_Constant(new ast::Float(*$1, curr_loc()), curr_loc()));
 		
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
-		$$ = (void*) (new ast::NT_Constant);
-
-		((ast::ASTNode*)$$)->add_child(new ast::String(*$1, curr_loc()));
+		$$ = (void*) (new ast::NT_Constant(new ast::String(*$1, curr_loc()), curr_loc()));
 		
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
-		$$ = (void*) (new ast::NT_Constant);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Bool(*$1, curr_loc()));
+		$$ = (void*) (new ast::NT_Constant(new ast::Bool(*$1, curr_loc()), curr_loc()));
 		
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
-		$$ = (void*) (new ast::NT_Constant);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Character(*$1, curr_loc()));
+		$$ = (void*) (new ast::NT_Constant(new ast::Character(*$1, curr_loc()), curr_loc()));
 		
 		// delete allocated string
 		delete $1;

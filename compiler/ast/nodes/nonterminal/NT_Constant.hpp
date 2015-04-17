@@ -13,9 +13,15 @@ namespace ast
 	{
 	public:
 		// Constructors
-		NT_Constant();
-		NT_Constant(int,int,int,int);
-		NT_Constant(const NodeLocation&);
+		// type of child (ast::Integer, ast::Float, ...)
+		NT_Constant(ASTNode*);
+		// type, first line, last line, first col, last col
+		NT_Constant(ASTNode*, int,int,int,int);
+		// type, node location object
+		NT_Constant(ASTNode*, const NodeLocation&);
+
+		// get child
+		ASTNode& get_type();
 
 		virtual void accept(ASTVisitor&);
 	};
