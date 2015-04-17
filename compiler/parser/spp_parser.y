@@ -289,10 +289,8 @@ decl-var:
 
 		// as the expression rule does not return an expression but the actual expression tree,
 		// we create the expression node here
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$3, curr_loc());
 
-		expr->add_child((ast::ASTNode*)$3);
-		
 		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
 		((ast::ASTNode*)$$)->add_child(expr);
 
@@ -474,9 +472,8 @@ argument:
 		$$ = (void*) (new ast::Argument);
 		// as the expression rule does not return an expression but the actual expression tree,
 		// we create the expression node here
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
-		expr->add_child((ast::ASTNode*)$2);
 		((ast::ASTNode*)$$)->add_child(expr);
 	}
 | soy-expression
@@ -661,27 +658,19 @@ assignment:
 modifying-expression:
   assignment
 	{
-		$$ = (void*) (new ast::ModifyingExpression);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
 	}
 | incr-expression
 	{
-		$$ = (void*) (new ast::ModifyingExpression);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
 	}
 | braced-func-call
 	{
-		$$ = (void*) (new ast::ModifyingExpression);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
 	}
 | func-call
 	{
-		$$ = (void*) (new ast::ModifyingExpression);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
 	}
 ;
 
@@ -702,14 +691,8 @@ assignable-expression:
 datastructure-access: 
   IDENTIFIER '[' expression ']'
     {
-		$$ = (void*) (new ast::DatastructureAccess);
+		$$ = (void*) (new ast::DatastructureAccess(new ast::Identifier(*$1, curr_loc()), new ast::Expression((ast::ASTNode*)$3, curr_loc()), curr_loc()));
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$3);
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-		((ast::ASTNode*)$$)->add_child(expr);
-		
 		// delete allocated string
 		delete $1;
 	}
@@ -719,25 +702,15 @@ datastructure-access:
 expression-list:
   expression
 	{
-		$$ = (void*) (new ast::ExpressionList);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(expr);
+		$$ = (void*) (new ast::ExpressionList(new ast::Expression((ast::ASTNode*)$1, curr_loc()), curr_loc()));
 	}
 | expression ',' expression-list
 	{
-		$$ = (void*) (new ast::ExpressionList);
+		ast::ExpressionList* expression_list = (ast::ExpressionList*)$3;
+		ast::Expression* expression = (ast::Expression*)$1;
+		expression_list->add_expression(expression);
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_children(children($3));
-
-		// delete remaining node (which has no children)
-		delete ((ast::ExpressionList*)$3);
+		$$ = (void*) expression_list;
 	}
 ;
 
@@ -840,12 +813,9 @@ make-sequence-array:
 seq-expression: 
   expression KEYWORD_TO expression
 	{
-		ast::Expression* expr1 = new ast::Expression, *expr2;
+		ast::Expression* expr1 = new ast::Expression((ast::ASTNode*)$1, curr_loc()), *expr2;
 
-		expr2 = new ast::Expression;
-
-		expr1->add_child((ast::ASTNode*)$1);
-		expr2->add_child((ast::ASTNode*)$3);
+		expr2 = new ast::Expression((ast::ASTNode*)$3, curr_loc());
 
 		$$ = (void*) (new ast::SeqExpression(expr1, expr2, curr_loc()));
 	}
@@ -903,9 +873,8 @@ return:
 	{
 		$$ = (void*) (new ast::Return);
 
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
-		expr->add_child((ast::ASTNode*)$2);
 		((ast::ASTNode*)$$)->add_child(expr);
 	}
 ;
@@ -916,9 +885,7 @@ menu:
 	{
 		$$ = (void*) (new ast::Menu);
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
 		((ast::ASTNode*)$$)->add_child(expr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
@@ -956,9 +923,7 @@ menu-case:
 	{
 		$$ = (void*) (new ast::MenuCase);
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$1);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$1, curr_loc());
 
 		((ast::ASTNode*)$$)->add_child(expr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
@@ -989,9 +954,7 @@ roll :
 	{
 		$$ = (void*) (new ast::Roll);
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
 		((ast::ASTNode*)$$)->add_child(expr);
 		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
@@ -1006,9 +969,7 @@ foreach:
 	{
 		$$ = (void*) (new ast::Foreach);
 
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
 		((ast::ASTNode*)$$)->add_child(expr);
 		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$4, curr_loc()));
@@ -1032,12 +993,11 @@ KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_
 	{	
 		$$ = (void*) (new ast::For);
 
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$4, curr_loc());
 
 		if((ast::ASTNode*)$2 != nullptr)
 			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
 
-		expr->add_child((ast::ASTNode*)$4);
 		((ast::ASTNode*)$$)->add_child(expr);
 
 		if((ast::ASTNode*)$2 != nullptr)
@@ -1080,10 +1040,8 @@ conditional:
 		
 		$$ = (void*) (new ast::Conditional);
 		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
-
-		expr->add_child((ast::ASTNode*)$2);
 		if_->add_child(expr);
 		if_->add_child((ast::ASTNode*)$4);
 
@@ -1093,9 +1051,8 @@ conditional:
 	{
 		$$ = (void*) (new ast::Conditional);
 		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 
-		expr->add_child((ast::ASTNode*)$2);
 		if_->add_child(expr);
 		if_->add_child((ast::ASTNode*)$4);
 
@@ -1106,10 +1063,9 @@ conditional:
 	{
 		$$ = (void*) (new ast::Conditional);
 
-		ast::Expression* expr = new ast::Expression;
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 		ast::If* if_ = new ast::If;
 
-		expr->add_child((ast::ASTNode*)$2);
 		if_->add_child(expr);
 		if_->add_child((ast::ASTNode*)$4);
 
@@ -1123,9 +1079,7 @@ conditional:
 	{
 		$$ = (void*) (new ast::Conditional);
 		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 		
 		if_->add_child(expr);
 		if_->add_child((ast::ASTNode*)$4);
@@ -1145,8 +1099,7 @@ elseif:
 	{
 		$$ = (void*) (new ast::Elseif);
 		ast::ASTNode* sub = new ast::Elseif;
-		ast::Expression* expr = new ast::Expression;
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 		sub->add_child(expr);
 		sub->add_child((ast::ASTNode*)$4);
 		((ast::ASTNode*)$$)->add_child(sub);
@@ -1155,8 +1108,7 @@ elseif:
 	{
 		$$ = (void*) (new ast::Elseif);
 		ast::ASTNode* sub = new ast::Elseif;
-		ast::Expression* expr = new ast::Expression;
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
 		sub->add_child(expr);
 		sub->add_child((ast::ASTNode*)$4);
 		((ast::ASTNode*)$$)->add_child(sub);
