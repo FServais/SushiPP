@@ -40,7 +40,7 @@
 	/** Return a pointer to the type node for the given string*/
 	static ast::ASTNode* get_type_node(const std::string&);
 	/** Add an error to the handler and invokes yyerror */
-	static void add_error(std::string, std::string);
+	//static void add_error(std::string, std::string);
 	/** Return the NodeLocation object containing the current location informations */
 	static ast::NodeLocation curr_loc();
 
@@ -386,8 +386,8 @@ param:
 			ss << "Invalid type string : given '" << *$3 << "', actual type expected";
 
 
-			add_error(line.str(), ss.str());
-			//yyerror(ss.str().c_str());
+			//add_error(line.str(), ss.str());
+			yyerror(ss.str().c_str());
 
 			YYERROR; // signal a parsing error
 			yyerrok; // mark the error as ok, to continue parsing
@@ -1037,6 +1037,9 @@ else:
 static void yyerror(const char *s)
 {
 	error_occurred = true;
+
+	errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
+	error_handler.add_synt_error("", yylloc.first_line, yylloc.first_column, desc);
 }
 
 static std::string curr_line_row()
@@ -1063,12 +1066,14 @@ static ast::ASTNode* get_type_node(const std::string& type_string)
 	else return nullptr;
 }
 
+/*
 static void add_error(std::string context, std::string desc)
 {
 	errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
 	error_handler.add_synt_error(context, yylloc.first_line, yylloc.first_column, desc);
 	yyerror(desc.c_str());
 }
+*/
 
 ast::NodeLocation curr_loc()
 {
