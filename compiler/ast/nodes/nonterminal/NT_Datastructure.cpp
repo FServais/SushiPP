@@ -3,6 +3,7 @@
 #include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
+using namespace except;
 
 /** Constant base class */
 NT_Datastructure::NT_Datastructure(const std::string& node_name) : NonTerminal(node_name) {}
@@ -140,12 +141,12 @@ MakeSequenceList::MakeSequenceList(Expression* begin, Expression* end, const Nod
 	add_child(end);
 }
 
-Expression& SeqExpression::get_begin()
+Expression& MakeSequenceList::get_begin()
 {
 	return *dynamic_cast<Expression*>(children[0]);
 }
 
-Expression& SeqExpression::get_end()
+Expression& MakeSequenceList::get_end()
 {
 	return *dynamic_cast<Expression*>(children[1]);
 }
@@ -175,12 +176,12 @@ MakeSequenceArray::MakeSequenceArray(Expression* begin, Expression* end, const N
 	add_child(end);
 }
 
-Expression& SeqExpression::get_begin()
+Expression& MakeSequenceArray::get_begin()
 {
 	return *dynamic_cast<Expression*>(children[0]);
 }
 
-Expression& SeqExpression::get_end()
+Expression& MakeSequenceArray::get_end()
 {
 	return *dynamic_cast<Expression*>(children[1]);
 }
@@ -189,40 +190,3 @@ void MakeSequenceArray::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
-
-/* SeqExpression */
-SeqExpression::SeqExpression(Expression* begin, Expression* end) : NT_Datastructure("Sequence expression")
-{ 
-	add_child(begin);
-	add_child(end);
-}
-
-SeqExpression::SeqExpression(Expression* begin, Expression* end, int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Sequence expression", first_line, last_line, first_column, last_column)
-{
-	add_child(begin);
-	add_child(end);
-}
-
-SeqExpression::SeqExpression(Expression* begin, Expression* end, const NodeLocation& node_loc) : NT_Datastructure("Sequence expression", node_loc)
-{
-	add_child(begin);
-	add_child(end);
-}
-
-Expression& SeqExpression::get_begin()
-{
-	return *dynamic_cast<Expression*>(children[0]);
-}
-
-Expression& SeqExpression::get_end()
-{
-	return *dynamic_cast<Expression*>(children[1]);
-}
-
-void SeqExpression::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-}
-
-

@@ -4,6 +4,7 @@
 	#include <sstream>
 	#include <cstddef>
 	#include <list>
+	#include <utility>
 
 	/** Compiler and AST includes */
 	#include "../SppCompiler.hpp"
@@ -44,6 +45,7 @@
 	/** Return the NodeLocation object containing the current location informations */
 	static ast::NodeLocation curr_loc();
 
+	typedef std::pair<ast::Expression*, ast::Expression*> ExpressionPair;
 
 	// pointer to 
 	extern compiler::SppCompiler* g_compiler;
@@ -798,27 +800,29 @@ make-sequence:
 make-sequence-list: 
   '{' seq-expression '}'
 	{
-		$$ = (void*) (new ast::MakeSequenceList(((ast::ASTNode*)$2)->get_begin()), ((ast::ASTNode*)$2)->get_end()), curr_loc());
-		delete ((ast::ASTNode*)$2);
+		ExpressionPair* exp_pair = (ExpressionPair*) $2;
+		$$ = (void*) (new ast::MakeSequenceList(exp_pair->first, exp_pair->second, curr_loc()));
+		delete exp_pair;
 	}
 ;
 
 make-sequence-array: 
   DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
 	{
-		$$ = (void*) (new ast::MakeSequenceArray(((ast::ASTNode*)$2)->get_begin()), ((ast::ASTNode*)$2)->get_end()), curr_loc());
-		delete ((ast::ASTNode*)$2);
+		ExpressionPair* exp_pair = (ExpressionPair*) $2;
+		$$ = (void*) (new ast::MakeSequenceArray(exp_pair->first, exp_pair->second, curr_loc()));
+		delete exp_pair;
 	}
 ;
 
+/** The semantic value associated with the seq-expression is a pointer to a std::pair<ast::Expression*,ast::Expression*> */
 seq-expression: 
   expression KEYWORD_TO expression
 	{
-		ast::Expression* expr1 = new ast::Expression((ast::ASTNode*)$1, curr_loc()), *expr2;
-
-		expr2 = new ast::Expression((ast::ASTNode*)$3, curr_loc());
-
-		$$ = (void*) (new ast::SeqExpression(expr1, expr2, curr_loc()));
+		ast::Expression *expr1 = new ast::Expression((ast::ASTNode*)$1, curr_loc()), 
+						*expr2 = new ast::Expression((ast::ASTNode*)$3, curr_loc());
+		ExpressionPair* exp_pair = new ExpressionPair(expr1, expr2);
+		$$ = (void*) exp_pair;
 	}
 ;
 

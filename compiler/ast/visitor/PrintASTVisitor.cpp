@@ -523,15 +523,6 @@ void PrintASTVisitor::visit( ast::Bool& token )
  * 		Datastructure non-terminal    *
  **************************************/
 
-void PrintASTVisitor::visit( ast::Datastructure& token )
-{
-	print_single(token.node_name());
-	curr_depth++;
-	for(auto child : token.get_children())
-		child->accept(*this);
-	curr_depth--;
-}
-
 void PrintASTVisitor::visit( ast::Array& token )
 {
 	print_single(token.node_name());
@@ -567,16 +558,6 @@ void PrintASTVisitor::visit( ast::MakeSequenceArray& token )
 		child->accept(*this);
 	curr_depth--;
 }
-
-void PrintASTVisitor::visit( ast::SeqExpression& token )
-{
-	print_single(token.node_name());
-	curr_depth++;
-	for(auto child : token.get_children())
-		child->accept(*this);
-	curr_depth--;
-}
-
 
 /************************************
  * 		Declaration non-terminal    *
@@ -641,34 +622,7 @@ void PrintASTVisitor::visit( ast::Expression& token )
 	curr_depth--;
 }
 
-void PrintASTVisitor::visit( ast::IncrExpression& token )
-{
-	print_single(token.node_name());
-	curr_depth++;
-	for(auto child : token.get_children())
-		child->accept(*this);
-	curr_depth--;
-}
-
-void PrintASTVisitor::visit( ast::Assignment& token )
-{
-	print_single(token.node_name());
-	curr_depth++;
-	for(auto child : token.get_children())
-		child->accept(*this);
-	curr_depth--;
-}
-
 void PrintASTVisitor::visit( ast::ModifyingExpression& token )
-{
-	print_single(token.node_name());
-	curr_depth++;
-	for(auto child : token.get_children())
-		child->accept(*this);
-	curr_depth--;
-}
-
-void PrintASTVisitor::visit( ast::AssignableExpression& token )
 {
 	print_single(token.node_name());
 	curr_depth++;

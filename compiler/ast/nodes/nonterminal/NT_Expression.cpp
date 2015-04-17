@@ -28,18 +28,18 @@ void NT_Expression::accept(ASTVisitor& visitor)
 /* Expression */
 Expression::Expression(ASTNode* child) : NT_Expression("Expression")
 {
-	add_child(child)
+	add_child(child);
 }
 
 Expression::Expression(ASTNode* child, int first_line, int last_line, int first_column, int last_column)
 	: NT_Expression("Expression", first_line, last_line, first_column, last_column)
 {
-	add_child(child)
+	add_child(child);
 }
 
 Expression::Expression(ASTNode* child, const NodeLocation& node_loc) : NT_Expression("Expression", node_loc)
 {
-	add_child(child)
+	add_child(child);
 }
 
 ASTNode& Expression::get_child()
@@ -69,7 +69,7 @@ ModifyingExpression::ModifyingExpression(ASTNode* child, const NodeLocation& nod
 	add_child(child);
 }
 
-ASTNode& Expression::get_child()
+ASTNode& ModifyingExpression::get_child()
 {
 	return *children[0];
 }
