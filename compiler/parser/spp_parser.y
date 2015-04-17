@@ -3,6 +3,7 @@
 	#include <string>
 	#include <sstream>
 	#include <cstddef>
+	#include <list>
 
 	/** Compiler and AST includes */
 	#include "../SppCompiler.hpp"
@@ -857,9 +858,8 @@ seq-expression:
 	{
 		$$ = (void*) (new ast::SeqExpression);
 
-		ast::Expression* expr1 = new ast::Expression, *expr2;
-
-		expr2 = new ast::Expression;
+		ast::Expression *expr1 = new ast::Expression, 
+						*expr2 = new ast::Expression;
 
 		expr1->add_child((ast::ASTNode*)$1);
 		expr2->add_child((ast::ASTNode*)$3);
@@ -873,58 +873,24 @@ seq-expression:
 /* Statements */
 /**************/
 statement:
-  return
-	{	
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| menu
-	{
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| loop
-	{
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| KEYWORD_CONTINUE
-	{
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child(new ast::K_Continue);
-	}
-| KEYWORD_BREAK
-	{
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child(new ast::K_Break);
-	}
-| conditional
-	{
-		$$ = (void*) (new ast::Statement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  return           { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
+| menu             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
+| loop             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
+| KEYWORD_CONTINUE { $$ = (void*) (new ast::Statement(new ast::K_Continue)); }
+| KEYWORD_BREAK    { $$ = (void*) (new ast::Statement(new ast::K_Break)); }
+| conditional      { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
 ;
 
 /* Return */
 return:
   KEYWORD_NORI
 	{
-		$$ = (void*) (new ast::Return);
+		$$ = (void*) (new ast::Return(curr_loc()));
 	}
 | KEYWORD_NORI expression
 	{
-		$$ = (void*) (new ast::Return);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
-		((ast::ASTNode*)$$)->add_child(expr);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2);
+		$$ = (void*) (new ast::Return(expr, curr_loc()));
 	}
 ;
 
@@ -932,63 +898,46 @@ return:
 menu: 
   KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
 	{
-		$$ = (void*) (new ast::Menu);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
-
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2);
+		ast::MenuBody* menu_body = ((ast::MenuBody*)$4);
+		$$ = (void*) (new ast::Menu(menu_body, expr, curr_loc()));
 	}
 ;
 
 menu-body:
   menu-def DELIM_EOL
 	{
-		$$ = (void*) (new ast::MenuBody);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
+		ast::MenuDef* menu_def = ((ast::MenuDef*)$1);
+		$$ = (void*) (new ast::MenuBody(menu_def, curr_loc()));
 	}
 | menu-case DELIM_EOL
 	{
-		$$ = (void*) (new ast::MenuBody);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
- 
+		ast::MenuCase* menu_case = ((ast::MenuCase*)$1);
+		$$ = (void*) (new ast::MenuBody(menu_case, curr_loc()));
 	}
 | menu-case DELIM_EOL menu-body
 	{
-		$$ = (void*) (new ast::MenuBody);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($3));
-
-		// delete remaining node (which has no children)
-		delete ((ast::MenuBody*)$3);
+		ast::MenuBody* menu_body = ((ast::MenuBody*)$3);
+		ast::MenuCase* menu_case = ((ast::MenuCase*)$1);
+		menu_body->add_case(menu_case);
+		$$ = (void*) menu_body;
 	}
 ;
 
 menu-case: 
   expression DELIM_ARROW scope DELIM_EOS
 	{
-		$$ = (void*) (new ast::MenuCase);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$1);
-
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$1, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$3);
+		$$ = (void*) (new ast::MenuCase(scope, expr, curr_loc()));
 	}
 ;
 
 menu-def:
  '_' DELIM_ARROW scope DELIM_EOS
 	{
-		$$ = (void*) (new ast::MenuDef);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
+		ast::Scope* scope = ((ast::Scope*)$3);
+		$$ = (void*) (new ast::MenuDef(scope, curr_loc()));
 	}
 ;
 
@@ -1005,14 +954,9 @@ loop :
 roll : 
   KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
 	{
-		$$ = (void*) (new ast::Roll);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
-
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		$$ = (void*) (new ast::Roll(expr, scope, curr_loc()));
 	}
 ;
 
@@ -1022,15 +966,10 @@ roll :
 foreach: 
   KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
 	{
-		$$ = (void*) (new ast::Foreach);
-
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
-
-		((ast::ASTNode*)$$)->add_child(expr);
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$4));
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$6);
+		ast::Identifier* id = new ast::Identifier(*$4, curr_loc());
+		$$ = (void*) (new ast::Foreach(expr, id, scope, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $4;
@@ -1046,150 +985,97 @@ foreach:
  * for iterating (or contain nothing)
  */
 for: 
-KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
+  KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
 	{	
-		$$ = (void*) (new ast::For);
-
-		ast::Expression* expr = new ast::Expression;
-
-		if((ast::ASTNode*)$2 != nullptr)
-			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-
-		expr->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(expr);
-
-		if((ast::ASTNode*)$2 != nullptr)
-			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$8);
+		ast::ForInitializer* initializer = ((ast::ForInitializer*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$4, curr_loc());
+		ast::ForUpdate* update = ((ast::ForUpdate*)$6);
+		ast::Scope* scope = ((ast::Scope*)$8);
+		$$ = (void*) (new ast::For(initializer, expr, update, scope, curr_loc()));
 	}
 ;
 
 for-initializer:
-  %empty
-	{
-		$$ = nullptr;
-	}
-| assignment
-	{
-		$$ = (void*) (new ast::ForInitializer);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  %empty     { $$ = nullptr; }
+| assignment { $$ = (void*) (new ast::ForInitializer((ast::ASTNode*)$1, curr_loc())); }
 ;
 
 for-update:
-  %empty
-	{
-		$$ = nullptr;
-	}
-| modifying-expression
-	{
-		$$ = (void*) (new ast::ForUpdate);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  %empty               { $$ = nullptr; }
+| modifying-expression { $$ = (void*) (new ast::ForUpdate((ast::ASTNode*)$1, curr_loc())); }
 ;
 
 /* Conditionnal */
 conditional:
   KEYWORD_IF expression DELIM_EOL scope DELIM_EOS
 	{
-		
-		$$ = (void*) (new ast::Conditional);
-		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
-
-
-		expr->add_child((ast::ASTNode*)$2);
-		if_->add_child(expr);
-		if_->add_child((ast::ASTNode*)$4);
-
-		((ast::ASTNode*)$$)->add_child(if_);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), nullptr, curr_loc()));
 	}
 | KEYWORD_IF expression DELIM_EOL scope else DELIM_EOS
 	{
-		$$ = (void*) (new ast::Conditional);
-		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
-		if_->add_child(expr);
-		if_->add_child((ast::ASTNode*)$4);
-
-		((ast::ASTNode*)$$)->add_child(if_);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$5);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		ast::Else* else_node = ((ast::Else*)$5);
+		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), else_node, curr_loc()));
 	}
 | KEYWORD_IF expression DELIM_EOL scope elseif DELIM_EOS
 	{
-		$$ = (void*) (new ast::Conditional);
-
-		ast::Expression* expr = new ast::Expression;
-		ast::If* if_ = new ast::If;
-
-		expr->add_child((ast::ASTNode*)$2);
-		if_->add_child(expr);
-		if_->add_child((ast::ASTNode*)$4);
-
-		((ast::ASTNode*)$$)->add_child(if_);
-		((ast::ASTNode*)$$)->add_children(children($5));
-
-		// delete the unused node
-		delete ((ast::ASTNode*) $5);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		std::list<ast::Elseif*>* elsif_list = ((std::list<ast::Elseif*>*)$5);
+		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, nullptr, curr_loc()));
+		
+		// delete the list
+		delete elsif_list;
 	}
 | KEYWORD_IF expression DELIM_EOL scope elseif else DELIM_EOS
 	{
-		$$ = (void*) (new ast::Conditional);
-		ast::If* if_ = new ast::If;
-		ast::Expression* expr = new ast::Expression;
-
-		expr->add_child((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		ast::Else* else_node = ((ast::Else*)$6);
+		std::list<ast::Elseif*>* elsif_list = ((std::list<ast::Elseif*>*)$5);
+		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, else_node, curr_loc()));
 		
-		if_->add_child(expr);
-		if_->add_child((ast::ASTNode*)$4);
-
-		((ast::ASTNode*)$$)->add_child(if_);
-		((ast::ASTNode*)$$)->add_children(children($5));
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$6);
-
-		// delete the unused node
-		delete ((ast::ASTNode*) $5);
+		// delete the list
+		delete elsif_list;
 	}
 ;
 
-/**  elsif rule return an ASTNode with all ast::Elseif as child */
+/**  elsif rule return an pointer to a std::list<ast::Elseif*> list */
 elseif:
   KEYWORD_ELSEIF expression DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::Elseif);
-		ast::ASTNode* sub = new ast::Elseif;
-		ast::Expression* expr = new ast::Expression;
-		expr->add_child((ast::ASTNode*)$2);
-		sub->add_child(expr);
-		sub->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(sub);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::Elseif* elseif = new ast::Elseif(expr, scope, curr_loc());
+		std::list<ast::Elseif*>* elseif_list = new std::list<ast::Elseif*>();
+		elseif_list->push_front(elseif);
+		$$ = (void*) elseif_list;
 	}
 | KEYWORD_ELSEIF expression DELIM_EOL scope elseif
 	{
-		$$ = (void*) (new ast::Elseif);
-		ast::ASTNode* sub = new ast::Elseif;
-		ast::Expression* expr = new ast::Expression;
-		expr->add_child((ast::ASTNode*)$2);
-		sub->add_child(expr);
-		sub->add_child((ast::ASTNode*)$4);
-		((ast::ASTNode*)$$)->add_child(sub);
-		((ast::ASTNode*)$$)->add_children(children($5));
-
-		//delete the unused node
-		delete ((ast::ASTNode*)$5);
+		// build the elsif
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Scope* scope = ((ast::Scope*)$4);
+		ast::Elseif* elseif = new ast::Elseif(expr, scope, curr_loc());
+		// add it to the list
+		std::list<ast::Elseif*>* elseif_list = ((std::list<ast::Elseif*>*)$5);
+		elseif_list->push_front(elseif);
+		$$ = (void*) elseif_list;
 	}
 ;
 
 else: 
   KEYWORD_ELSE scope 
 	{
-		$$ = (void*) (new ast::Else);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		ast::Scope* scope = ((ast::Scope*)$2);
+		$$ = (void*) (new ast::Else(scope, curr_loc()));
 	}
 ;
 
