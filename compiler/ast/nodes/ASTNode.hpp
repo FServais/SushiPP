@@ -62,17 +62,6 @@ namespace ast
 		std::vector<ASTNode*>& get_children();
 		const std::vector<ASTNode*>& get_children() const;
 
-		// add a child(ren) to the node
-		void add_child(ASTNode*);
-		void add_children(const std::vector<ASTNode*>&);
-		void add_child_first(ASTNode*); // add a child at the first position
-		void add_child_at(size_t, ASTNode*); // insert the child at the given position
-		// delete a child at the given index
-		// the ownership of the memory allocated for the child node and its descendents
-		// is tranferred to the calling context
-		ASTNode* delete_child(size_t);
-		std::vector<ASTNode*> delete_children();
-
 		// check wheter the node has at least a child
 		bool has_child() const;
 
@@ -87,6 +76,17 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 
 	protected:
+		// add a child(ren) to the node
+		void add_child(ASTNode*);
+		void add_children(const std::vector<ASTNode*>&);
+		void add_child_first(ASTNode*); // add a child at the first position
+		void add_child_at(size_t, ASTNode*); // insert the child at the given position
+		// delete a child at the given index
+		// the ownership of the memory allocated for the child node and its descendents
+		// is tranferred to the calling context
+		ASTNode* delete_child(size_t);
+		std::vector<ASTNode*> delete_children();
+
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
 		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */
 		NodeLocation loc; /* Node location */

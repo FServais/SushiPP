@@ -3,8 +3,12 @@
 
 #include <string>
 #include "NonTerminal.hpp"
-#include "../../../symb/SymbolInfo.hpp"
+#include "NT_Program.hpp"
+#include "NT_Expression.hpp"
+#include "../tokens/Token.hpp"
+#include "../tokens/Keyword.hpp"
 #include "../NodeLocation.hpp"
+#include "../../../symb/SymbolInfo.hpp"
 
 namespace ast
 {
@@ -25,49 +29,28 @@ namespace ast
 	/*************************************
 	 * Declaration rules node base class *
 	 *************************************/
-
-	class DeclFunc : public NT_Declaration
+	class Param : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclFunc(Identifier*, ParamList*, Scope*);
-		DeclFunc(Identifier*, ParamList*, Scope*, int,int,int,int);
-		DeclFunc(Identifier*, ParamList*, Scope*, const NodeLocation&);
+		Param(Identifier*);
+		Param(Identifier*, Type*);
+		Param(Identifier*, int,int,int,int);
+		Param(Identifier*, Type*, int,int,int,int);
+		Param(Identifier*, const NodeLocation&);
+		Param(Identifier*, Type*, const NodeLocation&);
+
+		const std::string& get_param_name() const;
+		bool has_type() const;
+		symb::Type get_type() const;
+
+		Identifier& get_identifier();
+		const Identifier& get_identifier() const;
+		Type& get_type_node();
+		const Type& get_type_node() const;
 
 		virtual void accept(ASTVisitor&);
-		Identifier& get_id();
-		ArgList& get_param_list();
-		Scope& get_scope();
-	};
 
-	class DeclVars : public NT_Declaration
-	{
-	public:
-		// Constructors
-		DeclVars(DeclVar*);
-		DeclVars(DeclVar*, int,int,int,int);
-		DeclVars(DeclVar*, const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-		DeclVar& get_decl_var(size_t);
-		void add_decl_var(DeclVar*);
-	};
-
-	class DeclVar : public NT_Declaration
-	{
-	public:
-		// Constructors
-		DeclVar(Identifier*);
-		DeclVar(Identifier*, int,int,int,int);
-		DeclVar(Identifier*, const NodeLocation&);
-
-		DeclVar(Identifier*, ASTNode*);
-		DeclVar(Identifier*, ASTNode*, int,int,int,int);
-		DeclVar(Identifier*, ASTNode*, const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-		Identifier& get_id();
-		ASTNode& get_exp();
 	};
 
 	class ParamList : public NT_Declaration
@@ -81,26 +64,84 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 		void add_param(Param*);
 		Param& get_param(size_t);
+		size_t nb_params() const;
 	};
 
-	class Param : public NT_Declaration
+	class DeclFunc : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Param(Identifier*);
-		Param(Identifier*, ASTNode*);
-		Param(Identifier*, int,int,int,int);
-		Param(Identifier*, ASTNode*, int,int,int,int);
-		Param(Identifier*, const NodeLocation&);
-		Param(Identifier*, ASTNode*, const NodeLocation&);
-
-		const std::string& get_param_name() const;
-		bool has_type() const;
-		symb::Type get_type() const;
+		DeclFunc(Identifier*, ParamList*, Scope*);
+		DeclFunc(Identifier*, ParamList*, Scope*, int,int,int,int);
+		DeclFunc(Identifier*, ParamList*, Scope*, const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
+
 		Identifier& get_id();
-		ASTNode& get_type();
+		/**
+		 * @throw NoSuchChildException if there is no parameters
+		 */
+		ParamList& get_param_list();
+		Scope& get_scope();
+
+		bool contains_params() const { return has_params; }
+		
+	private:
+		bool has_params;
+	};
+
+	class DeclVar : public NT_Declaration
+	{
+	public:
+		// Constructors
+		DeclVar(Identifier*);
+		DeclVar(Identifier*, int,int,int,int);
+		DeclVar(Identifier*, const NodeLocation&);
+
+		DeclVar(Identifier*, Expression*);
+		DeclVar(Identifier*, Expression*, int,int,int,int);
+		DeclVar(Identifier*, Expression*, const NodeLocation&);
+
+		Identifier& get_identifier();
+		Expression& get_expression();
+
+		bool contains_expr() const { return has_expression; }
+
+		virtual void accept(ASTVisitor&);
+	private:
+		bool has_expression;
+	};
+
+	class DeclVars : public NT_Declaration
+	{
+	public:
+		// Constructors
+		DeclVars(DeclVar*);
+		DeclVars(DeclVar*, int,int,int,int);
+		DeclVars(DeclVar*, const NodeLocation&);
+
+		DeclVar& get_variable(size_t);
+		void add_variable(DeclVar*);
+		size_t nb_variables() const; 
+
+		virtual void accept(ASTVisitor&);
+	};
+
+	class SoyFunc : public NT_Declaration
+	{
+	public:
+		// Constructors
+		SoyFunc(ParamList*, Scope*);
+		SoyFunc(ParamList*, Scope*, int,int,int,int);
+		SoyFunc(ParamList*, Scope*, const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
+		ParamList& get_params();
+		Scope& get_scope();
+
+		bool contains_params() const { return has_params; }
+	private:
+		bool has_params;
 	};
 }
 

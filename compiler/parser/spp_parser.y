@@ -21,7 +21,7 @@
 	#include "../ast/nodes/tokens/Keyword.hpp"
 
 	#include "../ast/nodes/nonterminal/NonTerminal.hpp"
-	#include "../ast/nodes/nonterminal/NT_Constant.hpp"
+	#include "../ast/nodes/nonterminal/Constant.hpp"
 	#include "../ast/nodes/nonterminal/NT_Datastructure.hpp"
 	#include "../ast/nodes/nonterminal/NT_Declaration.hpp"
 	#include "../ast/nodes/nonterminal/NT_Expression.hpp"
@@ -39,7 +39,7 @@
 	/** print the current location data */
 	static std::string curr_line_row();
 	/** Return a pointer to the type node for the given string*/
-	static ast::ASTNode* get_type_node(const std::string&);
+	static ast::Type* get_type_node(const std::string&);
 	/** Add an error to the handler and invokes yyerror */
 	//static void add_error(std::string, std::string);
 	/** Return the NodeLocation object containing the current location informations */
@@ -181,7 +181,7 @@
 /*  Program general rules  */
 /***************************/
 program:
-  %empty 		{ g_compiler->set_syntax_tree_root(new ast::Program); }
+  %empty 		{ g_compiler->set_syntax_tree_root(new ast::Program(nullptr)); }
 | scope	
 	{
 		if(error_occurred)
@@ -190,52 +190,28 @@ program:
 			YYABORT;
 		}
 
-		ast::ASTNode* prog = new ast::Program;
-		prog->add_child((ast::ASTNode*)$1);
-		g_compiler->set_syntax_tree_root(prog); 
+		g_compiler->set_syntax_tree_root(new ast::Program((ast::Scope*)$1)); 
 	}
 ;
 
 /* Scope containing sushi++ code */
 
 scope:
-  program-element 
-	{
-		$$ = (void*) (new ast::Scope);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| program-element DELIM_EOL
-	{
-		$$ = (void*) (new ast::Scope);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  program-element           { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1)); }
+| program-element DELIM_EOL { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1)); }
 | program-element DELIM_EOL scope
 	{
-		$$ = (void*) (new ast::Scope);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($3));
-
-		// delete remaining node (which has no children)
-		delete ((ast::Scope*)$3);
+		ast::Scope* scope = ((ast::Scope*)$3);
+		scope->add_program_element((ast::ASTNode*)$1);
+		$$ = (void*) scope;
 	}
-| DELIM_EOL scope
-	{
-		$$ = (void*) (new ast::Scope);
-
-		((ast::ASTNode*)$$)->add_children(children($2));
-
-		// delete remaining node (which has no children)
-		delete ((ast::Scope*)$2);
-	}
+| DELIM_EOL scope           { $$ = $2; }
 ;
 
 program-element:
-  statement { $$ = $1; }
+  statement            { $$ = $1; }
 | modifying-expression { $$ = $1; }
-| declaration { $$ = $1; }
+| declaration          { $$ = $1; }
 ;
 
 /***************/
@@ -248,54 +224,34 @@ declaration:
 
 /* variable declaration */
 decl-vars:
-  decl-var
-	{
-		$$ = (void*) (new ast::DeclVars);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  decl-var { $$ = (void*) (new ast::DeclVars((ast::DeclVar*)$1, curr_loc())); }
 | decl-var ',' decl-vars
 	{
-		$$ = (void*) (new ast::DeclVars);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($3));
-
-		// delete remaining node (which has no children)
-		delete ((ast::DeclVars*)$3);
+		ast::DeclVars* decl = ((ast::DeclVars*)$3);
+		decl->add_variable((ast::DeclVar*)$1);
+		$$ = (void*) decl;
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
-		$$ = (void*) (new ast::DeclVars);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($4));
-
-		// delete remaining node (which has no children)
-		delete ((ast::DeclVars*)$4);
+		ast::DeclVars* decl = ((ast::DeclVars*)$4);
+		decl->add_variable((ast::DeclVar*)$1);
+		$$ = (void*) decl;
 	}
 ;
 
 decl-var:
   IDENTIFIER
 	{
-		$$ = (void*) (new ast::DeclVar);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
+		$$ = (void*) (new ast::DeclVar(new ast::Identifier(*$1, curr_loc())));
 		
 		// delete the memory allocated for the string
 		delete $1;
 	}
 | IDENTIFIER '=' expression
 	{
-		$$ = (void*) (new ast::DeclVar);
-
-		// as the expression rule does not return an expression but the actual expression tree,
-		// we create the expression node here
 		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$3, curr_loc());
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-		((ast::ASTNode*)$$)->add_child(expr);
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		$$ = (void*) (new ast::DeclVar(iden, expr, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -321,15 +277,11 @@ decl-var:
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
 	{
-		$$ = (void*) (new ast::DeclFunc);
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		ast::ParamList* params = ((ast::ParamList*)$2);
+		ast::Scope* scope = ((ast::Scope*)$4);
+		$$ = (void*) (new ast::DeclFunc(iden, params, scope, curr_loc()));
 
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-
-		if($2 != nullptr) // if no parameters
-			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
-		
 		// delete the memory allocated for the string
 		delete $1;
 	}
@@ -343,16 +295,13 @@ param-list:
 	}
 | param param-list
 	{
-		$$ = (void*) (new ast::ParamList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-
-		if($2 != nullptr)
+		if(!$2)
+			$$ = (void*) (new ast::ParamList((ast::Param*)$1, curr_loc()));
+		else
 		{
-			((ast::ASTNode*)$$)->add_children(children($2));
-			
-			// delete remaining node (which has no children)
-			delete ((ast::ParamList*)$2);
+			ast::ParamList* params = ((ast::ParamList*)$1);
+			params->add_param((ast::Param*)$1);
+			$$ = (void*) params;
 		}
 	}
 ;
@@ -360,23 +309,17 @@ param-list:
 param:
   IDENTIFIER
 	{
-		$$ = (void*) (new ast::Param);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		$$ = (void*) (new ast::Param(iden, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
 	}
 | IDENTIFIER '<' IDENTIFIER '>'
 	{
-		
-
-		$$ = (void*) (new ast::Param);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-
 		// get the type 
-		ast::ASTNode* type = get_type_node(*$3);
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		ast::Type* type = get_type_node(*$3);
 
 		if(!type)
 		{
@@ -387,17 +330,16 @@ param:
 			std::stringstream ss;
 			ss << "Invalid type string : given '" << *$3 << "', actual type expected";
 
-
-			//add_error(line.str(), ss.str());
 			yyerror(ss.str().c_str());
 
 			YYERROR; // signal a parsing error
 			yyerrok; // mark the error as ok, to continue parsing
 
-			((ast::ASTNode*)$$)->add_child(new ast::ErrorNode);
+			delete iden;
+			$$ = (void*) (new ast::ErrorNode);
 		}
 		else
-			((ast::ASTNode*)$$)->add_child(type);
+			$$ = (void*) (new ast::Param(iden, type, curr_loc()));
 
 
 		// delete the memory allocated for the string
@@ -413,12 +355,9 @@ param:
 func-call:
   IDENTIFIER arg-list
 	{
-		$$ = (void*) (new ast::FuncCall);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-
-		if($2 != nullptr)
-			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -430,20 +369,15 @@ arg-list:
 	{
 		$$ = nullptr;
 	}
-
-
 | argument arg-list
 	{
-		$$ = (void*) (new ast::ArgList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-
-		if($2 != nullptr)
+		if(!$2)
+			$$ = (void*) (new ast::ArgList(((ast::Argument*)$1),curr_loc()));
+		else
 		{
-			((ast::ASTNode*)$$)->add_children(children($2));
-			
-			// delete remaining node (which has no children)
-			delete ((ast::ArgList*)$2);
+			ast::ArgList* arglist = ((ast::ArgList*)$2);
+			arglist->add_argument(((ast::Argument*)$1));;
+			$$ = (void*) arglist;
 		}
 	}
 ;
@@ -451,52 +385,24 @@ arg-list:
 argument:
   IDENTIFIER
 	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		$$ = (void*) (new ast::Argument(iden, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
 	}
-| constant
-	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| datastructure
-	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+| constant { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
+| datastructure { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
 | '(' expression ')'
 	{
-		$$ = (void*) (new ast::Argument);
 		// as the expression rule does not return an expression but the actual expression tree,
 		// we create the expression node here
 		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
-
-		((ast::ASTNode*)$$)->add_child(expr);
+		$$ = (void*) (new ast::Argument(expr, curr_loc()));
 	}
-| soy-expression
-	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| datastructure-access
-	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| braced-func-call
-	{
-		$$ = (void*) (new ast::Argument);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+| soy-expression       { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
+| datastructure-access { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
+| braced-func-call     { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
 | error
 	{
 		$$ = (void*) (new ast::ErrorNode);
@@ -517,58 +423,50 @@ braced-func-call:
  * is only allowed if the initial function call is braced (braced-func-call).
  */
 func-call-eol:
-  IDENTIFIER arg-list-eol
+ /* IDENTIFIER
 	{
-		$$ = (void*) (new ast::FuncCall);
-
-		((ast::ASTNode*)$$)->add_child(new ast::Identifier(*$1, curr_loc()));
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		$$ = (void*) (new ast::FuncCall(iden, nullptr, curr_loc()));
 
 		// delete the memory allocated for the string
 		delete $1;
 	}
+| */IDENTIFIER arg-list-eol
+	{
+		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
+
+		// delete the memory allocated for the string
+		delete $1;
+	}
+/*| soy-expression
+	{
+		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$1), nullptr));
+	}*/
 | soy-expression arg-list-eol
 	{
-		$$ = (void*) (new ast::FuncCall);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| error arg-list-eol
-	{
-		$$ = (void*) (new ast::ErrorNode);
-		//cerr << " Details : either an identifier or a soy anonymous function was expected" << endl;
-		delete ((ast::ASTNode*)$2);
-		yyerrok;
+		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$1), arglist));
 	}
 ;
 
 arg-list-eol:
-  argument
-	{
-		$$ = (void*) (new ast::ArgList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  argument 
+  	{ 
+  		$$ = (void*) (new ast::ArgList(((ast::Argument*)$1),curr_loc())); 
+  	}
 | argument arg-list-eol
 	{
-		$$ = (void*) (new ast::ArgList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($2));
-
-		// delete remaining node (which has no children)
-		delete ((ast::ArgList*)$2);
+		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		arglist->add_argument(((ast::Argument*)$1));;
+		$$ = (void*) arglist;
 	}
 | argument DELIM_EOL arg-list-eol
 	{
-		$$ = (void*) (new ast::ArgList);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_children(children($3));
-
-		// delete remaining node (which has no children)
-		delete ((ast::ArgList*)$3);
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
+		arglist->add_argument(((ast::Argument*)$1));;
+		$$ = (void*) arglist;
 	}
 ;
 
@@ -580,12 +478,9 @@ soy-expression:
 soy-func: 
   KEYWORD_SOY param-list ':' scope
 	{
-		$$ = (void*) (new ast::SoyFunc);
-
-		if((ast::ASTNode*)$2 != nullptr)
-			((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$4);
+		ast::ParamList* params = ((ast::ParamList*)$2);
+		ast::Scope* scope = ((ast::Scope*)$4);
+		$$ = (void*) (new ast::SoyFunc(params, scope, curr_loc()));
 	}
 ;
 
@@ -723,35 +618,40 @@ expression-list:
 constant:
   CONST_INT
     {
-		$$ = (void*) (new ast::NT_Constant(new ast::Integer(*$1, curr_loc()), curr_loc()));
+    	ast::Integer* i = new ast::Integer(*$1, curr_loc());
+		$$ = (void*) (new ast::Constant(i, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
-		$$ = (void*) (new ast::NT_Constant(new ast::Float(*$1, curr_loc()), curr_loc()));
+    	ast::Float* f = new ast::Float(*$1, curr_loc());
+		$$ = (void*) (new ast::Constant(f, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
-		$$ = (void*) (new ast::NT_Constant(new ast::String(*$1, curr_loc()), curr_loc()));
+    	ast::String* s = new ast::String(*$1, curr_loc());
+		$$ = (void*) (new ast::Constant(s, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
-		$$ = (void*) (new ast::NT_Constant(new ast::Bool(*$1, curr_loc()), curr_loc()));
+    	ast::Bool* b = new ast::Bool(*$1, curr_loc());
+		$$ = (void*) (new ast::Constant(b, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
-		$$ = (void*) (new ast::NT_Constant(new ast::Character(*$1, curr_loc()), curr_loc()));
+    	ast::Character* c = new ast::Character(*$1, curr_loc());
+		$$ = (void*) (new ast::Constant(c, curr_loc()));
 
 		// delete allocated string
 		delete $1;
@@ -864,11 +764,13 @@ menu:
 menu-body:
   menu-def DELIM_EOL
 	{
+		std::cout << "fuck1" <<  std::endl;
 		ast::MenuDef* menu_def = ((ast::MenuDef*)$1);
 		$$ = (void*) (new ast::MenuBody(menu_def, curr_loc()));
 	}
 | menu-case DELIM_EOL
 	{
+		std::cout << "fuck2" <<  std::endl;
 		ast::MenuCase* menu_case = ((ast::MenuCase*)$1);
 		$$ = (void*) (new ast::MenuBody(menu_case, curr_loc()));
 	}
@@ -1053,7 +955,7 @@ static std::string curr_line_row()
 	return ss.str();
 }
 
-static ast::ASTNode* get_type_node(const std::string& type_string)
+static ast::Type* get_type_node(const std::string& type_string)
 {
 	if(!type_string.compare("int"))
 		return new ast::Type_Int(curr_loc());

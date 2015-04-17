@@ -17,7 +17,7 @@ PATH_OBJS		 = obj/
 # objects #
 OBJS_NODES    		= $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
 OBJS_TOKENS   		= $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o  $(PATH_OBJS)Keyword.o
-OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)NT_Constant.o $(PATH_OBJS)NT_Functioncall.o
+OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)Constant.o $(PATH_OBJS)NT_Functioncall.o
 OBJS_NODE_ALL 		= $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
 OBJS_AST 	  		= $(PATH_OBJS)AbstractSyntaxTree.o
 OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o
@@ -57,11 +57,11 @@ DEP_EXCEP				 = $(PATH_EXCEP)Exceptions.hpp
 DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp
 # compilation and linking flags #
 CC = clang++
-DEBUG =
+DEBUG = -g
 CCFLAGS = -c --std=c++11 $(DEBUG) 
 LDFLAGS = 
 EXE = sushipp
-BISON_FLAGS = -d -b $(PATH_PARSER)$(EXE)
+BISON_FLAGS = -d -b $(PATH_PARSER)$(EXE) -v
 TARGETS = sushipp
 
 ###########################################################
@@ -125,7 +125,7 @@ $(PATH_OBJS)NT_Expression.o: $(PATH_NONTERMINAL)NT_Expression.cpp $(DEP_ASTNODE_
 $(PATH_OBJS)NT_Declaration.o: $(PATH_NONTERMINAL)NT_Declaration.cpp $(DEP_ASTNODE_DEEP_VISITOR) $(PATH_SYMB)SymbolInfo.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)NT_Constant.o: $(PATH_NONTERMINAL)NT_Constant.cpp $(DEP_ASTNODE_DEEP_VISITOR)
+$(PATH_OBJS)Constant.o: $(PATH_NONTERMINAL)Constant.cpp $(DEP_ASTNODE_DEEP_VISITOR)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)NT_Functioncall.o: $(PATH_NONTERMINAL)NT_FunctionCall.cpp $(DEP_ASTNODE_DEEP_VISITOR)
@@ -203,4 +203,5 @@ clean:
 clean-hard: clean
 	rm -f $(PATH_SCANNER)sushipp.yy.c 
 	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h 
+	touch $(PATH_PARSER)spp_parser.y $(PATH_SCANNER)spp_scanner.lex
 # DO NOT DELETE
