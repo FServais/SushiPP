@@ -86,3 +86,15 @@ TypeSymbolResolutionException::TypeSymbolResolutionException(const std::string& 
 {
 
 }
+
+BadParameterNumberException::BadParameterNumberException()
+	: logic_error("The number of expected number of parameters does not match the number of given parameters.")
+{
+
+}
+
+BadParameterNumberException::BadParameterNumberException(const std::string& details)
+	: logic_error("The number of expected number of parameters does not match the number of given parameters : " + details)
+{
+
+}

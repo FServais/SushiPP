@@ -55,6 +55,14 @@ namespace except
 		// param : some more details about the error
 		explicit TypeSymbolResolutionException(const std::string&);
 	};
+
+	class BadParameterNumberException : public std::logic_error
+	{
+	public:
+		BadParameterNumberException();
+		// param : some more details about the error
+		explicit BadParameterNumberException(const std::string&);
+	};
 }
 
 #endif // EXCEPTIONS_HPP_DEFINED

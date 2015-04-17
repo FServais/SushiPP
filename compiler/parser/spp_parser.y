@@ -37,6 +37,8 @@
 	static std::string curr_line_row();
 	/** Return a pointer to the type node for the given string*/
 	static ast::ASTNode* get_type_node(const std::string&);
+	/** Return the NodeLocation object containing the current location informations */
+	static ast::NodeLocation curr_loc();
 
 	// pointer to 
 	extern compiler::SppCompiler* g_compiler;
@@ -585,282 +587,61 @@ expression:
 | '(' expression ')' { $$ = $2; }
 | IDENTIFIER
 	{
-		$$ = new ast::Identifier(*$1);
+		$$ = new ast::Identifier(*$1, curr_loc());
 
 		// delete the memory allocated for the string
 		delete $1;
 	}
-| datastructure { $$ = $1; }
-| soy-expression { $$ = $1; }
-| datastructure-access { $$ = $1; }
-| incr-expression { $$ = $1; }
-| assignment { $$ = $1; }
-| braced-func-call { $$ = $1; }
-| expression '+' expression
-	{
-		$$ = (void*) (new ast::Op_Plus);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '-' expression
-	{
-		$$ = (void*) (new ast::Op_Minus);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '*' expression
-	{
-		$$ = (void*) (new ast::Op_Mult);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '/' expression
-	{
-		$$ = (void*) (new ast::Op_Div);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '%' expression
-	{
-		$$ = (void*) (new ast::Op_Modulo);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_ARITH_EXPO expression
-	{
-		$$ = (void*) (new ast::Op_Exponentiation);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| '-' expression %prec UNARY_MINUS
-	{
-		$$ = (void*) (new ast::Op_UnaryMinus);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| expression '|' expression
-	{
-		$$ = (void*) (new ast::Op_BitwiseOr);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '&' expression
-	{
-		$$ = (void*) (new ast::Op_BitwiseAnd);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '^' expression
-	{
-		$$ = (void*) (new ast::Op_BitwiseXor);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| '~' expression
-	{
-		$$ = (void*) (new ast::Op_BitwiseNot);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| expression OP_LOGIC_OR expression
-	{
-		$$ = (void*) (new ast::Op_LogicalOr);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_LOGIC_AND expression
-	{
-		$$ = (void*) (new ast::Op_LogicalAnd);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| '!' expression
-	{
-		$$ = (void*) (new ast::Op_LogicalNot);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| expression '<' expression
-	{
-		$$ = (void*) (new ast::Op_CompLessThan);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '>' expression
-	{
-		$$ = (void*) (new ast::Op_CompGreaterThan);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_COMP_LEQ expression
-	{
-		$$ = (void*) (new ast::Op_CompLessEqual);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_COMP_GEQ expression
-	{
-		$$ = (void*) (new ast::Op_CompGreaterEqual);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_COMP_EQ  expression
-	{
-		$$ = (void*) (new ast::Op_CompEqual);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_COMP_NEQ expression
-	{
-		$$ = (void*) (new ast::Op_CompNotEqual);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_LSHIFT expression
-	{
-		$$ = (void*) (new ast::Op_RightShift);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression OP_RSHIFT expression
-	{
-		$$ = (void*) (new ast::Op_LeftShift);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| expression '.' expression
-	{
-		$$ = (void*) (new ast::Op_StringConcat);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
+| datastructure                       { $$ = $1; }
+| soy-expression                      { $$ = $1; }
+| datastructure-access                { $$ = $1; }
+| incr-expression                     { $$ = $1; }
+| assignment                          { $$ = $1; }
+| braced-func-call                    { $$ = $1; }
+| expression '+' expression           { $$ = (void*) (new ast::Op_Plus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '-' expression           { $$ = (void*) (new ast::Op_Minus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '*' expression           { $$ = (void*) (new ast::Op_Mult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '/' expression           { $$ = (void*) (new ast::Op_Div(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '%' expression           { $$ = (void*) (new ast::Op_Modulo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_ARITH_EXPO expression { $$ = (void*) (new ast::Op_Exponentiation(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| '-' expression %prec UNARY_MINUS    { $$ = (void*) (new ast::Op_UnaryMinus(((ast::ASTNode*)$2), curr_loc())); }
+| expression '|' expression           { $$ = (void*) (new ast::Op_BitwiseOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '&' expression           { $$ = (void*) (new ast::Op_BitwiseAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '^' expression           { $$ = (void*) (new ast::Op_BitwiseXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| '~' expression                      { $$ = (void*) (new ast::Op_BitwiseNot(((ast::ASTNode*)$2), curr_loc())); }
+| expression OP_LOGIC_OR expression   { $$ = (void*) (new ast::Op_LogicalOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_LOGIC_AND expression  { $$ = (void*) (new ast::Op_LogicalAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| '!' expression                      { $$ = (void*) (new ast::Op_LogicalNot(((ast::ASTNode*)$2), curr_loc())); }
+| expression '<' expression           { $$ = (void*) (new ast::Op_CompLessThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '>' expression           { $$ = (void*) (new ast::Op_CompGreaterThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_COMP_LEQ expression   { $$ = (void*) (new ast::Op_CompLessEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_COMP_GEQ expression   { $$ = (void*) (new ast::Op_CompGreaterEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_COMP_EQ  expression   { $$ = (void*) (new ast::Op_CompEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_COMP_NEQ expression   { $$ = (void*) (new ast::Op_CompNotEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_LSHIFT expression     { $$ = (void*) (new ast::Op_RightShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression OP_RSHIFT expression     { $$ = (void*) (new ast::Op_LeftShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '.' expression           { $$ = (void*) (new ast::Op_StringConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
 ;
 
 incr-expression:
-  OP_ARITH_INCR assignable-expression %prec PREFIX_INCR
-	{
-		$$ = (void*) (new ast::Op_PrefixIncrement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| OP_ARITH_DECR assignable-expression %prec PREFIX_DECR
-	{
-		$$ = (void*) (new ast::Op_PrefixDecrement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
-	}
-| assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR
-	{
-		$$ = (void*) (new ast::Op_PostfixIncrement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR
-	{
-		$$ = (void*) (new ast::Op_PostfixDecrement);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  OP_ARITH_INCR assignable-expression %prec PREFIX_INCR { $$ = (void*) (new ast::Op_PrefixIncrement(((ast::ASTNode*)$2), curr_loc())); }
+| OP_ARITH_DECR assignable-expression %prec PREFIX_DECR { $$ = (void*) (new ast::Op_PrefixDecrement(((ast::ASTNode*)$2), curr_loc())); }
+| assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR { $$ = (void*) (new ast::Op_PostfixIncrement(((ast::ASTNode*)$1), curr_loc())); }
+| assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR { $$ = (void*) (new ast::Op_PostfixDecrement(((ast::ASTNode*)$1), curr_loc())); }
 ;
 
 assignment:
-  assignable-expression '=' expression
-	{
-		$$ = (void*) (new ast::Op_Assignment);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_PLUS expression
-	{
-		$$ = (void*) (new ast::Op_AssignPlus);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_MINUS expression
-	{
-		$$ = (void*) (new ast::Op_AssignMinus);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_MULT expression
-	{
-		$$ = (void*) (new ast::Op_AssignMult);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_DIV expression
-	{
-		$$ = (void*) (new ast::Op_AssignDiv);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_EXPO expression
-	{
-		$$ = (void*) (new ast::Op_AssignExpo);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_MOD expression
-	{
-		$$ = (void*) (new ast::Op_AssignMod);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_AND expression
-	{
-		$$ = (void*) (new ast::Op_AssignAnd);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_OR expression
-	{
-		$$ = (void*) (new ast::Op_AssignOr);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_XOR expression
-	{
-		$$ = (void*) (new ast::Op_AssignXor);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
-| assignable-expression OP_ASSIGN_CONCAT expression
-	{
-		$$ = (void*) (new ast::Op_AssignConcat);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$3);
-	}
+  assignable-expression '=' expression              { $$ = (void*) (new ast::Op_Assignment(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_PLUS expression   { $$ = (void*) (new ast::Op_AssignPlus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_MINUS expression  { $$ = (void*) (new ast::Op_AssignMinus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_MULT expression   { $$ = (void*) (new ast::Op_AssignMult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_DIV expression    { $$ = (void*) (new ast::Op_AssignDiv(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_EXPO expression   { $$ = (void*) (new ast::Op_AssignExpo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_MOD expression    { $$ = (void*) (new ast::Op_AssignMod(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_AND expression    { $$ = (void*) (new ast::Op_AssignAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_OR expression     { $$ = (void*) (new ast::Op_AssignOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_XOR expression    { $$ = (void*) (new ast::Op_AssignXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| assignable-expression OP_ASSIGN_CONCAT expression { $$ = (void*) (new ast::Op_AssignConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
 ;
 
 /* A modifying expression is an expression that could bring about
@@ -1457,4 +1238,10 @@ static ast::ASTNode* get_type_node(const std::string& type_string)
 	else if(!type_string.compare("array"))
 		return new ast::Type_Array;
 	else return nullptr;
+}
+
+ast::NodeLocation curr_loc()
+{
+	ast::NodeLocation loc(yylloc.first_line, yylloc.last_line, yylloc.first_column, yylloc.last_column);
+	return loc;
 }
