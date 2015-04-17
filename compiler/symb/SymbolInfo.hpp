@@ -6,7 +6,7 @@
 
 namespace symb
 {
-	enum Type { INT, FLOAT, STRING, BOOL, ARRAY, LIST, TUPLE, UNDEFINED };
+	enum Type { INT, FLOAT, CHAR, STRING, BOOL, ARRAY, LIST, TUPLE, UNDEFINED };
 	
 	class Parameter
 	{

@@ -6,6 +6,7 @@
 #include "ast/nodes/ASTNode.hpp"
 #include "symb/SymbolTable.hpp"
 #include "symb/SymbolInfo.hpp"
+#include "errors/ErrorHandler.hpp"
 
 namespace compiler
 {
@@ -27,11 +28,18 @@ namespace compiler
 		 */
 		void set_syntax_tree_root(ast::ASTNode*);
 
+		/**
+		 * @brief Get the error handler.
+		 * @return Error handler.
+		 */
+		errors::ErrorHandler& get_error_handler();
+
 	private:
 		settings::CompilerSettings config;
 		ast::AbstractSyntaxTree syntax_tree;
 		symb::SymbolTable<symb::FunctionInfo> function_table;
 		symb::SymbolTable<symb::VariableInfo> variable_table;
+		errors::ErrorHandler error_handler;
 
 		/** 
 		 * @brief Initialize the compiler for execution

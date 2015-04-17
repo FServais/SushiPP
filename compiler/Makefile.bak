@@ -153,7 +153,7 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Compiler #
-$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # CompilerSettings #
@@ -204,3 +204,4 @@ clean-hard: clean
 	rm -f $(PATH_SCANNER)sushipp.yy.c 
 	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h 
 # DO NOT DELETE
+

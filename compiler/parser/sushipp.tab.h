@@ -66,46 +66,43 @@ extern int yydebug;
     TYPE_STRING = 276,
     TYPE_ARRAY = 277,
     TYPE_LIST = 278,
-    TYPE_TUPLE = 279,
-    OP_ARITH_INCR = 280,
-    OP_ARITH_DECR = 281,
-    OP_ARITH_EXPO = 282,
-    OP_LOGIC_OR = 283,
-    OP_LOGIC_AND = 284,
-    OP_COMP_LEQ = 285,
-    OP_COMP_GEQ = 286,
-    OP_COMP_EQ = 287,
-    OP_COMP_NEQ = 288,
-    OP_RSHIFT = 289,
-    OP_LSHIFT = 290,
-    OP_ASSIGN_PLUS = 291,
-    OP_ASSIGN_MINUS = 292,
-    OP_ASSIGN_MULT = 293,
-    OP_ASSIGN_DIV = 294,
-    OP_ASSIGN_EXPO = 295,
-    OP_ASSIGN_MOD = 296,
-    OP_ASSIGN_OR = 297,
-    OP_ASSIGN_AND = 298,
-    OP_ASSIGN_XOR = 299,
-    OP_ASSIGN_CONCAT = 300,
-    UNARY_MINUS = 301,
-    PREFIX_INCR = 302,
-    PREFIX_DECR = 303,
-    SUFFIX_INCR = 304,
-    SUFFIX_DECR = 305,
-    DELIM_EOL = 306,
-    DELIM_EOS = 307,
-    DELIM_TUPLE_BEG = 308,
-    DELIM_TUPLE_END = 309,
-    DELIM_ARRAY_BEG = 310,
-    DELIM_ARRAY_END = 311,
-    DELIM_ARROW = 312,
-    CONST_STRING = 313,
-    CONST_INT = 314,
-    CONST_FLOAT = 315,
-    CONST_BOOL = 316,
-    CONST_CHAR = 317,
-    IDENTIFIER = 318
+    OP_ARITH_INCR = 279,
+    OP_ARITH_DECR = 280,
+    OP_ARITH_EXPO = 281,
+    OP_LOGIC_OR = 282,
+    OP_LOGIC_AND = 283,
+    OP_COMP_LEQ = 284,
+    OP_COMP_GEQ = 285,
+    OP_COMP_EQ = 286,
+    OP_COMP_NEQ = 287,
+    OP_RSHIFT = 288,
+    OP_LSHIFT = 289,
+    OP_ASSIGN_PLUS = 290,
+    OP_ASSIGN_MINUS = 291,
+    OP_ASSIGN_MULT = 292,
+    OP_ASSIGN_DIV = 293,
+    OP_ASSIGN_EXPO = 294,
+    OP_ASSIGN_MOD = 295,
+    OP_ASSIGN_OR = 296,
+    OP_ASSIGN_AND = 297,
+    OP_ASSIGN_XOR = 298,
+    OP_ASSIGN_CONCAT = 299,
+    UNARY_MINUS = 300,
+    PREFIX_INCR = 301,
+    PREFIX_DECR = 302,
+    SUFFIX_INCR = 303,
+    SUFFIX_DECR = 304,
+    DELIM_EOL = 305,
+    DELIM_EOS = 306,
+    DELIM_ARRAY_BEG = 307,
+    DELIM_ARRAY_END = 308,
+    DELIM_ARROW = 309,
+    CONST_STRING = 310,
+    CONST_INT = 311,
+    CONST_FLOAT = 312,
+    CONST_BOOL = 313,
+    CONST_CHAR = 314,
+    IDENTIFIER = 315
   };
 #endif
 
@@ -114,12 +111,12 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 43 "parser/spp_parser.y" /* yacc.c:1909  */
+#line 60 "parser/spp_parser.y" /* yacc.c:1915  */
 
 	std::string* vstring;
 	void* vnode;
 
-#line 123 "parser/sushipp.tab.h" /* yacc.c:1909  */
+#line 120 "parser/sushipp.tab.h" /* yacc.c:1915  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
