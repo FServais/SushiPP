@@ -65,7 +65,8 @@ namespace ast
 		// add a child(ren) to the node
 		void add_child(ASTNode*);
 		void add_children(const std::vector<ASTNode*>&);
-
+		void add_child_first(ASTNode*); // add a child at the first position
+		void add_child_at(size_t, ASTNode*); // insert the child at the given position
 		// delete a child at the given index
 		// the ownership of the memory allocated for the child node and its descendents
 		// is tranferred to the calling context
@@ -85,19 +86,12 @@ namespace ast
 		// function for accepting a visitor
 		virtual void accept(ASTVisitor&);
 
-		// return the depth of the tree
-		int depth() const;
-
 	protected:
 		ASTNode* father; /* Points to the current node father, nullptr if there is none */
 		std::vector<ASTNode*> children; /* Children of the node, empty for a leaf */
 		NodeLocation loc; /* Node location */
 		std::string node_name_; /* Node name */
-		int depth_;
-
-		// set the depth of the node and its child
-		void set_depth(int);
-
+		
 		// free recursively  the memory associated to the current node (memory of the children is freed too)
 		void free_node();
 
