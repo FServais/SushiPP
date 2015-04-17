@@ -748,35 +748,35 @@ constant:
   CONST_INT
     {
 		$$ = (void*) (new ast::NT_Constant(new ast::Integer(*$1, curr_loc()), curr_loc()));
-		
+
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
 		$$ = (void*) (new ast::NT_Constant(new ast::Float(*$1, curr_loc()), curr_loc()));
-		
+
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
 		$$ = (void*) (new ast::NT_Constant(new ast::String(*$1, curr_loc()), curr_loc()));
-		
+
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
 		$$ = (void*) (new ast::NT_Constant(new ast::Bool(*$1, curr_loc()), curr_loc()));
-		
+
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
 		$$ = (void*) (new ast::NT_Constant(new ast::Character(*$1, curr_loc()), curr_loc()));
-		
+
 		// delete allocated string
 		delete $1;
 	}
@@ -786,43 +786,30 @@ constant:
 /* Datastructures */
 /******************/
 datastructure:
-  array
-    {
-		$$ = (void*) (new ast::Datastructure);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| list
-    {
-		$$ = (void*) (new ast::Datastructure);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  array { $$ = $1; }
+| list { $$ = $1; }
 | make-sequence { $$ = $1; }
 ;
 
 array:
   DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
     {
-		$$ = (void*) (new ast::Array);
+		$$ = (void*) (new ast::Array(curr_loc()));
 	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
     {
-		$$ = (void*) (new ast::Array);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		$$ = (void*) (new ast::Array((ast::ASTNode*)$2, curr_loc()));
 	}
 ;
 
 list:
   '{' '}' /* empty list */
     {
-		$$ = (void*) (new ast::List);
+		$$ = (void*) (new ast::List(curr_loc()));
 	}
 | '{' expression-list '}'
     {
-		$$ = (void*) (new ast::List);
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$2);
+		$$ = (void*) (new ast::List((ast::ASTNode*)$2, curr_loc()));
 	}
 ;
 
@@ -837,8 +824,7 @@ make-sequence:
 make-sequence-list: 
   '{' seq-expression '}'
 	{
-		$$ = (void*) (new ast::MakeSequenceList);
-		((ast::ASTNode*)$$)->add_children(children($2));
+		$$ = (void*) (new ast::MakeSequenceList(((ast::ASTNode*)$2)->get_begin()), ((ast::ASTNode*)$2)->get_end()), curr_loc());
 		delete ((ast::ASTNode*)$2);
 	}
 ;
@@ -846,8 +832,7 @@ make-sequence-list:
 make-sequence-array: 
   DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
 	{
-		$$ = (void*) (new ast::MakeSequenceArray);
-		((ast::ASTNode*)$$)->add_children(children($2));
+		$$ = (void*) (new ast::MakeSequenceArray(((ast::ASTNode*)$2)->get_begin()), ((ast::ASTNode*)$2)->get_end()), curr_loc());
 		delete ((ast::ASTNode*)$2);
 	}
 ;
@@ -855,8 +840,6 @@ make-sequence-array:
 seq-expression: 
   expression KEYWORD_TO expression
 	{
-		$$ = (void*) (new ast::SeqExpression);
-
 		ast::Expression* expr1 = new ast::Expression, *expr2;
 
 		expr2 = new ast::Expression;
@@ -864,8 +847,7 @@ seq-expression:
 		expr1->add_child((ast::ASTNode*)$1);
 		expr2->add_child((ast::ASTNode*)$3);
 
-		((ast::ASTNode*)$$)->add_child(expr1);
-		((ast::ASTNode*)$$)->add_child(expr2);
+		$$ = (void*) (new ast::SeqExpression(expr1, expr2, curr_loc()));
 	}
 ;
 
