@@ -21,7 +21,7 @@ NT_Datastructure::NT_Datastructure(const std::string& node_name, const NodeLocat
 void NT_Datastructure::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
+
 }
 
 /** (NT_)Datastructure derived classes **/
@@ -42,7 +42,6 @@ Datastructure::Datastructure(const NodeLocation& node_loc) : NT_Datastructure("D
 void Datastructure::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Array */
@@ -62,7 +61,7 @@ Array::Array(const NodeLocation& node_loc) : NT_Datastructure("Array", node_loc)
 void Array::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
+
 }
 
 /* List */
@@ -82,27 +81,6 @@ List::List(const NodeLocation& node_loc) : NT_Datastructure("List", node_loc)
 void List::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
-}
-
-/* MakeSequence */
-MakeSequence::MakeSequence() : NT_Datastructure("Make sequence") { }
-
-MakeSequence::MakeSequence(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Make sequence", first_line, last_line, first_column, last_column)
-{
-
-}
-
-MakeSequence::MakeSequence(const NodeLocation& node_loc) : NT_Datastructure("Make sequence", node_loc)
-{
-
-}
-
-void MakeSequence::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	 
 }
 
 /* MakeSequenceList */
@@ -122,7 +100,6 @@ MakeSequenceList::MakeSequenceList(const NodeLocation& node_loc) : NT_Datastruct
 void MakeSequenceList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* MakeSequenceArray */
@@ -142,7 +119,6 @@ MakeSequenceArray::MakeSequenceArray(const NodeLocation& node_loc) : NT_Datastru
 void MakeSequenceArray::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* SeqExpression */
@@ -162,7 +138,6 @@ SeqExpression::SeqExpression(const NodeLocation& node_loc) : NT_Datastructure("S
 void SeqExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 

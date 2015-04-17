@@ -555,16 +555,6 @@ void PrintASTVisitor::visit( ast::List& token )
 	depth_tree--;
 }
 
-
-void PrintASTVisitor::visit( ast::MakeSequence& token )
-{
-	print_single(token.node_name(), token.depth());
-	depth_tree++;
-	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
-		(*it)->accept(*this);
-	depth_tree--;
-}
-
 void PrintASTVisitor::visit( ast::MakeSequenceList& token )
 {
 	print_single(token.node_name(), token.depth());
@@ -801,15 +791,6 @@ void PrintASTVisitor::visit( ast::Menu& token )
 }
 
 void PrintASTVisitor::visit( ast::MenuDef& token )
-{
-	print_single(token.node_name(), token.depth());
-	depth_tree++;
-	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
-		(*it)->accept(*this);
-	depth_tree--;
-}
-
-void PrintASTVisitor::visit( ast::Loop& token )
 {
 	print_single(token.node_name(), token.depth());
 	depth_tree++;

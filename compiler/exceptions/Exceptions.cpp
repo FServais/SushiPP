@@ -86,3 +86,27 @@ TypeSymbolResolutionException::TypeSymbolResolutionException(const std::string& 
 {
 
 }
+
+BadParameterNumberException::BadParameterNumberException()
+	: logic_error("The number of expected number of parameters does not match the number of given parameters.")
+{
+
+}
+
+BadParameterNumberException::BadParameterNumberException(const std::string& details)
+	: logic_error("The number of expected number of parameters does not match the number of given parameters : " + details)
+{
+
+}
+
+NoSuchChildException::NoSuchChildException()
+	: logic_error("The node has no such child.")
+{
+
+}
+
+NoSuchChildException::NoSuchChildException(const std::string& details)
+	: logic_error("The node has no such child : " + details)
+{
+
+}

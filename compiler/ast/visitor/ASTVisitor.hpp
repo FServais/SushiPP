@@ -103,7 +103,6 @@ public:
 	virtual void visit( ast::Datastructure& ) = 0;
 	virtual void visit( ast::Array& ) = 0;
 	virtual void visit( ast::List& ) = 0;
-	virtual void visit( ast::MakeSequence& ) = 0;
 	virtual void visit( ast::MakeSequenceList& ) = 0;
 	virtual void visit( ast::MakeSequenceArray& ) = 0;
 	virtual void visit( ast::SeqExpression& ) = 0;
@@ -153,7 +152,6 @@ public:
 	virtual void visit( ast::Return& ) = 0;
 	virtual void visit( ast::Menu& ) = 0;
 	virtual void visit( ast::MenuDef& ) = 0;
-	virtual void visit( ast::Loop& ) = 0;
 	virtual void visit( ast::Roll& ) = 0;
 	virtual void visit( ast::Foreach& ) = 0;
 	virtual void visit( ast::For& ) = 0;

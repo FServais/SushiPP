@@ -24,5 +24,4 @@ NonTerminal::NonTerminal(const std::string& node_name, const NodeLocation& node_
 void NonTerminal::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }

@@ -21,7 +21,6 @@ NT_FunctionCall::NT_FunctionCall(const std::string& node_name, const NodeLocatio
 void NT_FunctionCall::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -44,7 +43,6 @@ FuncCall::FuncCall(const NodeLocation& node_loc) : NT_FunctionCall("Function cal
 void FuncCall::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -65,7 +63,6 @@ ArgList::ArgList(const NodeLocation& node_loc) : NT_FunctionCall("Argument list"
 void ArgList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -87,7 +84,6 @@ Argument::Argument(const NodeLocation& node_loc) : NT_FunctionCall("Argument", n
 void Argument::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 

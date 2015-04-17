@@ -23,7 +23,7 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 void NT_Declaration::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
+
 }
 
 
@@ -45,7 +45,6 @@ DeclFunc::DeclFunc(const NodeLocation& node_loc) : NT_Declaration("Function decl
 void DeclFunc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* DeclVars */
@@ -65,7 +64,6 @@ DeclVars::DeclVars(const NodeLocation& node_loc) : NT_Declaration("Variables dec
 void DeclVars::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -86,7 +84,6 @@ DeclVar::DeclVar(const NodeLocation& node_loc) : NT_Declaration("Variable declar
 void DeclVar::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -107,7 +104,6 @@ Param::Param(const NodeLocation& node_loc) : NT_Declaration("Parameter", node_lo
 void Param::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* ParamList */
@@ -127,7 +123,6 @@ ParamList::ParamList(const NodeLocation& node_loc) : NT_Declaration("Parameter l
 void ParamList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 const std::string& Param::get_param_name() const

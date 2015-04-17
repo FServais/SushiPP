@@ -2,6 +2,7 @@
 #define NT_STATEMENT_HPP_DEFINED
 
 #include "NonTerminal.hpp"
+#include "NT_Program.hpp";
 
 namespace ast
 {
@@ -26,9 +27,12 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Statement();
-		Statement(int,int,int,int);
-		Statement(const NodeLocation&);
+		Statement(ASTNode*);
+		Statement(ASTNode*,int,int,int,int);
+		Statement(ASTNode*,const NodeLocation&);
+
+		// return the child node
+		ASTNode& get_statement();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -37,32 +41,16 @@ namespace ast
 	{
 	public:
 		// Constructors
+		Return(ASTNode*);
+		Return(ASTNode*,int,int,int,int);
+		Return(ASTNode*,const NodeLocation&);
 		Return();
 		Return(int,int,int,int);
 		Return(const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class Menu : public NT_Statement
-	{
-	public:
-		// Constructors
-		Menu();
-		Menu(int,int,int,int);
-		Menu(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class MenuBody : public NT_Statement
-	{
-	public:
-		// Constructors
-		MenuBody();
-		MenuBody(int,int,int,int);
-		MenuBody(const NodeLocation&);
-
+		bool empty_nori();
+		ASTNode& get_returned_expression();
+		
 		virtual void accept(ASTVisitor&);
 	};
 
@@ -70,9 +58,16 @@ namespace ast
 	{
 	public:
 		// Constructors
-		MenuCase();
-		MenuCase(int,int,int,int);
-		MenuCase(const NodeLocation&);
+		/**
+		 * @param Scope* scope The scope to execute when the case is matched
+		 * @þaram ASTNode* expr The matching expression
+		 */
+		MenuCase(Scope*,ASTNode*);
+		MenuCase(Scope*,ASTNode*,int,int,int,int);
+		MenuCase(Scope*,ASTNode*,const NodeLocation&);
+
+		Scope& get_scope();
+		ASTNode& get_expression();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -81,20 +76,82 @@ namespace ast
 	{
 	public:
 		// Constructors
-		MenuDef();
-		MenuDef(int,int,int,int);
-		MenuDef(const NodeLocation&);
+		/**
+		 * @param Scope* scope The scope to execute when the case is matched
+		 */
+		MenuDef(Scope*);
+		MenuDef(Scope*,int,int,int,int);
+		MenuDef(Scope*,const NodeLocation&);
+
+		Scope& get_scope();
 
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Loop : public NT_Statement
+	class MenuBody : public NT_Statement
 	{
 	public:
 		// Constructors
-		Loop();
-		Loop(int,int,int,int);
-		Loop(const NodeLocation&);
+		/**
+		 * @param MenuDef* default_case The default case node
+		 * @param MenuCase* menu_case A case node of the menu
+		 */
+		MenuBody(MenuDef*);
+		MenuBody(MenuDef*,int,int,int,int);
+		MenuBody(MenuDef*,const NodeLocation&);
+		MenuBody(MenuCase*);
+		MenuBody(MenuCase*,int,int,int,int);
+		MenuBody(MenuCase*,const NodeLocation&);
+
+		/** 
+		 * @brief Adds a case the the case list (insert it as the first one)
+		 * @param MenuCase* menu_case The case to add
+		 */
+		void add_case(MenuCase*);
+
+		/**
+		 * @brief Checks wether the menu body contains a default case
+		 * @retval bool True if it contains a default case, false otherwise
+		 */
+		bool contains_default() const { return has_default; };
+
+		/**
+		 * @brief Get the default case
+		 * @throw NoSuchChildException if the body does not contain a default case
+		 */
+		MenuDef& get_default_case();
+
+		/**
+		 * @brief Return the number of (non-default) cases in the menu body
+		 * @retval size_t The number of non-default cases in the body
+		 */
+		size_t nb_cases() const;
+
+		/**
+		 * @brief Return the nth (non-default) case of the menu body
+		 * @param size_t n The menu case index in [0, nb_cases()[
+		 * @retval MenuCase& The nth menu case
+		 * @throw NoSuchChildException if the given index does not match any default case
+		 */
+		MenuCase& get_nth_case(size_t);
+
+		virtual void accept(ASTVisitor&);
+
+	private:
+		bool has_default; // true if the menu body contains a default case (contained at the end of the children vector)
+	};
+
+	class Menu : public NT_Statement
+	{
+	public:
+		// Constructors
+		// second pointer is the menu expression
+		Menu(MenuBody*,ASTNode*);
+		Menu(MenuBody*,ASTNode*,int,int,int,int);
+		Menu(MenuBody*,ASTNode*,const NodeLocation&);
+
+		MenuBody& get_body();
+		ASTNode& get_expression();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -161,6 +218,17 @@ namespace ast
 		Conditional();
 		Conditional(int,int,int,int);
 		Conditional(const NodeLocation&);
+
+		virtual void accept(ASTVisitor&);
+	};
+
+	class If : public NT_Statement
+	{
+	public:
+		// Constructors
+		If();
+		If(int,int,int,int);
+		If(const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
 	};

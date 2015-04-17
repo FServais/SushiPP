@@ -21,7 +21,6 @@ NT_Expression::NT_Expression(const std::string& node_name, const NodeLocation& n
 void NT_Expression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /** (NT_)Expression derived classes **/
@@ -43,7 +42,6 @@ Expression::Expression(const NodeLocation& node_loc) : NT_Expression("Expression
 void Expression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -64,7 +62,6 @@ IncrExpression::IncrExpression(const NodeLocation& node_loc) : NT_Expression("In
 void IncrExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Assignment */
@@ -84,7 +81,6 @@ Assignment::Assignment(const NodeLocation& node_loc) : NT_Expression("Assignment
 void Assignment::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* ModifyingExpression */
@@ -104,7 +100,6 @@ ModifyingExpression::ModifyingExpression(const NodeLocation& node_loc) : NT_Expr
 void ModifyingExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* AssignableExpression */
@@ -124,7 +119,6 @@ AssignableExpression::AssignableExpression(const NodeLocation& node_loc) : NT_Ex
 void AssignableExpression::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* DatastructureAccess */
@@ -144,7 +138,6 @@ DatastructureAccess::DatastructureAccess(const NodeLocation& node_loc) : NT_Expr
 void DatastructureAccess::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* ExpressionList */
@@ -164,5 +157,5 @@ ExpressionList::ExpressionList(const NodeLocation& node_loc) : NT_Expression("Ex
 void ExpressionList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
+
 }

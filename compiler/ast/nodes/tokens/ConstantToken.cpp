@@ -25,7 +25,6 @@ ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& n
 void ConstantToken::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /** Constant token derived classes */
@@ -54,7 +53,6 @@ String::String(const std::string& lexer_val, const NodeLocation& node_loc)
 void String::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 std::string& String::value()
@@ -93,7 +91,6 @@ Character::Character(const std::string& lexer_val, const NodeLocation& node_loc)
 void Character::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 char Character::value() const
@@ -127,7 +124,6 @@ Integer::Integer(const std::string& lexer_val, const NodeLocation& node_loc)
 void Integer::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 int Integer::value() const
@@ -161,7 +157,6 @@ Float::Float(const std::string& lexer_val, const NodeLocation& node_loc)
 void Float::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 float Float::value() const
@@ -195,7 +190,6 @@ Bool::Bool(const std::string& lexer_val, const NodeLocation& node_loc)
 void Bool::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 bool Bool::value() const

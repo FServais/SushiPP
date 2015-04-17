@@ -21,7 +21,6 @@ Keyword::Keyword(const std::string& node_name, const NodeLocation& node_loc)
 void Keyword::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 
@@ -42,7 +41,6 @@ K_Break::K_Break(const NodeLocation& node_loc) : Keyword("break", node_loc)
 void K_Break::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : continue */
@@ -62,7 +60,6 @@ K_Continue::K_Continue(const NodeLocation& node_loc) : Keyword("continue", node_
 void K_Continue::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 Type::Type(const std::string& node_name) : Keyword(node_name) { }
@@ -102,7 +99,6 @@ symb::Type Type_Int::get_type() const
 void Type_Int::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : type_float */
@@ -129,7 +125,6 @@ symb::Type Type_Float::get_type() const
 void Type_Float::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : type_bool */
@@ -156,7 +151,6 @@ symb::Type Type_Bool::get_type() const
 void Type_Bool::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : type_bool */
@@ -182,7 +176,6 @@ symb::Type Type_Char::get_type() const
 void Type_Char::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : type_string */
@@ -207,7 +200,6 @@ symb::Type Type_String::get_type() const
 void Type_String::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : ] */
@@ -232,7 +224,6 @@ symb::Type Type_Array::get_type() const
 void Type_Array::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
 
 /* Keyword : type_list */
@@ -259,5 +250,4 @@ symb::Type Type_List::get_type() const
 void Type_List::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	 
 }
