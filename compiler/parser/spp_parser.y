@@ -1043,7 +1043,7 @@ static void yyerror(const char *s)
 	error_occurred = true;
 
 	errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
-	error_handler.add_synt_error("", yylloc.first_line, yylloc.first_column, desc);
+	error_handler.add_synt_error("", yylloc.first_line, yylloc.first_column, s);
 }
 
 static std::string curr_line_row()
