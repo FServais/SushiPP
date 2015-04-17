@@ -30,59 +30,77 @@ namespace ast
 	{
 	public:
 		// Constructors
-		DeclFunc();
-		DeclFunc(int,int,int,int);
-		DeclFunc(const NodeLocation&);
+		DeclFunc(Identifier*, ParamList*, Scope*);
+		DeclFunc(Identifier*, ParamList*, Scope*, int,int,int,int);
+		DeclFunc(Identifier*, ParamList*, Scope*, const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
+		Identifier& get_id();
+		ArgList& get_param_list();
+		Scope& get_scope();
 	};
 
 	class DeclVars : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclVars();
-		DeclVars(int,int,int,int);
-		DeclVars(const NodeLocation&);
+		DeclVars(DeclVar*);
+		DeclVars(DeclVar*, int,int,int,int);
+		DeclVars(DeclVar*, const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
+		DeclVar& get_decl_var(size_t);
+		void add_decl_var(DeclVar*);
 	};
 
 	class DeclVar : public NT_Declaration
 	{
 	public:
 		// Constructors
-		DeclVar();
-		DeclVar(int,int,int,int);
-		DeclVar(const NodeLocation&);
+		DeclVar(Identifier*);
+		DeclVar(Identifier*, int,int,int,int);
+		DeclVar(Identifier*, const NodeLocation&);
+
+		DeclVar(Identifier*, ASTNode*);
+		DeclVar(Identifier*, ASTNode*, int,int,int,int);
+		DeclVar(Identifier*, ASTNode*, const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
+		Identifier& get_id();
+		ASTNode& get_exp();
 	};
 
 	class ParamList : public NT_Declaration
 	{
 	public:
 		// Constructors
-		ParamList();
-		ParamList(int,int,int,int);
-		ParamList(const NodeLocation&);
+		ParamList(Param*);
+		ParamList(Param*, int,int,int,int);
+		ParamList(Param*, const NodeLocation&);
 
 		virtual void accept(ASTVisitor&);
+		void add_param(Param*);
+		Param& get_param(size_t);
 	};
 
 	class Param : public NT_Declaration
 	{
 	public:
 		// Constructors
-		Param();
-		Param(int,int,int,int);
-		Param(const NodeLocation&);
+		Param(Identifier*);
+		Param(Identifier*, ASTNode*);
+		Param(Identifier*, int,int,int,int);
+		Param(Identifier*, ASTNode*, int,int,int,int);
+		Param(Identifier*, const NodeLocation&);
+		Param(Identifier*, ASTNode*, const NodeLocation&);
 
 		const std::string& get_param_name() const;
 		bool has_type() const;
 		symb::Type get_type() const;
 
 		virtual void accept(ASTVisitor&);
+		Identifier& get_id();
+		ASTNode& get_type();
 	};
 }
 
