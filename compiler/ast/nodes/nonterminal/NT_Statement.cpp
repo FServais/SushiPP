@@ -1,5 +1,6 @@
 #include "NT_Statement.hpp"
 #include "../../visitor/ASTVisitor.hpp"
+#include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
 
@@ -21,36 +22,53 @@ NT_Statement::NT_Statement(const std::string& node_name, const NodeLocation& nod
 void NT_Statement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
-
 
 /** (NT_)Program derived classes **/
-
 /* Statement */
-Statement::Statement() : NT_Statement("Statement") { }
-
-Statement::Statement(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Statement", first_line, last_line, first_column, last_column)
-{
-
+Statement::Statement(ASTNode* statement) : NT_Statement("Statement") 
+{ 
+	add_child(statement);	
 }
 
-Statement::Statement(const NodeLocation& node_loc) : NT_Statement("Statement", node_loc)
+Statement::Statement(ASTNode* statement, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("Statement", first_line, last_line, first_column, last_column)
 {
+	add_child(statement);
+}
 
+Statement::Statement(ASTNode* statement, const NodeLocation& node_loc) : NT_Statement("Statement", node_loc)
+{
+	add_child(statement);
 }
 
 void Statement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
-
+ASTNode& Statement::get_statement()
+{
+	return children[0];
+}
+		
 /* Return */
+Return::Return(ASTNode* return_expression) : NT_Statement("Return") 
+{ 
+	add_child(return_expression);
+}
+
+Return::Return(ASTNode* return_expression, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("Return", first_line, last_line, first_column, last_column)
+{
+	add_child(return_expression);
+}
+
+Return::Return(ASTNode* return_expression, const NodeLocation& node_loc) : NT_Statement("Return", node_loc)
+{
+	add_child(return_expression);
+}
+
 Return::Return() : NT_Statement("Return") { }
 
 Return::Return(int first_line, int last_line, int first_column, int last_column)
@@ -63,58 +81,131 @@ Return::Return(const NodeLocation& node_loc) : NT_Statement("Return", node_loc)
 {
 
 }
+		
+bool Return::empty_nori()
+{
+	return children.size() == 0;
+}
+	
+ASTNode& Return::get_returned_expression()
+{
+	if(empty_nori())
+		throw NoSuchChildException(" this nori is an empty nori");
+	return children[0];
+}
 
 void Return::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
 /* Menu */
-Menu::Menu() : NT_Statement("Menu") { }
-
-Menu::Menu(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Menu", first_line, last_line, first_column, last_column)
-{
-
+Menu::Menu(MenuBody* body, ASTNode* expr) : NT_Statement("Menu") 
+{ 
+	add_child(expr);
+	add_child(body);
 }
 
-Menu::Menu(const NodeLocation& node_loc) : NT_Statement("Menu", node_loc)
+Menu::Menu(MenuBody* body, ASTNode* expr, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("Menu", first_line, last_line, first_column, last_column)
 {
+	add_child(expr);
+	add_child(body);
+}
 
+Menu::Menu(MenuBody* body, ASTNode* expr, const NodeLocation& node_loc) : NT_Statement("Menu", node_loc)
+{
+	add_child(expr);
+	add_child(body);
+}
+
+MenuBody& Menu::get_body()
+{
+	return *children[1];
+}
+
+ASTNode& Menu::get_expression()
+{
+	return *children[0];
 }
 
 void Menu::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
-
 
 /* MenuBody */
-MenuBody::MenuBody() : NT_Statement("Menu body") { }
-
-MenuBody::MenuBody(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Menu body", first_line, last_line, first_column, last_column)
+MenuBody::MenuBody(MenuDef* default_case) 
+  : NT_Statement("Menu body"), 
+    has_default(true)
 {
 
 }
 
-MenuBody::MenuBody(const NodeLocation& node_loc) : NT_Statement("Menu body", node_loc)
+MenuBody::MenuBody(MenuDef* default_case, int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("Menu body", first_line, last_line, first_column, last_column),
+	has_default(true)
 {
 
+}
+
+MenuBody::MenuBody(MenuDef* default_case, const NodeLocation& node_loc) 
+  : NT_Statement("Menu body", node_loc), 
+	has_default(true)
+{
+
+}
+
+MenuBody::MenuBody(MenuCase* menu_case) 
+  : NT_Statement("Menu body"),
+  	has_default(false)
+{
+
+}
+
+MenuBody::MenuBody(MenuCase* menu_case, int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("Menu body", first_line, last_line, first_column, last_column),
+  	has_default(false)
+{
+
+}
+
+MenuBody::MenuBody(MenuCase* menu_case, const NodeLocation& node_loc) 
+  : NT_Statement("Menu body", node_loc),
+  	has_default(false)
+{
+
+}
+
+void MenuBody::add_case(MenuCase* menu_case)
+{
+	children.insert(children.begin(), menu_case);
+}
+
+MenuDef& MenuBody::get_default_case()
+{
+	if(!contains_default())
+		throw NoSuchChildException("this menu body contains no default case child");
+	return *children.back();
+}
+
+size_t MenuBody::nb_cases() const
+{
+	return contains_default() ? children.size() - 1 : children.size();
+}
+
+MenuCase& MenuBody::get_nth_case(size_t n)
+{
+	if(n >= nb_cases())
+		throw NoSuchChildException("the given index does not refers to an existing case");
+	return *dynamic_cast<MenuCase*>(children[n]);
 }
 
 void MenuBody::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
-
 
 /* MenuCase */
 MenuCase::MenuCase() : NT_Statement("Case") { }
@@ -133,8 +224,6 @@ MenuCase::MenuCase(const NodeLocation& node_loc) : NT_Statement("Case", node_loc
 void MenuCase::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -155,32 +244,7 @@ MenuDef::MenuDef(const NodeLocation& node_loc) : NT_Statement("Default case", no
 void MenuDef::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
-
-
-/* Loop */
-Loop::Loop() : NT_Statement("Loop") { }
-
-Loop::Loop(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Loop", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Loop::Loop(const NodeLocation& node_loc) : NT_Statement("Loop", node_loc)
-{
-
-}
-
-void Loop::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
-}
-
 
 /* Roll */
 Roll::Roll() : NT_Statement("Roll") { }
@@ -199,8 +263,6 @@ Roll::Roll(const NodeLocation& node_loc) : NT_Statement("Roll", node_loc)
 void Roll::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -221,8 +283,6 @@ Foreach::Foreach(const NodeLocation& node_loc) : NT_Statement("Foreach", node_lo
 void Foreach::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -243,8 +303,6 @@ For::For(const NodeLocation& node_loc) : NT_Statement("For", node_loc)
 void For::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -265,8 +323,6 @@ ForInitializer::ForInitializer(const NodeLocation& node_loc) : NT_Statement("For
 void ForInitializer::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -287,8 +343,6 @@ ForUpdate::ForUpdate(const NodeLocation& node_loc) : NT_Statement("For update", 
 void ForUpdate::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 
@@ -309,8 +363,6 @@ Conditional::Conditional(const NodeLocation& node_loc) : NT_Statement("Condition
 void Conditional::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* If */
@@ -330,8 +382,6 @@ If::If(const NodeLocation& node_loc) : NT_Statement("If", node_loc)
 void If::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 } 
 
 /* Elseif */
@@ -351,8 +401,6 @@ Elseif::Elseif(const NodeLocation& node_loc) : NT_Statement("Elseif", node_loc)
 void Elseif::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 Else::Else() : NT_Statement("Else") { }
@@ -371,8 +419,6 @@ Else::Else(const NodeLocation& node_loc) : NT_Statement("Else", node_loc)
 void Else::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 

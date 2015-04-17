@@ -21,69 +21,63 @@ Operator::Operator(const std::string& node_name, const NodeLocation& node_loc)
 void Operator::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 BinaryOperator::BinaryOperator(const std::string& node_name, ASTNode* left, ASTNode* right)
-  : Operator(node_name), left_operand(left), right_operand(right)
+  : Operator(node_name)
 {
-
+	add_child(left);
+	add_child(right);
 }
 
 BinaryOperator::BinaryOperator(const std::string& node_name, ASTNode* left, ASTNode* right, 
 								int first_line, int last_line, int first_column, int last_column)
-  : Operator(node_name, first_line, last_line, first_column, last_column), 
-  	left_operand(left), 
-  	right_operand(right)
+  : Operator(node_name, first_line, last_line, first_column, last_column)
 {
-
+	add_child(left);
+	add_child(right);
 }
 
 BinaryOperator::BinaryOperator(const std::string& node_name, ASTNode* left, ASTNode* right, const NodeLocation& node_loc)
-  : Operator(node_name, node_loc), 
-    left_operand(left), 
-    right_operand(right)
+  : Operator(node_name, node_loc)
 {
-
+	add_child(left);
+	add_child(right);
 }
 
 ASTNode& BinaryOperator::get_left_operand()
 {
-	return *left_operand;
+	return *children[0];
 }
 
 ASTNode& BinaryOperator::get_right_operand()
 {
-	return *right_operand;
+	return *children[1];
 }
 
 
-UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand_)
-  : Operator(node_name),
-  	operand(operand_)
+UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand)
+  : Operator(node_name)
 {
-
+	add_child(operand);
 }
 
-UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand_ , 
+UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand , 
 								int first_line, int last_line, int first_column, int last_column)
-  : Operator(node_name, first_line, last_line, first_column, last_column),
-  	operand(operand_)
+  : Operator(node_name, first_line, last_line, first_column, last_column)
 {
-
+	add_child(operand);
 }
 
-UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand_ , const NodeLocation& node_loc)
-  : Operator(node_name, node_loc),
-  	operand(operand_)
+UnaryOperator::UnaryOperator(const std::string& node_name, ASTNode* operand , const NodeLocation& node_loc)
+  : Operator(node_name, node_loc)
 {
-
+	add_child(operand);
 }
 
 ASTNode& UnaryOperator::get_operand()
 {
-	return *operand;
+	return *children[0];
 }
 
 /** Operator derived classes */
@@ -104,8 +98,6 @@ Op_Plus::Op_Plus(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : 
 void Op_Plus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : - */
@@ -125,8 +117,6 @@ Op_Minus::Op_Minus(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) 
 void Op_Minus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : * */
@@ -146,8 +136,6 @@ Op_Mult::Op_Mult(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : 
 void Op_Mult::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : / */
@@ -167,8 +155,6 @@ Op_Div::Op_Div(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : Bi
 void Op_Div::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : % */
@@ -188,8 +174,6 @@ Op_Modulo::Op_Modulo(ASTNode* left, ASTNode* right, const NodeLocation& node_loc
 void Op_Modulo::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ** */
@@ -209,8 +193,6 @@ Op_Exponentiation::Op_Exponentiation(ASTNode* left, ASTNode* right, const NodeLo
 void Op_Exponentiation::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : -1 */
@@ -230,8 +212,6 @@ Op_UnaryMinus::Op_UnaryMinus(ASTNode* operand, const NodeLocation& node_loc) : U
 void Op_UnaryMinus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator :| */
@@ -251,8 +231,6 @@ Op_BitwiseOr::Op_BitwiseOr(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_BitwiseOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : & */
@@ -272,8 +250,6 @@ Op_BitwiseAnd::Op_BitwiseAnd(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_BitwiseAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ^*/
@@ -293,8 +269,6 @@ Op_BitwiseXor::Op_BitwiseXor(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_BitwiseXor::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ~ */
@@ -314,8 +288,6 @@ Op_BitwiseNot::Op_BitwiseNot(ASTNode* operand, const NodeLocation& node_loc) : U
 void Op_BitwiseNot::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : || */
@@ -335,8 +307,6 @@ Op_LogicalOr::Op_LogicalOr(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_LogicalOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : && */
@@ -356,8 +326,6 @@ Op_LogicalAnd::Op_LogicalAnd(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_LogicalAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ! */
@@ -377,8 +345,6 @@ Op_LogicalNot::Op_LogicalNot(ASTNode* operand, const NodeLocation& node_loc) : U
 void Op_LogicalNot::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : < */
@@ -398,8 +364,6 @@ Op_CompLessThan::Op_CompLessThan(ASTNode* left, ASTNode* right, const NodeLocati
 void Op_CompLessThan::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : > */
@@ -419,8 +383,6 @@ Op_CompGreaterThan::Op_CompGreaterThan(ASTNode* left, ASTNode* right, const Node
 void Op_CompGreaterThan::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : <= */
@@ -440,8 +402,6 @@ Op_CompLessEqual::Op_CompLessEqual(ASTNode* left, ASTNode* right, const NodeLoca
 void Op_CompLessEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : >= */
@@ -461,8 +421,6 @@ Op_CompGreaterEqual::Op_CompGreaterEqual(ASTNode* left, ASTNode* right, const No
 void Op_CompGreaterEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : == */
@@ -482,8 +440,6 @@ Op_CompEqual::Op_CompEqual(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_CompEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : != */
@@ -503,8 +459,6 @@ Op_CompNotEqual::Op_CompNotEqual(ASTNode* left, ASTNode* right, const NodeLocati
 void Op_CompNotEqual::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : << */
@@ -524,8 +478,6 @@ Op_LeftShift::Op_LeftShift(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_LeftShift::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : >> */
@@ -545,8 +497,6 @@ Op_RightShift::Op_RightShift(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_RightShift::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : . */
@@ -566,8 +516,6 @@ Op_StringConcat::Op_StringConcat(ASTNode* left, ASTNode* right, const NodeLocati
 void Op_StringConcat::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ++ prefix */
@@ -587,8 +535,6 @@ Op_PrefixIncrement::Op_PrefixIncrement(ASTNode* operand, const NodeLocation& nod
 void Op_PrefixIncrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : -- prefix*/
@@ -608,8 +554,6 @@ Op_PrefixDecrement::Op_PrefixDecrement(ASTNode* operand, const NodeLocation& nod
 void Op_PrefixDecrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ++ postfix */
@@ -629,8 +573,6 @@ Op_PostfixIncrement::Op_PostfixIncrement(ASTNode* operand, const NodeLocation& n
 void Op_PostfixIncrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : -- postfix */
@@ -650,8 +592,6 @@ Op_PostfixDecrement::Op_PostfixDecrement(ASTNode* operand, const NodeLocation& n
 void Op_PostfixDecrement::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : = */
@@ -671,8 +611,6 @@ Op_Assignment::Op_Assignment(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_Assignment::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : += */
@@ -692,8 +630,6 @@ Op_AssignPlus::Op_AssignPlus(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_AssignPlus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : -= */
@@ -713,8 +649,6 @@ Op_AssignMinus::Op_AssignMinus(ASTNode* left, ASTNode* right, const NodeLocation
 void Op_AssignMinus::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : *= */
@@ -734,8 +668,6 @@ Op_AssignMult::Op_AssignMult(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_AssignMult::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : /= */
@@ -755,8 +687,6 @@ Op_AssignDiv::Op_AssignDiv(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_AssignDiv::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : **= */
@@ -776,8 +706,6 @@ Op_AssignExpo::Op_AssignExpo(ASTNode* left, ASTNode* right, const NodeLocation& 
 void Op_AssignExpo::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : %= */
@@ -797,8 +725,6 @@ Op_AssignMod::Op_AssignMod(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_AssignMod::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : &= */
@@ -818,8 +744,6 @@ Op_AssignAnd::Op_AssignAnd(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_AssignAnd::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : |= */
@@ -839,8 +763,6 @@ Op_AssignOr::Op_AssignOr(ASTNode* left, ASTNode* right, const NodeLocation& node
 void Op_AssignOr::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : ^= */
@@ -860,8 +782,6 @@ Op_AssignXor::Op_AssignXor(ASTNode* left, ASTNode* right, const NodeLocation& no
 void Op_AssignXor::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 /* Operator : .= */
@@ -881,8 +801,6 @@ Op_AssignConcat::Op_AssignConcat(ASTNode* left, ASTNode* right, const NodeLocati
 void Op_AssignConcat::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 

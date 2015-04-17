@@ -63,6 +63,14 @@ namespace except
 		// param : some more details about the error
 		explicit BadParameterNumberException(const std::string&);
 	};
+
+	class NoSuchChildException : public std::logic_error
+	{
+	public:
+		NoSuchChildException();
+		// param : some more details about the error
+		explicit NoSuchChildException(const std::string&);
+	};
 }
 
 #endif // EXCEPTIONS_HPP_DEFINED

@@ -35,9 +35,6 @@ namespace ast
 		ASTNode& get_right_operand();
 
 	private:
-		// binary operator operand
-		ASTNode* left_operand;
-		ASTNode* right_operand;
 	};
 
 	class UnaryOperator : public Operator
@@ -55,8 +52,6 @@ namespace ast
 		ASTNode& get_operand();
 
 	private:
-		// unary operator operand
-		ASTNode* operand;
 	};
 
 	/** operator derived class */

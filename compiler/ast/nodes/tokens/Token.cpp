@@ -44,8 +44,6 @@ Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
 void Identifier::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 
 std::string& Identifier::id()

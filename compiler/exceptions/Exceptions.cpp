@@ -98,3 +98,15 @@ BadParameterNumberException::BadParameterNumberException(const std::string& deta
 {
 
 }
+
+NoSuchChildException::NoSuchChildException()
+	: logic_error("The node has no such child.")
+{
+
+}
+
+NoSuchChildException::NoSuchChildException(const std::string& details)
+	: logic_error("The node has no such child : " + details)
+{
+
+}

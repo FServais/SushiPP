@@ -994,24 +994,9 @@ menu-def:
 
 /* Loop */
 loop :
-  foreach
-	{
-		$$ = (void*) (new ast::Loop);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| for
-	{
-		$$ = (void*) (new ast::Loop);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
-| roll
-	{
-		$$ = (void*) (new ast::Loop);
-
-		((ast::ASTNode*)$$)->add_child((ast::ASTNode*)$1);
-	}
+  foreach { $$ = $1; }
+| for     { $$ = $1; }
+| roll    { $$ = $1; }
 ;
 
 /* The roll loop is actually a while loop

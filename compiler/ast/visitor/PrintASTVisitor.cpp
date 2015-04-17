@@ -471,11 +471,6 @@ void PrintASTVisitor::visit( ast::MenuDef& token )
 	print_single(token.node_name(), token.depth());
 }
 
-void PrintASTVisitor::visit( ast::Loop& token )
-{
-	print_single(token.node_name(), token.depth());
-}
-
 void PrintASTVisitor::visit( ast::Roll& token )
 {
 	print_single(token.node_name(), token.depth());
