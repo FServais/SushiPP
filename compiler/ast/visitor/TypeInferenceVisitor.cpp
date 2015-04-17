@@ -300,11 +300,6 @@ void TypeInferenceVisitor::visit( ast::Bool& )
 
 }
 
-void TypeInferenceVisitor::visit( ast::Datastructure& )
-{
-
-}
-
 void TypeInferenceVisitor::visit( ast::Array& )
 {
 
@@ -321,11 +316,6 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceList& )
 }
 
 void TypeInferenceVisitor::visit( ast::MakeSequenceArray& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::SeqExpression& )
 {
 
 }
@@ -359,23 +349,7 @@ void TypeInferenceVisitor::visit( ast::Expression& )
 {
 
 }
-
-void TypeInferenceVisitor::visit( ast::IncrExpression& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Assignment& )
-{
-
-}
-
 void TypeInferenceVisitor::visit( ast::ModifyingExpression& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::AssignableExpression& )
 {
 
 }

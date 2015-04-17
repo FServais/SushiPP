@@ -2,6 +2,7 @@
 #define NT_EXPRESSION_HPP_DEFINED
 
 #include "NonTerminal.hpp"
+#include "../tokens/Token.hpp"
 
 namespace ast
 {

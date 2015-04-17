@@ -91,21 +91,6 @@ namespace ast
 
 		virtual void accept(ASTVisitor&);
 	};
-
-	class SeqExpression : public NT_Datastructure
-	{
-	public:
-		// Constructors
-		// Children : begin ("to") end
-		SeqExpression(Expression*,Expression*);
-		SeqExpression(Expression*,Expression*,int,int,int,int);
-		SeqExpression(Expression*,Expression*,const NodeLocation&);
-
-		Expression& get_begin();
-		Expression& get_end();
-
-		virtual void accept(ASTVisitor&);
-	};
 }
 
 #endif

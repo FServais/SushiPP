@@ -91,12 +91,10 @@ public:
 	 * 		Datastructure non-terminal    *
 	 **************************************/
 
-	virtual void visit( ast::Datastructure& );
 	virtual void visit( ast::Array& );
 	virtual void visit( ast::List& );
 	virtual void visit( ast::MakeSequenceList& );
 	virtual void visit( ast::MakeSequenceArray& );
-	virtual void visit( ast::SeqExpression& );
 
 	/************************************
 	 * 		Declaration non-terminal    *
@@ -113,10 +111,7 @@ public:
 	 ***********************************/
 
 	virtual void visit( ast::Expression& );
-	virtual void visit( ast::IncrExpression& );
-	virtual void visit( ast::Assignment& );
 	virtual void visit( ast::ModifyingExpression& );
-	virtual void visit( ast::AssignableExpression& );
 	virtual void visit( ast::DatastructureAccess& );
 
 	/*************************************

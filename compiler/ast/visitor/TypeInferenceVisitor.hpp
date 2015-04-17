@@ -100,7 +100,6 @@ namespace ast
 		virtual void visit( ast::List& );
 		virtual void visit( ast::MakeSequenceList& );
 		virtual void visit( ast::MakeSequenceArray& );
-		virtual void visit( ast::SeqExpression& );
 
 		/************************************
 		 * 		Declaration non-terminal    *
