@@ -2,11 +2,16 @@
 	#include <iostream>
 	#include <sstream>
 	#include "../parser/sushipp.tab.h"
+	#include "../SppCompiler.hpp"
+	#include "../errors/ErrorHandler.hpp"
+
 	using namespace std;
 	#define YY_DECL extern "C" int yylex()
 
 	extern void yyerror(const char*);
 	extern bool error_occurred;
+	extern compiler::SppCompiler* g_compiler;
+
 	#define YY_USER_ACTION update_yylloc();
 
 	/**
@@ -119,9 +124,10 @@ list                    { yylval.vstring = new string(yytext, yyleng); return ID
 ({EOL}+|\$.*{EOL})      { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
 [ \t]+                  { }
 .                       {
-							cerr << "[Error] lexical error, unrecognized sequence '" << yytext << "' at line "
-								 << yylloc.first_line << " (column " << yylloc.first_column
-								 << ")" << endl;
+							std::stringstream ss;
+							ss << "unrecognized sequence '" << yytext << "'";
+							errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
+							error_handler.add_lex_error(yytext, yylloc.first_line, yylloc.first_column, ss.str());
 							error_occurred = true; 
 						}
 
