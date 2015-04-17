@@ -20,3 +20,5 @@ Tests/AST-diagram/AST.vpp~8
 Tests/AST-diagram/AST.vpp~11
 Tests/AST-diagram/AST.vpp~12
 .vpp~1
+compiler/parser/sushipp.tab.c
+compiler/parser/sushipp.tab.h
