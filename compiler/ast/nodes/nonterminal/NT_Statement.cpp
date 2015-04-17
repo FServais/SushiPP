@@ -3,6 +3,7 @@
 #include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
+using namespace except;
 
 /** Constant base class */
 NT_Statement::NT_Statement(const std::string& node_name) : NonTerminal(node_name) {}
@@ -49,7 +50,7 @@ void Statement::accept(ASTVisitor& visitor)
 
 ASTNode& Statement::get_statement()
 {
-	return children[0];
+	return *children[0];
 }
 		
 /* Return */
@@ -91,7 +92,7 @@ ASTNode& Return::get_returned_expression()
 {
 	if(empty_nori())
 		throw NoSuchChildException(" this nori is an empty nori");
-	return children[0];
+	return *children[0];
 }
 
 void Return::accept(ASTVisitor& visitor)
@@ -180,7 +181,7 @@ MenuBody::MenuBody(MenuCase* menu_case, const NodeLocation& node_loc)
 
 void MenuBody::add_case(MenuCase* menu_case)
 {
-	children.insert(children.begin(), menu_case);
+	add_child_first(menu_case);
 }
 
 MenuDef& MenuBody::get_default_case()
@@ -226,7 +227,6 @@ void MenuCase::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-
 /* MenuDef */
 MenuDef::MenuDef() : NT_Statement("Default case") { }
 
@@ -247,17 +247,33 @@ void MenuDef::accept(ASTVisitor& visitor)
 }
 
 /* Roll */
-Roll::Roll() : NT_Statement("Roll") { }
-
-Roll::Roll(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Roll", first_line, last_line, first_column, last_column)
-{
-
+Roll::Roll(ASTNode* expr, Scope* scope) : NT_Statement("Roll") 
+{ 
+	add_child(expr);
+	add_child(scope);
 }
 
-Roll::Roll(const NodeLocation& node_loc) : NT_Statement("Roll", node_loc)
+Roll::Roll(ASTNode* expr, Scope* scope, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("Roll", first_line, last_line, first_column, last_column)
 {
+	add_child(expr);
+	add_child(scope);
+}
 
+Roll::Roll(ASTNode* expr, Scope* scope, const NodeLocation& node_loc) : NT_Statement("Roll", node_loc)
+{
+	add_child(expr);
+	add_child(scope);
+}
+
+Scope& Roll::get_scope()
+{
+	return *dynamic_cast<Scope*>(children[1]);
+}
+
+ASTNode& Roll::get_expression()
+{
+	return *children[0];
 }
 
 void Roll::accept(ASTVisitor& visitor)
@@ -265,39 +281,96 @@ void Roll::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-
 /* Foreach */
-Foreach::Foreach() : NT_Statement("Foreach") { }
+Foreach::Foreach(ASTNode* expr, Identifier* id, Scope* scope) : NT_Statement("Foreach") 
+{
+	add_child(expr);
+	add_child(id);
+	add_child(scope);
+}
 
-Foreach::Foreach(int first_line, int last_line, int first_column, int last_column)
+Foreach::Foreach(ASTNode* expr, Identifier* id, Scope* scope, int first_line, int last_line, int first_column, int last_column)
 	: NT_Statement("Foreach", first_line, last_line, first_column, last_column)
 {
-
+	add_child(expr);
+	add_child(id);
+	add_child(scope);
 }
 
-Foreach::Foreach(const NodeLocation& node_loc) : NT_Statement("Foreach", node_loc)
+Foreach::Foreach(ASTNode* expr, Identifier* id, Scope* scope, const NodeLocation& node_loc) : NT_Statement("Foreach", node_loc)
 {
-
+	add_child(expr);
+	add_child(id);
+	add_child(scope);
 }
 
+ASTNode* Foreach::get_expression()
+{
+	return *children[0];
+}
+
+Identifier* Foreach::get_identifier()
+{
+	return *dynamic_cast<Identifier*>(children[1]);
+}
+
+Scope* Foreach::get_scope()
+{
+	return *dynamic_cast<Scope*>(children[2]);
+}
+		
 void Foreach::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
 
-
 /* For */
-For::For() : NT_Statement("For") { }
-
-For::For(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("For", first_line, last_line, first_column, last_column)
-{
-
+For::For(ForInitializer* init, ASTNode* expr, ForUpdate* update, Scope* scope) 
+  : NT_Statement("For"),
+  	has_initializer(init != nullptr),
+  	has_update(update != nullptr)
+{ 
+	if(init)
+		add_child(init);
+	
+	add_child(expr);
+	
+	if(update)
+		add_child(update);
+	
+	add_child(scope);
 }
 
-For::For(const NodeLocation& node_loc) : NT_Statement("For", node_loc)
+For::For(ForInitializer* init, ASTNode* expr, ForUpdate* update, Scope* scope, int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("For", first_line, last_line, first_column, last_column),
+  	has_initializer(init != nullptr),
+  	has_update(update != nullptr)
 {
+	if(init)
+		add_child(init);
+	
+	add_child(expr);
+	
+	if(update)
+		add_child(update);
+	
+	add_child(scope);
+}
 
+For::For(ForInitializer* init, ASTNode* expr, ForUpdate* update, Scope* scope, const NodeLocation& node_loc) 
+  : NT_Statement("For", node_loc),
+  	has_initializer(init != nullptr),
+  	has_update(update != nullptr)
+{
+	if(init)
+		add_child(init);
+	
+	add_child(expr);
+	
+	if(update)
+		add_child(update);
+	
+	add_child(scope);
 }
 
 void For::accept(ASTVisitor& visitor)
@@ -305,19 +378,50 @@ void For::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-
-/* ForInitializer */
-ForInitializer::ForInitializer() : NT_Statement("For initializer") { }
-
-ForInitializer::ForInitializer(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("For initializer", first_line, last_line, first_column, last_column)
+ForInitializer& For::get_initializer()
 {
-
+	if(empty_initializer())
+		throw NoSuchChildException("empty for initializer section");
+	return *dynamic_cast<ForInitializer*>(children[0]);
 }
 
-ForInitializer::ForInitializer(const NodeLocation& node_loc) : NT_Statement("For initializer", node_loc)
+ASTNode& For::get_expression()
 {
+	return *children[1];
+}
 
+ForUpdate& For::get_update()
+{
+	if(empty_update())
+		throw NoSuchChildException("empty for initializer section");
+	return *dynamic_cast<ForUpdate*>(children[2]);
+}
+
+Scope& For::get_scope()
+{
+	return *dynamic_cast<Scope*>(children[3]);
+}
+
+/* ForInitializer */
+ForInitializer::ForInitializer(ASTNode* expr) : NT_Statement("For initializer") 
+{
+	add_child(expr);
+}
+
+ForInitializer::ForInitializer(ASTNode* expr, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("For initializer", first_line, last_line, first_column, last_column)
+{
+	add_child(expr);
+}
+
+ForInitializer::ForInitializer(ASTNode* expr, const NodeLocation& node_loc) : NT_Statement("For initializer", node_loc)
+{
+	add_child(expr);
+}
+
+ASTNode* ForInitializer::get_expression()
+{
+	return *children[0];
 }
 
 void ForInitializer::accept(ASTVisitor& visitor)
@@ -327,17 +431,25 @@ void ForInitializer::accept(ASTVisitor& visitor)
 
 
 /* ForUpdate */
-ForUpdate::ForUpdate() : NT_Statement("For update") { }
-
-ForUpdate::ForUpdate(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("For update", first_line, last_line, first_column, last_column)
-{
-
+ForUpdate::ForUpdate(ASTNode* expr) : NT_Statement("For update") 
+{ 
+	add_child(expr);
 }
 
-ForUpdate::ForUpdate(const NodeLocation& node_loc) : NT_Statement("For update", node_loc)
+ForUpdate::ForUpdate(ASTNode* expr, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("For update", first_line, last_line, first_column, last_column)
 {
+	add_child(expr);
+}
 
+ForUpdate::ForUpdate(ASTNode* expr, const NodeLocation& node_loc) : NT_Statement("For update", node_loc)
+{
+	add_child(expr);
+}
+
+ASTNode* ForUpdate::get_expression()
+{
+	return *children[0];
 }
 
 void ForUpdate::accept(ASTVisitor& visitor)
@@ -345,19 +457,61 @@ void ForUpdate::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-
 /* Conditional */
-Conditional::Conditional() : NT_Statement("Conditional") { }
-
-Conditional::Conditional(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Conditional", first_line, last_line, first_column, last_column)
-{
-
+Conditional::Conditional(If* if_node, const std::vector<Elseif*>& elseifs, Else* else_node)
+  : NT_Statement("Conditional"),
+	has_else(else_node != nullptr)
+{ 
+	add_child(if_node);
+	add_children(elseifs);
+	if(else_node)
+		add_child(else_node);
 }
 
-Conditional::Conditional(const NodeLocation& node_loc) : NT_Statement("Conditional", node_loc)
+Conditional::Conditional(If* if_node, const std::vector<Elseif*>& elseifs, Else* else_node,
+							int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("Conditional", first_line, last_line, first_column, last_column),
+  	has_else(else_node != nullptr)
 {
+	add_child(if_node);
+	add_children(elseifs);
+	if(else_node)
+		add_child(else_node);
+}
 
+Conditional::Conditional(If* if_node, const std::vector<Elseif*>& elseifs, Else* else_node,
+							const NodeLocation& node_loc) 
+  : NT_Statement("Conditional", node_loc),
+  	has_else(else_node != nullptr)
+{
+	add_child(if_node);
+	add_children(elseifs);
+	if(else_node)
+		add_child(else_node);
+}
+
+size_t count_elseif() const
+{
+	return contains_else() ? children.size() - 2 : children.size() - 1;
+}
+
+Elseif& get_nth_elseif(size_t n)
+{
+	if(n >= count_elseif())
+		throw NoSuchChildException("the given index does not refer to an elseif node");
+	return *dynamic_cast<Elseif*>(children[n + 1]);
+}
+
+If& get_if()
+{
+	return *dynamic_cast<If*>(children[0]);
+}
+
+Else& get_else()
+{
+	if(!contains_else())
+		throw NoSuchChildException("this conditional node has no else child node");
+	return *dynamic_cast<Else*>(children.back());
 }
 
 void Conditional::accept(ASTVisitor& visitor)
@@ -366,17 +520,25 @@ void Conditional::accept(ASTVisitor& visitor)
 }
 
 /* If */
-If::If() : NT_Statement("If") { }
-
-If::If(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("If", first_line, last_line, first_column, last_column)
-{
-
+If::If(ASTNode* expr, Scope* scope) 
+  : NT_Statement("If") 
+{ 
+	add_child(expr);
+	add_child(scope);
 }
 
-If::If(const NodeLocation& node_loc) : NT_Statement("If", node_loc)
+If::If(ASTNode* expr, Scope* scope, int first_line, int last_line, int first_column, int last_column)
+	: NT_Statement("If", first_line, last_line, first_column, last_column)
 {
+	add_child(expr);
+	add_child(scope);
+}
 
+If::If(ASTNode* expr, Scope* scope, const NodeLocation& node_loc) 
+  : NT_Statement("If", node_loc)
+{
+	add_child(expr);
+	add_child(scope);
 }
 
 void If::accept(ASTVisitor& visitor)
@@ -384,18 +546,36 @@ void If::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 } 
 
-/* Elseif */
-Elseif::Elseif() : NT_Statement("Elseif") { }
-
-Elseif::Elseif(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Elseif", first_line, last_line, first_column, last_column)
+Scope& If::get_scope()
 {
-
+	return *dynamic_cast<Scope*>(children[1]);
 }
 
-Elseif::Elseif(const NodeLocation& node_loc) : NT_Statement("Elseif", node_loc)
+ASTNode& If::get_expression()
 {
+	return *children[0];
+}
 
+/* Elseif */
+Elseif::Elseif(ASTNode* expr, Scope* scope) 
+  : NT_Statement("Elseif") 
+{ 
+	add_child(expr);
+	add_child(scope);
+}
+
+Elseif::Elseif(ASTNode* expr, Scope* scope, int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("Elseif", first_line, last_line, first_column, last_column)
+{
+	add_child(expr);
+	add_child(scope);
+}
+
+Elseif::Elseif(ASTNode* expr, Scope* scope, const NodeLocation& node_loc) 
+  : NT_Statement("Elseif", node_loc)
+{
+	add_child(expr);
+	add_child(scope);
 }
 
 void Elseif::accept(ASTVisitor& visitor)
@@ -403,22 +583,41 @@ void Elseif::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-Else::Else() : NT_Statement("Else") { }
-
-Else::Else(int first_line, int last_line, int first_column, int last_column)
-	: NT_Statement("Else", first_line, last_line, first_column, last_column)
+Scope& Elseif::get_scope()
 {
-
+	return *dynamic_cast<Scope*>(children[1]);
 }
 
-Else::Else(const NodeLocation& node_loc) : NT_Statement("Else", node_loc)
+ASTNode& Elseif::get_expression()
 {
+	return *children[0];
+}
 
+/** Else */
+Else::Else(Scope* scope) 
+  : NT_Statement("Else") 
+{ 
+	add_child(scope);
+}
+
+Else::Else(Scope* scope, int first_line, int last_line, int first_column, int last_column)
+  : NT_Statement("Else", first_line, last_line, first_column, last_column)
+{
+	add_child(scope);
+}
+
+Else::Else(Scope* scope, const NodeLocation& node_loc) 
+  : NT_Statement("Else", node_loc)
+{
+	add_child(scope);
+}
+
+Scope& Else::get_scope()
+{
+	return *dynamic_cast<Scope*>(children[0]);
 }
 
 void Else::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
-
-

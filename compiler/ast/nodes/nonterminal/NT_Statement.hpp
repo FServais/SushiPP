@@ -160,9 +160,16 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Roll();
-		Roll(int,int,int,int);
-		Roll(const NodeLocation&);
+		/**
+		 * @param ASTNode* expr The roll expression node
+		 * @param Scope* scope The roll scope node
+		 */
+		Roll(ASTNode*,Scope*);
+		Roll(ASTNode*,Scope*,int,int,int,int);
+		Roll(ASTNode*,Scope*,const NodeLocation&);
+
+		Scope& get_scope();
+		ASTNode& get_expression();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -171,20 +178,18 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Foreach();
-		Foreach(int,int,int,int);
-		Foreach(const NodeLocation&);
+		/**
+		 * @param ASTNode* expr datastructure expression
+		 * @param Identifier* The id node of the identifier used for iterating over array/list
+		 * @param Scope* the foreach scope
+		 */
+		Foreach(ASTNode*,Identifier*,Scope*);
+		Foreach(ASTNode*,Identifier*,Scope*,int,int,int,int);
+		Foreach(ASTNode*,Identifier*,Scope*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class For : public NT_Statement
-	{
-	public:
-		// Constructors
-		For();
-		For(int,int,int,int);
-		For(const NodeLocation&);
+		Identifier* get_identifier();
+		ASTNode* get_expression();
+		Scope* get_scope();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -193,10 +198,15 @@ namespace ast
 	{
 	public:
 		// Constructors
-		ForInitializer();
-		ForInitializer(int,int,int,int);
-		ForInitializer(const NodeLocation&);
+		/**
+		 * @param ASTNode* expr Initializer expression
+		 */
+		ForInitializer(ASTNode*);
+		ForInitializer(ASTNode*,int,int,int,int);
+		ForInitializer(ASTNode*,const NodeLocation&);
 
+		ASTNode* get_expression();
+		
 		virtual void accept(ASTVisitor&);
 	};
 
@@ -204,31 +214,68 @@ namespace ast
 	{
 	public:
 		// Constructors
-		ForUpdate();
-		ForUpdate(int,int,int,int);
-		ForUpdate(const NodeLocation&);
-
+		/**
+		 * @param ASTNode* expr Update expression
+		 */
+		ForUpdate(ASTNode*);
+		ForUpdate(ASTNode*,int,int,int,int);
+		ForUpdate(ASTNode*,const NodeLocation&);
+		
+		ASTNode* get_expression();
+		
 		virtual void accept(ASTVisitor&);
 	};
 
-	class Conditional : public NT_Statement
+	class For : public NT_Statement
 	{
 	public:
 		// Constructors
-		Conditional();
-		Conditional(int,int,int,int);
-		Conditional(const NodeLocation&);
+		/**
+		 * @param ForInitializer* init Loop initializer node
+		 * @param ASTNode* expr Loop guardian node
+		 * @param ForUpdate* update Loop update node
+		 * @param Scope* Loop scope node
+		 * @note nullptr can be given for the ForInitializer and ForUpdate if there is none
+		 */
+		For(ForInitializer*,ASTNode*,ForUpdate*,Scope*);
+		For(ForInitializer*,ASTNode*,ForUpdate*,Scope*,int,int,int,int);
+		For(ForInitializer*,ASTNode*,ForUpdate*,Scope*,const NodeLocation&);
+
+		/**
+		 * @throw NoSuchChildException if the initializer part is empty
+		 */
+		ForInitializer& get_initializer();
+		ASTNode& get_expression();
+		/**
+		 * @throw NoSuchChildException if the update part is empty
+		 */
+		ForUpdate& get_update();
+		Scope& get_scope();
+
+		bool empty_initializer() const { return !has_initializer; }
+		bool empty_update() const { return !has_update; }
 
 		virtual void accept(ASTVisitor&);
+
+	private:
+		bool has_initializer;
+		bool has_update;
 	};
 
 	class If : public NT_Statement
 	{
 	public:
 		// Constructors
-		If();
-		If(int,int,int,int);
-		If(const NodeLocation&);
+		/**
+		 * @param ASTNode* expr The condition expression node
+		 * @param Scope* scope The scope node 
+		 */
+		If(ASTNode*,Scope*);
+		If(ASTNode*,Scope*,int,int,int,int);
+		If(ASTNode*,Scope*,const NodeLocation&);
+
+		Scope& get_scope();
+		ASTNode& get_expression();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -237,9 +284,16 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Elseif();
-		Elseif(int,int,int,int);
-		Elseif(const NodeLocation&);
+		/**
+		 * @param ASTNode* expr The condition expression node
+		 * @param Scope* scope The scope node 
+		 */
+		Elseif(ASTNode*,Scope*);
+		Elseif(ASTNode*,Scope*,int,int,int,int);
+		Elseif(ASTNode*,Scope*,const NodeLocation&);
+
+		Scope& get_scope();
+		ASTNode& get_expression();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -248,11 +302,58 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Else();
-		Else(int,int,int,int);
-		Else(const NodeLocation&);
+		/**
+		 * @param Scope* scope The scope node 
+		 */
+		Else(Scope*);
+		Else(Scope*,int,int,int,int);
+		Else(Scope*,const NodeLocation&);
+
+		Scope& get_scope();
 
 		virtual void accept(ASTVisitor&);
+	};
+
+	class Conditional : public NT_Statement
+	{
+	public:
+		// Constructors
+		/**
+		 * @param If* if_node The if node
+		 * @param const std::vector<Elseif*> elseifs A vector containing the Elseif children nodes
+		 * @param Else* else_node The else node (nullptr if there is none)
+		 */
+		Conditional(If*,const std::vector<Elseif*>&,Else*);
+		Conditional(If*,const std::vector<Elseif*>&,Else*,int,int,int,int);
+		Conditional(If*,const std::vector<Elseif*>&,Else*,const NodeLocation&);
+
+		/**
+		 * @brief Count the number of elseif
+		 * @retval size_t The number of elseif 
+		 */
+		size_t count_elseif() const;
+
+		/**
+		 * @brief Get the nth elseif 
+		 * @param size_t The nth elseif 
+		 * @throw NoSuchChildException If the index does not refer to an existing node
+		 */
+		Elseif& get_nth_elseif(size_t);
+
+		If& get_if();
+
+		/**
+		 * @brief Checks whether there is a Else child node
+		 */
+		bool contains_else() const { return has_else; }
+		/**
+		 * @throw NoSuchChildException If there is no else node
+		 */
+		Else& get_else();
+
+		virtual void accept(ASTVisitor&);
+	private:
+		bool has_else;
 	};
 }
 
