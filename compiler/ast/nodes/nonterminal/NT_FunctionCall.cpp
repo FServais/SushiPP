@@ -109,11 +109,4 @@ SoyFunc::SoyFunc(const NodeLocation& node_loc) : NT_FunctionCall("Soy function",
 void SoyFunc::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-<<<<<<< HEAD
-	 
-
-=======
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
->>>>>>> origin/ro_vm
 }
