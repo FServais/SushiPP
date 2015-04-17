@@ -24,6 +24,4 @@ NonTerminal::NonTerminal(const std::string& node_name, const NodeLocation& node_
 void NonTerminal::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }

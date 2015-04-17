@@ -20,7 +20,5 @@ NT_Constant::NT_Constant(const NodeLocation& node_loc) : NonTerminal("Constant",
 void NT_Constant::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-	for(auto it = children.begin() ; it != children.end() ; ++it)
-		(*it)->accept(visitor);
 }
 

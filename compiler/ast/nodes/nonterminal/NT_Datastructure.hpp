@@ -55,17 +55,6 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 	};
 
-	class MakeSequence : public NT_Datastructure
-	{
-	public:
-		// Constructors
-		MakeSequence();
-		MakeSequence(int,int,int,int);
-		MakeSequence(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
 	class MakeSequenceList : public NT_Datastructure
 	{
 	public:
