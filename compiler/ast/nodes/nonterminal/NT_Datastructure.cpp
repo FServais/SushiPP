@@ -23,6 +23,7 @@ NT_Datastructure::NT_Datastructure(const std::string& node_name, const NodeLocat
 void NT_Datastructure::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
+
 }
 
 /** (NT_)Datastructure derived classes **/
@@ -72,6 +73,7 @@ ASTNode& Array::get_items()
 void Array::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
+
 }
 
 /* List */

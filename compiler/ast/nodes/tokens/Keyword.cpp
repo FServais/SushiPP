@@ -23,7 +23,7 @@ void Keyword::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-/** Keyword derived classes */
+
 /* Keyword :break */
 K_Break::K_Break() : Keyword("break") { }
 
@@ -75,6 +75,7 @@ Type::Type(const std::string& node_name, const NodeLocation& node_loc) : Keyword
 
 }
 
+
 /* Keyword : type_int */
 Type_Int::Type_Int() : Type("Type (int)") { }
 
@@ -88,6 +89,7 @@ Type_Int::Type_Int(const NodeLocation& node_loc) : Type("Type (int)", node_loc)
 {
 
 }
+
 
 symb::Type Type_Int::get_type() const
 {
@@ -112,6 +114,7 @@ Type_Float::Type_Float(const NodeLocation& node_loc) : Type("Type (float)", node
 {
 
 }
+
 
 symb::Type Type_Float::get_type() const
 {
@@ -138,6 +141,7 @@ Type_Bool::Type_Bool(const NodeLocation& node_loc) : Type("Type (bool)", node_lo
 
 }
 
+
 symb::Type Type_Bool::get_type() const
 {
 	return symb::BOOL;
@@ -162,6 +166,7 @@ Type_Char::Type_Char(const NodeLocation& node_loc) : Type("Type (char)", node_lo
 {
 
 }
+
 
 symb::Type Type_Char::get_type() const
 {
@@ -234,6 +239,7 @@ Type_List::Type_List(const NodeLocation& node_loc) : Type("Type (list)", node_lo
 {
 
 }
+
 
 symb::Type Type_List::get_type() const
 {

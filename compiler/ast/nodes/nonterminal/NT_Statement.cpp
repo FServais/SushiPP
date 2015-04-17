@@ -193,6 +193,7 @@ MenuDef& MenuBody::get_default_case()
 
 size_t MenuBody::nb_cases() const
 {
+
 	return contains_default() ? children.size() - 1 : children.size();
 }
 

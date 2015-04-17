@@ -148,6 +148,8 @@ public:
 
 private:
 	int length_line;
+	int depth_tree = 0;
+
 	std::ostream& out_; // stream in which to write
 	size_t curr_depth;
 
