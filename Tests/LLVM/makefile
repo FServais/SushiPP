@@ -1,19 +1,8 @@
-#EXECUTABLE=hello
-
-#all: hello.ll
-#	llvm-as hello.ll
-#	llc hello.bc
-#	gcc -o $(EXECUTABLE) hello.s
-
-#clean:
-#	rm $(EXECUTABLE)
-#	rm hello.s
-#	rm hello.bc
-
 EXECUTABLE=quicksort
+DEP_LIST=$(EXECUTABLE)
 FILE=$(EXECUTABLE).ll
 
-all: $(FILE)
+all: $(DEP_LIST)
 	llvm-as $(FILE)
 	llc $(EXECUTABLE).bc
 	gcc -o $(EXECUTABLE) $(EXECUTABLE).s
