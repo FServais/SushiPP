@@ -2,6 +2,7 @@
 #define NT_DATASTRUCTURE_HPP_DEFINED
 
 #include "NonTerminal.hpp"
+#include "NT_Expression.hpp"
 
 namespace ast
 {
@@ -22,16 +23,6 @@ namespace ast
 	/***************************************
 	 * Datastructure rules node base class *
 	 ***************************************/
-	class Datastructure : public NT_Datastructure
-	{
-	public:
-		// Constructors
-		Datastructure();
-		Datastructure(int,int,int,int);
-		Datastructure(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
 
 	class Array : public NT_Datastructure
 	{
@@ -40,6 +31,14 @@ namespace ast
 		Array();
 		Array(int,int,int,int);
 		Array(const NodeLocation&);
+
+		// Child : item(s)
+		Array(ASTNode*);
+		Array(ASTNode*, int,int,int,int);
+		Array(ASTNode*, const NodeLocation&);
+
+		bool empty_items() const;
+		ASTNode& get_items();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -52,6 +51,14 @@ namespace ast
 		List(int,int,int,int);
 		List(const NodeLocation&);
 
+		// Child : item(s)
+		List(ASTNode*);
+		List(ASTNode*, int,int,int,int);
+		List(ASTNode*, const NodeLocation&);
+
+		bool empty_items() const;
+		ASTNode& get_items();
+
 		virtual void accept(ASTVisitor&);
 	};
 
@@ -59,9 +66,13 @@ namespace ast
 	{
 	public:
 		// Constructors
-		MakeSequenceList();
-		MakeSequenceList(int,int,int,int);
-		MakeSequenceList(const NodeLocation&);
+		// Children : begin ("to") end
+		MakeSequenceList(Expression*,Expression*);
+		MakeSequenceList(Expression*,Expression*,int,int,int,int);
+		MakeSequenceList(Expression*,Expression*,const NodeLocation&);
+
+		Expression& get_begin();
+		Expression& get_end();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -70,20 +81,13 @@ namespace ast
 	{
 	public:
 		// Constructors
-		MakeSequenceArray();
-		MakeSequenceArray(int,int,int,int);
-		MakeSequenceArray(const NodeLocation&);
+		// Children : begin ("to") end
+		MakeSequenceArray(Expression*,Expression*);
+		MakeSequenceArray(Expression*,Expression*,int,int,int,int);
+		MakeSequenceArray(Expression*,Expression*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class SeqExpression : public NT_Datastructure
-	{
-	public:
-		// Constructors
-		SeqExpression();
-		SeqExpression(int,int,int,int);
-		SeqExpression(const NodeLocation&);
+		Expression& get_begin();
+		Expression& get_end();
 
 		virtual void accept(ASTVisitor&);
 	};

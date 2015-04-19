@@ -6,8 +6,23 @@
 
 namespace symb
 {
+<<<<<<< HEAD
 	enum Type { INT, FLOAT, CHAR, STRING, BOOL, ARRAY, LIST, TUPLE, UNDEFINED };
+=======
+	/**
+	 * @enumeration symb::Type
+	 * @brief List of types
+	 * @note UNDEFINED is an early compile stage type associated to an entity of which the type must be inferred
+	 * @note VOID cannot be associated as type to any actual entity except for function return
+	 * @note NOT_EXPECTED cannot be associated as type to any actual entity. It is used in the type inference algorithm for 
+	 * 
+	 */
+	enum Type { INT, FLOAT, STRING, CHAR, BOOL, ARRAY, LIST, VOID, UNDEFINED, NOT_EXPECTED };
+>>>>>>> origin/Fabs_clean
 	
+	/**
+	 * @class Parameter
+	 */
 	class Parameter
 	{
 	public:
@@ -37,6 +52,9 @@ namespace symb
 		Type type_;
 	};
 
+	/**
+	 * @class FunctionInfo
+	 */
 	class FunctionInfo 
 	{
 	public:
@@ -75,6 +93,9 @@ namespace symb
 		bool anonymous_;
 	};
 
+	/**
+	 * @class VariableInfo
+	 */
 	class VariableInfo
 	{
 	public:
@@ -104,6 +125,5 @@ namespace symb
 		Type type_;
 	};
 }
-
 
 #endif // FUNCTION_INFO_HPP_DEFINED

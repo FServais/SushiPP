@@ -1,7 +1,9 @@
 #include "NT_Datastructure.hpp"
 #include "../../visitor/ASTVisitor.hpp"
+#include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
+using namespace except;
 
 /** Constant base class */
 NT_Datastructure::NT_Datastructure(const std::string& node_name) : NonTerminal(node_name) {}
@@ -25,24 +27,6 @@ void NT_Datastructure::accept(ASTVisitor& visitor)
 }
 
 /** (NT_)Datastructure derived classes **/
-/* Datastructure */
-Datastructure::Datastructure() : NT_Datastructure("Datastructure") { }
-
-Datastructure::Datastructure(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Datastructure", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Datastructure::Datastructure(const NodeLocation& node_loc) : NT_Datastructure("Datastructure", node_loc)
-{
-
-}
-
-void Datastructure::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-}
 
 /* Array */
 Array::Array() : NT_Datastructure("Array") { }
@@ -56,6 +40,34 @@ Array::Array(int first_line, int last_line, int first_column, int last_column)
 Array::Array(const NodeLocation& node_loc) : NT_Datastructure("Array", node_loc)
 {
 
+}
+
+Array::Array(ASTNode* items) : NT_Datastructure("Array")
+{
+	add_child(items);
+}
+
+Array::Array(ASTNode* items, int first_line, int last_line, int first_column, int last_column)
+	: NT_Datastructure("Array", first_line, last_line, first_column, last_column)
+{
+	add_child(items);
+}
+
+Array::Array(ASTNode* items, const NodeLocation& node_loc) : NT_Datastructure("Array", node_loc)
+{
+	add_child(items);
+}
+
+bool Array::empty_items() const
+{
+	return children.size() == 0;
+}
+
+ASTNode& Array::get_items()
+{
+	if(empty_items())
+		throw NoSuchChildException("this array is empty");
+	return *children[0];
 }
 
 void Array::accept(ASTVisitor& visitor)
@@ -78,23 +90,67 @@ List::List(const NodeLocation& node_loc) : NT_Datastructure("List", node_loc)
 
 }
 
+List::List(ASTNode* items) : NT_Datastructure("List")
+{ 
+	add_child(items);
+}
+
+List::List(ASTNode* items, int first_line, int last_line, int first_column, int last_column)
+	: NT_Datastructure("List", first_line, last_line, first_column, last_column)
+{
+	add_child(items);
+}
+
+List::List(ASTNode* items, const NodeLocation& node_loc) : NT_Datastructure("List", node_loc)
+{
+	add_child(items);
+}
+
+bool List::empty_items() const
+{
+	return children.size() == 0;
+}
+
+ASTNode& List::get_items()
+{
+	if(empty_items())
+		throw NoSuchChildException("this list is empty");
+	return *children[0];
+}
+
 void List::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
 
 /* MakeSequenceList */
-MakeSequenceList::MakeSequenceList() : NT_Datastructure("Make sequence (list)") { }
-
-MakeSequenceList::MakeSequenceList(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Make sequence (list)", first_line, last_line, first_column, last_column)
+MakeSequenceList::MakeSequenceList(Expression* begin, Expression* end) : NT_Datastructure("Make sequence (list)")
 {
-
+	add_child(begin);
+	add_child(end);
 }
 
-MakeSequenceList::MakeSequenceList(const NodeLocation& node_loc) : NT_Datastructure("Make sequence (list)", node_loc)
+MakeSequenceList::MakeSequenceList(Expression* begin, Expression* end, int first_line, int last_line, int first_column, int last_column)
+	: NT_Datastructure("Make sequence (list)", first_line, last_line, first_column, last_column)
 {
+	add_child(begin);
+	add_child(end);
+}
 
+MakeSequenceList::MakeSequenceList(Expression* begin, Expression* end, const NodeLocation& node_loc) : NT_Datastructure("Make sequence (list)", node_loc)
+{
+	add_child(begin);
+	add_child(end);
+}
+
+Expression& MakeSequenceList::get_begin()
+{
+	return *dynamic_cast<Expression*>(children[0]);
+}
+
+Expression& MakeSequenceList::get_end()
+{
+	return *dynamic_cast<Expression*>(children[1]);
 }
 
 void MakeSequenceList::accept(ASTVisitor& visitor)
@@ -103,41 +159,36 @@ void MakeSequenceList::accept(ASTVisitor& visitor)
 }
 
 /* MakeSequenceArray */
-MakeSequenceArray::MakeSequenceArray() : NT_Datastructure("Make sequence (array)") { }
-
-MakeSequenceArray::MakeSequenceArray(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Make sequence (array)", first_line, last_line, first_column, last_column)
+MakeSequenceArray::MakeSequenceArray(Expression* begin, Expression* end) : NT_Datastructure("Make sequence (array)")
 {
-
+	add_child(begin);
+	add_child(end);
 }
 
-MakeSequenceArray::MakeSequenceArray(const NodeLocation& node_loc) : NT_Datastructure("Make sequence (array)", node_loc)
+MakeSequenceArray::MakeSequenceArray(Expression* begin, Expression* end, int first_line, int last_line, int first_column, int last_column)
+	: NT_Datastructure("Make sequence (array)", first_line, last_line, first_column, last_column)
 {
+	add_child(begin);
+	add_child(end);
+}
 
+MakeSequenceArray::MakeSequenceArray(Expression* begin, Expression* end, const NodeLocation& node_loc) : NT_Datastructure("Make sequence (array)", node_loc)
+{
+	add_child(begin);
+	add_child(end);
+}
+
+Expression& MakeSequenceArray::get_begin()
+{
+	return *dynamic_cast<Expression*>(children[0]);
+}
+
+Expression& MakeSequenceArray::get_end()
+{
+	return *dynamic_cast<Expression*>(children[1]);
 }
 
 void MakeSequenceArray::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
-
-/* SeqExpression */
-SeqExpression::SeqExpression() : NT_Datastructure("Sequence expression") { }
-
-SeqExpression::SeqExpression(int first_line, int last_line, int first_column, int last_column)
-	: NT_Datastructure("Sequence expression", first_line, last_line, first_column, last_column)
-{
-
-}
-
-SeqExpression::SeqExpression(const NodeLocation& node_loc) : NT_Datastructure("Sequence expression", node_loc)
-{
-
-}
-
-void SeqExpression::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-}
-
-

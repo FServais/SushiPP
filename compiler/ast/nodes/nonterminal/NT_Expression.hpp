@@ -2,6 +2,7 @@
 #define NT_EXPRESSION_HPP_DEFINED
 
 #include "NonTerminal.hpp"
+#include "../tokens/Token.hpp"
 
 namespace ast
 {
@@ -26,31 +27,11 @@ namespace ast
 	{
 	public:
 		// Constructors
-		Expression();
-		Expression(int,int,int,int);
-		Expression(const NodeLocation&);
+		Expression(ASTNode*);
+		Expression(ASTNode*,int,int,int,int);
+		Expression(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class IncrExpression : public NT_Expression
-	{
-	public:
-		// Constructors
-		IncrExpression();
-		IncrExpression(int,int,int,int);
-		IncrExpression(const NodeLocation&);
-
-		virtual void accept(ASTVisitor&);
-	};
-
-	class Assignment : public NT_Expression
-	{
-	public:
-		// Constructors
-		Assignment();
-		Assignment(int,int,int,int);
-		Assignment(const NodeLocation&);
+		ASTNode& get_child();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -59,20 +40,11 @@ namespace ast
 	{
 	public:
 		// Constructors
-		ModifyingExpression();
-		ModifyingExpression(int,int,int,int);
-		ModifyingExpression(const NodeLocation&);
+		ModifyingExpression(ASTNode*);
+		ModifyingExpression(ASTNode*,int,int,int,int);
+		ModifyingExpression(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
-	};
-
-	class AssignableExpression : public NT_Expression
-	{
-	public:
-		// Constructors
-		AssignableExpression();
-		AssignableExpression(int,int,int,int);
-		AssignableExpression(const NodeLocation&);
+		ASTNode& get_child();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -81,9 +53,13 @@ namespace ast
 	{
 	public:
 		// Constructors
-		DatastructureAccess();
-		DatastructureAccess(int,int,int,int);
-		DatastructureAccess(const NodeLocation&);
+		// name of the datastructure, index
+		DatastructureAccess(Identifier*,Expression*);
+		DatastructureAccess(Identifier*,Expression*,int,int,int,int);
+		DatastructureAccess(Identifier*,Expression*,const NodeLocation&);
+
+		Identifier& get_id();
+		Expression& get_index();
 
 		virtual void accept(ASTVisitor&);
 	};
@@ -92,9 +68,15 @@ namespace ast
 	{
 	public:
 		// Constructors
-		ExpressionList();
-		ExpressionList(int,int,int,int);
-		ExpressionList(const NodeLocation&);
+		ExpressionList(Expression*);
+		ExpressionList(Expression*,int,int,int,int);
+		ExpressionList(Expression*,const NodeLocation&);
+
+		/** 
+		 * @brief Adds an expression to the case list (insert it as the first one)
+		 * @param Expression* expression The expression to add
+		 */
+		void add_expression(Expression*);
 
 		virtual void accept(ASTVisitor&);
 	};

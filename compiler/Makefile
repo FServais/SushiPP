@@ -10,26 +10,29 @@ PATH_VISITOR	 = $(PATH_AST)visitor/
 PATH_EXCEP		 = exceptions/
 PATH_SYMB		 = symb/
 PATH_SETTINGS    = settings/
+PATH_ERRORS		 = errors/
 
 PATH_OBJS		 = obj/
 
 # objects #
-OBJS_NODES    = $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
-OBJS_TOKENS   = $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o  $(PATH_OBJS)Keyword.o
-OBJS_NONTERMS = $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)NT_Constant.o $(PATH_OBJS)NT_Functioncall.o
-OBJS_NODE_ALL = $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
-OBJS_AST 	  = $(PATH_OBJS)AbstractSyntaxTree.o
-OBJS_VST	  = $(PATH_OBJS)PrintASTVisitor.o
-OBJS_EXCEP    = $(PATH_OBJS)Exceptions.o
-OBJS_MAIN 	  = $(PATH_OBJS)main.o
-OBJS_PARSER   = $(PATH_OBJS)sushipp.tab.o
-OBJS_COMP	  = $(PATH_OBJS)SppCompiler.o
-OBJS_SCANNER  = $(PATH_OBJS)sushipp.yy.o
-OBJS_SETTINGS = $(PATH_OBJS)CompilerSettings.o
-OBJS_UTIL	  = $(PATH_OBJS)util.o
-OBJS_SYMB	  = $(PATH_OBJS)SymbolInfo.o
+OBJS_NODES    		= $(PATH_OBJS)NodeLocation.o $(PATH_OBJS)AstNode.o $(PATH_OBJS)ErrorNode.o
+OBJS_TOKENS   		= $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)ConstantToken.o  $(PATH_OBJS)Keyword.o
+OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)NT_Constant.o $(PATH_OBJS)NT_Functioncall.o
+OBJS_NODE_ALL 		= $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
+OBJS_AST 	  		= $(PATH_OBJS)AbstractSyntaxTree.o
+OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o
+OBJS_EXCEP    		= $(PATH_OBJS)Exceptions.o
+OBJS_MAIN 	  		= $(PATH_OBJS)main.o
+OBJS_PARSER   		= $(PATH_OBJS)sushipp.tab.o
+OBJS_COMP	  		= $(PATH_OBJS)SppCompiler.o
+OBJS_SCANNER  		= $(PATH_OBJS)sushipp.yy.o
+OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o
+OBJS_UTIL	  		= $(PATH_OBJS)util.o
+OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
+OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
+OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
 
-OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL)
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER)
 
 # dependecies #
 # DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
@@ -46,6 +49,7 @@ DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.h
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
+DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)SyntaxError.hpp
 
 DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB)SymbolInfo.hpp
 DEP_COMP				 = SppCompiler.hpp
@@ -149,7 +153,7 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Compiler #
-$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB)
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # CompilerSettings #
@@ -164,6 +168,30 @@ $(PATH_OBJS)SymbolInfo.o: $(PATH_SYMB)SymbolInfo.cpp $(PATH_SYMB)SymbolInfo.hpp 
 $(PATH_OBJS)util.o: $(PATH_UTIL)util.cpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
+# ErrorHandler #
+$(PATH_OBJS)ErrorHandler.o: $(PATH_ERRORS)ErrorHandler.cpp $(PATH_ERRORS)ErrorHandler.hpp $(DEP_ERRORS) $(PATH_SETTINGS)CompilerSettings.hpp $(DEP_EXCEP)
+	$(CC) $< -o $@ $(CCFLAGS)
+
+# ErrorItem(s) #
+$(PATH_OBJS)ErrorItem.o: $(PATH_ERRORS)ErrorItem.cpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)IOError.o: $(PATH_ERRORS)IOError.cpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)LexicalError.o: $(PATH_ERRORS)LexicalError.cpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)MemoryError.o: $(PATH_ERRORS)MemoryError.cpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)SemanticError.o: $(PATH_ERRORS)SemanticError.cpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)SyntaxError.o: $(PATH_ERRORS)SyntaxError.cpp $(PATH_ERRORS)SyntaxError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+
 ###########################################################
 
 # clean 
@@ -175,3 +203,4 @@ clean:
 clean-hard: clean
 	rm -f $(PATH_SCANNER)sushipp.yy.c 
 	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h 
+# DO NOT DELETE

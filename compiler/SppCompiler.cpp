@@ -18,9 +18,10 @@ extern "C" FILE* yyin;
 
 using namespace compiler;
 using namespace ast;
+using namespace errors;
 using namespace std;
 
-SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv)
+SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
 	srand(time(NULL));
 }
@@ -65,6 +66,8 @@ void SppCompiler::terminate()
 {
 	if(config.read_from_file())
 		fclose(yyin);
+
+	error_handler.print_errors();
 }
 
 void SppCompiler::set_syntax_tree_root(ASTNode* root)
@@ -113,4 +116,9 @@ void SppCompiler::print_ast()
 		PrintASTVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
 	}
+}
+
+ErrorHandler& SppCompiler::get_error_handler()
+{
+	return error_handler;
 }

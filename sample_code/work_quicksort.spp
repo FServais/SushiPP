@@ -57,5 +57,5 @@ maki quicksort array :
 	quicksort_aux array 0 (array_len array)
 ;;
 
-array = #[ an, brand, new, array ]#
+array = #[ 12, 3, 7, 42 ]#
 quicksort array
