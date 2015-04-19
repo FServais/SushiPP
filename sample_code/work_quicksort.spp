@@ -20,11 +20,11 @@ maki partition array pivot boundary_index item_index :
 	;;
 
 	$ compare item index to the pivot
-	if array[item_index] < array[end] 
+	if array[item_index] < array[pivot] 
 		array-swap array boundary_index item_index
-		partition array pivot (++boundary_index) (++item_index)
+		nori partition array pivot (++boundary_index) (++item_index)
 	else
-		partition array pivot boundary_index (++item_index)
+		nori partition array pivot boundary_index (++item_index)
 	;;
 ;;
 
@@ -41,7 +41,7 @@ maki quicksort_aux array start end :
 		 last_index = end - 1
 
 	$partition the array around the given pivot
-	swap array pivot_index last_index
+	array-swap array pivot_index last_index
 	pivot = (partition array last_index start start)
 
 	quicksort_aux array start pivot
