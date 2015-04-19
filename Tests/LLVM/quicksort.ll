@@ -98,10 +98,11 @@ iffalse:
 	ret void
 }
 
+; ------ DEBUGGING PURPOSE ------ ;
 declare i32 @printf(i8*, ...) nounwind
 
 @disp_array = internal constant [27 x i8] c"Array : %d - %d - %d - %d\0A\00"
-
+; ------------------------------- ;
 
 
 define i32 @main(i32 %argc, i8** %argv) {
@@ -127,12 +128,15 @@ define i32 @main(i32 %argc, i8** %argv) {
 
 	call void @quicksort_aux( i32* %arrayptr, i32 0, i32 4 )
 
+	; ------ DEBUGGING PURPOSE ------ ;
+	; Check if worked correctly
 	%val.1 = load i32* %4
 	%val.2 = load i32* %5
 	%val.3 = load i32* %6
 	%val.4 = load i32* %7
 
 	%8 = call i32 (i8*, ...)* @printf(i8* getelementptr([27 x i8]* @disp_array, i32 0, i32 0), i32 %val.1, i32 %val.2, i32 %val.3, i32 %val.4)
+	; ------------------------------- ;
 
 	ret i32 0
 }
