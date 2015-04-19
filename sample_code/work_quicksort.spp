@@ -42,7 +42,7 @@ maki quicksort_aux array start end :
 
 	$partition the array around the given pivot
 	array-swap array pivot_index last_index
-	pivot = (partition array last_index start start)
+	maki pivot = (partition array last_index start start)
 
 	quicksort_aux array start pivot
 	quicksort_aux array (++pivot) end 
