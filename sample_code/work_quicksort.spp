@@ -22,9 +22,9 @@ maki partition array pivot boundary_index item_index :
 	$ compare item index to the pivot
 	if array[item_index] < array[pivot] 
 		array-swap array boundary_index item_index
-		nori partition array pivot (++boundary_index) (++item_index)
+		nori (partition array pivot (++boundary_index) (++item_index))
 	else
-		nori partition array pivot boundary_index (++item_index)
+		nori (partition array pivot boundary_index (++item_index))
 	;;
 ;;
 
