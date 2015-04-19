@@ -299,7 +299,7 @@ param-list:
 			$$ = (void*) (new ast::ParamList((ast::Param*)$1, curr_loc()));
 		else
 		{
-			ast::ParamList* params = ((ast::ParamList*)$1);
+			ast::ParamList* params = ((ast::ParamList*)$2);
 			params->add_param((ast::Param*)$1);
 			$$ = (void*) params;
 		}
@@ -423,15 +423,7 @@ braced-func-call:
  * is only allowed if the initial function call is braced (braced-func-call).
  */
 func-call-eol:
- /* IDENTIFIER
-	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		$$ = (void*) (new ast::FuncCall(iden, nullptr, curr_loc()));
-
-		// delete the memory allocated for the string
-		delete $1;
-	}
-| */IDENTIFIER arg-list-eol
+  IDENTIFIER arg-list-eol
 	{
 		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
 		ast::ArgList* arglist = ((ast::ArgList*)$2);
@@ -440,10 +432,6 @@ func-call-eol:
 		// delete the memory allocated for the string
 		delete $1;
 	}
-/*| soy-expression
-	{
-		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$1), nullptr));
-	}*/
 | soy-expression arg-list-eol
 	{
 		ast::ArgList* arglist = ((ast::ArgList*)$2);
@@ -554,22 +542,10 @@ assignment:
  * expressions that can be as such in a program (see program-element rule)
  */
 modifying-expression:
-  assignment
-	{
-		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
-	}
-| incr-expression
-	{
-		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
-	}
-| braced-func-call
-	{
-		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
-	}
-| func-call
-	{
-		$$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc()));
-	}
+  assignment       { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
+| incr-expression  { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
+| braced-func-call { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
+| func-call        { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
 ;
 
 /* An assignable expression is an expression that represents a
@@ -764,13 +740,11 @@ menu:
 menu-body:
   menu-def DELIM_EOL
 	{
-		std::cout << "fuck1" <<  std::endl;
 		ast::MenuDef* menu_def = ((ast::MenuDef*)$1);
 		$$ = (void*) (new ast::MenuBody(menu_def, curr_loc()));
 	}
 | menu-case DELIM_EOL
 	{
-		std::cout << "fuck2" <<  std::endl;
 		ast::MenuCase* menu_case = ((ast::MenuCase*)$1);
 		$$ = (void*) (new ast::MenuBody(menu_case, curr_loc()));
 	}

@@ -212,7 +212,6 @@ Param::Param(Identifier* id, Type* type,  const NodeLocation& node_loc) : NT_Dec
 {
 	add_child(id);
 	add_child(type);
-
 }
 
 void Param::accept(ASTVisitor& visitor)
