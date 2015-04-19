@@ -1,0 +1,117 @@
+$ Partition a partially partitionned range of an array
+$ array 		 Array
+$ pivot 		 Index of the pivot (pivot >= item_index) pivot must be the last item of the range to partition
+$ boundary_index Index of the element following the last element smaller than the pivot (item_index >= boundary_index)
+$ item_index     Index of the current item to partition
+
+
+maki partition array pivot boundary_index item_index :
+	if item_index == pivot
+		array-swap array boundary_index pivot
+		nori boundary_index
+	;;
+
+	$ compare item index to the pivot
+	if array[item_index] < array[pivot] 
+		array-swap array boundary_index item_index
+		partition array pivot (++boundary_index) (++item_index)
+	else
+		partition array pivot boundary_index (++item_index)
+	;;
+;;
+
+
+/* ============ partition ============ */
+
+|----˧ Function declaration
+|------˧ <Identifier ; partition>
+
+|------˧ Parameter list
+|--------˧ Parameter
+|----------˧ <Identifier ; array>
+|--------˧ Parameter
+|----------˧ <Identifier ; pivot>
+|--------˧ Parameter
+|----------˧ <Identifier ; boundary_index>
+|--------˧ Parameter
+|----------˧ <Identifier ; item_index>
+
+|------˧ Scope
+
+|--------˧ Statement
+|----------˧ Conditional
+|------------˧ Expression
+|--------------˧ ==
+|----------------˧ <Identifier ; item_index>
+|----------------˧ <Identifier ; pivot>
+|------------˧ Scope
+|--------------˧ Modifying expression
+|----------------˧ Function call
+|------------------˧ <Identifier ; array-swap>
+|------------------˧ Argument list
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; array>
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; boundary_index>
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; pivot>
+|--------------˧ Statement
+|----------------˧ Return
+|------------------˧ Expression
+|--------------------˧ <Identifier ; boundary_index>
+
+|--------˧ Statement
+|----------˧ Conditional
+|------------˧ Expression
+|--------------˧ <
+|----------------˧ Datastructure access
+|------------------˧ <Identifier ; array>
+|------------------˧ Expression
+|--------------------˧ <Identifier ; item_index>
+|----------------˧ Datastructure access
+|------------------˧ <Identifier ; array>
+|------------------˧ Expression
+|--------------------˧ <Identifier ; end>
+|------------˧ Scope
+|--------------˧ Modifying expression
+|----------------˧ Function call
+|------------------˧ <Identifier ; array-swap>
+|------------------˧ Argument list
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; array>
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; boundary_index>
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; item_index>
+|--------------˧ Modifying expression
+|----------------˧ Function call
+|------------------˧ <Identifier ; partition>
+|------------------˧ Argument list
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; array>
+|--------------------˧ Argument
+|----------------------˧ <Identifier ; pivot>
+|--------------------˧ Argument
+|----------------------˧ Expression
+|------------------------˧ ++
+|--------------------------˧ <Identifier ; boundary_index>
+|--------------------˧ Argument
+|----------------------˧ Expression
+|------------------------˧ ++
+|--------------------------˧ <Identifier ; item_index>
+|------------˧ Else
+|--------------˧ Scope
+|----------------˧ Modifying expression
+|------------------˧ Function call
+|--------------------˧ <Identifier ; partition>
+|--------------------˧ Argument list
+|----------------------˧ Argument
+|------------------------˧ <Identifier ; array>
+|----------------------˧ Argument
+|------------------------˧ <Identifier ; pivot>
+|----------------------˧ Argument
+|------------------------˧ <Identifier ; boundary_index>
+|----------------------˧ Argument
+|------------------------˧ Expression
+|--------------------------˧ ++
+|----------------------------˧ <Identifier ; item_index>

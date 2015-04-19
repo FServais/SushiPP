@@ -6,6 +6,9 @@
 
 namespace symb
 {
+<<<<<<< HEAD
+	enum Type { INT, FLOAT, CHAR, STRING, BOOL, ARRAY, LIST, TUPLE, UNDEFINED };
+=======
 	/**
 	 * @enumeration symb::Type
 	 * @brief List of types
@@ -15,6 +18,7 @@ namespace symb
 	 * 
 	 */
 	enum Type { INT, FLOAT, STRING, CHAR, BOOL, ARRAY, LIST, VOID, UNDEFINED, NOT_EXPECTED };
+>>>>>>> origin/Fabs_clean
 	
 	/**
 	 * @class Parameter

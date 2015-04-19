@@ -139,4 +139,5 @@ void ExpressionList::add_expression(Expression* expression)
 void ExpressionList::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
+
 }
