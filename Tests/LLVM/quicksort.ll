@@ -15,7 +15,7 @@
 
 ; array-swap
 ; Swap elements array[item1] and array[item2]
-define void @array-swap (i32* %array, i32 %item1, i32 %item2 ) {
+define void @array-swap(i32* %array, i32 %item1, i32 %item2 ) {
 	; maki tmp = array[item1]
 	%tmp1 = getelementptr inbounds i32* %array, i32 %item1 ; int* tmp1 = &array[item1]
 	%tmp = load i32* %tmp1 ; int temp1value = *tmp1
@@ -44,7 +44,7 @@ define i32 @partition(i32* %array, i32 %pivot, i32 %boundary_index, i32 %item_in
 		%tmp = load i32* %tmp1
 		%tmp2 = getelementptr inbounds i32* %array, i32 %pivot
 		%tmp3 = load i32* %tmp2
-		%cond2 = icmp ugt i32 %tmp, %tmp3
+		%cond2 = icmp ugt i32 %tmp3, %tmp
 		br i1 %cond2, label %if_truer, label %if_falser
 
 	if_truer:
@@ -98,31 +98,44 @@ iffalse:
 	ret void
 }
 
+declare i32 @printf(i8*, ...) nounwind
+
+@disp_array = internal constant [27 x i8] c"Array : %d - %d - %d - %d\0A\00"
+
+
+
 define i32 @main(i32 %argc, i8** %argv) {
 	%1 = alloca i32, align 4
 	%2 = alloca i32, align 4
 	%3 = alloca i8**, align 8
-	%array = alloca [3 x i32], align 4
 	store i32 0, i32* %1
 	store i32 %argc, i32* %2, align 4
 	store i8** %argv, i8*** %3, align 8
-	%4 = getelementptr inbounds [3 x i32]* %array, i32 0, i64 0
+
+	%array = alloca [4 x i32], align 4
+
+	%4 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 0
 	store i32 6, i32* %4, align 4
-	%5 = getelementptr inbounds [3 x i32]* %array, i32 0, i64 1
+	%5 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 1
 	store i32 5, i32* %5, align 4
-	%6 = getelementptr inbounds [3 x i32]* %array, i32 0, i64 2
+	%6 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 2
 	store i32 4, i32* %6, align 4
+    %7 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 3
+    store i32 8, i32* %7, align 4
 
-	%arrayptr = getelementptr inbounds [3 x i32]* %array, i32 0, i32 0
+	%arrayptr = getelementptr inbounds [4 x i32]* %array, i32 0, i32 0
 
-	call void @quicksort_aux( i32* %arrayptr, i32 0, i32 3 )
+	call void @quicksort_aux( i32* %arrayptr, i32 0, i32 4 )
 
 	%val.1 = load i32* %4
 	%val.2 = load i32* %5
 	%val.3 = load i32* %6
+	%val.4 = load i32* %7
 
-	call i32 (i32*, ...)* @printf(i32* @msg, i32 %val.1, i32 %val.2, i32 %val.3)
+	%8 = call i32 (i8*, ...)* @printf(i8* getelementptr([27 x i8]* @disp_array, i32 0, i32 0), i32 %val.1, i32 %val.2, i32 %val.3, i32 %val.4)
 
-	;fuck Flo
 	ret i32 0
 }
+
+
+
