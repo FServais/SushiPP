@@ -1,9 +1,11 @@
 #include "NT_Declaration.hpp"
 #include "../tokens/Token.hpp"
 #include "../../visitor/ASTVisitor.hpp"
+#include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
 using namespace std;
+using namespace except;
 
 /** Constant base class */
 NT_Declaration::NT_Declaration(const string& node_name) : NonTerminal(node_name) {}
@@ -23,32 +25,31 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 void NT_Declaration::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);
-
 }
-
-
 
 /* DeclFunc */
 DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope) : NT_Declaration("Function declaration") 
 {
 	add_child(id);
-	add_child(param_list);
+	if(param_list)
+		add_child(param_list);
 	add_child(scope);
-
 }
 
 DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("Function declaration", first_line, last_line, first_column, last_column)
 {
 	add_child(id);
-	add_child(param_list);
+	if(param_list)
+		add_child(param_list);
 	add_child(scope);
 }
 
 DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, const NodeLocation& node_loc) : NT_Declaration("Function declaration", node_loc)
 {
 	add_child(id);
-	add_child(param_list);
+	if(param_list)
+		add_child(param_list);
 	add_child(scope);
 }
 
@@ -62,9 +63,11 @@ Identifier& DeclFunc::get_id()
 	return *dynamic_cast<Identifier*>(children[0]);
 }
 
-ArgList& DeclFunc::get_param_list()
+ParamList& DeclFunc::get_param_list()
 {
-	return *dynamic_cast<ArgList*>(children[1]);	
+	if(!contains_params())
+		throw NoSuchChildException("the declared function has no parameters");
+	return *dynamic_cast<ParamList*>(children[1]);	
 }
 
 Scope& DeclFunc::get_scope()
@@ -94,54 +97,67 @@ void DeclVars::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-DeclVar& DeclVars::get_decl_var(size_t n)
+DeclVar& DeclVars::get_variable(size_t n)
 {
-	if(n >= nb_cases())
-		throw NoSuchChildException("the given index does not refers to an existing case");
+	if(n >= nb_variables())
+		throw NoSuchChildException("the given index does not refers to an existing variable");
 	return *dynamic_cast<DeclVar*>(children[n]);
 }
 
-void DeclVars::add_decl_var(DeclVar* dvar)
+void DeclVars::add_variable(DeclVar* dvar)
 {
-	add_child(dvar);
+	add_child_first(dvar);
 }
 
+size_t DeclVars::nb_variables() const
+{
+	return children.size();
+} 
+
 /* DeclVar */
-DeclVar::DeclVar(Identifier* id) : NT_Declaration("Variable declaration")
+DeclVar::DeclVar(Identifier* id) 
+  : NT_Declaration("Variable declaration"),
+  	has_expression(false)
 {
 	add_child(id);
 }
 
 DeclVar::DeclVar(Identifier* id, int first_line, int last_line, int first_column, int last_column)
-	: NT_Declaration("Variable declaration", first_line, last_line, first_column, last_column)
+  : NT_Declaration("Variable declaration", first_line, last_line, first_column, last_column),
+  	has_expression(false)
 {
 	add_child(id);
 }
 
-DeclVar::DeclVar(Identifier* id, const NodeLocation& node_loc) : NT_Declaration("Variable declaration", node_loc)
+DeclVar::DeclVar(Identifier* id, const NodeLocation& node_loc) 
+  : NT_Declaration("Variable declaration", node_loc),
+  	has_expression(false)
 {
 	add_child(id);
 }
 
-DeclVar::DeclVar(Identifier* id, ASTNode* expr) : NT_Declaration("Variable declaration")
+DeclVar::DeclVar(Identifier* id, Expression* expr) 
+  : NT_Declaration("Variable declaration"),
+  	has_expression(expr != nullptr)
 {
 	add_child(id);
 	add_child(expr);
 }
 
-DeclVar::DeclVar(Identifier* id,  ASTNode* exp, int first_line, int last_line, int first_column, int last_column)
-	: NT_Declaration("Variable declaration", first_line, last_line, first_column, last_column)
+DeclVar::DeclVar(Identifier* id,  Expression* expr, int first_line, int last_line, int first_column, int last_column)
+  : NT_Declaration("Variable declaration", first_line, last_line, first_column, last_column),
+  	has_expression(expr != nullptr)
 {
 	add_child(id);
 	add_child(expr);
-
 }
 
-DeclVar::DeclVar(Identifier* id,  ASTNode* exp, const NodeLocation& node_loc) : NT_Declaration("Variable declaration", node_loc)
+DeclVar::DeclVar(Identifier* id,  Expression* expr, const NodeLocation& node_loc) 
+  : NT_Declaration("Variable declaration", node_loc),
+  	has_expression(expr != nullptr)
 {
 	add_child(id);
 	add_child(expr);
-
 }
 
 void DeclVar::accept(ASTVisitor& visitor)
@@ -149,16 +165,16 @@ void DeclVar::accept(ASTVisitor& visitor)
 	visitor.visit(*this);
 }
 
-Identifier& DeclVar::get_id()
+Identifier& DeclVar::get_identifier()
 {
 	return *dynamic_cast<Identifier*>(children[0]);
 }
 
-ASTNode& DeclVar::get_exp()
+Expression& DeclVar::get_expression()
 {
-	if(nb_cases() == 1)
+	if(!contains_expr())
 		throw NoSuchChildException(" there is no expression assigned to this variable declaration !");
-	return *children[1];
+	return *dynamic_cast<Expression*>(children[1]);
 }
 
 /* Param */
@@ -178,13 +194,13 @@ Param::Param(Identifier* id, const NodeLocation& node_loc) : NT_Declaration("Par
 	add_child(id);
 }
 
-Param::Param(Identifier* id, ASTNode* type) : NT_Declaration("Parameter")
+Param::Param(Identifier* id, Type* type) : NT_Declaration("Parameter")
 {
 	add_child(id);
 	add_child(type);
 }
 
-Param::Param(Identifier* id, ASTNode* type, int first_line, int last_line, int first_column, int last_column)
+Param::Param(Identifier* id, Type* type, int first_line, int last_line, int first_column, int last_column)
 	: NT_Declaration("Parameter", first_line, last_line, first_column, last_column)
 {
 	add_child(id);
@@ -192,7 +208,7 @@ Param::Param(Identifier* id, ASTNode* type, int first_line, int last_line, int f
 
 }
 
-Param::Param(Identifier* id, ASTNode* type,  const NodeLocation& node_loc) : NT_Declaration("Parameter", node_loc)
+Param::Param(Identifier* id, Type* type,  const NodeLocation& node_loc) : NT_Declaration("Parameter", node_loc)
 {
 	add_child(id);
 	add_child(type);
@@ -211,19 +227,36 @@ bool Param::has_type() const
 
 symb::Type Param::get_type() const
 {
-	Type* type_node = dynamic_cast<Type*>(children[1]);
-	return type_node->get_type();
+	return get_type_node().get_type();
 }
 
-Identifier& Param::get_id()
+Identifier& Param::get_identifier()
 {
 	return *dynamic_cast<Identifier*>(children[0]);
 }
 
+const Identifier& Param::get_identifier() const
+{
+	return *dynamic_cast<Identifier*>(children[0]);
+}
+
+const Type& Param::get_type_node() const
+{
+	if(!has_type())
+		throw NoSuchChildException(" this parameter has no specified type");
+	return *dynamic_cast<Type*>(children[1]);
+}
+
+Type& Param::get_type_node()
+{
+	if(!has_type())
+		throw NoSuchChildException(" this parameter has no specified type");
+	return *dynamic_cast<Type*>(children[1]);
+}
+
 const std::string& Param::get_param_name() const
 {
-	Identifier* identifier = dynamic_cast<Identifier*>(children[0]);
-	return identifier->id();
+	return get_identifier().id();
 }
 
 /* ParamList */
@@ -252,11 +285,61 @@ void ParamList::add_param(Param* param)
 {
 	add_child(param);
 }
+
+size_t ParamList::nb_params() const
+{
+	return children.size();
+}
+
 Param& ParamList::get_param(size_t n)
 {
-	if(n >= nb_cases())
+	if(n >= nb_params())
 		throw NoSuchChildException("the given index does not refers to an existing case");
 	return *dynamic_cast<Param*>(children[n]);
 }
 
 
+/* SoyFunc */
+SoyFunc::SoyFunc(ParamList* param_list, Scope* scope) 
+  : NT_Declaration("Soy function"),
+  	has_params(param_list != nullptr)
+{
+	if(param_list)
+		add_child(param_list);
+	add_child(scope);
+}
+
+SoyFunc::SoyFunc(ParamList* param_list, Scope* scope,int first_line, int last_line, int first_column, int last_column)
+  : NT_Declaration("Soy function", first_line, last_line, first_column, last_column),
+  	has_params(param_list != nullptr)
+{
+	if(param_list)
+		add_child(param_list);
+	add_child(scope);
+}
+
+SoyFunc::SoyFunc(ParamList* param_list, Scope* scope, const NodeLocation& node_loc) 
+  : NT_Declaration("Soy function", node_loc),
+  	has_params(param_list != nullptr)
+{
+	if(param_list)
+		add_child(param_list);
+	add_child(scope);
+}
+
+void SoyFunc::accept(ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+}
+
+ParamList& SoyFunc::get_params()
+{
+	if(!contains_params())
+		throw NoSuchChildException("this soy function has no argument");
+	return *dynamic_cast<ParamList*>(children[0]);
+}
+
+Scope& SoyFunc::get_scope()
+{
+	return *dynamic_cast<Scope*>(children[1]);
+}

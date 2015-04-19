@@ -47,7 +47,7 @@ namespace symb
 		* @brief creates a new scope adds it as a child scope of the current scope
 		* @return the new scope's id
 		*/
-		int add_scope();
+		size_t add_scope();
 
 		// Displacement function : move_to another scope
 		void move_to_scope(size_t scope_id);
@@ -153,11 +153,12 @@ namespace symb
 		throw except::UndefinedSymbolException(symbol);
 	}
 
-
 	template <class S>
-	void SymbolTable<S>::add_scope()
+	size_t SymbolTable<S>::add_scope()
 	{
-		return current_scope.create_child_scope(new_scope_id());
+		size_t new_id = new_scope_id();
+		current_scope.create_child_scope(new_id);
+		return new_id;
 	}
 
 	template <class S>

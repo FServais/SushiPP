@@ -8,7 +8,7 @@
 #include "../nodes/tokens/Operator.hpp"
 #include "../nodes/tokens/Token.hpp"
 
-#include "../nodes/nonterminal/NT_Constant.hpp"
+#include "../nodes/nonterminal/Constant.hpp"
 #include "../nodes/nonterminal/NT_Datastructure.hpp"
 #include "../nodes/nonterminal/NT_Declaration.hpp"
 #include "../nodes/nonterminal/NT_Expression.hpp"

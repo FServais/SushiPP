@@ -836,24 +836,3 @@ void Op_AssignConcat::accept(ASTVisitor& visitor)
 {
 	visitor.visit(*this);	 
 }
-
-/* Operator : : */
-Op_AssignFunc::Op_AssignFunc() : Operator(":") { }
-
-Op_AssignFunc::Op_AssignFunc(int first_line, int last_line, int first_column, int last_column)
-	: Operator(":", first_line, last_line, first_column, last_column)
-{
-
-}
-
-Op_AssignFunc::Op_AssignFunc(const NodeLocation& node_loc) : Operator(":", node_loc)
-{
-
-}
-
-void Op_AssignFunc::accept(ASTVisitor& visitor)
-{
-	visitor.visit(*this);
-	 
-}
-

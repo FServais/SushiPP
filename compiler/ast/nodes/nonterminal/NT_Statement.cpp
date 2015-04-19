@@ -101,6 +101,7 @@ void Return::accept(ASTVisitor& visitor)
 }
 
 
+#include <iostream>
 /* Menu */
 Menu::Menu(MenuBody* body, Expression* expr) : NT_Statement("Menu") 
 { 
@@ -141,42 +142,42 @@ MenuBody::MenuBody(MenuDef* default_case)
   : NT_Statement("Menu body"), 
     has_default(true)
 {
-
+	add_child(default_case);
 }
 
 MenuBody::MenuBody(MenuDef* default_case, int first_line, int last_line, int first_column, int last_column)
   : NT_Statement("Menu body", first_line, last_line, first_column, last_column),
 	has_default(true)
 {
-
+	add_child(default_case);
 }
 
 MenuBody::MenuBody(MenuDef* default_case, const NodeLocation& node_loc) 
   : NT_Statement("Menu body", node_loc), 
 	has_default(true)
 {
-
+	add_child(default_case);
 }
 
 MenuBody::MenuBody(MenuCase* menu_case) 
   : NT_Statement("Menu body"),
   	has_default(false)
 {
-
+	add_child(menu_case);
 }
 
 MenuBody::MenuBody(MenuCase* menu_case, int first_line, int last_line, int first_column, int last_column)
   : NT_Statement("Menu body", first_line, last_line, first_column, last_column),
   	has_default(false)
 {
-
+	add_child(menu_case);
 }
 
 MenuBody::MenuBody(MenuCase* menu_case, const NodeLocation& node_loc) 
   : NT_Statement("Menu body", node_loc),
   	has_default(false)
 {
-
+	add_child(menu_case);
 }
 
 void MenuBody::add_case(MenuCase* menu_case)
