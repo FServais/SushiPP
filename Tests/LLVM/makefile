@@ -1,11 +1,11 @@
-EXECUTABLE=quicksort
+EXECUTABLE=fibonacci
 
-all: quicksort.ll
-	llvm-as quicksort.ll
-	llc quicksort.bc
-	gcc -o $(EXECUTABLE) quicksort.s
+all: fibonacci.ll
+	llvm-as fibonacci.ll
+	llc fibonacci.bc
+	gcc -o $(EXECUTABLE) fibonacci.s
 
 clean:
 	rm $(EXECUTABLE)
-	rm quicksort.s
-	rm quicksort.bc
+	rm fibonacci.s
+	rm fibonacci.bc

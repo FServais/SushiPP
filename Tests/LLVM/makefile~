@@ -1,11 +1,11 @@
-EXECUTABLE=main
+EXECUTABLE=quicksort
 
-all: main.ll
-	llvm-as main.ll
-	llc main.bc
-	gcc -o $(EXECUTABLE) main.s
+all: quicksort.ll
+	llvm-as quicksort.ll
+	llc quicksort.bc
+	gcc -o $(EXECUTABLE) quicksort.s
 
 clean:
 	rm $(EXECUTABLE)
-	rm main.s
-	rm main.bc
+	rm quicksort.s
+	rm quicksort.bc
