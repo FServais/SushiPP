@@ -1,4 +1,4 @@
-EXECUTABLE=quicksort
+EXECUTABLE=fibonacci
 DEP_LIST=$(EXECUTABLE).ll
 FILE=$(EXECUTABLE).ll
 
