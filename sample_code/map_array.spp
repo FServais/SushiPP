@@ -1,0 +1,8 @@
+maki map_array array size func :
+	for i = 0, i < size, ++i
+		array[i] = (func array[i]) 
+	;;
+;;
+
+array = #[ 12, 3, 7, 42 ]#
+map_array array 4 (soy x : nori x*x)
