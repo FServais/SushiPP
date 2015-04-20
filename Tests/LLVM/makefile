@@ -1,4 +1,4 @@
-EXECUTABLE=fibonacci
+EXECUTABLE=map_array
 DEP_LIST=$(EXECUTABLE).ll
 FILE=$(EXECUTABLE).ll
 

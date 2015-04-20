@@ -1,0 +1,36 @@
+========================== LLVM Homework ==========================
+
+INTRODUCTION
+
+	The goal is to provide the Sushi++ code of a quicksort and another function, with their translation
+	in the LLVM language. As second program, we chose to do the function 'map_array', which will apply 
+	a function of one argument to each element of an array.
+	Note that the translations has been done manually.
+
+FILES
+	
+	- quicksort.spp : Sushi++ code of the quicksort.
+	- quicksort.ll  : Translation of quisort.spp.
+	- map_array.spp : Sushi++ code of the map_array.
+	- map_array.ll  : Translation of map_array.spp.
+
+USAGE
+
+	A makefile has been provided to test the LLVM translations. In these codes, we added a print on the
+	standard output to display the result in order to test them.
+	
+	To compile : make
+
+	To run : ./quicksort to run the quicksort program and ./map_array to run the map_array program.
+
+SITUATION
+	
+	Now that some aspects of the grammar has been corrected, that the abstract syntax tree is corrected 
+	and simplified, and that the semantic analysis is in progress, we also focus on the code generation.
+	We will focus also on the functioning of the C++ API of the generation of LLVM, and integrate it 
+	through a visitor pattern as we have a better understanding of LLVM.
+
+AUTHORS
+	Floriane MAGERA
+	Romain MORMONT
+	Fabrice SERVAIS
