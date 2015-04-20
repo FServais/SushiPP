@@ -18,12 +18,16 @@ loop:
 	store i32 %sq, i32* %tmp
 	%i.next = add i32 %i, 1
 	%cond = icmp ugt i32 %i, %n  ; unsigned %a > %b
-	br i1 %cond, label %loop, label %if_false
+	br i1 %cond, label %if_false, label %loop
 
 if_false:
 	ret void
 
 }
+
+declare i32 @printf(i8*, ...) nounwind
+
+@disp_array = internal constant [27 x i8] c"Array : %d - %d - %d - %d\0A\00"
 
 define void @main(i32 %argc, i8** %argv)
 {
@@ -48,6 +52,12 @@ define void @main(i32 %argc, i8** %argv)
 	%arrayptr = getelementptr inbounds [4 x i32]* %array, i32 0, i32 0
 
 	call void @map_array(i32* %arrayptr, i32 4, i32 (i32)* @ghty)
+	%val.1 = load i32* %4
+	%val.2 = load i32* %5
+	%val.3 = load i32* %6
+	%val.4 = load i32* %7
+
+	%8 = call i32 (i8*, ...)* @printf(i8* getelementptr([27 x i8]* @disp_array, i32 0, i32 0), i32 %val.1, i32 %val.2, i32 %val.3, i32 %val.4)
 
 	ret void
 

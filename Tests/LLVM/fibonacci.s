@@ -55,7 +55,7 @@ map_array:                              # @map_array
 	callq	ghty
 	movl	%eax, (%r15,%rbx,4)
 	cmpl	%r14d, %ebx
-	ja	.LBB1_1
+	jbe	.LBB1_1
 # BB#2:                                 # %if_false
 	addq	$8, %rsp
 	popq	%rbx
@@ -87,11 +87,25 @@ main:                                   # @main
 	movl	$4, %esi
 	movl	$ghty, %edx
 	callq	map_array
+	movl	8(%rsp), %esi
+	movl	12(%rsp), %edx
+	movl	16(%rsp), %ecx
+	movl	20(%rsp), %r8d
+	movl	$disp_array, %edi
+	xorl	%eax, %eax
+	callq	printf
 	addq	$40, %rsp
 	retq
 .Ltmp12:
 	.size	main, .Ltmp12-main
 	.cfi_endproc
+
+	.type	disp_array,@object      # @disp_array
+	.section	.rodata,"a",@progbits
+	.align	16
+disp_array:
+	.asciz	"Array : %d - %d - %d - %d\n"
+	.size	disp_array, 27
 
 
 	.section	".note.GNU-stack","",@progbits
