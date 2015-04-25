@@ -1,6 +1,7 @@
 #include "FunctionTableVisitor.hpp"
 
 using namespace std;
+using namespace visitor;
 
 // Constructor
 FunctionTableVisitor::FunctionTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab){ function_table =  fct_tab;}

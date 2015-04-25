@@ -1,6 +1,7 @@
 #include "PrintASTVisitor.hpp"
 
 using namespace std;
+using namespace visitor;
 
 // Constructor
 PrintASTVisitor::PrintASTVisitor() : length_line(2), out_(cout), curr_depth(0) { }
