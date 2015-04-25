@@ -79,8 +79,22 @@ namespace inference
 	public:
 		TypeLink(std::shared_ptr<TypeSymbol>);
 
+		/**
+		 * @brief Get the actual type object or type linked to the current link
+		 */
 		TypeSymbol& resolve();
 		const TypeSymbol& resolve() const;
+
+		/**
+		 * @brief Set the symbol linked by the type link
+		 */
+		void set_symbol(std::shared_ptr<TypeSymbol>);
+
+		/**
+		 * @brief Get the last link before the an actual type object or type variable
+		 */
+		TypeLink& resolve_last_link();
+		const TypeLink& resolve_last_link() const;
 
 		virtual std::string str() const;
 		virtual bool is_link() const { return true; }

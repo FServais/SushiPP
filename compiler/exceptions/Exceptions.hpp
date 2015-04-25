@@ -95,6 +95,13 @@ namespace except
 		explicit ExistingTypeSymbolException(const std::string&);
 	};
 
+	class NoSuchTypeSymbolException : public std::runtime_error
+	{
+	public:
+		// param : the name of the type symbol 
+		explicit NoSuchTypeSymbolException(const std::string&);
+	};
+
 	class UnresolvableTypeException : public std::runtime_error
 	{
 	public:

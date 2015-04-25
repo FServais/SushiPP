@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace inference;
+
 TypeVariable::TypeVariable(const std::string& str) : varname(str) { }
 
 bool TypeVariable::equals(const TypeSymbol& symb) const
@@ -25,18 +26,33 @@ TypeLink::TypeLink(shared_ptr<TypeSymbol> pointed_symbol) : symbol(pointed_symbo
 
 const TypeSymbol& TypeLink::resolve() const
 {
-	if(symbol->is_link()) // if the pointed symbol is a link, resolve it too
-		return dynamic_cast<TypeLink*>(symbol.get())->resolve();
-	else
-		return *symbol;
+	return *(resolve_last_link().symbol);
 }
 
 TypeSymbol& TypeLink::resolve()
 {
-	if(symbol->is_link()) // if the pointed symbol is a link, resolve it too
-		return dynamic_cast<TypeLink*>(symbol.get())->resolve();
+	return *(resolve_last_link().symbol);
+}
+
+TypeLink& TypeLink::resolve_last_link()
+{
+	if(symbol->is_link())
+		return dynamic_cast<TypeLink*>(symbol.get())->resolve_last_link();
 	else
-		return *symbol;
+		return *this;
+}
+
+void TypeLink::set_symbol(std::shared_ptr<TypeSymbol> new_symbol)
+{
+	symbol = new_symbol;
+}
+
+const TypeLink& TypeLink::resolve_last_link() const
+{
+	if(symbol->is_link())
+		return dynamic_cast<TypeLink*>(symbol.get())->resolve_last_link();
+	else
+		return *this;
 }
 
 std::string TypeLink::str() const
@@ -146,38 +162,14 @@ std::string Function::str() const
 	ss << "(" << params << ") : " << return_type->str();
 	return ss.str();
 }
-/*
-void Function::get_return_type(types::Type* type) const
-{
-	return_type.get_type(type);
-}
 
-void Function::get_parameter_type(size_t param_nb, types::Type* type) const
-{
-	parameters[param_nb].get_type(type);
-}
-
-void Function::get_parameter_types(std::vector<types::Type>& types) const
-{
-	transform(parameters.begin(), parameters.end(), back_inserter(types),
-			  [](TypeLink& link)
-			  {
-				types::Type* type;
-				link.get_type(type);
-				return *type;
-			  });
-}
-*/
 Array::Array(shared_ptr<TypeLink> type) : items_type(type) { }
 
 
 std::string Array::str() const
 {
-	stringstream ss;
-	ss << "ARRAY ( " << items_type->str() << " )";
-	return ss.str();
+	return "ARRAY ( " + items_type->str() + " )";
 }
-
 
 bool Array::equals(const TypeSymbol& symb) const
 {
@@ -193,9 +185,7 @@ List::List(shared_ptr<TypeLink> type) : items_type(type) { }
 
 std::string List::str() const
 {
-	stringstream ss;
-	ss << "LIST ( " << items_type->str() << " )";
-	return ss.str();
+	return "LIST ( " + items_type->str() + " )";
 }
 
 bool List::equals(const TypeSymbol& symb) const

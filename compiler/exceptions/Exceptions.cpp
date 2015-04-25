@@ -124,7 +124,7 @@ NoSuchParameterException::NoSuchParameterException(size_t param, const string& d
 }
 
 UnificationException::UnificationException(const string& details)
-  : runtime_error("Unable to unify the types : " + details)
+  : runtime_error(details)
 {
 
 }
@@ -137,6 +137,12 @@ ExistingTypeSymbolException::ExistingTypeSymbolException(const string& symbol)
 
 UnresolvableTypeException::UnresolvableTypeException(const string& symbol)
   : runtime_error("The type of the type symbol '" + symbol + "' cannot be resolved")
+{
+
+}
+
+NoSuchTypeSymbolException::NoSuchTypeSymbolException(const string& symbol)
+  : runtime_error("Unable to find the type symbol '" + symbol + "'")
 {
 
 }
