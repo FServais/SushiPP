@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <functionnal>
 
 #include "../types/Type.hpp"
 
@@ -35,7 +36,14 @@ namespace inference
 		 * @throw TypeSymbolResolutionException If an actual type cannot be returned (if the link is not resolvable 
 		 * to a complete type, if the type symbol is a variable)
 		 */
-		virtual void get_type(types::Type*) const = 0;
+		//virtual void get_type(types::Type*) const = 0;
+
+		/**
+		 * @brief Unify the current type symbol with the given one
+		 * @param TypeSymbol& symb The symbol to unify the current one with
+		 * @throw UnificationException if the unification is impossible to perform during the unification
+		 */
+		virtual void unify(TypeLink&) = 0;
 	};
 
 	/**
@@ -54,13 +62,12 @@ namespace inference
 		virtual bool is_function_type() const { return false; }
 		virtual bool is_structure_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 
 	private:
 		std::string varname;
 	};
 
-	/**
+	/**Type
 	 * @class TypeLink
 	 * @brief Represent a link to a type symbol
 	 */
@@ -78,7 +85,6 @@ namespace inference
 		virtual bool is_function_type() const { return false; }
 		virtual bool is_structure_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	
 	private:
 		TypeSymbol& symbol; // the symbol linked by the object
@@ -116,7 +122,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -127,7 +132,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -138,7 +142,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -149,7 +152,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -160,7 +162,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -171,7 +172,6 @@ namespace inference
 	{
 	public:
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 	};
 
 	/**
@@ -189,7 +189,6 @@ namespace inference
 		virtual bool is_function_type() const { return true; };
 		virtual bool is_structure_type() const { return false; };
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 
 		types::Type get_return_type() const;
 		types::Type get_parameter_type(size_t) const;
@@ -197,7 +196,7 @@ namespace inference
 
 	private:
 		TypeLink& return_type;
-		std::vector<TypeLink&> parameters;
+		std::vector<std::reference_wrapper<TypeLink>> parameters;
 	};
 
 	/**
@@ -214,7 +213,6 @@ namespace inference
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 
 		types::Type get_items_type() const;
 
@@ -236,7 +234,6 @@ namespace inference
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
-		virtual void get_type(types::Type*) const;
 
 		types::Type get_items_type() const;
 

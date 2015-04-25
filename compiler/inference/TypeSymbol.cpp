@@ -21,13 +21,6 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
 }
 
-void TypeVariable::get_type(types::Type* type) const
-{
-	stringstream ss;
-	ss << "a type variable (here : '" << varname << "') is not a resolvable symbol type";
-	throw TypeSymbolResolutionException(ss.str());
-}
-
 TypeLink::TypeLink(TypeSymbol& pointed_symbol) : symbol(pointed_symbol) { }
 
 TypeSymbol& TypeLink::resolve()
@@ -45,11 +38,6 @@ bool TypeLink::equals(const TypeSymbol& symb) const
 	return !t_link ? symb.equals(resolve()) : resolve().equals(t_link->resolve());
 }
 
-void TypeLink::get_type(types::Type* type) const
-{
-	symbol.get_type(type);
-}
-
 bool Bool::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -57,11 +45,6 @@ bool Bool::equals(const TypeSymbol& symb) const
 	Bool* t_bool = dynamic_cast<Bool*>(&symb);
 
 	return t_bool != nullptr;
-}
-
-void Bool::get_type(types::Type* type) const
-{
-	*type = types::Bool();
 }
 
 bool Char::equals(const TypeSymbol& symb) const
@@ -73,11 +56,6 @@ bool Char::equals(const TypeSymbol& symb) const
 	return t_bool != nullptr;
 }
 
-void Char::get_type(types::Type* type) const
-{
-	*type = types::Char();
-}
-
 bool Int::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -85,11 +63,6 @@ bool Int::equals(const TypeSymbol& symb) const
 	Int* t_bool = dynamic_cast<Int*>(&symb);
 
 	return t_bool != nullptr;
-}
-
-void Int::get_type(types::Type* type) const
-{
-	*type = types::Int();
 }
 
 bool Float::equals(const TypeSymbol& symb) const
@@ -101,11 +74,6 @@ bool Float::equals(const TypeSymbol& symb) const
 	return t_bool != nullptr;
 }
 
-void Float::get_type(types::Type* type) const
-{
-	*type = types::Float();
-}
-
 bool Void::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -113,11 +81,6 @@ bool Void::equals(const TypeSymbol& symb) const
 	Void* t_bool = dynamic_cast<Void*>(&symb);
 
 	return t_bool != nullptr;
-}
-
-void Void::get_type(types::Type* type) const
-{
-	*type = types::Void();
 }
 
 bool String::equals(const TypeSymbol& symb) const
@@ -129,11 +92,6 @@ bool String::equals(const TypeSymbol& symb) const
 	return t_bool != nullptr;
 }
 
-void String::get_type(types::Type* type) const
-{
-	*type = types::String();
-}
-
 Function::Function(const std::vector<TypeLink&>& params, TypeLink& ret)
   : return_type(ret),
   	parameters(params)
@@ -141,7 +99,7 @@ Function::Function(const std::vector<TypeLink&>& params, TypeLink& ret)
 
 }
 
-virtual bool Function::equals(const TypeSymbol& symb) const
+bool Function::equals(const TypeSymbol& symb) const
 {
 	if(this == *symb) return true;
 
@@ -162,13 +120,6 @@ virtual bool Function::equals(const TypeSymbol& symb) const
 			});
 
 	return all_of(equality.begin(), equality.end(), [](bool val) { return val; });
-}
-
-virtual void Function::get_type(types::Type* type) const
-{
-	vector<types::Type> param_types;
-	get_parameter_types(param_types);
-	*type = types::Function(param_types, return_type.get_type());
 }
 
 void Function::get_return_type(types::Type* type) const
@@ -192,10 +143,9 @@ void Function::get_parameter_types(std::vector<types::Type>& types) const
 			  });
 }
 
-
 Array::Array(TypeLink& type) : items_type(type) { }
 
-virtual bool Array::equals(const TypeSymbol& symb) const
+bool Array::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb)
 		return true;
@@ -205,12 +155,6 @@ virtual bool Array::equals(const TypeSymbol& symb) const
 	return t_arr != nullptr && items_type.equals(t_arr->items_type);
 }
 
-virtual void Array::get_type(types::Type* type) const
-{	typesType* item_type;
-	get_items_type(item_type);
-	*type = types::Array(*item_type);
-}
-
 Array::get_items_type(types::Type* type) const
 {
 	items_type.get_type(type);
@@ -218,7 +162,7 @@ Array::get_items_type(types::Type* type) const
 
 List::List(TypeLink& type) : items_type(type) { }
 
-virtual bool List::equals(const TypeSymbol& symb) const
+bool List::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb)
 		return true;
@@ -226,12 +170,6 @@ virtual bool List::equals(const TypeSymbol& symb) const
 	List* t_list = dynamic_cast<List*>(symb);
 
 	return t_list != nullptr && items_type.equals(t_list->items_type);
-}
-
-virtual void List::get_type(types::Type* type) const
-{	typesType* item_type;
-	get_items_type(item_type);
-	*type = types::List(*item_type);
 }
 
 List::get_items_type(types::Type* type) const
