@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <functionnal>
+#include <memory>
 
 #include "../types/Type.hpp"
 
@@ -33,7 +33,7 @@ namespace inference
 													// if one of the element is a link it is resolved before comparison
 		/**
 		 * @brief Return the actual type of the type symbol
-		 * @throw TypeSymbolResolutionException If an actual type cannot be returned (if the link is not resolvable 
+		 * @throw TypeSymbolResolutionException If an actual type cannot be returned (if the link is not resolvable
 		 * to a complete type, if the type symbol is a variable)
 		 */
 		//virtual void get_type(types::Type*) const = 0;
@@ -43,7 +43,7 @@ namespace inference
 		 * @param TypeSymbol& symb The symbol to unify the current one with
 		 * @throw UnificationException if the unification is impossible to perform during the unification
 		 */
-		virtual void unify(TypeLink&) = 0;
+		//virtual void unify(std::shared_ptr<TypeLink>) = 0;
 	};
 
 	/**
@@ -74,9 +74,10 @@ namespace inference
 	class TypeLink : public TypeSymbol
 	{
 	public:
-		TypeLink(TypeSymbol&);
-		
+		TypeLink(std::shared_ptr<TypeSymbol>);
+
 		TypeSymbol& resolve();
+		const TypeSymbol& resolve() const;
 
 		virtual bool is_link() const { return true; }
 		virtual bool is_variable() const { return false; }
@@ -85,14 +86,14 @@ namespace inference
 		virtual bool is_function_type() const { return false; }
 		virtual bool is_structure_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
-	
+
 	private:
-		TypeSymbol& symbol; // the symbol linked by the object
+		std::shared_ptr<TypeSymbol> symbol; // the symbol linked by the object
 	};
 
 	/**
 	 * @class Type
-	 * @brief Base class for any actual type 
+	 * @brief Base class for any actual type
 	 */
 	class Type : public TypeSymbol
 	{
@@ -181,22 +182,21 @@ namespace inference
 	class Function : public Type
 	{
 	public:
-		// Function returning void
-		Function(const std::vector<TypeLink&>&);
-		Function(const std::vector<TypeLink&>&, TypeLink&);
+		Function(const std::vector<std::shared_ptr<TypeLink>>&, std::shared_ptr<TypeLink>);
 
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return true; };
 		virtual bool is_structure_type() const { return false; };
 		virtual bool equals(const TypeSymbol&) const;
-
+/*
 		types::Type get_return_type() const;
 		types::Type get_parameter_type(size_t) const;
 		void get_parameter_types(std::vector<types::Type>&) const;
+		*/
 
 	private:
-		TypeLink& return_type;
-		std::vector<std::reference_wrapper<TypeLink>> parameters;
+		std::shared_ptr<TypeLink> return_type;
+		std::vector<std::shared_ptr<TypeLink>> parameters;
 	};
 
 	/**
@@ -207,7 +207,7 @@ namespace inference
 	{
 	public:
 		/** A type link to the structure elements' type */
-		Array(TypeLink&);
+		Array(std::shared_ptr<TypeLink>);
 
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return false; };
@@ -215,7 +215,7 @@ namespace inference
 		virtual bool equals(const TypeSymbol&) const;
 
 	private:
-		TypeLink& items_type;
+		std::shared_ptr<TypeLink> items_type;
 	};
 
 	/**
@@ -226,7 +226,7 @@ namespace inference
 	{
 	public:
 		/** A type link to the structure elements' type */
-		List(TypeLink&);
+		List(std::shared_ptr<TypeLink>);
 
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return false; };
@@ -234,7 +234,7 @@ namespace inference
 		virtual bool equals(const TypeSymbol&) const;
 
 	private:
-		TypeLink& items_type;
+		std::shared_ptr<TypeLink> items_type;
 	};
 }
 

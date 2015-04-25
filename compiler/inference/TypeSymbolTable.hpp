@@ -2,7 +2,6 @@
 #define TYPE_SYMBOL_TABLE_HPP_DEFINED
 
 #include <unordered_map>
-#include <functionnal>
 #include <string>
 #include <utility>
 
@@ -10,9 +9,10 @@
 
 namespace inference
 {
-	class TypeSymbolTable : public std::unordered_map<std::string, std::reference_wrapper<TypeLink>>
+	class TypeSymbolTable : public std::unordered_map<std::string, TypeLink>
 	{
 	public:
+		TypeSymbolTable();
 
 		/**  Functions for creating a new entity in the type symbol table */
 		/**
@@ -25,11 +25,13 @@ namespace inference
 
 		/**
 		 * @brief Adds a new function in the table
-		 * @param const std::string& The function name (optional)
+		 * @param const std::vector<std::string>& param_names Names of the parameters 
+		 * @param size_t scope The scope id 
+		 * @param const std::string& name The function name (optional)
 		 * @retval std::string The function name in the map
 		 */
-		std::string new_function();
-		std::string new_function(const std::string&);
+		std::string new_function(const std::vector<std::string>&, size_t);
+		std::string new_function(const std::vector<std::string>&, size_t, const std::string&);
 
 		/**
 		 * @brief Adds a new array in the table
@@ -52,6 +54,20 @@ namespace inference
 		 * @throw UnificationException if the unification fails
 		 */
 		void unify(const std::string&, const std::string&);
+
+		/**
+		 * @brief Return a unique variable name string 
+		 * @retval std::string A unique variable string
+		 */
+		std::string unique_varname();
+
+		/**
+		 * @brief Get the identifier unique name
+		 * @param size_t scope The id of the scope in which is defined the identifier
+		 * @param const std::string& The identifier string
+		 * @retval std::string The unique string identifiying the identifier
+		 */
+		std::string unique_id_name(size_t, const std::string&);
 
 	private:
 		/**
