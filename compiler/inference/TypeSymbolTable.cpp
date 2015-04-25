@@ -115,3 +115,14 @@ std::string TypeSymbolTable::unique_id_name(size_t scope, const std::string& ide
 {
 	return identfier + "@" + to_string(scope);
 }
+
+namespace inference
+{
+    std::ostream& operator<<(std::ostream& out, const TypeSymbolTable& table)
+    {
+        for(auto symbol : table)
+            out << symbol.first << " => " << symbol.second->str() << endl;
+
+        return out;
+    }
+}

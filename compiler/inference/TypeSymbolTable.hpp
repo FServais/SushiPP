@@ -4,13 +4,16 @@
 #include <unordered_map>
 #include <string>
 #include <utility>
+#include <memory>
+#include <iostream>
 
 #include "TypeSymbol.hpp"
 
 namespace inference
 {
-	class TypeSymbolTable : public std::unordered_map<std::string, TypeLink>
+	class TypeSymbolTable : public std::unordered_map<std::string, std::shared_ptr<TypeLink>>
 	{
+		friend std::ostream& operator<<(std::ostream&, const TypeSymbolTable&);
 	public:
 		TypeSymbolTable();
 
@@ -83,6 +86,8 @@ namespace inference
 		inference::Float type_float;
 		inference::Void type_void;
 	};
+
+	std::ostream& operator<<(std::ostream&, const TypeSymbolTable&);
 }
 
 #endif // TYPE_SYMBOL_TABLE_HPP_DEFINED

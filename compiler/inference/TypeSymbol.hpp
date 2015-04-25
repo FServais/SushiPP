@@ -22,6 +22,8 @@ namespace inference
 	class TypeSymbol
 	{
 	public:
+		/** Return the type in a string format (in one line without EOL) */
+		virtual std::string str() const = 0;
 		// predicates
 		virtual bool is_link() const = 0;
 		virtual bool is_variable() const = 0;
@@ -55,6 +57,7 @@ namespace inference
 	public:
 		explicit TypeVariable(const std::string&);
 
+		virtual std::string str() const { return varname; };
 		virtual bool is_link() const { return false; }
 		virtual bool is_variable() const { return true; }
 		virtual bool is_type() const { return false; }
@@ -79,6 +82,7 @@ namespace inference
 		TypeSymbol& resolve();
 		const TypeSymbol& resolve() const;
 
+		virtual std::string str() const;
 		virtual bool is_link() const { return true; }
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return false; }
@@ -122,6 +126,7 @@ namespace inference
 	class Bool : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "BOOL"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -132,6 +137,7 @@ namespace inference
 	class String : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "STRING"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -142,6 +148,7 @@ namespace inference
 	class Int : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "INT"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -152,6 +159,7 @@ namespace inference
 	class Float : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "FLOAT"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -162,6 +170,7 @@ namespace inference
 	class Void : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "VOID"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -172,6 +181,7 @@ namespace inference
 	class Char : public FlatType
 	{
 	public:
+		virtual std::string str() const { return "CHAR"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -184,6 +194,7 @@ namespace inference
 	public:
 		Function(const std::vector<std::shared_ptr<TypeLink>>&, std::shared_ptr<TypeLink>);
 
+		virtual std::string str() const;
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return true; };
 		virtual bool is_structure_type() const { return false; };
@@ -209,6 +220,7 @@ namespace inference
 		/** A type link to the structure elements' type */
 		Array(std::shared_ptr<TypeLink>);
 
+		virtual std::string str() const;
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structure_type() const { return true; };
@@ -228,6 +240,7 @@ namespace inference
 		/** A type link to the structure elements' type */
 		List(std::shared_ptr<TypeLink>);
 
+		virtual std::string str() const;
 		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structure_type() const { return true; };

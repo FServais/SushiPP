@@ -3,12 +3,12 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <numeric>
 
 #include "../exceptions/Exceptions.hpp"
 
 using namespace std;
 using namespace inference;
-
 TypeVariable::TypeVariable(const std::string& str) : varname(str) { }
 
 bool TypeVariable::equals(const TypeSymbol& symb) const
@@ -17,7 +17,7 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 
 	const TypeVariable* t_var = dynamic_cast<const TypeVariable*>(&symb);
 
-	return t_var != nullptr // symb is not of class TypeVariable
+	return !t_var // symb is not of class TypeVariable
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
 }
 
@@ -39,6 +39,11 @@ TypeSymbol& TypeLink::resolve()
 		return *symbol;
 }
 
+std::string TypeLink::str() const
+{
+	return resolve().str();
+}
+
 bool TypeLink::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -52,7 +57,7 @@ bool Bool::equals(const TypeSymbol& symb) const
 
 	const Bool* t_bool = dynamic_cast<const Bool*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 bool Char::equals(const TypeSymbol& symb) const
@@ -61,7 +66,7 @@ bool Char::equals(const TypeSymbol& symb) const
 
 	const Char* t_bool = dynamic_cast<const Char*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 bool Int::equals(const TypeSymbol& symb) const
@@ -70,7 +75,7 @@ bool Int::equals(const TypeSymbol& symb) const
 
 	const Int* t_bool = dynamic_cast<const Int*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 bool Float::equals(const TypeSymbol& symb) const
@@ -79,7 +84,7 @@ bool Float::equals(const TypeSymbol& symb) const
 
 	const Float* t_bool = dynamic_cast<const Float*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 bool Void::equals(const TypeSymbol& symb) const
@@ -88,7 +93,7 @@ bool Void::equals(const TypeSymbol& symb) const
 
 	const Void* t_bool = dynamic_cast<const Void*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 bool String::equals(const TypeSymbol& symb) const
@@ -97,7 +102,7 @@ bool String::equals(const TypeSymbol& symb) const
 
 	const String* t_bool = dynamic_cast<const String*>(&symb);
 
-	return t_bool != nullptr;
+	return !t_bool;
 }
 
 Function::Function(const std::vector<shared_ptr<TypeLink>>& params, shared_ptr<TypeLink> ret)
@@ -129,6 +134,18 @@ bool Function::equals(const TypeSymbol& symb) const
 
 	return all_of(equality.begin(), equality.end(), [](bool val) { return val; });
 }
+
+std::string Function::str() const
+{
+	stringstream ss;
+	std::string params = accumulate(next(parameters.begin()), parameters.end(), parameters[0]->str(),
+									[](std::string& acc, shared_ptr<TypeSymbol> symb)
+									{
+										return acc += ", " + symb->str();
+									});
+	ss << "(" << params << ") : " << return_type->str();
+	return ss.str();
+}
 /*
 void Function::get_return_type(types::Type* type) const
 {
@@ -153,6 +170,15 @@ void Function::get_parameter_types(std::vector<types::Type>& types) const
 */
 Array::Array(shared_ptr<TypeLink> type) : items_type(type) { }
 
+
+std::string Array::str() const
+{
+	stringstream ss;
+	ss << "ARRAY ( " << items_type->str() << " )";
+	return ss.str();
+}
+
+
 bool Array::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb)
@@ -164,6 +190,13 @@ bool Array::equals(const TypeSymbol& symb) const
 }
 
 List::List(shared_ptr<TypeLink> type) : items_type(type) { }
+
+std::string List::str() const
+{
+	stringstream ss;
+	ss << "LIST ( " << items_type->str() << " )";
+	return ss.str();
+}
 
 bool List::equals(const TypeSymbol& symb) const
 {
