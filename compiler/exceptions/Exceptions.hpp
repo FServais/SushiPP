@@ -71,6 +71,15 @@ namespace except
 		// param : some more details about the error
 		explicit NoSuchChildException(const std::string&);
 	};
+
+	class NoSuchParameterException : public std::logic_error
+	{
+	public:
+		// param : the number of the parameter
+		explicit NoSuchParameterException(size_t);
+		// param : the number of the parameter and some more details about the error
+		NoSuchParameterException(size_t, const std::string&);
+	};
 }
 
 #endif // EXCEPTIONS_HPP_DEFINED

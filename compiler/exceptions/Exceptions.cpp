@@ -110,3 +110,15 @@ NoSuchChildException::NoSuchChildException(const std::string& details)
 {
 
 }
+
+NoSuchParameterException::NoSuchParameterException(size_t param)
+  : logic_error("There is no parameter number " + std::to_string(param) + " in the VisitorParameters object")
+{
+
+}
+
+NoSuchParameterException::NoSuchParameterException(size_t param, const std::string& details)
+  : logic_error("There is no parameter number " + std::to_string(param) + " in the VisitorParameters object : " + details)
+{
+
+}
