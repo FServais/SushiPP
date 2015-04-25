@@ -79,24 +79,33 @@ namespace inference
 		 * @throw UnificationException if the unification fails
 		 */
 		void unify(const std::string&, const std::string&);
+
 		/**
 		 * @brief Unify the types referenced by the given string with the given flat type
 		 * @param const std::string& type The type string reference
-		 * @param std::shared_ptr<*> flat A shared pointer containing a pointer to the flat type *	
+		 * @param std::shared_ptr<FlatType> flat A shared pointer containing a pointer to the flat type 
 		 * @throw UnificationException if the unification fails
 		 */
 		void unify(const std::string&, std::shared_ptr<inference::FlatType>);
-		/*void unify(const std::string&, std::shared_ptr<inference::Bool>);
-		void unify(const std::string&, std::shared_ptr<inference::String>);
-		void unify(const std::string&, std::shared_ptr<inference::Char>);
-		void unify(const std::string&, std::shared_ptr<inference::Float>);
-		void unify(const std::string&, std::shared_ptr<inference::Void>);*/
 		void unify(std::shared_ptr<inference::FlatType>, const std::string&);
-		/*void unify(std::shared_ptr<inference::Bool>, const std::string&);
-		void unify(std::shared_ptr<inference::String>, const std::string&);
-		void unify(std::shared_ptr<inference::Char>, const std::string&);
-		void unify(std::shared_ptr<inference::Float>, const std::string&);
-		void unify(std::shared_ptr<inference::Void>, const std::string&);*/
+
+		/**
+		 * @brief Unify the types referenced by the given string with the given array type
+		 * @param const std::string& type The type string reference
+		 * @param std::shared_ptr<Array> flat A shared pointer containing a pointer to the flat type Array	
+		 * @throw UnificationException if the unification fails
+		 */
+		void unify(const std::string&, std::shared_ptr<inference::Array>);
+		void unify(std::shared_ptr<inference::Array>, const std::string&);
+
+		/**
+		 * @brief Unify the types referenced by the given string with the given list type
+		 * @param const std::string& type The type string reference
+		 * @param std::shared_ptr<List> flat A shared pointer containing a pointer to the flat type List	
+		 * @throw UnificationException if the unification fails
+		 */
+		void unify(const std::string&, std::shared_ptr<inference::List>);
+		void unify(std::shared_ptr<inference::List>, const std::string&);
 
 	private:
 		/**

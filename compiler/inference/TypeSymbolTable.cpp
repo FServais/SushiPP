@@ -181,7 +181,7 @@ void TypeSymbolTable::unify(const string& type, shared_ptr<FlatType> flat)
 	if(actual_type.is_flat_type())
 	{
 		if(flat->equals(actual_type))
-			throw except::UnificationException("couldn't unify two flat types '" + flat->str() + "' and ' " + actual_type.str() + " '");
+			throw except::UnificationException("couldn't unify two different flat types '" + flat->str() + "' and ' " + actual_type.str() + " '");
 		return;
 	}
 
@@ -192,4 +192,24 @@ void TypeSymbolTable::unify(const string& type, shared_ptr<FlatType> flat)
 void TypeSymbolTable::unify(shared_ptr<FlatType> flat, const string& type)
 {
 	unify(type, flat);
+}
+
+void TypeSymbolTable::unify(const std::string& type, std::shared_ptr<inference::Array> array)
+{
+
+}
+
+void TypeSymbolTable::unify(std::shared_ptr<inference::Array> array, const std::string& type)
+{
+	unify(type, array);
+}
+
+void TypeSymbolTable::unify(const std::string& type, std::shared_ptr<inference::List> list)
+{
+
+}
+
+void TypeSymbolTable::unify(std::shared_ptr<inference::List> list, const std::string& type)
+{
+	unify(type, list);
 }
