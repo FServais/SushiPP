@@ -18,7 +18,7 @@ NT_Expression::NT_Expression(const std::string& node_name, const NodeLocation& n
 
 }
 
-void NT_Expression::accept(ASTVisitor& visitor)
+void NT_Expression::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -47,7 +47,7 @@ ASTNode& Expression::get_child()
 	return *children[0];
 }
 
-void Expression::accept(ASTVisitor& visitor)
+void Expression::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -74,7 +74,7 @@ ASTNode& ModifyingExpression::get_child()
 	return *children[0];
 }
 
-void ModifyingExpression::accept(ASTVisitor& visitor)
+void ModifyingExpression::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -109,7 +109,7 @@ Expression& DatastructureAccess::get_index()
 	return *dynamic_cast<Expression*>(children[1]);
 }
 
-void DatastructureAccess::accept(ASTVisitor& visitor)
+void DatastructureAccess::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -136,7 +136,7 @@ void ExpressionList::add_expression(Expression* expression)
 	add_child_first(expression);
 }
 
-void ExpressionList::accept(ASTVisitor& visitor)
+void ExpressionList::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 

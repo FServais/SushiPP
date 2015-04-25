@@ -25,7 +25,7 @@ ASTNode& Constant::get_constant()
 	return *children[0];
 }
 
-void Constant::accept(ASTVisitor& visitor)
+void Constant::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

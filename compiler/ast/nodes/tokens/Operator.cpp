@@ -18,7 +18,7 @@ Operator::Operator(const std::string& node_name, const NodeLocation& node_loc)
 
 }
 
-void Operator::accept(ASTVisitor& visitor)
+void Operator::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -96,7 +96,7 @@ Op_Plus::Op_Plus(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : 
 
 }
 
-void Op_Plus::accept(ASTVisitor& visitor)
+void Op_Plus::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -115,7 +115,7 @@ Op_Minus::Op_Minus(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) 
 
 }
 
-void Op_Minus::accept(ASTVisitor& visitor)
+void Op_Minus::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -134,7 +134,7 @@ Op_Mult::Op_Mult(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : 
 
 }
 
-void Op_Mult::accept(ASTVisitor& visitor)
+void Op_Mult::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -153,7 +153,7 @@ Op_Div::Op_Div(ASTNode* left, ASTNode* right, const NodeLocation& node_loc) : Bi
 
 }
 
-void Op_Div::accept(ASTVisitor& visitor)
+void Op_Div::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -173,7 +173,7 @@ Op_Modulo::Op_Modulo(ASTNode* left, ASTNode* right, const NodeLocation& node_loc
 
 }
 
-void Op_Modulo::accept(ASTVisitor& visitor)
+void Op_Modulo::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -192,7 +192,7 @@ Op_Exponentiation::Op_Exponentiation(ASTNode* left, ASTNode* right, const NodeLo
 
 }
 
-void Op_Exponentiation::accept(ASTVisitor& visitor)
+void Op_Exponentiation::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -212,7 +212,7 @@ Op_UnaryMinus::Op_UnaryMinus(ASTNode* operand, const NodeLocation& node_loc) : U
 
 }
 
-void Op_UnaryMinus::accept(ASTVisitor& visitor)
+void Op_UnaryMinus::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -232,7 +232,7 @@ Op_BitwiseOr::Op_BitwiseOr(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_BitwiseOr::accept(ASTVisitor& visitor)
+void Op_BitwiseOr::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -252,7 +252,7 @@ Op_BitwiseAnd::Op_BitwiseAnd(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_BitwiseAnd::accept(ASTVisitor& visitor)
+void Op_BitwiseAnd::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -272,7 +272,7 @@ Op_BitwiseXor::Op_BitwiseXor(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_BitwiseXor::accept(ASTVisitor& visitor)
+void Op_BitwiseXor::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -292,7 +292,7 @@ Op_BitwiseNot::Op_BitwiseNot(ASTNode* operand, const NodeLocation& node_loc) : U
 
 }
 
-void Op_BitwiseNot::accept(ASTVisitor& visitor)
+void Op_BitwiseNot::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -312,7 +312,7 @@ Op_LogicalOr::Op_LogicalOr(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_LogicalOr::accept(ASTVisitor& visitor)
+void Op_LogicalOr::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -332,7 +332,7 @@ Op_LogicalAnd::Op_LogicalAnd(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_LogicalAnd::accept(ASTVisitor& visitor)
+void Op_LogicalAnd::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -352,7 +352,7 @@ Op_LogicalNot::Op_LogicalNot(ASTNode* operand, const NodeLocation& node_loc) : U
 
 }
 
-void Op_LogicalNot::accept(ASTVisitor& visitor)
+void Op_LogicalNot::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -372,7 +372,7 @@ Op_CompLessThan::Op_CompLessThan(ASTNode* left, ASTNode* right, const NodeLocati
 
 }
 
-void Op_CompLessThan::accept(ASTVisitor& visitor)
+void Op_CompLessThan::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -392,7 +392,7 @@ Op_CompGreaterThan::Op_CompGreaterThan(ASTNode* left, ASTNode* right, const Node
 
 }
 
-void Op_CompGreaterThan::accept(ASTVisitor& visitor)
+void Op_CompGreaterThan::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -412,7 +412,7 @@ Op_CompLessEqual::Op_CompLessEqual(ASTNode* left, ASTNode* right, const NodeLoca
 
 }
 
-void Op_CompLessEqual::accept(ASTVisitor& visitor)
+void Op_CompLessEqual::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -432,7 +432,7 @@ Op_CompGreaterEqual::Op_CompGreaterEqual(ASTNode* left, ASTNode* right, const No
 
 }
 
-void Op_CompGreaterEqual::accept(ASTVisitor& visitor)
+void Op_CompGreaterEqual::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -452,7 +452,7 @@ Op_CompEqual::Op_CompEqual(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_CompEqual::accept(ASTVisitor& visitor)
+void Op_CompEqual::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -472,7 +472,7 @@ Op_CompNotEqual::Op_CompNotEqual(ASTNode* left, ASTNode* right, const NodeLocati
 
 }
 
-void Op_CompNotEqual::accept(ASTVisitor& visitor)
+void Op_CompNotEqual::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -492,7 +492,7 @@ Op_LeftShift::Op_LeftShift(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_LeftShift::accept(ASTVisitor& visitor)
+void Op_LeftShift::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -512,7 +512,7 @@ Op_RightShift::Op_RightShift(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_RightShift::accept(ASTVisitor& visitor)
+void Op_RightShift::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -532,7 +532,7 @@ Op_StringConcat::Op_StringConcat(ASTNode* left, ASTNode* right, const NodeLocati
 
 }
 
-void Op_StringConcat::accept(ASTVisitor& visitor)
+void Op_StringConcat::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -552,7 +552,7 @@ Op_PrefixIncrement::Op_PrefixIncrement(ASTNode* operand, const NodeLocation& nod
 
 }
 
-void Op_PrefixIncrement::accept(ASTVisitor& visitor)
+void Op_PrefixIncrement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -572,7 +572,7 @@ Op_PrefixDecrement::Op_PrefixDecrement(ASTNode* operand, const NodeLocation& nod
 
 }
 
-void Op_PrefixDecrement::accept(ASTVisitor& visitor)
+void Op_PrefixDecrement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -592,7 +592,7 @@ Op_PostfixIncrement::Op_PostfixIncrement(ASTNode* operand, const NodeLocation& n
 
 }
 
-void Op_PostfixIncrement::accept(ASTVisitor& visitor)
+void Op_PostfixIncrement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -612,7 +612,7 @@ Op_PostfixDecrement::Op_PostfixDecrement(ASTNode* operand, const NodeLocation& n
 
 }
 
-void Op_PostfixDecrement::accept(ASTVisitor& visitor)
+void Op_PostfixDecrement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -632,7 +632,7 @@ Op_Assignment::Op_Assignment(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_Assignment::accept(ASTVisitor& visitor)
+void Op_Assignment::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -652,7 +652,7 @@ Op_AssignPlus::Op_AssignPlus(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_AssignPlus::accept(ASTVisitor& visitor)
+void Op_AssignPlus::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -672,7 +672,7 @@ Op_AssignMinus::Op_AssignMinus(ASTNode* left, ASTNode* right, const NodeLocation
 
 }
 
-void Op_AssignMinus::accept(ASTVisitor& visitor)
+void Op_AssignMinus::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -692,7 +692,7 @@ Op_AssignMult::Op_AssignMult(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_AssignMult::accept(ASTVisitor& visitor)
+void Op_AssignMult::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -712,7 +712,7 @@ Op_AssignDiv::Op_AssignDiv(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_AssignDiv::accept(ASTVisitor& visitor)
+void Op_AssignDiv::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -732,7 +732,7 @@ Op_AssignExpo::Op_AssignExpo(ASTNode* left, ASTNode* right, const NodeLocation& 
 
 }
 
-void Op_AssignExpo::accept(ASTVisitor& visitor)
+void Op_AssignExpo::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -752,7 +752,7 @@ Op_AssignMod::Op_AssignMod(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_AssignMod::accept(ASTVisitor& visitor)
+void Op_AssignMod::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -772,7 +772,7 @@ Op_AssignAnd::Op_AssignAnd(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_AssignAnd::accept(ASTVisitor& visitor)
+void Op_AssignAnd::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -792,7 +792,7 @@ Op_AssignOr::Op_AssignOr(ASTNode* left, ASTNode* right, const NodeLocation& node
 
 }
 
-void Op_AssignOr::accept(ASTVisitor& visitor)
+void Op_AssignOr::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -812,7 +812,7 @@ Op_AssignXor::Op_AssignXor(ASTNode* left, ASTNode* right, const NodeLocation& no
 
 }
 
-void Op_AssignXor::accept(ASTVisitor& visitor)
+void Op_AssignXor::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -832,7 +832,7 @@ Op_AssignConcat::Op_AssignConcat(ASTNode* left, ASTNode* right, const NodeLocati
 
 }
 
-void Op_AssignConcat::accept(ASTVisitor& visitor)
+void Op_AssignConcat::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);	 
 }

@@ -21,7 +21,7 @@ NT_FunctionCall::NT_FunctionCall(const string& node_name, const NodeLocation& no
 
 }
 
-void NT_FunctionCall::accept(ASTVisitor& visitor)
+void NT_FunctionCall::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -57,7 +57,7 @@ FuncCall::FuncCall(ASTNode* id, ArgList* arg_list, const NodeLocation& node_loc)
 		add_child(arg_list);
 }
 
-void FuncCall::accept(ASTVisitor& visitor)
+void FuncCall::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -91,7 +91,7 @@ ArgList::ArgList(Argument* arg, const NodeLocation& node_loc) : NT_FunctionCall(
 	add_child(arg);
 }
 
-void ArgList::accept(ASTVisitor& visitor)
+void ArgList::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -130,7 +130,7 @@ Argument::Argument(ASTNode* arg, const NodeLocation& node_loc) : NT_FunctionCall
 	add_child(arg);
 }
 
-void Argument::accept(ASTVisitor& visitor)
+void Argument::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

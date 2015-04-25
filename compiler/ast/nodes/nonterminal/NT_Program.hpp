@@ -16,7 +16,7 @@ namespace ast
 		NT_Program(const std::string&,int,int,int,int);
 		NT_Program(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Scope : public NT_Program
@@ -41,7 +41,7 @@ namespace ast
 		size_t get_scope_id() const { return scope_id; }
 		void set_scope_id(size_t id) { scope_id = id; }
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	private:
 		size_t scope_id;
 	};
@@ -58,7 +58,7 @@ namespace ast
 		Program(Scope*,int,int,int,int);
 		Program(Scope*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 

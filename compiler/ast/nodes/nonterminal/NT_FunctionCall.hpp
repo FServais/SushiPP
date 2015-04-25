@@ -18,7 +18,7 @@ namespace ast
 		NT_FunctionCall(const std::string&,int,int,int,int);
 		NT_FunctionCall(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/***************************************
@@ -33,7 +33,7 @@ namespace ast
 		Argument(ASTNode*, int,int,int,int);
 		Argument(ASTNode*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		ASTNode& get_child();
 
 
@@ -47,7 +47,7 @@ namespace ast
 		ArgList(Argument*,int,int,int,int);
 		ArgList(Argument*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		void add_argument(Argument*);
 		Argument& get_arg(size_t);
 		size_t nb_args() const;
@@ -61,7 +61,7 @@ namespace ast
 		FuncCall(ASTNode*, ArgList*, int,int,int,int);
 		FuncCall(ASTNode*, ArgList*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		// either an id or a function call
 		ASTNode& get_function();
 		/**

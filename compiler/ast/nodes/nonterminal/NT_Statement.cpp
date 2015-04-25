@@ -20,7 +20,7 @@ NT_Statement::NT_Statement(const std::string& node_name, const NodeLocation& nod
 
 }
 
-void NT_Statement::accept(ASTVisitor& visitor)
+void NT_Statement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -43,7 +43,7 @@ Statement::Statement(ASTNode* statement, const NodeLocation& node_loc) : NT_Stat
 	add_child(statement);
 }
 
-void Statement::accept(ASTVisitor& visitor)
+void Statement::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -95,7 +95,7 @@ Expression& Return::get_returned_expression()
 	return *dynamic_cast<Expression*>(children[0]);
 }
 
-void Return::accept(ASTVisitor& visitor)
+void Return::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -132,7 +132,7 @@ Expression& Menu::get_expression()
 	return *dynamic_cast<Expression*>(children[0]);
 }
 
-void Menu::accept(ASTVisitor& visitor)
+void Menu::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -205,7 +205,7 @@ MenuCase& MenuBody::get_nth_case(size_t n)
 	return *dynamic_cast<MenuCase*>(children[n]);
 }
 
-void MenuBody::accept(ASTVisitor& visitor)
+void MenuBody::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -241,7 +241,7 @@ Expression& MenuCase::get_expression()
 }
 
 
-void MenuCase::accept(ASTVisitor& visitor)
+void MenuCase::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -270,7 +270,7 @@ Scope& MenuDef::get_scope()
 }
 
 
-void MenuDef::accept(ASTVisitor& visitor)
+void MenuDef::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -305,7 +305,7 @@ Expression& Roll::get_expression()
 	return *dynamic_cast<Expression*>(children[0]);
 }
 
-void Roll::accept(ASTVisitor& visitor)
+void Roll::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -348,7 +348,7 @@ Scope& Foreach::get_scope()
 	return *dynamic_cast<Scope*>(children[2]);
 }
 		
-void Foreach::accept(ASTVisitor& visitor)
+void Foreach::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -402,7 +402,7 @@ For::For(ForInitializer* init, Expression* expr, ForUpdate* update, Scope* scope
 	add_child(scope);
 }
 
-void For::accept(ASTVisitor& visitor)
+void For::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -453,7 +453,7 @@ ASTNode& ForInitializer::get_expression()
 	return *children[0];
 }
 
-void ForInitializer::accept(ASTVisitor& visitor)
+void ForInitializer::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -481,7 +481,7 @@ ASTNode& ForUpdate::get_expression()
 	return *children[0];
 }
 
-void ForUpdate::accept(ASTVisitor& visitor)
+void ForUpdate::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -552,7 +552,7 @@ Else& Conditional::get_else()
 	return *dynamic_cast<Else*>(children.back());
 }
 
-void Conditional::accept(ASTVisitor& visitor)
+void Conditional::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -579,7 +579,7 @@ If::If(Expression* expr, Scope* scope, const NodeLocation& node_loc)
 	add_child(scope);
 }
 
-void If::accept(ASTVisitor& visitor)
+void If::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 } 
@@ -616,7 +616,7 @@ Elseif::Elseif(Expression* expr, Scope* scope, const NodeLocation& node_loc)
 	add_child(scope);
 }
 
-void Elseif::accept(ASTVisitor& visitor)
+void Elseif::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -655,7 +655,7 @@ Scope& Else::get_scope()
 	return *dynamic_cast<Scope*>(children[0]);
 }
 
-void Else::accept(ASTVisitor& visitor)
+void Else::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

@@ -22,7 +22,7 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 
 }
 
-void NT_Declaration::accept(ASTVisitor& visitor)
+void NT_Declaration::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -53,7 +53,7 @@ DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, const No
 	add_child(scope);
 }
 
-void DeclFunc::accept(ASTVisitor& visitor)
+void DeclFunc::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -92,7 +92,7 @@ DeclVars::DeclVars(DeclVar* dvar, const NodeLocation& node_loc) : NT_Declaration
 	add_child(dvar);
 }
 
-void DeclVars::accept(ASTVisitor& visitor)
+void DeclVars::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -160,7 +160,7 @@ DeclVar::DeclVar(Identifier* id,  Expression* expr, const NodeLocation& node_loc
 	add_child(expr);
 }
 
-void DeclVar::accept(ASTVisitor& visitor)
+void DeclVar::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -214,7 +214,7 @@ Param::Param(Identifier* id, Type* type,  const NodeLocation& node_loc) : NT_Dec
 	add_child(type);
 }
 
-void Param::accept(ASTVisitor& visitor)
+void Param::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -275,7 +275,7 @@ ParamList::ParamList(Param* param, const NodeLocation& node_loc) : NT_Declaratio
 	add_child(param);
 }
 
-void ParamList::accept(ASTVisitor& visitor)
+void ParamList::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -326,7 +326,7 @@ SoyFunc::SoyFunc(ParamList* param_list, Scope* scope, const NodeLocation& node_l
 	add_child(scope);
 }
 
-void SoyFunc::accept(ASTVisitor& visitor)
+void SoyFunc::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
