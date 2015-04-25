@@ -155,11 +155,6 @@ bool Array::equals(const TypeSymbol& symb) const
 	return t_arr != nullptr && items_type.equals(t_arr->items_type);
 }
 
-Array::get_items_type(types::Type* type) const
-{
-	items_type.get_type(type);
-}
-
 List::List(TypeLink& type) : items_type(type) { }
 
 bool List::equals(const TypeSymbol& symb) const
@@ -170,9 +165,4 @@ bool List::equals(const TypeSymbol& symb) const
 	List* t_list = dynamic_cast<List*>(symb);
 
 	return t_list != nullptr && items_type.equals(t_list->items_type);
-}
-
-List::get_items_type(types::Type* type) const
-{
-	items_type.get_type(type);
 }

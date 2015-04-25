@@ -214,8 +214,6 @@ namespace inference
 		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
 
-		types::Type get_items_type() const;
-
 	private:
 		TypeLink& items_type;
 	};
@@ -234,8 +232,6 @@ namespace inference
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
-
-		types::Type get_items_type() const;
 
 	private:
 		TypeLink& items_type;
