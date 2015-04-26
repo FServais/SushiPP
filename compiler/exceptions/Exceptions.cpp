@@ -75,18 +75,6 @@ ParsingException::ParsingException(const string& details)
 
 }
 
-TypeSymbolResolutionException::TypeSymbolResolutionException()
-	: runtime_error("Cannot resolve a symbol type to a complete type.")
-{
-
-}
-
-TypeSymbolResolutionException::TypeSymbolResolutionException(const string& details)
-	: runtime_error("Cannot resolve a symbol type to a complete type : " + details)
-{
-
-}
-
 BadParameterNumberException::BadParameterNumberException()
 	: logic_error("The number of expected number of parameters does not match the number of given parameters.")
 {
