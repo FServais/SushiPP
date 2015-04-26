@@ -163,12 +163,13 @@ std::string Function::str() const
 	return ss.str();
 }
 
-Array::Array(shared_ptr<TypeLink> type) : items_type(type) { }
+UniparameterType::UniparameterType(std::shared_ptr<TypeLink> param_type) : parameter_type(param_type) { }
 
+Array::Array(shared_ptr<TypeLink> type) : UniparameterType(type) { }
 
 std::string Array::str() const
 {
-	return "ARRAY ( " + items_type->str() + " )";
+	return "ARRAY ( " + parameter_type->str() + " )";
 }
 
 bool Array::equals(const TypeSymbol& symb) const
@@ -178,14 +179,14 @@ bool Array::equals(const TypeSymbol& symb) const
 
 	const Array* t_arr = dynamic_cast<const Array*>(&symb);
 
-	return !t_arr && items_type->equals(*(t_arr->items_type));
+	return !t_arr && parameter_type->equals(*(t_arr->parameter_type));
 }
 
-List::List(shared_ptr<TypeLink> type) : items_type(type) { }
+List::List(shared_ptr<TypeLink> type) : UniparameterType(type) { }
 
 std::string List::str() const
 {
-	return "LIST ( " + items_type->str() + " )";
+	return "LIST ( " + parameter_type->str() + " )";
 }
 
 bool List::equals(const TypeSymbol& symb) const
@@ -195,5 +196,5 @@ bool List::equals(const TypeSymbol& symb) const
 
 	const List* t_list = dynamic_cast<const List*>(&symb);
 
-	return !t_list && items_type->equals(*(t_list->items_type));
+	return !t_list && parameter_type->equals(*(t_list->parameter_type));
 }

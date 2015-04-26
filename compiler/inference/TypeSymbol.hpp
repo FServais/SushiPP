@@ -30,7 +30,8 @@ namespace inference
 		virtual bool is_type() const = 0;
 		virtual bool is_flat_type() const = 0;
 		virtual bool is_function_type() const = 0;
-		virtual bool is_structure_type() const = 0; // true if the TypeSymbol is the array or list type
+		virtual bool is_structured_type() const = 0; // true if the TypeSymbol is the array, list or function type
+		virtual bool is_uniparameter_type() const = 0;  // true if the TypeSymbol is the array or list type
 		virtual bool equals(const TypeSymbol&) const = 0; // return true if the given type symbol is equal to the one given as argument
 													// if one of the element is a link it is resolved before comparison
 		/**
@@ -63,7 +64,8 @@ namespace inference
 		virtual bool is_type() const { return false; }
 		virtual bool is_flat_type() const { return false; }
 		virtual bool is_function_type() const { return false; }
-		virtual bool is_structure_type() const { return false; }
+		virtual bool is_structured_type() const { return false; }
+		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
 
 	private:
@@ -102,7 +104,8 @@ namespace inference
 		virtual bool is_type() const { return false; }
 		virtual bool is_flat_type() const { return false; }
 		virtual bool is_function_type() const { return false; }
-		virtual bool is_structure_type() const { return false; }
+		virtual bool is_structured_type() const { return false; }
+		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
 
 	private:
@@ -130,7 +133,8 @@ namespace inference
 	public:
 		virtual bool is_flat_type() const { return true; };
 		virtual bool is_function_type() const { return false; };
-		virtual bool is_structure_type() const { return false; };
+		virtual bool is_structured_type() const { return false; }
+		virtual bool is_uniparameter_type() const { return false; }
 	};
 
 	/**
@@ -200,18 +204,28 @@ namespace inference
 	};
 
 	/**
+	 * @class StructuredType
+	 * @brief A class for complex type that could be composed of other types
+	 */
+	class StructuredType : public Type
+	{
+	public:
+		virtual bool is_flat_type() const { return false; }
+		virtual bool is_structured_type() const { return true; }
+	};
+
+	/**
 	 * @class Function
 	 * @brief Function type
 	 */
-	class Function : public Type
+	class Function : public StructuredType
 	{
 	public:
 		Function(const std::vector<std::shared_ptr<TypeLink>>&, std::shared_ptr<TypeLink>);
 
 		virtual std::string str() const;
-		virtual bool is_flat_type() const { return false; };
 		virtual bool is_function_type() const { return true; };
-		virtual bool is_structure_type() const { return false; };
+		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
 /*
 		types::Type get_return_type() const;
@@ -219,49 +233,74 @@ namespace inference
 		void get_parameter_types(std::vector<types::Type>&) const;
 		*/
 
+		/** Getters for the return type */
+		std::shared_ptr<TypeLink> get_return_type() { return return_type; };
+		const std::shared_ptr<TypeLink> get_return_type() const { return return_type; };
+
+		/** Getters for the parameters */
+		std::vector<std::shared_ptr<TypeLink>>& get_parameters() { return parameters; };
+		const std::vector<std::shared_ptr<TypeLink>>& get_parameters() const { return parameters; };
+
 	private:
 		std::shared_ptr<TypeLink> return_type;
 		std::vector<std::shared_ptr<TypeLink>> parameters;
 	};
 
 	/**
+	 * @class UniparameterType
+	 * @brief A base class for any structured type containing one type parameter
+ 	 */
+	class UniparameterType : public StructuredType
+	{
+	public:
+		UniparameterType(std::shared_ptr<TypeLink>);
+
+		virtual bool is_function_type() const { return false; };
+		virtual bool is_uniparameter_type() const { return true; };
+
+		virtual bool is_array() const = 0;
+		virtual bool is_list() const = 0;
+
+		// parameter type getters
+		std::shared_ptr<TypeLink> get_param_type() { return parameter_type };
+		const std::shared_ptr<TypeLink> get_param_type() const { return parameter_type };
+
+	protected:
+		std::shared_ptr<TypeLink> parameter_type; 
+	};
+
+	/**
 	 * @class Array
 	 * @brief Array type
 	 */
-	class Array : public Type
+	class Array : public UniparameterType
 	{
 	public:
 		/** A type link to the structure elements' type */
 		Array(std::shared_ptr<TypeLink>);
 
 		virtual std::string str() const;
-		virtual bool is_flat_type() const { return false; };
-		virtual bool is_function_type() const { return false; };
-		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
 
-	private:
-		std::shared_ptr<TypeLink> items_type;
+		virtual bool is_array() const { return true; };
+		virtual bool is_list() const { return false; };
 	};
 
 	/**
 	 * @class List
 	 * @brief List type
 	 */
-	class List : public Type
+	class List : public UniparameterType
 	{
 	public:
 		/** A type link to the structure elements' type */
 		List(std::shared_ptr<TypeLink>);
 
 		virtual std::string str() const;
-		virtual bool is_flat_type() const { return false; };
-		virtual bool is_function_type() const { return false; };
-		virtual bool is_structure_type() const { return true; };
 		virtual bool equals(const TypeSymbol&) const;
 
-	private:
-		std::shared_ptr<TypeLink> items_type;
+		virtual bool is_array() const { return false; };
+		virtual bool is_list() const { return true; };
 	};
 }
 
