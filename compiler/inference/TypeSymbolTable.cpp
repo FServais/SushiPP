@@ -107,6 +107,7 @@ namespace inference
 {
     ostream& operator<<(ostream& out, const TypeSymbolTable& table)
     {  
+    	// sort the indexes
     	map<TypeSymbolTable::key_type, string> omap;
         
         for(auto& symbol : table)
@@ -256,7 +257,7 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 	{
 		delete flat;
 		if(flat->equals(actual_type))
-			throw except::UnificationException("couldn't unify two different flat types '" + err_type + "' and ' " + actual_type.str() + " '");
+			throw except::UnificationException("couldn't unify two different flat types '" + err_type + "' and '" + actual_type.str() + "'");
 		return;
 	}
 

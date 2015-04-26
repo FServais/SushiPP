@@ -20,7 +20,7 @@ namespace inference
 	 *  - type variable : represent a still unresolved type. A unique name can be obtained with the 'unique_varname' function
 	 *  - an identifier of a program : a unique name can be obtained with the 'unique_id_name' function
 	 */
-	class TypeSymbolTable : public std::unordered_map<std::string, TypeLink>
+	class TypeSymbolTable : protected std::unordered_map<std::string, TypeLink>
 	{
 		friend std::ostream& operator<<(std::ostream&, const TypeSymbolTable&);
 	public:
