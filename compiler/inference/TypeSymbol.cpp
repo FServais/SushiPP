@@ -10,7 +10,7 @@
 using namespace std;
 using namespace inference;
 
-TypeVariable::TypeVariable(const std::string& str) : varname(str) { }
+TypeVariable::TypeVariable(const string& str) : varname(str) { }
 
 bool TypeVariable::equals(const TypeSymbol& symb) const
 {
@@ -18,44 +18,61 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 
 	const TypeVariable* t_var = dynamic_cast<const TypeVariable*>(&symb);
 
-	return !t_var // symb is not of class TypeVariable
+	return t_var // symb is not of class TypeVariable
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
 }
 
-TypeLink::TypeLink(shared_ptr<TypeSymbol> pointed_symbol) : symbol(pointed_symbol) { }
+TypeLink::TypeLink(TypeSymbol* symb) : linked_symbol(symb), symbol_is_link(symb->is_link())
+{ 
+	if(!symb) throw invalid_argument("The link must be a valid pointer, nullptr given.");
+}
 
-const TypeSymbol& TypeLink::resolve() const
+TypeLink::~TypeLink()
 {
-	return *(resolve_last_link().symbol);
+	if(!symbol_is_link) // the ownership is not acquired on the type links
+ 		delete linked_symbol;
+}
+
+TypeSymbol& TypeLink::symbol()
+{
+	return *linked_symbol;
+}
+
+const TypeSymbol& TypeLink::symbol() const
+{
+	return *linked_symbol;
 }
 
 TypeSymbol& TypeLink::resolve()
 {
-	return *(resolve_last_link().symbol);
+	return resolve_last_link().symbol();
+}
+
+const TypeSymbol& TypeLink::resolve() const
+{
+	return resolve_last_link().symbol();
 }
 
 TypeLink& TypeLink::resolve_last_link()
 {
-	if(symbol->is_link())
-		return dynamic_cast<TypeLink*>(symbol.get())->resolve_last_link();
-	else
-		return *this;
-}
-
-void TypeLink::set_symbol(std::shared_ptr<TypeSymbol> new_symbol)
-{
-	symbol = new_symbol;
+	return linked_symbol->is_link() ? dynamic_cast<TypeLink&>(*linked_symbol).resolve_last_link() : *this;
 }
 
 const TypeLink& TypeLink::resolve_last_link() const
 {
-	if(symbol->is_link())
-		return dynamic_cast<TypeLink*>(symbol.get())->resolve_last_link();
-	else
-		return *this;
+	return linked_symbol->is_link() ? dynamic_cast<TypeLink&>(*linked_symbol).resolve_last_link() : *this;
 }
 
-std::string TypeLink::str() const
+void TypeLink::set_symbol(TypeSymbol* new_symb)
+{
+	if(!symbol_is_link)
+		delete linked_symbol;
+
+	linked_symbol = new_symb;
+	symbol_is_link = linked_symbol->is_link();
+}
+
+string TypeLink::str() const
 {
 	return resolve().str();
 }
@@ -73,55 +90,55 @@ bool Bool::equals(const TypeSymbol& symb) const
 
 	const Bool* t_bool = dynamic_cast<const Bool*>(&symb);
 
-	return !t_bool;
+	return t_bool;
 }
 
 bool Char::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
-	const Char* t_bool = dynamic_cast<const Char*>(&symb);
+	const Char* t_char = dynamic_cast<const Char*>(&symb);
 
-	return !t_bool;
+	return t_char;
 }
 
 bool Int::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
-	const Int* t_bool = dynamic_cast<const Int*>(&symb);
+	const Int* t_int = dynamic_cast<const Int*>(&symb);
 
-	return !t_bool;
+	return t_int;
 }
 
 bool Float::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
-	const Float* t_bool = dynamic_cast<const Float*>(&symb);
+	const Float* t_float = dynamic_cast<const Float*>(&symb);
 
-	return !t_bool;
+	return t_float;
 }
 
 bool Void::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
-	const Void* t_bool = dynamic_cast<const Void*>(&symb);
+	const Void* t_void = dynamic_cast<const Void*>(&symb);
 
-	return !t_bool;
+	return t_void;
 }
 
 bool String::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
-	const String* t_bool = dynamic_cast<const String*>(&symb);
+	const String* t_string = dynamic_cast<const String*>(&symb);
 
-	return !t_bool;
+	return !t_string;
 }
 
-Function::Function(const std::vector<shared_ptr<TypeLink>>& params, shared_ptr<TypeLink> ret)
+Function::Function(const vector<reference_wrapper<TypeLink>>& params, TypeLink& ret)
   : return_type(ret),
   	parameters(params)
 {
@@ -136,40 +153,40 @@ bool Function::equals(const TypeSymbol& symb) const
 
 	if(!t_func  // symb is not of type Function
 		 || t_func->parameters.size() != parameters.size() // parameter list are not the same
-		 || !return_type->equals(*(t_func->return_type))) // return type is not the same
+		 || !return_type.equals(t_func->return_type)) // return type is not the same
 		return false;
 
 	// check whether the parameters are the same
-	std::vector<bool> equality;
+	vector<bool> equality;
 
 	transform(parameters.begin(), parameters.end(), t_func->parameters.begin(), back_inserter(equality),
-			 [](shared_ptr<TypeLink> link1, shared_ptr<TypeLink> link2)
+			 [](TypeLink& link1, TypeLink& link2)
 			 {
-                return link1->equals(*link2);
+                return link1.equals(link2);
 			 });
 
 	return all_of(equality.begin(), equality.end(), [](bool val) { return val; });
 }
 
-std::string Function::str() const
+string Function::str() const
 {
 	stringstream ss;
-	std::string params = accumulate(next(parameters.begin()), parameters.end(), parameters[0]->str(),
-									[](std::string& acc, shared_ptr<TypeSymbol> symb)
-									{
-										return acc += ", " + symb->str();
-									});
-	ss << "(" << params << ") : " << return_type->str();
+	string params = accumulate(next(parameters.begin()), parameters.end(), parameters.size() ? parameters[0].get().str() : "",
+								[](string& acc, TypeSymbol& symb)
+								{
+									return acc += ", " + symb.str();
+								});
+	ss << "(" << params << ") : (" << return_type.str() << ")";
 	return ss.str();
 }
 
-UniparameterType::UniparameterType(std::shared_ptr<TypeLink> param_type) : parameter_type(param_type) { }
+UniparameterType::UniparameterType(TypeLink& param_type) : parameter_type(param_type) { }
 
-Array::Array(shared_ptr<TypeLink> type) : UniparameterType(type) { }
+Array::Array(TypeLink& type) : UniparameterType(type) { }
 
-std::string Array::str() const
+string Array::str() const
 {
-	return "ARRAY ( " + parameter_type->str() + " )";
+	return "ARRAY ( " + parameter_type.str() + " )";
 }
 
 bool Array::equals(const TypeSymbol& symb) const
@@ -179,14 +196,14 @@ bool Array::equals(const TypeSymbol& symb) const
 
 	const Array* t_arr = dynamic_cast<const Array*>(&symb);
 
-	return !t_arr && parameter_type->equals(*(t_arr->parameter_type));
+	return t_arr && parameter_type.equals(t_arr->parameter_type);
 }
 
-List::List(shared_ptr<TypeLink> type) : UniparameterType(type) { }
+List::List(TypeLink& type) : UniparameterType(type) { }
 
-std::string List::str() const
+string List::str() const
 {
-	return "LIST ( " + parameter_type->str() + " )";
+	return "LIST ( " + parameter_type.str() + " )";
 }
 
 bool List::equals(const TypeSymbol& symb) const
@@ -196,5 +213,5 @@ bool List::equals(const TypeSymbol& symb) const
 
 	const List* t_list = dynamic_cast<const List*>(&symb);
 
-	return !t_list && parameter_type->equals(*(t_list->parameter_type));
+	return t_list && parameter_type.equals(t_list->parameter_type);
 }

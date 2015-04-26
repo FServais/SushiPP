@@ -5,8 +5,6 @@
 #include <vector>
 #include <memory>
 
-#include "../types/Type.hpp"
-
 namespace inference
 {
 	/**
@@ -22,6 +20,7 @@ namespace inference
 	class TypeSymbol
 	{
 	public:
+		virtual ~TypeSymbol() {};
 		/** Return the type in a string format (in one line without EOL) */
 		virtual std::string str() const = 0;
 		// predicates
@@ -40,13 +39,6 @@ namespace inference
 		 * to a complete type, if the type symbol is a variable)
 		 */
 		//virtual void get_type(types::Type*) const = 0;
-
-		/**
-		 * @brief Unify the current type symbol with the given one
-		 * @param TypeSymbol& symb The symbol to unify the current one with
-		 * @throw UnificationException if the unification is impossible to perform during the unification
-		 */
-		//virtual void unify(std::shared_ptr<TypeLink>) = 0;
 	};
 
 	/**
@@ -72,14 +64,48 @@ namespace inference
 		std::string varname;
 	};
 
-	/**Type
+	/**
+	 * @class Type
+	 * @brief Base class for any actual type
+	 */
+	class Type : public TypeSymbol
+	{
+	public:
+		virtual bool is_link() const { return false; }
+		virtual bool is_variable() const { return false; }
+		virtual bool is_type() const { return true; }
+	};
+
+	/**
 	 * @class TypeLink
 	 * @brief Represent a link to a type symbol
+	 * A typelink has two modes :
+	 * 1) Either it is linked type link which was allocated in another context
+	 * 2) Or it is linked to an actual type (functio, array, list or flat) or a type variable. In this case, 
+	 *   the type link object has the ownership of the underlying object (which must be dynamically allocated)
 	 */
 	class TypeLink : public TypeSymbol
 	{
 	public:
-		TypeLink(std::shared_ptr<TypeSymbol>);
+		/**
+		 * @brief Construct a type link object
+		 * @param Symbol* link A pointer to the symbol type owned by the link
+		 * @note The object acquire the ownership
+		 */
+		TypeLink(TypeSymbol*);
+
+		// disable copy constructor, and assignment operator
+		TypeLink(const TypeLink&) = delete;
+		TypeLink& operator=(const TypeLink&) = delete;
+
+		virtual ~TypeLink();
+
+		/**
+		 * @brief Set the symbol linked by the type link
+		 * @param TypeLink* link A pointer to a link object (must not be allocated dynamically)
+		 * @note The object acquire the ownership
+		 */
+		void set_symbol(TypeSymbol*);
 
 		/**
 		 * @brief Get the actual type object or type linked to the current link
@@ -88,15 +114,16 @@ namespace inference
 		const TypeSymbol& resolve() const;
 
 		/**
-		 * @brief Set the symbol linked by the type link
-		 */
-		void set_symbol(std::shared_ptr<TypeSymbol>);
-
-		/**
 		 * @brief Get the last link before the an actual type object or type variable
 		 */
 		TypeLink& resolve_last_link();
 		const TypeLink& resolve_last_link() const;
+
+		/**
+		 * @brief Get the type symbol pointed by the object
+		 */
+		TypeSymbol& symbol();
+		const TypeSymbol& symbol() const;
 
 		virtual std::string str() const;
 		virtual bool is_link() const { return true; }
@@ -109,19 +136,8 @@ namespace inference
 		virtual bool equals(const TypeSymbol&) const;
 
 	private:
-		std::shared_ptr<TypeSymbol> symbol; // the symbol linked by the object
-	};
-
-	/**
-	 * @class Type
-	 * @brief Base class for any actual type
-	 */
-	class Type : public TypeSymbol
-	{
-	public:
-		virtual bool is_link() const { return false; }
-		virtual bool is_variable() const { return false; }
-		virtual bool is_type() const { return true; }
+		TypeSymbol* linked_symbol; // underlying link object, nullptr if (*this) does not point to a type link object
+		bool symbol_is_link; // true if the linked symbol points to a link, false otherwise
 	};
 
 	/**
@@ -221,7 +237,7 @@ namespace inference
 	class Function : public StructuredType
 	{
 	public:
-		Function(const std::vector<std::shared_ptr<TypeLink>>&, std::shared_ptr<TypeLink>);
+		Function(const std::vector<std::reference_wrapper<TypeLink>>&, TypeLink&);
 
 		virtual std::string str() const;
 		virtual bool is_function_type() const { return true; };
@@ -234,16 +250,16 @@ namespace inference
 		*/
 
 		/** Getters for the return type */
-		std::shared_ptr<TypeLink> get_return_type() { return return_type; };
-		const std::shared_ptr<TypeLink> get_return_type() const { return return_type; };
+		TypeLink& get_return_type() { return return_type; };
+		const TypeLink& get_return_type() const { return return_type; };
 
 		/** Getters for the parameters */
-		std::vector<std::shared_ptr<TypeLink>>& get_parameters() { return parameters; };
-		const std::vector<std::shared_ptr<TypeLink>>& get_parameters() const { return parameters; };
+		std::vector<std::reference_wrapper<TypeLink>>& get_parameters() { return parameters; };
+		const std::vector<std::reference_wrapper<TypeLink>>& get_parameters() const { return parameters; };
 
 	private:
-		std::shared_ptr<TypeLink> return_type;
-		std::vector<std::shared_ptr<TypeLink>> parameters;
+		TypeLink& return_type;
+		std::vector<std::reference_wrapper<TypeLink>> parameters;
 	};
 
 	/**
@@ -253,7 +269,7 @@ namespace inference
 	class UniparameterType : public StructuredType
 	{
 	public:
-		UniparameterType(std::shared_ptr<TypeLink>);
+		UniparameterType(TypeLink&);
 
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_uniparameter_type() const { return true; };
@@ -262,11 +278,11 @@ namespace inference
 		virtual bool is_list() const = 0;
 
 		// parameter type getters
-		std::shared_ptr<TypeLink> get_param_type() { return parameter_type };
-		const std::shared_ptr<TypeLink> get_param_type() const { return parameter_type };
+		TypeLink& get_param_type() { return parameter_type; };
+		const TypeLink& get_param_type() const { return parameter_type; };
 
 	protected:
-		std::shared_ptr<TypeLink> parameter_type; 
+		TypeLink& parameter_type;
 	};
 
 	/**
@@ -277,7 +293,7 @@ namespace inference
 	{
 	public:
 		/** A type link to the structure elements' type */
-		Array(std::shared_ptr<TypeLink>);
+		Array(TypeLink&);
 
 		virtual std::string str() const;
 		virtual bool equals(const TypeSymbol&) const;
@@ -294,7 +310,7 @@ namespace inference
 	{
 	public:
 		/** A type link to the structure elements' type */
-		List(std::shared_ptr<TypeLink>);
+		List(TypeLink&);
 
 		virtual std::string str() const;
 		virtual bool equals(const TypeSymbol&) const;
