@@ -23,7 +23,7 @@ namespace ast
 		// get child
 		ASTNode& get_constant();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 

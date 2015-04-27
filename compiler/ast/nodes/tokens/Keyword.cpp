@@ -18,7 +18,7 @@ Keyword::Keyword(const std::string& node_name, const NodeLocation& node_loc)
 
 }
 
-void Keyword::accept(ASTVisitor& visitor)
+void Keyword::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -38,7 +38,7 @@ K_Break::K_Break(const NodeLocation& node_loc) : Keyword("break", node_loc)
 
 }
 
-void K_Break::accept(ASTVisitor& visitor)
+void K_Break::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -57,7 +57,7 @@ K_Continue::K_Continue(const NodeLocation& node_loc) : Keyword("continue", node_
 
 }
 
-void K_Continue::accept(ASTVisitor& visitor)
+void K_Continue::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -96,7 +96,7 @@ symb::Type Type_Int::get_type() const
 	return symb::INT;
 }
 
-void Type_Int::accept(ASTVisitor& visitor)
+void Type_Int::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -122,7 +122,7 @@ symb::Type Type_Float::get_type() const
 }
 
 
-void Type_Float::accept(ASTVisitor& visitor)
+void Type_Float::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -148,7 +148,7 @@ symb::Type Type_Bool::get_type() const
 }
 
 
-void Type_Bool::accept(ASTVisitor& visitor)
+void Type_Bool::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -173,7 +173,7 @@ symb::Type Type_Char::get_type() const
 	return symb::CHAR;
 }
 
-void Type_Char::accept(ASTVisitor& visitor)
+void Type_Char::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -197,7 +197,7 @@ symb::Type Type_String::get_type() const
 	return symb::STRING;
 }
 
-void Type_String::accept(ASTVisitor& visitor)
+void Type_String::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -221,7 +221,7 @@ symb::Type Type_Array::get_type() const
 	return symb::ARRAY;
 }
 
-void Type_Array::accept(ASTVisitor& visitor)
+void Type_Array::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -247,7 +247,7 @@ symb::Type Type_List::get_type() const
 }
 
 
-void Type_List::accept(ASTVisitor& visitor)
+void Type_List::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

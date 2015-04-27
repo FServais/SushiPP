@@ -41,7 +41,7 @@ Identifier::Identifier(const std::string& id, const NodeLocation& node_loc)
 
 }
 
-void Identifier::accept(ASTVisitor& visitor)
+void Identifier::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

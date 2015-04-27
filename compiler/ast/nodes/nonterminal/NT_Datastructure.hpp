@@ -17,7 +17,7 @@ namespace ast
 		NT_Datastructure(const std::string&,int,int,int,int);
 		NT_Datastructure(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/***************************************
@@ -40,7 +40,7 @@ namespace ast
 		bool empty_items() const;
 		ASTNode& get_items();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class List : public NT_Datastructure
@@ -59,7 +59,7 @@ namespace ast
 		bool empty_items() const;
 		ASTNode& get_items();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class MakeSequenceList : public NT_Datastructure
@@ -74,7 +74,7 @@ namespace ast
 		Expression& get_begin();
 		Expression& get_end();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class MakeSequenceArray : public NT_Datastructure
@@ -89,7 +89,7 @@ namespace ast
 		Expression& get_begin();
 		Expression& get_end();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 

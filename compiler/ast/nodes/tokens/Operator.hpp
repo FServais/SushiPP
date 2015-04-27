@@ -16,7 +16,7 @@ namespace ast
 		Operator(const std::string&,int,int,int,int);
 		Operator(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class BinaryOperator : public Operator
@@ -63,7 +63,7 @@ namespace ast
 		Op_Plus(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Plus(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Minus : public BinaryOperator
@@ -74,7 +74,7 @@ namespace ast
 		Op_Minus(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Minus(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Mult : public BinaryOperator
@@ -85,7 +85,7 @@ namespace ast
 		Op_Mult(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Mult(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Div : public BinaryOperator
@@ -96,7 +96,7 @@ namespace ast
 		Op_Div(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Div(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Modulo : public BinaryOperator
@@ -107,7 +107,7 @@ namespace ast
 		Op_Modulo(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Modulo(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Exponentiation : public BinaryOperator
@@ -118,7 +118,7 @@ namespace ast
 		Op_Exponentiation(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Exponentiation(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_UnaryMinus : public UnaryOperator
@@ -129,7 +129,7 @@ namespace ast
 		Op_UnaryMinus(ASTNode*,int,int,int,int);
 		Op_UnaryMinus(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_BitwiseOr : public BinaryOperator
@@ -140,7 +140,7 @@ namespace ast
 		Op_BitwiseOr(ASTNode*,ASTNode*,int,int,int,int);
 		Op_BitwiseOr(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_BitwiseAnd : public BinaryOperator
@@ -151,7 +151,7 @@ namespace ast
 		Op_BitwiseAnd(ASTNode*,ASTNode*,int,int,int,int);
 		Op_BitwiseAnd(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_BitwiseXor : public BinaryOperator
@@ -162,7 +162,7 @@ namespace ast
 		Op_BitwiseXor(ASTNode*,ASTNode*,int,int,int,int);
 		Op_BitwiseXor(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_BitwiseNot : public UnaryOperator
@@ -173,7 +173,7 @@ namespace ast
 		Op_BitwiseNot(ASTNode*,int,int,int,int);
 		Op_BitwiseNot(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_LogicalOr : public BinaryOperator
@@ -184,7 +184,7 @@ namespace ast
 		Op_LogicalOr(ASTNode*,ASTNode*,int,int,int,int);
 		Op_LogicalOr(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_LogicalAnd : public BinaryOperator
@@ -195,7 +195,7 @@ namespace ast
 		Op_LogicalAnd(ASTNode*,ASTNode*,int,int,int,int);
 		Op_LogicalAnd(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_LogicalNot : public UnaryOperator
@@ -206,7 +206,7 @@ namespace ast
 		Op_LogicalNot(ASTNode*,int,int,int,int);
 		Op_LogicalNot(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompLessThan : public BinaryOperator
@@ -217,7 +217,7 @@ namespace ast
 		Op_CompLessThan(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompLessThan(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompGreaterThan : public BinaryOperator
@@ -228,7 +228,7 @@ namespace ast
 		Op_CompGreaterThan(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompGreaterThan(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompLessEqual : public BinaryOperator
@@ -239,7 +239,7 @@ namespace ast
 		Op_CompLessEqual(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompLessEqual(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompGreaterEqual : public BinaryOperator
@@ -250,7 +250,7 @@ namespace ast
 		Op_CompGreaterEqual(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompGreaterEqual(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompEqual : public BinaryOperator
@@ -261,7 +261,7 @@ namespace ast
 		Op_CompEqual(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompEqual(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_CompNotEqual : public BinaryOperator
@@ -272,7 +272,7 @@ namespace ast
 		Op_CompNotEqual(ASTNode*,ASTNode*,int,int,int,int);
 		Op_CompNotEqual(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_LeftShift : public BinaryOperator
@@ -283,7 +283,7 @@ namespace ast
 		Op_LeftShift(ASTNode*,ASTNode*,int,int,int,int);
 		Op_LeftShift(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_RightShift : public BinaryOperator
@@ -294,7 +294,7 @@ namespace ast
 		Op_RightShift(ASTNode*,ASTNode*,int,int,int,int);
 		Op_RightShift(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_StringConcat : public BinaryOperator
@@ -305,7 +305,7 @@ namespace ast
 		Op_StringConcat(ASTNode*,ASTNode*,int,int,int,int);
 		Op_StringConcat(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_PrefixIncrement : public UnaryOperator
@@ -316,7 +316,7 @@ namespace ast
 		Op_PrefixIncrement(ASTNode*,int,int,int,int);
 		Op_PrefixIncrement(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_PrefixDecrement : public UnaryOperator
@@ -327,7 +327,7 @@ namespace ast
 		Op_PrefixDecrement(ASTNode*,int,int,int,int);
 		Op_PrefixDecrement(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_PostfixIncrement : public UnaryOperator
@@ -338,7 +338,7 @@ namespace ast
 		Op_PostfixIncrement(ASTNode*,int,int,int,int);
 		Op_PostfixIncrement(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_PostfixDecrement : public UnaryOperator
@@ -349,7 +349,7 @@ namespace ast
 		Op_PostfixDecrement(ASTNode*,int,int,int,int);
 		Op_PostfixDecrement(ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_Assignment : public BinaryOperator
@@ -360,7 +360,7 @@ namespace ast
 		Op_Assignment(ASTNode*,ASTNode*,int,int,int,int);
 		Op_Assignment(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignPlus : public BinaryOperator
@@ -371,7 +371,7 @@ namespace ast
 		Op_AssignPlus(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignPlus(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignMinus : public BinaryOperator
@@ -382,7 +382,7 @@ namespace ast
 		Op_AssignMinus(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignMinus(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignMult : public BinaryOperator
@@ -393,7 +393,7 @@ namespace ast
 		Op_AssignMult(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignMult(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignDiv : public BinaryOperator
@@ -404,7 +404,7 @@ namespace ast
 		Op_AssignDiv(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignDiv(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignExpo : public BinaryOperator
@@ -415,7 +415,7 @@ namespace ast
 		Op_AssignExpo(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignExpo(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignMod : public BinaryOperator
@@ -426,7 +426,7 @@ namespace ast
 		Op_AssignMod(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignMod(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignAnd : public BinaryOperator
@@ -437,7 +437,7 @@ namespace ast
 		Op_AssignAnd(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignAnd(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignOr : public BinaryOperator
@@ -448,7 +448,7 @@ namespace ast
 		Op_AssignOr(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignOr(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignXor : public BinaryOperator
@@ -459,7 +459,7 @@ namespace ast
 		Op_AssignXor(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignXor(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Op_AssignConcat : public BinaryOperator
@@ -470,7 +470,7 @@ namespace ast
 		Op_AssignConcat(ASTNode*,ASTNode*,int,int,int,int);
 		Op_AssignConcat(ASTNode*,ASTNode*,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 #endif

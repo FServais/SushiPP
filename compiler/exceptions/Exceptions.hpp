@@ -48,14 +48,6 @@ namespace except
 		explicit ParsingException(const std::string&);
 	};
 
-	class TypeSymbolResolutionException : public std::runtime_error
-	{
-	public:
-		TypeSymbolResolutionException();
-		// param : some more details about the error
-		explicit TypeSymbolResolutionException(const std::string&);
-	};
-
 	class BadParameterNumberException : public std::logic_error
 	{
 	public:
@@ -70,6 +62,45 @@ namespace except
 		NoSuchChildException();
 		// param : some more details about the error
 		explicit NoSuchChildException(const std::string&);
+	};
+
+	/** Visitor parameters */
+	class NoSuchParameterException : public std::logic_error
+	{
+	public:
+		// param : the number of the parameter
+		explicit NoSuchParameterException(size_t);
+		// param : the number of the parameter and some more details about the error
+		NoSuchParameterException(size_t, const std::string&);
+	};
+
+	/** Type inference */
+	class UnificationException : public std::runtime_error
+	{
+	public:
+		// param : some more details about the error
+		explicit UnificationException(const std::string&);
+	};
+
+	class ExistingTypeSymbolException : public std::logic_error
+	{
+	public:
+		// param : the name of the type symbol 
+		explicit ExistingTypeSymbolException(const std::string&);
+	};
+
+	class NoSuchTypeSymbolException : public std::runtime_error
+	{
+	public:
+		// param : the name of the type symbol 
+		explicit NoSuchTypeSymbolException(const std::string&);
+	};
+
+	class UnresolvableTypeException : public std::runtime_error
+	{
+	public:
+		// param : the name of the type symbol 
+		explicit UnresolvableTypeException(const std::string&);
 	};
 }
 

@@ -23,7 +23,7 @@ namespace ast
 		NT_Declaration(const std::string&,int,int,int,int);
 		NT_Declaration(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/*************************************
@@ -49,7 +49,7 @@ namespace ast
 		Type& get_type_node();
 		const Type& get_type_node() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 	};
 
@@ -61,7 +61,7 @@ namespace ast
 		ParamList(Param*, int,int,int,int);
 		ParamList(Param*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		void add_param(Param*);
 		Param& get_param(size_t);
 		size_t nb_params() const;
@@ -75,7 +75,7 @@ namespace ast
 		DeclFunc(Identifier*, ParamList*, Scope*, int,int,int,int);
 		DeclFunc(Identifier*, ParamList*, Scope*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 		Identifier& get_id();
 		/**
@@ -107,7 +107,7 @@ namespace ast
 
 		bool contains_expr() const { return has_expression; }
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	private:
 		bool has_expression;
 	};
@@ -124,7 +124,7 @@ namespace ast
 		void add_variable(DeclVar*);
 		size_t nb_variables() const; 
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class SoyFunc : public NT_Declaration
@@ -135,7 +135,7 @@ namespace ast
 		SoyFunc(ParamList*, Scope*, int,int,int,int);
 		SoyFunc(ParamList*, Scope*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		ParamList& get_params();
 		Scope& get_scope();
 

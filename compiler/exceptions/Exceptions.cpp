@@ -10,7 +10,7 @@ UndefinedSymbolException::UndefinedSymbolException()
 
 }
 
-UndefinedSymbolException::UndefinedSymbolException(const std::string& symb_name) 
+UndefinedSymbolException::UndefinedSymbolException(const string& symb_name) 
 	: runtime_error("The symbol '" + symb_name + "' does not exist in the table.")
 {
 
@@ -38,7 +38,7 @@ BadSettingException::BadSettingException()
 
 }
 
-BadSettingException::BadSettingException(const std::string& details) 
+BadSettingException::BadSettingException(const string& details) 
 	: runtime_error("The settings configuration are such that these data are not available : " + details)
 {
 
@@ -57,7 +57,7 @@ BadInputParameterException::BadInputParameterException(char c)
 
 }
 
-BadInputParameterException::BadInputParameterException(const std::string& details)
+BadInputParameterException::BadInputParameterException(const string& details)
 	: runtime_error("The program input parameters are not formatted correctly : " + details)
 {
 
@@ -69,20 +69,8 @@ ParsingException::ParsingException()
 
 }
 
-ParsingException::ParsingException(const std::string& details)
+ParsingException::ParsingException(const string& details)
 	: runtime_error("The parser has encountered an error while parsing the code : " + details)
-{
-
-}
-
-TypeSymbolResolutionException::TypeSymbolResolutionException()
-	: runtime_error("Cannot resolve a symbol type to a complete type.")
-{
-
-}
-
-TypeSymbolResolutionException::TypeSymbolResolutionException(const std::string& details)
-	: runtime_error("Cannot resolve a symbol type to a complete type : " + details)
 {
 
 }
@@ -93,7 +81,7 @@ BadParameterNumberException::BadParameterNumberException()
 
 }
 
-BadParameterNumberException::BadParameterNumberException(const std::string& details)
+BadParameterNumberException::BadParameterNumberException(const string& details)
 	: logic_error("The number of expected number of parameters does not match the number of given parameters : " + details)
 {
 
@@ -105,8 +93,44 @@ NoSuchChildException::NoSuchChildException()
 
 }
 
-NoSuchChildException::NoSuchChildException(const std::string& details)
+NoSuchChildException::NoSuchChildException(const string& details)
 	: logic_error("The node has no such child : " + details)
+{
+
+}
+
+NoSuchParameterException::NoSuchParameterException(size_t param)
+  : logic_error("There is no parameter number " + to_string(param) + " in the VisitorParameters object")
+{
+
+}
+
+NoSuchParameterException::NoSuchParameterException(size_t param, const string& details)
+  : logic_error("There is no parameter number " + to_string(param) + " in the VisitorParameters object : " + details)
+{
+
+}
+
+UnificationException::UnificationException(const string& details)
+  : runtime_error(details)
+{
+
+}
+
+ExistingTypeSymbolException::ExistingTypeSymbolException(const string& symbol)
+  : logic_error("Attempting to add the existing symbol '" + symbol + "' in the type symbol table")
+{
+
+}
+
+UnresolvableTypeException::UnresolvableTypeException(const string& symbol)
+  : runtime_error("The type of the type symbol '" + symbol + "' cannot be resolved")
+{
+
+}
+
+NoSuchTypeSymbolException::NoSuchTypeSymbolException(const string& symbol)
+  : runtime_error("Unable to find the type symbol '" + symbol + "'")
 {
 
 }

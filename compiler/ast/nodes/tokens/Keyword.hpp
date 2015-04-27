@@ -17,7 +17,7 @@ namespace ast
 		Keyword(const std::string&,int,int,int,int);
 		Keyword(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/** Keyword derived class */
@@ -29,7 +29,7 @@ namespace ast
 		K_Break(int,int,int,int);
 		K_Break(const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class K_Continue : public Keyword
@@ -40,7 +40,7 @@ namespace ast
 		K_Continue(int,int,int,int);
 		K_Continue(const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type : public Keyword 
@@ -64,7 +64,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_Float : public Type
@@ -77,7 +77,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_Char : public Type
@@ -90,7 +90,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_String : public Type
@@ -103,7 +103,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_Array : public Type
@@ -116,7 +116,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_List : public Type
@@ -129,7 +129,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Type_Bool : public Type
@@ -142,7 +142,7 @@ namespace ast
 
 		virtual symb::Type get_type() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 #endif

@@ -12,7 +12,7 @@
 
 #include "NodeLocation.hpp"
 
-class ASTVisitor;
+namespace visitor { class ASTVisitor; }
 
 namespace ast
 {
@@ -73,7 +73,7 @@ namespace ast
 		const std::string& node_name() const;
 
 		// function for accepting a visitor
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 	protected:
 		// add a child(ren) to the node
