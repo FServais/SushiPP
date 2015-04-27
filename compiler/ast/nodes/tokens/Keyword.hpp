@@ -3,7 +3,7 @@
 
 #include <string>
 #include "Token.hpp"
-#include "../../../symb/SymbolInfo.hpp"
+#include "../../../inference/Types.hpp"
 #include "../NodeLocation.hpp"
 
 namespace ast
@@ -51,7 +51,7 @@ namespace ast
 		Type(const std::string&,int,int,int,int);
 		Type(const std::string&,const NodeLocation&);
 
-		virtual symb::Type get_type() const = 0;
+		virtual inference::ShallowType get_type() const = 0;
 	};
 
 	class Type_Int : public Type
@@ -62,7 +62,7 @@ namespace ast
 		Type_Int(int,int,int,int);
 		Type_Int(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -75,7 +75,7 @@ namespace ast
 		Type_Float(int,int,int,int);
 		Type_Float(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -88,7 +88,7 @@ namespace ast
 		Type_Char(int,int,int,int);
 		Type_Char(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -101,7 +101,7 @@ namespace ast
 		Type_String(int,int,int,int);
 		Type_String(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -114,7 +114,7 @@ namespace ast
 		Type_Array(int,int,int,int);
 		Type_Array(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -127,7 +127,7 @@ namespace ast
 		Type_List(int,int,int,int);
 		Type_List(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
@@ -140,7 +140,7 @@ namespace ast
 		Type_Bool(int,int,int,int);
 		Type_Bool(const NodeLocation&);
 
-		virtual symb::Type get_type() const;
+		virtual inference::ShallowType get_type() const;
 
 		virtual void accept(visitor::ASTVisitor&);
 	};

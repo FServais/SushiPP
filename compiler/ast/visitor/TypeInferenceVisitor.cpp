@@ -1,6 +1,7 @@
 #include "TypeInferenceVisitor.hpp"
 
 #include "../../../Exceptions.hpp"
+#include "../../../Types.hpp"
 
 using namespace std;
 using namespace visitor;
@@ -854,19 +855,42 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceArray& seq_array )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::DeclFunc& )
+void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 {
+	ParamList& param_list = declfunc.get_param_list();
 
+	vector<string> param_names;
+	vector<ShallowType> param_types;
+
+	param_list.get_parameters_name(param_names);
+	param_list.get_parameters_type(param_types);
+
+	
 }
 
-void TypeInferenceVisitor::visit( ast::DeclVars& )
+void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 {
+	// no argument expecte
+	for(size_t i = 0; i < declvars.nb_variables(); ++i)
+	{
+		params.call();
+		declvars.get_variable(i).accept(*this);
+	}
 
+	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::DeclVar& )
-{
+{	
+	// no argument expected 
+	// create a new type variable
+	string varname = type_table.new_variable(type_table.unique_id_name(current_scope, declaration.get_identifier().id()));
+	
+	params.add_param(varname); // the expression has the same type of the identifier
+	params.call();
+	declaration.get_expression().accept(*this);
 
+	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::ParamList& )
@@ -883,6 +907,7 @@ void TypeInferenceVisitor::visit( ast::Expression& )
 {
 
 }
+
 void TypeInferenceVisitor::visit( ast::ModifyingExpression& )
 {
 
