@@ -108,6 +108,7 @@ as                      { return KEYWORD_AS; }
 if                      { return KEYWORD_IF; }
 elseif                  { return KEYWORD_ELSEIF; }
 else                    { return KEYWORD_ELSE; }
+call                    { return KEYWORD_CALL; }
 char                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 int                     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 float                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }

@@ -228,7 +228,7 @@ bool Param::has_type() const
 
 inference::ShallowType Param::get_type() const
 {
-	if(!has_type) return inference::NO_TYPE;
+	if(!has_type()) return inference::NO_TYPE;
 	return get_type_node().get_type();
 }
 
