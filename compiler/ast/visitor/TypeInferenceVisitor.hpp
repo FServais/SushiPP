@@ -13,6 +13,7 @@ namespace visitor
 	class TypeInferenceVisitor : public ASTVisitor
 	{
 	public:
+		TypeInferenceVisitor();
 
 		/****************
 		 * 		Node    *
@@ -97,7 +98,6 @@ namespace visitor
 		 * 		Datastructure non-terminal    *
 		 **************************************/
 
-		virtual void visit( ast::Datastructure& );
 		virtual void visit( ast::Array& );
 		virtual void visit( ast::List& );
 		virtual void visit( ast::MakeSequenceList& );
@@ -118,10 +118,7 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
-		virtual void visit( ast::IncrExpression& );
-		virtual void visit( ast::Assignment& );
 		virtual void visit( ast::ModifyingExpression& );
-		virtual void visit( ast::AssignableExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
 		/*************************************
@@ -147,6 +144,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -156,6 +154,14 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
+
+		/**
+		 * @brief Return the type table built by the visitor
+		 */
+		inference::TypeSymbolTable& get_table() { return type_table; }
+		const inference::TypeSymbolTable& get_table() const { return type_table; }
 
 	private:
 		/**
@@ -178,6 +184,13 @@ namespace visitor
 		 * @note The VisitorParameters object is not modified
 		 */
 		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
+
+		/**
+		 * @brief Check whether, from a scope node, a type variable must be propagate
+		 * @retuval bool True if the variable must be propagated, false otherwise
+		 * @note A type should be propagated on statement
+		 */
+		bool propagate_type_from_scope(ast::ASTNode&);
 	};
 }
 
