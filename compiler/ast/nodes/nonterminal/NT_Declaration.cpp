@@ -278,7 +278,7 @@ ParamList::ParamList(Param* param, const NodeLocation& node_loc) : NT_Declaratio
 	add_child(param);
 }
 
-void ParamList::get_parameters_name(std::vector<std::string>& param_names)
+void ParamList::get_parameters_name(std::vector<std::string>& param_names) const
 {
 	param_names.clear();
 	transform(children.begin(), children.end(), back_inserter(param_names), 
@@ -288,7 +288,7 @@ void ParamList::get_parameters_name(std::vector<std::string>& param_names)
 			  });
 }
 
-void ParamList::get_parameters_type(std::vector<inference::ShallowType>& param_types)
+void ParamList::get_parameters_type(std::vector<inference::ShallowType>& param_types) const
 {
 	param_types.clear();
 	transform(children.begin(), children.end(), back_inserter(param_types),
