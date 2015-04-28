@@ -22,6 +22,7 @@ OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PAT
 OBJS_NODE_ALL 		= $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
 OBJS_AST 	  		= $(PATH_OBJS)AbstractSyntaxTree.o
 OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o
+OBJS_CGVST			= $(PATH_OBJS)CodeGenVisitor.o
 OBJS_EXCEP    		= $(PATH_OBJS)Exceptions.o
 OBJS_MAIN 	  		= $(PATH_OBJS)main.o
 OBJS_PARSER   		= $(PATH_OBJS)sushipp.tab.o
@@ -34,7 +35,7 @@ OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
 OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
 OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
 
-OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER) $(OBJS_INFERENCE)
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_CGVST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER) $(OBJS_INFERENCE)
 
 # dependecies #
 # DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
@@ -48,6 +49,7 @@ DEP_ASTNODE_DEEP 		 = $(PATH_NODES)*.hpp $(PATH_TOKENS)*.hpp $(PATH_NONTERMINAL)
 DEP_ASTNODE_DEEP_VISITOR = $(DEP_ASTNODE_DEEP) $(PATH_VISITOR)ASTVisitor.hpp
 DEP_ASTNODE_SHALLOW 	 = $(PATH_NODES)ASTNode.hpp $(PATH_NODES)NodeLocation.hpp
 DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp
+DEP_CODEGENVISITOR		 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)CodeGenVisitor.hpp
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
@@ -62,10 +64,11 @@ DEP_INFERENCE			 = $(PATH_INFERENCE)TypeSymbolTable.hpp $(PATH_INFERENCE)TypeSym
 # compilation and linking flags #
 CC = clang++
 DEBUG = -g
-CCFLAGS = -c --std=c++11 $(DEBUG) 
-LDFLAGS = 
+CCFLAGS = -c --std=c++11 $(DEBUG)
+LDFLAGS = $(LLVM_FLAGS)
 EXE = sushipp
 BISON_FLAGS = -d -b $(PATH_PARSER)$(EXE) -v
+LLVM_FLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core`
 TARGETS = sushipp
 
 ###########################################################
@@ -83,10 +86,10 @@ $(PATH_OBJS)main.o: main.cpp $(PATH_PARSER)sushipp.tab.h $(DEP_AST) $(DEP_EXCEP)
 $(PATH_OBJS)sushipp.tab.o: $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h $(DEP_AST_ALL)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_PARSER)sushipp.tab.h: $(PATH_PARSER)spp_parser.y 
+$(PATH_PARSER)sushipp.tab.h: $(PATH_PARSER)spp_parser.y
 	bison $< $(BISON_FLAGS)
 
-$(PATH_PARSER)sushipp.tab.c: $(PATH_PARSER)spp_parser.y 
+$(PATH_PARSER)sushipp.tab.c: $(PATH_PARSER)spp_parser.y
 	bison $< $(BISON_FLAGS)
 
 # Scanner #
@@ -148,9 +151,13 @@ $(PATH_OBJS)Keyword.o: $(PATH_TOKENS)Keyword.cpp $(DEP_ASTNODE_DEEP_VISITOR) $(P
 $(PATH_OBJS)Operator.o: $(PATH_TOKENS)Operator.cpp $(DEP_ASTNODE_DEEP_VISITOR)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-# Visitor #
+# Visitors #
 $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
 	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_CODEGENVISITOR) $(DEP_ASTNODE_DEEP)
+	$(CC) $(LLVM_FLAGS) $< -o $@ $(CCFLAGS)
+
 
 # Exceptions #
 $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hpp
@@ -200,18 +207,18 @@ $(PATH_OBJS)TypeSymbolTable.o: $(PATH_INFERENCE)TypeSymbolTable.cpp $(DEP_INFERE
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)TypeSymbol.o: $(PATH_INFERENCE)TypeSymbol.cpp $(DEP_INFERENCE)
-	$(CC) $< -o $@ $(CCFLAGS)	
+	$(CC) $< -o $@ $(CCFLAGS)
 
 ###########################################################
 
-# clean 
-clean: 
+# clean
+clean:
 	rm -f obj/*.o
 	rm -f sushipp
 	rm -f $(PATH_PARSER)*.output
 
 clean-hard: clean
-	rm -f $(PATH_SCANNER)sushipp.yy.c 
-	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h 
+	rm -f $(PATH_SCANNER)sushipp.yy.c
+	rm -f $(PATH_PARSER)sushipp.tab.c $(PATH_PARSER)sushipp.tab.h
 	touch $(PATH_PARSER)spp_parser.y $(PATH_SCANNER)spp_scanner.lex
 # DO NOT DELETE
