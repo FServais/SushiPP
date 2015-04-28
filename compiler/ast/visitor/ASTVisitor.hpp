@@ -44,6 +44,7 @@ namespace visitor
 		virtual void visit( ast::Type_Array& ) = 0;
 		virtual void visit( ast::Type_List& ) = 0;
 		virtual void visit( ast::Type_Bool& ) = 0;
+		virtual void visit( ast::Type_Function& ) = 0;
 
 		/**************************
 		 * 		Operator token    *

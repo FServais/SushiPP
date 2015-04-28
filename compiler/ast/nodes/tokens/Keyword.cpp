@@ -140,12 +140,10 @@ Type_Bool::Type_Bool(const NodeLocation& node_loc) : Type("Type (bool)", node_lo
 
 }
 
-
 inference::ShallowType Type_Bool::get_type() const
 {
 	return inference::BOOL;
 }
-
 
 void Type_Bool::accept(visitor::ASTVisitor& visitor)
 {
@@ -250,3 +248,28 @@ void Type_List::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
+
+/* Keyword : type function */
+Type_Function::Type_Function() : Type("Type (function)") { }
+
+Type_Function::Type_Function(int first_line, int last_line, int first_column, int last_column)
+	: Type("Type (function)", first_line, last_line, first_column, last_column)
+{
+
+}
+
+Type_Function::Type_Function(const NodeLocation& node_loc) : Type("Type (function)", node_loc)
+{
+
+}
+
+inference::ShallowType Type_Function::get_type() const
+{
+	return inference::FUNCTION;
+}
+
+void Type_Function::accept(visitor::ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+}
+

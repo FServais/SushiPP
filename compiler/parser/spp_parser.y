@@ -95,6 +95,7 @@
 %token TYPE_STRING "string"
 %token TYPE_ARRAY "array"
 %token TYPE_LIST "list"
+%token TYPE_FUNCTION "function"
 
 /* Operators */
 %token '='
@@ -960,6 +961,8 @@ static ast::Type* get_type_node(const std::string& type_string)
 		return new ast::Type_List(curr_loc());
 	else if(!type_string.compare("array"))
 		return new ast::Type_Array(curr_loc());
+	else if(!type_string.compare("function"))
+		return new ast::Type_Function(curr_loc());
 	else return nullptr;
 }
 

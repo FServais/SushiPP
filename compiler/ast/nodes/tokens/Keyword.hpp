@@ -144,5 +144,18 @@ namespace ast
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
+
+
+	class Type_Function : public Type
+	{
+	public:
+		// constructors
+		Type_Function();
+		Type_Function(int,int,int,int);
+		Type_Function(const NodeLocation&);
+
+		virtual inference::ShallowType get_type() const;
+		virtual void accept(visitor::ASTVisitor&);
+	};
 }
 #endif

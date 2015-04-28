@@ -120,6 +120,15 @@ void PrintASTVisitor::visit( ast::Type_Bool& token )
 }
 
 
+void PrintASTVisitor::visit( ast::Type_Function& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
 /****************************
  * 		Operator token      *
  ****************************/

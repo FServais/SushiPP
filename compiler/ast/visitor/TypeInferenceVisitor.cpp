@@ -67,6 +67,11 @@ void TypeInferenceVisitor::visit( ast::Type_Bool& )
 
 }
 
+void TypeInferenceVisitor::visit( ast::Type_Function& )
+{
+
+}
+
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
 	string alpha = params.get_param(1); 

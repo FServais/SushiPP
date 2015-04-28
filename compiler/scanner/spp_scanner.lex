@@ -116,6 +116,7 @@ bool                    { yylval.vstring = new string(yytext, yyleng); return ID
 string                  { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 array                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 list                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+function 				{ yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 (false|FALSE|true|TRUE) { yylval.vstring = new string(yytext, yyleng); return CONST_BOOL; }
 {ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
 [+-]?{DIGIT}+           { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }

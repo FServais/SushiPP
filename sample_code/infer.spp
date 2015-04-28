@@ -1,2 +1,4 @@
 (call str-le)
 (call str-len a)
+
+maki func a<function> b<int> : nori (call a b);;
