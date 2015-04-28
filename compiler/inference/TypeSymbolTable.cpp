@@ -271,9 +271,13 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 	// if the type mapped is a flat type, it must be the same than the other
 	if(actual_type.is_flat_type())
 	{
-		delete flat;
 		if(flat->equals(actual_type))
+		{
+			delete flat;
 			throw except::UnificationException("couldn't unify two different flat types '" + err_type + "' and '" + actual_type.str() + "'");
+		}
+
+		delete flat;
 		return;
 	}
 
