@@ -1,37 +1,35 @@
+$
+$maki loop-test-function : 
+$	roll i <= 5
+$		print "Test"
+$		i++
+$		if i == 3
+$			break
+$		;;
+$	;;
+$
+$	for int = 0, i < 5, ++i
+$		print "Test2"
+$	;;
+$;;
+$
+$maki b = "testing" . " some " . "features"
+$maki test-embedded-closure func : 
+$	nori (func b)
+$;;
+$
+$test-embedded-closure (soy a : print a)
+
 maki condition-test : 
 	maki a = 3
-	if a < 4
-		print "Yes"
-	else
-		print "Nope."
-	;;
+$	if a < 4
+$		print "Yes"
+$	else
+$		print "Nope."
+$	;;
 
 	menu a
-		1 -> print "1" ;;
-		2 -> print "2" ;;
-		_ -> print "else" ;;
+		_ -> call print "else" ;;
 	;;
 
 ;;
-
-maki loop-test-function : 
-	roll i <= 5
-		print "Test"
-		i++
-		if i == 3
-			break
-		;;
-	;;
-
-	for int i = 0 to 5
-		print "Test2"
-		++i
-	;;
-;;
-
-maki b = "testing" . " some " . "features"
-maki test-embedded-closure func : 
-	nori func b
-;;
-
-test-embedded-closure (soy a : print a)

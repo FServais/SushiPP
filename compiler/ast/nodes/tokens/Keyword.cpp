@@ -75,7 +75,6 @@ Type::Type(const std::string& node_name, const NodeLocation& node_loc) : Keyword
 
 }
 
-
 /* Keyword : type_int */
 Type_Int::Type_Int() : Type("Type (int)") { }
 
@@ -91,9 +90,9 @@ Type_Int::Type_Int(const NodeLocation& node_loc) : Type("Type (int)", node_loc)
 }
 
 
-symb::Type Type_Int::get_type() const
+inference::ShallowType Type_Int::get_type() const
 {
-	return symb::INT;
+	return inference::INT;
 }
 
 void Type_Int::accept(visitor::ASTVisitor& visitor)
@@ -116,9 +115,9 @@ Type_Float::Type_Float(const NodeLocation& node_loc) : Type("Type (float)", node
 }
 
 
-symb::Type Type_Float::get_type() const
+inference::ShallowType Type_Float::get_type() const
 {
-	return symb::FLOAT;
+	return inference::FLOAT;
 }
 
 
@@ -141,12 +140,10 @@ Type_Bool::Type_Bool(const NodeLocation& node_loc) : Type("Type (bool)", node_lo
 
 }
 
-
-symb::Type Type_Bool::get_type() const
+inference::ShallowType Type_Bool::get_type() const
 {
-	return symb::BOOL;
+	return inference::BOOL;
 }
-
 
 void Type_Bool::accept(visitor::ASTVisitor& visitor)
 {
@@ -168,9 +165,9 @@ Type_Char::Type_Char(const NodeLocation& node_loc) : Type("Type (char)", node_lo
 }
 
 
-symb::Type Type_Char::get_type() const
+inference::ShallowType Type_Char::get_type() const
 {
-	return symb::CHAR;
+	return inference::CHAR;
 }
 
 void Type_Char::accept(visitor::ASTVisitor& visitor)
@@ -192,9 +189,9 @@ Type_String::Type_String(const NodeLocation& node_loc) : Type("Type (string)", n
 
 }
 
-symb::Type Type_String::get_type() const
+inference::ShallowType Type_String::get_type() const
 {
-	return symb::STRING;
+	return inference::STRING;
 }
 
 void Type_String::accept(visitor::ASTVisitor& visitor)
@@ -216,9 +213,9 @@ Type_Array::Type_Array(const NodeLocation& node_loc) : Type("Type (array)", node
 
 }
 
-symb::Type Type_Array::get_type() const
+inference::ShallowType Type_Array::get_type() const
 {
-	return symb::ARRAY;
+	return inference::ARRAY;
 }
 
 void Type_Array::accept(visitor::ASTVisitor& visitor)
@@ -241,9 +238,9 @@ Type_List::Type_List(const NodeLocation& node_loc) : Type("Type (list)", node_lo
 }
 
 
-symb::Type Type_List::get_type() const
+inference::ShallowType Type_List::get_type() const
 {
-	return symb::LIST;
+	return inference::LIST;
 }
 
 
@@ -251,3 +248,28 @@ void Type_List::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
+
+/* Keyword : type function */
+Type_Function::Type_Function() : Type("Type (function)") { }
+
+Type_Function::Type_Function(int first_line, int last_line, int first_column, int last_column)
+	: Type("Type (function)", first_line, last_line, first_column, last_column)
+{
+
+}
+
+Type_Function::Type_Function(const NodeLocation& node_loc) : Type("Type (function)", node_loc)
+{
+
+}
+
+inference::ShallowType Type_Function::get_type() const
+{
+	return inference::FUNCTION;
+}
+
+void Type_Function::accept(visitor::ASTVisitor& visitor)
+{
+	visitor.visit(*this);
+}
+

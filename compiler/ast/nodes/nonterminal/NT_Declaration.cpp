@@ -3,6 +3,8 @@
 #include "../../visitor/ASTVisitor.hpp"
 #include "../../../exceptions/Exceptions.hpp"
 
+#include <algorithm>
+
 using namespace ast;
 using namespace std;
 using namespace except;
@@ -224,8 +226,9 @@ bool Param::has_type() const
 	return children.size() == 2;
 }
 
-symb::Type Param::get_type() const
+inference::ShallowType Param::get_type() const
 {
+	if(!has_type()) return inference::NO_TYPE;
 	return get_type_node().get_type();
 }
 
@@ -273,6 +276,26 @@ ParamList::ParamList(Param* param, int first_line, int last_line, int first_colu
 ParamList::ParamList(Param* param, const NodeLocation& node_loc) : NT_Declaration("Parameter list", node_loc)
 {
 	add_child(param);
+}
+
+void ParamList::get_parameters_name(std::vector<std::string>& param_names)
+{
+	param_names.clear();
+	transform(children.begin(), children.end(), back_inserter(param_names), 
+			  [&param_names](ASTNode* child)
+			  {
+				return dynamic_cast<Param*>(child)->get_identifier().id();
+			  });
+}
+
+void ParamList::get_parameters_type(std::vector<inference::ShallowType>& param_types)
+{
+	param_types.clear();
+	transform(children.begin(), children.end(), back_inserter(param_types),
+			  [&param_types](ASTNode* child) 
+			  {
+			  	return dynamic_cast<Param*>(child)->get_type();
+			  });
 }
 
 void ParamList::accept(visitor::ASTVisitor& visitor)

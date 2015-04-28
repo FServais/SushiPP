@@ -86,6 +86,7 @@
 %token KEYWORD_IF "if"
 %token KEYWORD_ELSEIF "elseif"
 %token KEYWORD_ELSE "else"
+%token KEYWORD_CALL "call"
 
 %token TYPE_INT "int"
 %token TYPE_FLOAT "float"
@@ -94,6 +95,7 @@
 %token TYPE_STRING "string"
 %token TYPE_ARRAY "array"
 %token TYPE_LIST "list"
+%token TYPE_FUNCTION "function"
 
 /* Operators */
 %token '='
@@ -353,14 +355,14 @@ param:
 /******************/
 
 func-call:
-  IDENTIFIER arg-list
+  KEYWORD_CALL IDENTIFIER arg-list
 	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		ast::Identifier* iden = new ast::Identifier(*$2, curr_loc());
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
 		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
 
 		// delete the memory allocated for the string
-		delete $1;
+		delete $2;
 	}
 ;
 
@@ -423,37 +425,53 @@ braced-func-call:
  * is only allowed if the initial function call is braced (braced-func-call).
  */
 func-call-eol:
-  IDENTIFIER arg-list-eol
+  KEYWORD_CALL IDENTIFIER arg-list-eol
 	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		ast::ArgList* arglist = ((ast::ArgList*)$2);
+		ast::Identifier* iden = new ast::Identifier(*$2, curr_loc());
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
 		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
 
 		// delete the memory allocated for the string
-		delete $1;
+		delete $2;
 	}
-| soy-expression arg-list-eol
+| KEYWORD_CALL soy-expression arg-list-eol
 	{
-		ast::ArgList* arglist = ((ast::ArgList*)$2);
-		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$1), arglist));
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
+		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$2), arglist));
 	}
 ;
 
 arg-list-eol:
-  argument 
+  %empty
   	{ 
-  		$$ = (void*) (new ast::ArgList(((ast::Argument*)$1),curr_loc())); 
+  		$$ = nullptr;	
   	}
 | argument arg-list-eol
-	{
-		ast::ArgList* arglist = ((ast::ArgList*)$2);
-		arglist->add_argument(((ast::Argument*)$1));;
+	{	
+		ast::ArgList* arglist;
+
+		if($2 == nullptr)
+			arglist = new ast::ArgList(((ast::Argument*)$1),curr_loc()); 
+		else 
+		{	
+			arglist = ((ast::ArgList*)$2);
+			arglist->add_argument(((ast::Argument*)$1));;
+		}
+		
 		$$ = (void*) arglist;
 	}
 | argument DELIM_EOL arg-list-eol
 	{
-		ast::ArgList* arglist = ((ast::ArgList*)$3);
-		arglist->add_argument(((ast::Argument*)$1));;
+		ast::ArgList* arglist;
+
+		if($3 == nullptr)
+			arglist = new ast::ArgList(((ast::Argument*)$1),curr_loc()); 
+		else 
+		{	
+			arglist = ((ast::ArgList*)$3);
+			arglist->add_argument(((ast::Argument*)$1));
+		}
+
 		$$ = (void*) arglist;
 	}
 ;
@@ -943,6 +961,8 @@ static ast::Type* get_type_node(const std::string& type_string)
 		return new ast::Type_List(curr_loc());
 	else if(!type_string.compare("array"))
 		return new ast::Type_Array(curr_loc());
+	else if(!type_string.compare("function"))
+		return new ast::Type_Function(curr_loc());
 	else return nullptr;
 }
 
