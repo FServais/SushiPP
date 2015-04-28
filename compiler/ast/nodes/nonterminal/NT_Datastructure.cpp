@@ -20,7 +20,7 @@ NT_Datastructure::NT_Datastructure(const std::string& node_name, const NodeLocat
 
 }
 
-void NT_Datastructure::accept(ASTVisitor& visitor)
+void NT_Datastructure::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -70,7 +70,7 @@ ASTNode& Array::get_items()
 	return *children[0];
 }
 
-void Array::accept(ASTVisitor& visitor)
+void Array::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 
@@ -118,7 +118,7 @@ ASTNode& List::get_items()
 	return *children[0];
 }
 
-void List::accept(ASTVisitor& visitor)
+void List::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -153,7 +153,7 @@ Expression& MakeSequenceList::get_end()
 	return *dynamic_cast<Expression*>(children[1]);
 }
 
-void MakeSequenceList::accept(ASTVisitor& visitor)
+void MakeSequenceList::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -188,7 +188,7 @@ Expression& MakeSequenceArray::get_end()
 	return *dynamic_cast<Expression*>(children[1]);
 }
 
-void MakeSequenceArray::accept(ASTVisitor& visitor)
+void MakeSequenceArray::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

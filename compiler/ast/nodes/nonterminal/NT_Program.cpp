@@ -18,7 +18,7 @@ NT_Program::NT_Program(const std::string& node_name, const NodeLocation& node_lo
 
 }
 
-void NT_Program::accept(ASTVisitor& visitor)
+void NT_Program::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -44,7 +44,17 @@ Program::Program(Scope* scope, const NodeLocation& node_loc) : NT_Program("Progr
 		add_child(scope);
 }
 
-void Program::accept(ASTVisitor& visitor)
+Scope& Program::get_scope()
+{
+	return dynamic_cast<Scope&>(*children[0]);
+}
+
+const Scope& Program::get_scope() const
+{
+	return dynamic_cast<Scope&>(*children[0]);
+} 
+
+void Program::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -66,7 +76,7 @@ Scope::Scope(ASTNode* program_elem, const NodeLocation& node_loc) : NT_Program("
 	add_child(program_elem);
 }
 
-void Scope::accept(ASTVisitor& visitor)
+void Scope::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -80,3 +90,4 @@ size_t Scope::nb_elements() const
 {
 	return children.size();
 }
+

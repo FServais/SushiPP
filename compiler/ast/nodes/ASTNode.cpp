@@ -15,6 +15,7 @@
 
 using namespace ast;
 using namespace std;
+using namespace visitor;
 
 ASTNode::ASTNode() : father(nullptr)
 {
@@ -167,7 +168,7 @@ const string& ASTNode::node_name() const
 	return node_name_;
 }
 
-void ASTNode::accept(ASTVisitor& visitor)
+void ASTNode::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

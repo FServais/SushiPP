@@ -120,7 +120,7 @@ void SppCompiler::print_ast()
 			return;
 		}
 
-		PrintASTVisitor visitor(file);
+		visitor::PrintASTVisitor visitor(file);
 		syntax_tree.root().accept(visitor);
 		file.close();
 
@@ -131,7 +131,7 @@ void SppCompiler::print_ast()
 	}
 	else
 	{
-		PrintASTVisitor visitor(cout);
+		visitor::PrintASTVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
 	}
 }

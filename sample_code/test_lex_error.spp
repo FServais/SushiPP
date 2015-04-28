@@ -4,7 +4,7 @@ $ mutliple item function
 			b = 2
 
 	a = 25 - 36.25
-	func b[2] 2
+	call func b[2] 2
 
-	func (func b[2] a) c
+	call func (call func b[2] a) c
 ;;

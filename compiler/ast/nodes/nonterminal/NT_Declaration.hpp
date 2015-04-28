@@ -8,7 +8,7 @@
 #include "../tokens/Token.hpp"
 #include "../tokens/Keyword.hpp"
 #include "../NodeLocation.hpp"
-#include "../../../symb/SymbolInfo.hpp"
+#include "../../../inference/Types.hpp"
 
 namespace ast
 {
@@ -23,7 +23,7 @@ namespace ast
 		NT_Declaration(const std::string&,int,int,int,int);
 		NT_Declaration(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/*************************************
@@ -42,14 +42,14 @@ namespace ast
 
 		const std::string& get_param_name() const;
 		bool has_type() const;
-		symb::Type get_type() const;
+		inference::ShallowType get_type() const;
 
 		Identifier& get_identifier();
 		const Identifier& get_identifier() const;
 		Type& get_type_node();
 		const Type& get_type_node() const;
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 	};
 
@@ -61,10 +61,22 @@ namespace ast
 		ParamList(Param*, int,int,int,int);
 		ParamList(Param*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		void add_param(Param*);
 		Param& get_param(size_t);
 		size_t nb_params() const;
+
+		/**
+		 * @brief Return the parameters name in a vector
+		 * The return a vector of n strings if the param list contains n parameters
+		 */
+		void get_parameters_name(std::vector<std::string>&);
+
+		/**
+		 * @brief Return the parameters types in a vector
+		 * The return a vector of n strings if the param list contains n parameters
+		 */
+		void get_parameters_type(std::vector<inference::ShallowType>&);
 	};
 
 	class DeclFunc : public NT_Declaration
@@ -75,7 +87,7 @@ namespace ast
 		DeclFunc(Identifier*, ParamList*, Scope*, int,int,int,int);
 		DeclFunc(Identifier*, ParamList*, Scope*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 		Identifier& get_id();
 		/**
@@ -107,7 +119,7 @@ namespace ast
 
 		bool contains_expr() const { return has_expression; }
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	private:
 		bool has_expression;
 	};
@@ -124,7 +136,7 @@ namespace ast
 		void add_variable(DeclVar*);
 		size_t nb_variables() const; 
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class SoyFunc : public NT_Declaration
@@ -135,7 +147,7 @@ namespace ast
 		SoyFunc(ParamList*, Scope*, int,int,int,int);
 		SoyFunc(ParamList*, Scope*, const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 		ParamList& get_params();
 		Scope& get_scope();
 		void set_name(std::string& n){name = n;}

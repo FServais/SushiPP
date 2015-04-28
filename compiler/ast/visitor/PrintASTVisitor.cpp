@@ -1,6 +1,7 @@
 #include "PrintASTVisitor.hpp"
 
 using namespace std;
+using namespace visitor;
 
 // Constructor
 PrintASTVisitor::PrintASTVisitor() : length_line(2), out_(cout), curr_depth(0) { }
@@ -118,6 +119,15 @@ void PrintASTVisitor::visit( ast::Type_Bool& token )
 	curr_depth--;
 }
 
+
+void PrintASTVisitor::visit( ast::Type_Function& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
 
 /****************************
  * 		Operator token      *
@@ -745,6 +755,15 @@ void PrintASTVisitor::visit( ast::MenuDef& token )
 	curr_depth--;
 }
 
+void PrintASTVisitor::visit( ast::MenuCase& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
 void PrintASTVisitor::visit( ast::Roll& token )
 {
 	print_single(token.node_name());
@@ -813,11 +832,9 @@ void PrintASTVisitor::visit( ast::Elseif& token )
  ************************/
 void PrintASTVisitor::visit( ast::ASTNode& token )
 {
-	string name = "Unknown";
 	print_single(token.node_name());
 	curr_depth++;
 	for(auto child : token.get_children())
 		child->accept(*this);
 	curr_depth--;
 }
-

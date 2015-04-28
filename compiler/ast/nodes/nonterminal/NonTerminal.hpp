@@ -19,7 +19,7 @@ namespace ast
 		NonTerminal(const std::string&,int,int,int,int);
 		NonTerminal(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 

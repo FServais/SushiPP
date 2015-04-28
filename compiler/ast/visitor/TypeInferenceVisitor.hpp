@@ -5,13 +5,14 @@
 #include <string>
 
 #include "ASTVisitor.hpp"
+#include "VisitorParameters.hpp"
+#include "../../inference/TypeSymbolTable.hpp"
 
-namespace ast 
+namespace visitor
 {
 	class TypeInferenceVisitor : public ASTVisitor
 	{
 	public:
-		TypeInferenceVisitor();
 
 		/****************
 		 * 		Node    *
@@ -37,6 +38,7 @@ namespace ast
 		virtual void visit( ast::Type_Array& );
 		virtual void visit( ast::Type_List& );
 		virtual void visit( ast::Type_Bool& );
+		virtual void visit( ast::Type_Function& );
 
 		/**************************
 		 * 		Operator token    *
@@ -146,6 +148,7 @@ namespace ast
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
+		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );
@@ -156,54 +159,25 @@ namespace ast
 
 	private:
 		/**
-		 * These table maps symbols with their associated link type pointing the their type 
-		 * Symbols are either symbols from the soure program or type variables
+		 * type_table : maps type identifiers and their actual value 
+		 * params     : an object for emulating parameters passing 
+		 * current_scope : the current scope id
 		 */
-		std::unordered_map<std::string, inference::LinkType&> type_symbol_table;
+		inference::TypeSymbolTable type_table;
+		VisitorParameters<std::string> params;
+		size_t current_scope;
 
-		/** Common flat types objects */
-		inference::Int type_int;
-		inference::Bool type_bool;
-		inference::String type_string;
-		inference::Char type_char;
-		inference::Float type_float;
-		inference::Void type_void;
-
-		/** 
-		 * Stack of TypeLink reference to emulate parameter passing 
-		 * The variable parameter_count counts the number of parameters that were passed
-		 */
-		size_t parameter_count;
-		std::stack<inference::TypeLink&> parameters;
-
-		/** Counts the number of generated type variable */
-		static size_t type_variable_cnt;
 
 		/**
-		 * @brief Generate a new (unique) type variable name
-		 * @retval std::string The brand new variable name
+		 * @brief Update the symbol table for a function declaration (either named or anonymous)
+		 * @param const ast::ParamList param_list The function parameters list
+		 * @param const std::string& func_name The name of the function 
+		 * @param size_t scope_id The function body scope id 
+		 * @param std::pair<std::string, std::string> The pair containing the type variable name of the function (first)
+		 * and of the return value (second)
+		 * @note The VisitorParameters object is not modified
 		 */
-		static std::string new_type_variable_name();
-
-		/**
-		 * @brief Checks whether the number of parameters match the one expected
-		 * @param size_t expected Expected number of parameters
-		 * @throw BadParameterNumberException if the number of expected parameters doesn't match the number of given parameters
-		 */
-		void check_params(size_t);
-
-		/**
-		 * @brief Add a parameter for the next call
-		 * @param inference::TypeLink link The link to pass as parameter
-		 */
-		void add_param(inference::TypeLink&);
-
-		/**
-		 * @brief Get a parameter from the parameter stack
-		 * @param inference::TypeLink& The reference to the link node parameter
-		 * @throw BadParameterNumberException If no parameters are available anymore
-		 */
-		inference::TypeLink& get_param();
+		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
 	};
 }
 

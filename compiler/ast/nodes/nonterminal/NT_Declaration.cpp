@@ -3,6 +3,8 @@
 #include "../../visitor/ASTVisitor.hpp"
 #include "../../../exceptions/Exceptions.hpp"
 
+#include <algorithm>
+
 using namespace ast;
 using namespace std;
 using namespace except;
@@ -22,7 +24,7 @@ NT_Declaration::NT_Declaration(const string& node_name, const NodeLocation& node
 
 }
 
-void NT_Declaration::accept(ASTVisitor& visitor)
+void NT_Declaration::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -53,7 +55,7 @@ DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, const No
 	add_child(scope);
 }
 
-void DeclFunc::accept(ASTVisitor& visitor)
+void DeclFunc::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -92,7 +94,7 @@ DeclVars::DeclVars(DeclVar* dvar, const NodeLocation& node_loc) : NT_Declaration
 	add_child(dvar);
 }
 
-void DeclVars::accept(ASTVisitor& visitor)
+void DeclVars::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -160,7 +162,7 @@ DeclVar::DeclVar(Identifier* id,  Expression* expr, const NodeLocation& node_loc
 	add_child(expr);
 }
 
-void DeclVar::accept(ASTVisitor& visitor)
+void DeclVar::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -214,7 +216,7 @@ Param::Param(Identifier* id, Type* type,  const NodeLocation& node_loc) : NT_Dec
 	add_child(type);
 }
 
-void Param::accept(ASTVisitor& visitor)
+void Param::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -224,8 +226,9 @@ bool Param::has_type() const
 	return children.size() == 2;
 }
 
-symb::Type Param::get_type() const
+inference::ShallowType Param::get_type() const
 {
+	if(!has_type()) return inference::NO_TYPE;
 	return get_type_node().get_type();
 }
 
@@ -275,7 +278,27 @@ ParamList::ParamList(Param* param, const NodeLocation& node_loc) : NT_Declaratio
 	add_child(param);
 }
 
-void ParamList::accept(ASTVisitor& visitor)
+void ParamList::get_parameters_name(std::vector<std::string>& param_names)
+{
+	param_names.clear();
+	transform(children.begin(), children.end(), back_inserter(param_names), 
+			  [&param_names](ASTNode* child)
+			  {
+				return dynamic_cast<Param*>(child)->get_identifier().id();
+			  });
+}
+
+void ParamList::get_parameters_type(std::vector<inference::ShallowType>& param_types)
+{
+	param_types.clear();
+	transform(children.begin(), children.end(), back_inserter(param_types),
+			  [&param_types](ASTNode* child) 
+			  {
+			  	return dynamic_cast<Param*>(child)->get_type();
+			  });
+}
+
+void ParamList::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -326,7 +349,7 @@ SoyFunc::SoyFunc(ParamList* param_list, Scope* scope, const NodeLocation& node_l
 	add_child(scope);
 }
 
-void SoyFunc::accept(ASTVisitor& visitor)
+void SoyFunc::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

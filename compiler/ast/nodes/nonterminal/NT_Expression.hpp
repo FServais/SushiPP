@@ -17,7 +17,7 @@ namespace ast
 		NT_Expression(const std::string&,int,int,int,int);
 		NT_Expression(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/************************************
@@ -33,7 +33,7 @@ namespace ast
 
 		ASTNode& get_child();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class ModifyingExpression : public NT_Expression
@@ -46,7 +46,7 @@ namespace ast
 
 		ASTNode& get_child();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class DatastructureAccess : public NT_Expression
@@ -61,7 +61,7 @@ namespace ast
 		Identifier& get_id();
 		Expression& get_index();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class ExpressionList : public NT_Expression
@@ -78,7 +78,7 @@ namespace ast
 		 */
 		void add_expression(Expression*);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 }
 

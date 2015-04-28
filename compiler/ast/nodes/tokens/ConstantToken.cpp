@@ -22,7 +22,7 @@ ConstantToken::ConstantToken(const std::string& node_name, const NodeLocation& n
 
 }
 
-void ConstantToken::accept(ASTVisitor& visitor)
+void ConstantToken::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -50,7 +50,7 @@ String::String(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
-void String::accept(ASTVisitor& visitor)
+void String::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -88,7 +88,7 @@ Character::Character(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
-void Character::accept(ASTVisitor& visitor)
+void Character::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -121,7 +121,7 @@ Integer::Integer(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
-void Integer::accept(ASTVisitor& visitor)
+void Integer::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -154,7 +154,7 @@ Float::Float(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
-void Float::accept(ASTVisitor& visitor)
+void Float::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
@@ -187,7 +187,7 @@ Bool::Bool(const std::string& lexer_val, const NodeLocation& node_loc)
 
 }
 
-void Bool::accept(ASTVisitor& visitor)
+void Bool::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }

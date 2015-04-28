@@ -35,7 +35,7 @@ namespace ast
 		Identifier(const std::string&,int,int,int,int);
 		Identifier(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	
 		// id getters
 		std::string& id();

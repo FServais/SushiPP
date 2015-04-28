@@ -8,7 +8,7 @@ patterns:
 
 - comment: Control flow keywords
   name: keyword.control.sushipp
-  match: \b(if|roll|menu|else(if)?|to|nori|for|foreach|continue|break|as)\b
+  match: \b(if|roll|menu|else(if)?|to|nori|for|foreach|continue|break|as|call)\b
 
 - comment: Operators
   name: keyword.operator.sushipp

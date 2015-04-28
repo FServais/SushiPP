@@ -22,7 +22,7 @@ namespace ast
 		NT_Statement(const std::string&,int,int,int,int);
 		NT_Statement(const std::string&,const NodeLocation&);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	/***********************************
@@ -39,7 +39,7 @@ namespace ast
 		// return the child node
 		ASTNode& get_statement();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Return : public NT_Statement
@@ -56,7 +56,7 @@ namespace ast
 		bool empty_nori();
 		Expression& get_returned_expression();
 		
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class MenuCase : public NT_Statement
@@ -74,7 +74,7 @@ namespace ast
 		Scope& get_scope();
 		Expression& get_expression();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class MenuDef : public NT_Statement
@@ -90,7 +90,7 @@ namespace ast
 
 		Scope& get_scope();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class MenuBody : public NT_Statement
@@ -140,7 +140,7 @@ namespace ast
 		 */
 		MenuCase& get_nth_case(size_t);
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 	private:
 		bool has_default; // true if the menu body contains a default case (contained at the end of the children vector)
@@ -158,7 +158,7 @@ namespace ast
 		MenuBody& get_body();
 		Expression& get_expression();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Roll : public NT_Statement
@@ -176,7 +176,7 @@ namespace ast
 		Scope& get_scope();
 		Expression& get_expression();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Foreach : public NT_Statement
@@ -196,7 +196,7 @@ namespace ast
 		Expression& get_expression();
 		Scope& get_scope();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class ForInitializer : public NT_Statement
@@ -212,7 +212,7 @@ namespace ast
 
 		ASTNode& get_expression();
 		
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class ForUpdate : public NT_Statement
@@ -228,7 +228,7 @@ namespace ast
 		
 		ASTNode& get_expression();
 		
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class For : public NT_Statement
@@ -260,7 +260,7 @@ namespace ast
 		bool empty_initializer() const { return !has_initializer; }
 		bool empty_update() const { return !has_update; }
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 
 	private:
 		bool has_initializer;
@@ -282,7 +282,7 @@ namespace ast
 		Scope& get_scope();
 		Expression& get_expression();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Elseif : public NT_Statement
@@ -300,7 +300,7 @@ namespace ast
 		Scope& get_scope();
 		Expression& get_expression();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Else : public NT_Statement
@@ -316,7 +316,7 @@ namespace ast
 
 		Scope& get_scope();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	};
 
 	class Conditional : public NT_Statement
@@ -356,7 +356,7 @@ namespace ast
 		 */
 		Else& get_else();
 
-		virtual void accept(ASTVisitor&);
+		virtual void accept(visitor::ASTVisitor&);
 	private:
 		bool has_else;
 	};
