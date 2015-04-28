@@ -8,9 +8,7 @@
 #include <ios> // failure
 
 #include "ast/visitor/PrintASTVisitor.hpp"
-#include "ast/visitor/FunctionTableVisitor.hpp"
-#include "ast/visitor/SymbolTableVisitor.hpp"
-
+#include "ast/visitor/TypeInferenceVisitor.hpp"
 
 #include "parser/sushipp.tab.h"
 
@@ -38,6 +36,7 @@ void SppCompiler::execute()
 	{
 		init();
 		parse();
+		inference();
 		terminate();
 	}
 }
@@ -97,15 +96,13 @@ void SppCompiler::parse()
 		if(config.do_dump_ast())
 			print_ast();
 	}
+}
 
-	PrintASTVisitor visitor(cout);
+void SppCompiler::inference()
+{
+	visitor::TypeInferenceVisitor visitor;
 	syntax_tree.root().accept(visitor);
-	
-	FunctionTableVisitor visitor2(function_table);
-	syntax_tree.root().accept(visitor2);
-
-	SymbolTableVisitor visitor3(function_table, variable_table);
-	syntax_tree.root().accept(visitor3);
+	cout << endl << visitor.get_table() << endl << endl;
 }
 
 void SppCompiler::print_ast()
@@ -123,11 +120,6 @@ void SppCompiler::print_ast()
 		visitor::PrintASTVisitor visitor(file);
 		syntax_tree.root().accept(visitor);
 		file.close();
-
-		
-
-
-
 	}
 	else
 	{
