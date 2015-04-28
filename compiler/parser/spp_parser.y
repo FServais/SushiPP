@@ -612,40 +612,35 @@ expression-list:
 constant:
   CONST_INT
     {
-    	ast::Integer* i = new ast::Integer(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(i, curr_loc()));
+		$$ = (void*) (new ast::Integer(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
-    	ast::Float* f = new ast::Float(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(f, curr_loc()));
+		$$ = (void*) (new ast::Float(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
-    	ast::String* s = new ast::String(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(s, curr_loc()));
+		$$ = (void*) (new ast::String(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
-    	ast::Bool* b = new ast::Bool(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(b, curr_loc()));
+		$$ = (void*) (new ast::Bool(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
-    	ast::Character* c = new ast::Character(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(c, curr_loc()));
+		$$ = (void*) (new ast::Character(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
