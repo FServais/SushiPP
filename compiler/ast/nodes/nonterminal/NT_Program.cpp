@@ -44,6 +44,16 @@ Program::Program(Scope* scope, const NodeLocation& node_loc) : NT_Program("Progr
 		add_child(scope);
 }
 
+Scope& Program::get_scope()
+{
+	return dynamic_cast<Scope&>(*children[0]);
+}
+
+const Scope& Program::get_scope() const
+{
+	return dynamic_cast<Scope&>(*children[0]);
+} 
+
 void Program::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
@@ -80,3 +90,4 @@ size_t Scope::nb_elements() const
 {
 	return children.size();
 }
+

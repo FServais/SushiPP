@@ -7,9 +7,16 @@ using namespace std;
 using namespace visitor;
 using namespace inference;
 
-void TypeInferenceVisitor::visit( ast::ASTNode& )
+void TypeInferenceVisitor::visit( ast::ASTNode& node )
 {
+	// hopefully, never called because of virtual 
+	for(auto child : node.get_children())
+	{
+		params.call();
+		child.accept(*this);
+	}
 
+	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Identifier& id )
@@ -22,54 +29,54 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::K_Continue& )
+void TypeInferenceVisitor::visit( ast::K_Continue& cont )
 {
-
+	params.ret(); // nothing to do (no type information)
 }
 
-void TypeInferenceVisitor::visit( ast::K_Break& )
+void TypeInferenceVisitor::visit( ast::K_Break& brk )
 {
-
+	params.ret(); // nothing to do (no type information)
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Int& )
+void TypeInferenceVisitor::visit( ast::Type_Int& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Float& )
+void TypeInferenceVisitor::visit( ast::Type_Float& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Char& )
+void TypeInferenceVisitor::visit( ast::Type_Char& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_String& )
+void TypeInferenceVisitor::visit( ast::Type_String& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Array& )
+void TypeInferenceVisitor::visit( ast::Type_Array& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_List& )
+void TypeInferenceVisitor::visit( ast::Type_List& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Bool& )
+void TypeInferenceVisitor::visit( ast::Type_Bool& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
-void TypeInferenceVisitor::visit( ast::Type_Function& )
+void TypeInferenceVisitor::visit( ast::Type_Function& type )
 {
-
+	params.ret(); // bypassed by the decl func node
 }
 
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
@@ -862,15 +869,17 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceArray& seq_array )
 
 void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 {
-	ParamList& param_list = declfunc.get_param_list();
+	// update the symbol table with function data
+	pair<string, string> func_type_names = add_function_declaration_rule(declfunc.get_param_list(),
+																		 declfunc.get_scope().get_scope_id(),
+																		 declfunc.get_id().id());
 
-	vector<string> param_names;
-	vector<ShallowType> param_types;
-
-	param_list.get_parameters_name(param_names);
-	param_list.get_parameters_type(param_types);
-
+	// propagate return value to scope
+	params.add_param(func_type_names.second);
+	params.call();
+	declfunc.get_scope().accept(*this);
 	
+	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
@@ -885,7 +894,7 @@ void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::DeclVar& )
+void TypeInferenceVisitor::visit( ast::DeclVar& declaration )
 {	
 	// no argument expected 
 	// create a new type variable
@@ -898,24 +907,46 @@ void TypeInferenceVisitor::visit( ast::DeclVar& )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::ParamList& )
+void TypeInferenceVisitor::visit( ast::ParamList& param_list )
 {
-
+	params.ret(); // bypassed by DelcFunc and SoyExpression 
 }
 
-void TypeInferenceVisitor::visit( ast::Param& )
+void TypeInferenceVisitor::visit( ast::Param& param )
 {
-
+	params.ret(); // bypassed by DelcFunc and SoyExpression 
 }
 
-void TypeInferenceVisitor::visit( ast::Expression& )
+void TypeInferenceVisitor::visit( ast::Expression& expr )
 {
+	/**
+	 * can either take one or zero parameter. If the number of 
+	 * parameters is 0, then a new type variable is created for the 
+	 * subexpression. Otherwise the one given as parameter is taken
+	 */ 
+	string alpha = (params.nb_params() == 0) ? new_variable() : params.get_param(1);
 
+	params.add_param(alpha);
+	params.call();
+	expression.get_child().accept(*this);
+
+	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::ModifyingExpression& )
+void TypeInferenceVisitor::visit( ast::ModifyingExpression& expr )
 {
+	/**
+	 * can either take one or zero parameter. If the number of 
+	 * parameters is 0, then a new type variable is created for the 
+	 * subexpression. Otherwise the one given as parameter is taken
+	 */ 
+	string alpha = (params.nb_params() == 0) ? new_variable() : params.get_param(1);
 
+	params.add_param(alpha);
+	params.call();
+	expression.get_child().accept(*this);
+
+	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::DatastructureAccess& ds_access )
@@ -934,7 +965,7 @@ void TypeInferenceVisitor::visit( ast::DatastructureAccess& ds_access )
 	ds_access.get_id().accept(*this);
 
 	// the index expression should be an integer
-	string beta = new_variable();
+	string beta = type_table.new_variable();
 	type_table.unify_int(beta);
 
 	params.add_param(beta);
@@ -979,64 +1010,165 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::ArgList& )
+void TypeInferenceVisitor::visit( ast::ArgList& arg_list )
 {
-	// bypassed in the FuncCall visit
+	params.ret(); // bypassed in the FuncCall visit
 }
 
-void TypeInferenceVisitor::visit( ast::Argument& )
+void TypeInferenceVisitor::visit( ast::Argument& arg )
 {
+	string alpha = params.get_param(1);
 
+	params.add_param(alpha);
+	params.call();
+	arg.get_child().accept(*this);
+
+	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::SoyFunc& func )
+void TypeInferenceVisitor::visit( ast::SoyFunc& soy )
 {
 	string delta = params.get_param(1); // function type
 
+	// update the symbol table with soy function data
+	pair<string, string> func_type_names = add_function_declaration_rule(soy.get_params(),
+																		 soy.get_scope().get_scope_id(),
+																		 soy.get_name());
+
+	// unify the function type with the inherited type
+	type_table.unify(delta, func_type_names.first);
+
+	// propagate return value to scope
+	params.add_param(func_type_names.second);
+	params.call();
+	soy.get_scope().accept(*this);
+	
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Program& program )
+{
+	params.add_param(""); // empty string means that nothing is expected as return type
+	params.call();
+	program.get_scope().accept(*this);
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Scope& scope )
+{
+	string alpha = params.get_param(1), 
+		   beta; // beta is the type to pass to the child nodes
+
+	if(alpha.empty()) // empty string means that nothing is expected as return type
+	{
+		// the scope is not expected to return something 
+		beta = type_table.new_variable();
+		type_table.unify_void(beta);
+	}
+	else beta = alpha; 
+
+	// pass beta recursively
+	for(auto child : scope.children())
+	{
+		params.add_param(beta);
+		params.call();
+		child->accept(*this);
+	}
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Statement& statement )
+{
+	statement.get_statement().accept(*this); // forward the type to the actual statement
+}
+
+void TypeInferenceVisitor::visit( ast::Return& nori )
+{
+	string alpha = params.get_param(1);
+
+	if(nori.empty_nori())
+		type_table.unify_void(alpha);
+	else
+	{
+		params.add_param(alpha);
+		params.call();
+		nori.get_expression().accept(*this);
+	}
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Menu& menu )
+{
+	string alpha = params.get_param(1), // type that should be returned by the element of the body
+			beta = type_table.new_variable(); // type of the menu expression
+
+	params.add_param(beta);
+	params.call();
+	menu.get_body().accept(*this);
+
+	params.add_param(alpha); 
+	params.add_param(beta);
+	params.call();
+	menu.get_expression().accept(*this);
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::MenuDef& menudef )
+{
+	string alpha = params.get_param(1); // the parameter that should be returned by case scope
+
+	params.add_param(alpha);
+	params.call();
+	menudef.get_scope().accept(*this);
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::MenuCase& menucase )
+{
+	string alpha = params.get_param(1), // the parameter that should be returned by case scope
+			beta = params.get_param(2); // function of the case expression
+
+	params.add_param(alpha);
+	params.call();
+	menudef.get_scope().accept(*this);
+
+	params.add_param(beta);
+	params.call();
+	menudef.get_expression().accept(*this);
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Roll& roll )
+{
+	string alpha = params.get_param(1), // the parameter to pass to the roll body scope
+			beta = type_table.new_variable(); // type of the roll expression
+
+	// the expression must return stg of type bool
+	type_table.unify_bool(beta);
+
+	params.add_param(beta);
+	params.call();
+	roll.get_expression().accept(*this);
+
+	params.add_param(alpha);
+	params.call();
+	roll.get_scope().accept(*this);
+
+	params.ret();
+}
+
+void TypeInferenceVisitor::visit( ast::Foreach& foreach )
+{
 	
 }
 
-void TypeInferenceVisitor::visit( ast::Program& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Scope& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Statement& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Return& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Menu& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::MenuDef& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Roll& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::Foreach& )
-{
-
-}
-
-void TypeInferenceVisitor::visit( ast::For& )
+void TypeInferenceVisitor::visit( ast::For& for_loop )
 {
 
 }
@@ -1059,4 +1191,28 @@ void TypeInferenceVisitor::visit( ast::Conditional& )
 void TypeInferenceVisitor::visit( ast::Elseif& )
 {
 
+}
+
+pair<string, string> TypeInferenceVisitor::add_function_declaration_rule(const ast::ParamList& param_list, 
+																		 const string& func_name, 
+																		 size_t scope_id)
+{
+	vector<string> param_names, // param names without scope ids
+				   param_type_names; // params names with scope ids
+
+	param_list.get_parameters_name(param_names);
+	
+	// get name with scope ids
+	auto mk_unique_id_name = [&type_table, body_scope_id](const std::string& name)
+							 { return type_table.unique_id_name(body_scope_id, name); };
+
+	transform(param_names.begin(), params_names.end(), back_inserter(param_type_names), mk_unique_id_name);
+
+	// unify possible hints with param type variables
+	vector<ShallowType> param_type_hints;
+	param_list.get_parameters_type(param_type_hints);
+
+	// create function
+	string func_type_name = type_table.unique_id_name(current_scope, func_name);
+	return func_type_names = new_function(param_type_names, func_type_name, param_type_hints);
 }

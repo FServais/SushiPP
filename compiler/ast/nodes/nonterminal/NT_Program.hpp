@@ -58,6 +58,9 @@ namespace ast
 		Program(Scope*,int,int,int,int);
 		Program(Scope*,const NodeLocation&);
 
+		Scope& get_scope();
+		const Scope& get_scope() const; 
+		
 		virtual void accept(visitor::ASTVisitor&);
 	};
 }

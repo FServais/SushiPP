@@ -148,6 +148,7 @@ namespace visitor
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
+		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );
@@ -165,6 +166,18 @@ namespace visitor
 		inference::TypeSymbolTable type_table;
 		VisitorParameters<std::string> params;
 		size_t current_scope;
+
+
+		/**
+		 * @brief Update the symbol table for a function declaration (either named or anonymous)
+		 * @param const ast::ParamList param_list The function parameters list
+		 * @param const std::string& func_name The name of the function 
+		 * @param size_t scope_id The function body scope id 
+		 * @param std::pair<std::string, std::string> The pair containing the type variable name of the function (first)
+		 * and of the return value (second)
+		 * @note The VisitorParameters object is not modified
+		 */
+		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
 	};
 }
 

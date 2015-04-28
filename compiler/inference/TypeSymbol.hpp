@@ -33,12 +33,12 @@ namespace inference
 		virtual bool is_uniparameter_type() const = 0;  // true if the TypeSymbol is the array or list type
 		virtual bool equals(const TypeSymbol&) const = 0; // return true if the given type symbol is equal to the one given as argument
 													// if one of the element is a link it is resolved before comparison
+
 		/**
-		 * @brief Return the actual type of the type symbol
-		 * @throw TypeSymbolResolutionException If an actual type cannot be returned (if the link is not resolvable
-		 * to a complete type, if the type symbol is a variable)
-		 */
-		//virtual void get_type(types::Type*) const = 0;
+		 * @brief Check whether the give type symbol is a complete type (of which all the elements are actual types)
+		 * @retval bool True if it is resolved, false otherwise
+ 		 */
+		virtual bool is_resolved() const = 0;
 	};
 
 	/**
@@ -59,6 +59,7 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual bool is_resolved() const { return false; }
 
 	private:
 		std::string varname;
@@ -134,6 +135,7 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual bool is_resolved() const;
 
 	private:
 		TypeSymbol* linked_symbol; // underlying link object, nullptr if (*this) does not point to a type link object
@@ -151,6 +153,7 @@ namespace inference
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
+		virtual bool is_resolved() const { return true; }
 	};
 
 	/**
@@ -243,11 +246,7 @@ namespace inference
 		virtual bool is_function_type() const { return true; };
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
-/*
-		types::Type get_return_type() const;
-		types::Type get_parameter_type(size_t) const;
-		void get_parameter_types(std::vector<types::Type>&) const;
-		*/
+		virtual bool is_resolved() const;
 
 		/** Getters for the return type */
 		TypeLink& get_return_type() { return return_type; };
@@ -273,6 +272,7 @@ namespace inference
 
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_uniparameter_type() const { return true; };
+		virtual bool is_resolved() const;
 
 		virtual bool is_array() const = 0;
 		virtual bool is_list() const = 0;

@@ -72,6 +72,11 @@ void TypeLink::set_symbol(TypeSymbol* new_symb)
 	symbol_is_link = linked_symbol->is_link();
 }
 
+bool TypeLink::is_resolved() const 
+{
+	return linked_symbol->is_resolved();
+}
+
 string TypeLink::str() const
 {
 	return resolve().str();
@@ -168,6 +173,12 @@ bool Function::equals(const TypeSymbol& symb) const
 	return all_of(equality.begin(), equality.end(), [](bool val) { return val; });
 }
 
+bool Function::is_resolved() const 
+{
+	return return_type.is_resolved() 
+			&& all_of(parameters.begin(), parameters.end(), [](const TypeLink& link) { return link.is_resolved(); });
+}
+
 string Function::str() const
 {
 	stringstream ss;
@@ -181,6 +192,11 @@ string Function::str() const
 }
 
 UniparameterType::UniparameterType(TypeLink& param_type) : parameter_type(param_type) { }
+
+bool UniparameterType::is_resolved() const 
+{
+	return parameter_type.is_resolved();
+}
 
 Array::Array(TypeLink& type) : UniparameterType(type) { }
 

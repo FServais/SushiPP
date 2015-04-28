@@ -35,8 +35,6 @@ namespace ast
 
 		virtual void accept(visitor::ASTVisitor&);
 		ASTNode& get_child();
-
-
 	};
 
 	class ArgList : public NT_FunctionCall

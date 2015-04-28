@@ -63,6 +63,22 @@ pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_n
 	return make_pair(func_name, ret_type_var);
 }
 
+pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_names, const vector<ShallowType>& hints)
+{
+	return new_function(param_names, unique_varname(), hints);
+}
+		
+pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_names, const string& func_name, const vector<ShallowType>& hints)
+{
+	pair<string, string> func_type_names = new_function(param_names, func_name);
+
+	for(size_t i = 0; i < hints.size(); ++i)
+		unify(param_names[i], hints[i]);
+
+	return func_type_names;
+}
+
+
 pair<string, string> TypeSymbolTable::new_array()
 {
 	// create the array type entry in the map
@@ -263,4 +279,18 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 
 	// set the last link
 	link.resolve_last_link().set_symbol(flat);
+}
+
+void TypeSymbolTable::unify(const std::string& type_str, ShallowType s_type)
+{
+	switch(s_type)
+	{
+	case INT: unify_int(type_str); break;
+	case FLOAT: unify_float(type_str); break;
+	case VOID: unify_void(type_str); break;
+	case STRING: unify_string(type_str); break;
+	case BOOL: unify_bool(type_str); break;
+	case CHAR: unify_char(type_str); break;
+	default: break;
+	}
 }

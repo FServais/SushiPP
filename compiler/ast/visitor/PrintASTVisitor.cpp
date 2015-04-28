@@ -755,6 +755,15 @@ void PrintASTVisitor::visit( ast::MenuDef& token )
 	curr_depth--;
 }
 
+void PrintASTVisitor::visit( ast::MenuCase& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
 void PrintASTVisitor::visit( ast::Roll& token )
 {
 	print_single(token.node_name());
@@ -823,11 +832,9 @@ void PrintASTVisitor::visit( ast::Elseif& token )
  ************************/
 void PrintASTVisitor::visit( ast::ASTNode& token )
 {
-	string name = "Unknown";
 	print_single(token.node_name());
 	curr_depth++;
 	for(auto child : token.get_children())
 		child->accept(*this);
 	curr_depth--;
 }
-

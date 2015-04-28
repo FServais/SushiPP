@@ -141,6 +141,7 @@ namespace visitor
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
+		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );

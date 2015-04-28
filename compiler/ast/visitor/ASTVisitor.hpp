@@ -150,6 +150,7 @@ namespace visitor
 		virtual void visit( ast::Return& ) = 0;
 		virtual void visit( ast::Menu& ) = 0;
 		virtual void visit( ast::MenuDef& ) = 0;
+		virtual void visit( ast::MenuCase& ) = 0;
 		virtual void visit( ast::Roll& ) = 0;
 		virtual void visit( ast::Foreach& ) = 0;
 		virtual void visit( ast::For& ) = 0;
