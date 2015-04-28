@@ -138,10 +138,13 @@ namespace ast
 		virtual void accept(ASTVisitor&);
 		ParamList& get_params();
 		Scope& get_scope();
+		void set_name(std::string& n){name = n;}
+		std::string& get_name() { return name; }
 
 		bool contains_params() const { return has_params; }
 	private:
 		bool has_params;
+		std::string name;
 	};
 }
 

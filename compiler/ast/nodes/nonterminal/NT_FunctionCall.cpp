@@ -74,6 +74,16 @@ ArgList& FuncCall::get_arg_list()
 	return *dynamic_cast<ArgList*>(children[1]);
 }
 
+std::string& FuncCall::get_function_name()
+{
+	if(Identifier* v = dynamic_cast<Identifier*>(children[0]))
+		return v->id();
+
+	else
+		return dynamic_cast<SoyFunc*>(children[0])->get_name();
+
+}
+
 /* ArgList */
 ArgList::ArgList(Argument* arg) : NT_FunctionCall("Argument list") 
 {

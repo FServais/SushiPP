@@ -20,7 +20,7 @@ OBJS_TOKENS   		= $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)Constan
 OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)Constant.o $(PATH_OBJS)NT_Functioncall.o
 OBJS_NODE_ALL 		= $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
 OBJS_AST 	  		= $(PATH_OBJS)AbstractSyntaxTree.o
-OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o
+OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o $(PATH_OBJS)SymbolTableVisitor.o $(PATH_OBJS)FunctionTableVisitor.o
 OBJS_EXCEP    		= $(PATH_OBJS)Exceptions.o
 OBJS_MAIN 	  		= $(PATH_OBJS)main.o
 OBJS_PARSER   		= $(PATH_OBJS)sushipp.tab.o
@@ -45,7 +45,7 @@ OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OB
 DEP_ASTNODE_DEEP 		 = $(PATH_NODES)*.hpp $(PATH_TOKENS)*.hpp $(PATH_NONTERMINAL)*.hpp
 DEP_ASTNODE_DEEP_VISITOR = $(DEP_ASTNODE_DEEP) $(PATH_VISITOR)ASTVisitor.hpp
 DEP_ASTNODE_SHALLOW 	 = $(PATH_NODES)ASTNode.hpp $(PATH_NODES)NodeLocation.hpp
-DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp
+DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp $(PATH_VISITOR)FunctionTableVisitor.hpp $(PATH_VISITOR)SymbolTableVisitor.hpp
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
@@ -147,6 +147,15 @@ $(PATH_OBJS)Operator.o: $(PATH_TOKENS)Operator.cpp $(DEP_ASTNODE_DEEP_VISITOR)
 # Visitor #
 $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
 	$(CC) $< -o $@ $(CCFLAGS)
+
+# Visitor #
+$(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB)
+	$(CC) $< -o $@ $(CCFLAGS)
+
+# Visitor #
+$(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB)
+	$(CC) $< -o $@ $(CCFLAGS)
+
 
 # Exceptions #
 $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hpp

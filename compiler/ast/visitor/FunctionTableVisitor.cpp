@@ -1,9 +1,11 @@
 #include "FunctionTableVisitor.hpp"
 
-using namespace std;
 
 // Constructor
-FunctionTableVisitor::FunctionTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab){ function_table =  fct_tab;}
+FunctionTableVisitor::FunctionTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab)
+{ 
+	function_table =  fct_tab;
+}
 
 
 
@@ -16,63 +18,78 @@ FunctionTableVisitor::FunctionTableVisitor(symb::SymbolTable<symb::FunctionInfo>
 
 void FunctionTableVisitor::visit( ast::DeclFunc& token )
 {
-	std::vector<ASTNode*> children = token.get_children();
 	// first child is a identifier
-	std::string id = children[0]->id();
+	std::string id = token.get_id().id();
 	// second child is a param list whose children are params
-	std::vector<ASTNode*> params = children[1].get_children();
-	std::vector<VariableInfo> param_list;
+	ast::ParamList param_list = token.get_param_list();
+	std::vector<symb::VariableInfo> params;
 
 	// create a VariableInfo for each parameter of the function
-	for(auto it = params.begin(); it != params.end(); it++)
+	for(int i = 0; i < param_list.nb_params(); i++)
 	{
-			std::vector<ASTNode*> param_children = (*it).get_children();
-			std:: string param_name = param_children[0]->id();
-			symb::Type type = param_children[1]->get_type();
-			VariableInfo param(param_name, type);
-			param_list.push_back(param);
+			ast::Param param = param_list.get_param(i);
+			std::string param_name = param.get_param_name();
+
+			if(param.has_type())
+			{
+				symb::Type type = param.get_type();
+				symb::VariableInfo parameter(param_name, type);
+			}
+			else 
+				symb::VariableInfo parameter(param_name);
+
+			params.push_back(parameter);
 
 	}
 
-	FunctionInfo fct_info(id, param_list, UNDEFINED);
+	symb::FunctionInfo fct_info(id, params, symb::UNDEFINED);
 	function_table.add_symbol(id, fct_info);
-
-	for(auto it = (children.begin()+2); it != children.end(); it++)
-	{
-		(*it)->accept(*this);
-	}
+	// continue visiting deeper
+	token.get_scope().accept(*this);
+	
 }
 
 void FunctionTableVisitor::visit( ast::SoyFunc& token )
 {
-	std::vector<ASTNode*> children = token.get_children();
 	
-	// first child is a param list whose children are params
-	std::vector<ASTNode*> params = children[0].get_children();
-	std::vector<VariableInfo> param_list;
+	// second child is a param list whose children are params
+	ast::ParamList param_list = token.get_params();
+	std::vector<symb::VariableInfo> params;
 
 	// create a VariableInfo for each parameter of the function
-	for(auto it = params.begin(); it != params.end(); it++)
+	for(int i = 0; i < param_list.nb_params(); i++)
 	{
-			std::vector<ASTNode*> param_children = (*it).get_children();
-			std:: string param_name = param_children[0]->id();
-			symb::Type type = param_children[1]->get_type();
-			VariableInfo param(param_name, type);
-			param_list.push_back(param);
+			ast::Param param = param_list.get_param(i);
+			std::string param_name = param.get_param_name();
+
+			if(param.has_type())
+			{
+				symb::Type type = param.get_type();
+				symb::VariableInfo parameter(param_name, type);
+				params.push_back(parameter);
+			}
+			else 
+			{
+				symb::VariableInfo parameter(param_name);
+				params.push_back(parameter);
+			}
+				
+
+			
 
 	}
 
-	FunctionInfo fct_info(param_list, UNDEFINED);
-	std::string name = random_string();
-	while(function_table.symbol_exists(name))
-		name = random_string();
+	symb::FunctionInfo fct_info(params, symb::UNDEFINED);
+
+	std::string name = util::random_string(10)+"$";
+	
+	
+	token.set_name(name);
 
 	function_table.add_symbol(name, fct_info);
-
-	for(auto it = (children.begin()+1); it != children.end(); it++)
-	{
-		(*it)->accept(*this);
-	}
+	// continue visiting deeper
+	token.get_scope().accept(*this);
+	
 }
 
 
@@ -87,9 +104,12 @@ void FunctionTableVisitor::visit( ast::Scope& token )
 
 	int id_scope = function_table.add_scope();
 	function_table.move_to_scope(id_scope);
+	token.set_scope_id(id_scope);
+
 	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
 		(*it)->accept(*this);
-	function_table.move_to_oarent_scope();
+	
+	function_table.move_to_parent_scope();
 
 }
 

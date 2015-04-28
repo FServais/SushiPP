@@ -69,6 +69,7 @@ namespace ast
 		 */
 		ArgList& get_arg_list();
 		bool contains_arglist() const { return has_arglist; };
+		std::string& get_function_name();
 
 	private:
 		bool has_arglist;

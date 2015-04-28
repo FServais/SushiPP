@@ -23,7 +23,7 @@ public:
 	/*************************
 	 * 		Keyword token    *
 	 *************************/
-
+	
 	virtual void visit( ast::K_Break& );
 	virtual void visit( ast::K_Continue& );
 	virtual void visit( ast::Type_Int& );
