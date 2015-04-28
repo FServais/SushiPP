@@ -22,7 +22,7 @@ namespace visitor
 		/******************************
 		 * 		Identifier token    *
 		 ******************************/
-		 
+
 		virtual void visit( ast::Identifier& );
 
 		/*************************
@@ -148,6 +148,7 @@ namespace visitor
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
+		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );
@@ -158,8 +159,8 @@ namespace visitor
 
 	private:
 		/**
-		 * type_table : maps type identifiers and their actual value 
-		 * params     : an object for emulating parameters passing 
+		 * type_table : maps type identifiers and their actual value
+		 * params     : an object for emulating parameters passing
 		 * current_scope : the current scope id
 		 */
 		inference::TypeSymbolTable type_table;

@@ -74,7 +74,7 @@ void TypeInferenceVisitor::visit( ast::Type_Function& )
 
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -84,13 +84,13 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -106,7 +106,7 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -116,13 +116,13 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_Div& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -132,7 +132,7 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -150,7 +150,7 @@ void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -165,10 +165,10 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 	params.call();
 	op.get_left_operand().accept(*this);
 
-	params.add_param(beta); 
+	params.add_param(beta);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -197,7 +197,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -215,7 +215,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -233,7 +233,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -247,7 +247,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -305,7 +305,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -326,7 +326,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -347,7 +347,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -368,7 +368,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -389,7 +389,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -410,7 +410,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 {
 	string alpha = params.get_param(1);
 
-	// comparison operators return a boolean 
+	// comparison operators return a boolean
 	type_table.unify_bool(alpha);
 
 	// operands can have a different types
@@ -441,7 +441,7 @@ void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -459,7 +459,7 @@ void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -477,7 +477,7 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -499,7 +499,7 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
 	op.get_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -510,7 +510,7 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
 	op.get_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -521,13 +521,13 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
 	op.get_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -537,13 +537,13 @@ void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -553,13 +553,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -569,13 +569,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -585,13 +585,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -601,13 +601,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// exponent must be an integer
 	string beta = type_table.new_variable();
@@ -621,13 +621,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 	params.add_param(beta);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// modulo op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -640,13 +640,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -659,13 +659,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -678,13 +678,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 {
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -697,7 +697,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
@@ -715,13 +715,13 @@ void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 	params.add_param(alpha);
 	params.call();
 	op.get_right_operand().accept(*this);
-	
+
 	params.ret();
 }
 
 /**
  * Constants
- */ 
+ */
 
 void TypeInferenceVisitor::visit( ast::String& cste )
 {
@@ -870,7 +870,7 @@ void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 	param_list.get_parameters_name(param_names);
 	param_list.get_parameters_type(param_types);
 
-	
+
 }
 
 void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
@@ -886,11 +886,11 @@ void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 }
 
 void TypeInferenceVisitor::visit( ast::DeclVar& )
-{	
-	// no argument expected 
+{
+	// no argument expected
 	// create a new type variable
 	string varname = type_table.new_variable(type_table.unique_id_name(current_scope, declaration.get_identifier().id()));
-	
+
 	params.add_param(varname); // the expression has the same type of the identifier
 	params.call();
 	declaration.get_expression().accept(*this);
@@ -953,8 +953,8 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 
 	// build the vector of parameter names
 	vector<string> type_param_name;
-	generate_n(back_inserter(type_param_name), 
-			   arg_list.nb_args(), 
+	generate_n(back_inserter(type_param_name),
+			   arg_list.nb_args(),
 			   [type_table&](){ return type_table.unique_varname(); });
 
 	// create the function type
@@ -993,7 +993,7 @@ void TypeInferenceVisitor::visit( ast::SoyFunc& func )
 {
 	string delta = params.get_param(1); // function type
 
-	
+
 }
 
 void TypeInferenceVisitor::visit( ast::Program& )
@@ -1022,6 +1022,11 @@ void TypeInferenceVisitor::visit( ast::Menu& )
 }
 
 void TypeInferenceVisitor::visit( ast::MenuDef& )
+{
+
+}
+
+void TypeInferenceVisitor::visit( ast::MenuCase& )
 {
 
 }

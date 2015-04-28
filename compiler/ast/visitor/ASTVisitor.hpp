@@ -28,7 +28,7 @@ namespace visitor
 		/******************************
 		 * 		Identifier token    *
 		 ******************************/
-		 
+
 		virtual void visit( ast::Identifier& ) = 0;
 
 		/*************************
@@ -49,7 +49,7 @@ namespace visitor
 		/**************************
 		 * 		Operator token    *
 		 **************************/
-		
+
 		virtual void visit( ast::Op_Plus& ) = 0;
 		virtual void visit( ast::Op_Minus& ) = 0;
 		virtual void visit( ast::Op_Mult& ) = 0;
@@ -88,7 +88,7 @@ namespace visitor
 		virtual void visit( ast::Op_AssignOr& ) = 0;
 		virtual void visit( ast::Op_AssignXor& ) = 0;
 		virtual void visit( ast::Op_AssignConcat& ) = 0;
-		
+
 		/**************************
 		 * 		Constant token    *
 		 **************************/
@@ -150,6 +150,7 @@ namespace visitor
 		virtual void visit( ast::Return& ) = 0;
 		virtual void visit( ast::Menu& ) = 0;
 		virtual void visit( ast::MenuDef& ) = 0;
+		virtual void visit( ast::MenuCase& ) = 0;
 		virtual void visit( ast::Roll& ) = 0;
 		virtual void visit( ast::Foreach& ) = 0;
 		virtual void visit( ast::For& ) = 0;
@@ -158,7 +159,7 @@ namespace visitor
 		virtual void visit( ast::Conditional& ) = 0;
 		virtual void visit( ast::Elseif& ) = 0;
 
-	};	
+	};
 }
 
 #endif

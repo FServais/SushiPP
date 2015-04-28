@@ -79,7 +79,7 @@ namespace visitor
 		virtual void visit( ast::Op_AssignOr& );
 		virtual void visit( ast::Op_AssignXor& );
 		virtual void visit( ast::Op_AssignConcat& );
-		
+
 		/**************************
 		 * 		Constant token    *
 		 **************************/
@@ -141,6 +141,7 @@ namespace visitor
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
+		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );
@@ -158,8 +159,7 @@ namespace visitor
 
 		void print_pair( std::string& p_name, std::string& p_value );
 		void print_single( std::string& name );
-	};	
+	};
 }
 
 #endif
-
