@@ -100,6 +100,9 @@ void SppCompiler::parse()
 
 void SppCompiler::inference()
 {
+	if(error_handler.error_occurred())
+		return;
+	
 	visitor::TypeInferenceVisitor visitor;
 	syntax_tree.root().accept(visitor);
 	cout << endl << visitor.get_table() << endl << endl;
