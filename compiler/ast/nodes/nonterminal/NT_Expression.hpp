@@ -78,6 +78,15 @@ namespace ast
 		 */
 		void add_expression(Expression*);
 
+		/**
+		 * @brief Return the nth_expression of the expression list
+		 * @oaram size_t n The parameter index
+		 */
+		Expression& get_nth_expression(size_t);
+		const Expression& get_nth_expression(size_t) const;
+
+		size_t nb_expressions() const { return children.size(); }; 
+
 		virtual void accept(visitor::ASTVisitor&);
 	};
 }
