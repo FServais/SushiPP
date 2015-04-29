@@ -30,7 +30,9 @@ void NT_Declaration::accept(visitor::ASTVisitor& visitor)
 }
 
 /* DeclFunc */
-DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope) : NT_Declaration("Function declaration") 
+DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope)
+  : NT_Declaration("Function declaration"), 
+  	has_params(param_list)
 {
 	add_child(id);
 	if(param_list)
@@ -39,7 +41,7 @@ DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope) : NT_Dec
 }
 
 DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, int first_line, int last_line, int first_column, int last_column)
-	: NT_Declaration("Function declaration", first_line, last_line, first_column, last_column)
+  : NT_Declaration("Function declaration", first_line, last_line, first_column, last_column), has_params(param_list)
 {
 	add_child(id);
 	if(param_list)
@@ -47,7 +49,8 @@ DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, int firs
 	add_child(scope);
 }
 
-DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, const NodeLocation& node_loc) : NT_Declaration("Function declaration", node_loc)
+DeclFunc::DeclFunc(Identifier* id, ParamList* param_list, Scope* scope, const NodeLocation& node_loc) 
+  : NT_Declaration("Function declaration", node_loc), has_params(param_list)
 {
 	add_child(id);
 	if(param_list)
@@ -74,7 +77,10 @@ ParamList& DeclFunc::get_param_list()
 
 Scope& DeclFunc::get_scope()
 {
-	return *dynamic_cast<Scope*>(children[2]);
+	if(!contains_params())
+		return *dynamic_cast<Scope*>(children[1]);
+	else
+		return *dynamic_cast<Scope*>(children[2]);
 }
 
 /* DeclVars */
@@ -305,7 +311,7 @@ void ParamList::accept(visitor::ASTVisitor& visitor)
 
 void ParamList::add_param(Param* param)
 {
-	add_child(param);
+	add_child_first(param);
 }
 
 size_t ParamList::nb_params() const
