@@ -26,8 +26,8 @@ namespace visitor
 		 * 		Keyword token    *
 		 *************************/
 
-		virtual void visit( ast::K_Break& );
 		virtual void visit( ast::K_Continue& );
+		virtual void visit( ast::K_Break& );
 		virtual void visit( ast::Type_Int& );
 		virtual void visit( ast::Type_Float& );
 		virtual void visit( ast::Type_Char& );
@@ -79,7 +79,7 @@ namespace visitor
 		virtual void visit( ast::Op_AssignOr& );
 		virtual void visit( ast::Op_AssignXor& );
 		virtual void visit( ast::Op_AssignConcat& );
-		
+
 		/**************************
 		 * 		Constant token    *
 		 **************************/
@@ -140,6 +140,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -149,6 +150,8 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
 
 	private:
 		int length_line;

@@ -707,7 +707,8 @@ void PrintASTVisitor::visit( ast::Program& token )
 
 void PrintASTVisitor::visit( ast::Scope& token )
 {
-	print_single(token.node_name());
+	string to_print(token.node_name() + "(" + to_string(token.get_scope_id()) + ")");
+	print_single(to_print);
 	curr_depth++;
 	for(auto child : token.get_children())
 		child->accept(*this);
@@ -747,6 +748,15 @@ void PrintASTVisitor::visit( ast::Menu& token )
 }
 
 void PrintASTVisitor::visit( ast::MenuDef& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
+void PrintASTVisitor::visit( ast::MenuBody& token )
 {
 	print_single(token.node_name());
 	curr_depth++;
@@ -819,6 +829,24 @@ void PrintASTVisitor::visit( ast::Conditional& token )
 }
 
 void PrintASTVisitor::visit( ast::Elseif& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
+void PrintASTVisitor::visit( ast::If& token )
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
+void PrintASTVisitor::visit( ast::Else& token )
 {
 	print_single(token.node_name());
 	curr_depth++;
