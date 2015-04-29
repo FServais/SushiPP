@@ -1311,7 +1311,7 @@ void TypeInferenceVisitor::visit( ast::Foreach& foreach )
 	cout << "Foreach" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // the parameter to pass to the roll body scope
 
-	string iter_var_type = type_table.unique_id_name(current_scope, foreach.get_identifier().id());
+	string iter_var_type = type_table.unique_id_name(foreach.get_scope().get_scope_id(), foreach.get_identifier().id());
 	type_table.new_variable(iter_var_type); // the type of the iteration variable
 
 	pair<string,string> list_type = type_table.new_list(); // the list expression 
