@@ -30,11 +30,13 @@ void TypeInferenceVisitor::visit( ast::ASTNode& node )
 
 void TypeInferenceVisitor::visit( ast::Identifier& id )
 {
-	cout << "Identifier" << endl << type_table << endl << endl;
+	cout << "Identifier  _" << id.id() << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// unify alpha with the type of the identifier
-	type_table.unify(alpha, type_table.unique_id_name(current_scope, id.id()));
+	string id_type_name = type_table.unique_id_name(current_scope, id.id());
+	cout << alpha << " - > " << id_type_name << endl;
+	type_table.unify(alpha, id_type_name);
 
 	params.ret();
 }
@@ -518,6 +520,7 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 	string alpha = params.get_param(1);
 
 	// string concatenation takes strings as operand and return string
+	cout << alpha << endl;
 	type_table.unify_string(alpha);
 
 	params.add_param(alpha);
@@ -931,10 +934,17 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceArray& seq_array )
 void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 {
 	cout << "DeclFunc" << endl << type_table << endl << endl;
+
 	// update the symbol table with function data
-	pair<string, string> func_type_names = add_function_declaration_rule(declfunc.get_param_list(),
-																		 declfunc.get_id().id(),
-																		 declfunc.get_scope().get_scope_id());
+	pair<string, string> func_type_names;
+	if(declfunc.contains_params())
+		func_type_names = add_function_declaration_rule(declfunc.get_param_list(),
+														declfunc.get_id().id(),
+														declfunc.get_scope().get_scope_id());
+	else 
+		func_type_names = add_function_declaration_rule(declfunc.get_id().id(),
+														declfunc.get_scope().get_scope_id());
+
 
 	// propagate return value to scope
 	params.add_param(func_type_names.second);
@@ -959,14 +969,17 @@ void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 
 void TypeInferenceVisitor::visit( ast::DeclVar& declaration )
 {
-cout << "DeclVar" << endl << type_table << endl << endl;	
+	cout << "DeclVar" << endl << type_table << endl << endl;	
 	// no argument expected 
 	// create a new type variable
 	string varname = type_table.new_variable(type_table.unique_id_name(current_scope, declaration.get_identifier().id()));
 	
-	params.add_param(varname); // the expression has the same type of the identifier
-	params.call();
-	declaration.get_expression().accept(*this);
+	if(declaration.contains_expr())
+	{
+		params.add_param(varname); // the expression has the same type of the identifier
+		params.call();
+		declaration.get_expression().accept(*this);		
+	}
 
 	params.ret();
 }
@@ -1050,12 +1063,15 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 	string gamma = params.get_param(1); // type that should be returned by the function
 
 	// add function matching the structure of the call
-	ast::ArgList& arg_list = func_call.get_arg_list();
+	size_t number_args = 0;
+
+	if(func_call.contains_arglist())
+		number_args = func_call.get_arg_list().nb_args();
 
 	// build the vector of parameter names
 	vector<string> type_param_name;
 	generate_n(back_inserter(type_param_name), 
-			   arg_list.nb_args(), 
+			   number_args, 
 			   [this](){ return type_table.unique_varname(); });
 
 	// create the function type
@@ -1064,18 +1080,18 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 	// gamma should be the same type as the one returned by the function
 	type_table.unify(gamma, func_type.second);
 
-	// each argument should have the correct type
-	for(size_t i = 0; i < arg_list.nb_args(); ++i)
-	{
-		params.add_param(type_param_name[i]);
-		params.call();
-		arg_list.get_arg(i).accept(*this);
-	}
-
 	// the function id or soy should have the same structure as the one defined here
 	params.add_param(func_type.first);
 	params.call();
 	func_call.get_function().accept(*this);
+
+	// each argument should have the correct type
+	for(size_t i = 0; i < number_args; ++i)
+	{
+		params.add_param(type_param_name[i]);
+		params.call();
+		func_call.get_arg_list().get_arg(i).accept(*this);
+	}
 
 	params.ret();
 }
@@ -1139,6 +1155,8 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 
     size_t prev_scope = current_scope;
     current_scope = scope.get_scope_id();
+	cout << "from " << prev_scope << endl;
+    cout << "to   " << current_scope << endl;
 
 	if(alpha.empty()) // empty string means that nothing is expected as return type
 	{
@@ -1158,6 +1176,8 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 	}
 
 	current_scope = prev_scope;
+	cout << "Go back to " << current_scope << endl;
+
 	params.ret();
 }
 
@@ -1441,6 +1461,16 @@ pair<string, string> TypeInferenceVisitor::add_function_declaration_rule(const a
 	// create function
 	string func_type_name = type_table.unique_id_name(current_scope, func_name);
 	return type_table.new_function(param_type_names, func_type_name, param_type_hints);
+}
+
+pair<string, string> TypeInferenceVisitor::add_function_declaration_rule(const string& func_name, 
+																		 size_t scope_id)
+{
+	vector<string> param_type_names; // params names with scope ids
+
+	// create function
+	string func_type_name = type_table.unique_id_name(current_scope, func_name);
+	return type_table.new_function(param_type_names, func_type_name);
 }
 
 bool TypeInferenceVisitor::propagate_type_from_scope(ast::ASTNode& node)

@@ -176,7 +176,7 @@ namespace visitor
 
 		/**
 		 * @brief Update the symbol table for a function declaration (either named or anonymous)
-		 * @param const ast::ParamList param_list The function parameters list
+		 * @param const ast::ParamList param_list The function parameters list (optionnal: if the function has no parameters)
 		 * @param const std::string& func_name The name of the function 
 		 * @param size_t scope_id The function body scope id 
 		 * @param std::pair<std::string, std::string> The pair containing the type variable name of the function (first)
@@ -184,7 +184,8 @@ namespace visitor
 		 * @note The VisitorParameters object is not modified
 		 */
 		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
-
+		std::pair<std::string, std::string> add_function_declaration_rule(const std::string&, size_t);
+		
 		/**
 		 * @brief Check whether, from a scope node, a type variable must be propagate
 		 * @retuval bool True if the variable must be propagated, false otherwise

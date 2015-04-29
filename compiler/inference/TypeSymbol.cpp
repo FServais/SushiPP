@@ -17,8 +17,8 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 	if(this == &symb) return true;
 
 	const TypeVariable* t_var = dynamic_cast<const TypeVariable*>(&symb);
-
-	return t_var // symb is not of class TypeVariable
+	
+	return t_var // symb is of class TypeVariable
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
 }
 
@@ -106,13 +106,12 @@ bool Char::equals(const TypeSymbol& symb) const
 
 	return t_char;
 }
-
 bool Int::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
 	const Int* t_int = dynamic_cast<const Int*>(&symb);
-
+	
 	return t_int;
 }
 
@@ -140,7 +139,7 @@ bool String::equals(const TypeSymbol& symb) const
 
 	const String* t_string = dynamic_cast<const String*>(&symb);
 
-	return !t_string;
+	return t_string;
 }
 
 Function::Function(const vector<reference_wrapper<TypeLink>>& params, TypeLink& ret)
@@ -182,11 +181,16 @@ bool Function::is_resolved() const
 string Function::str() const
 {
 	stringstream ss;
-	string params = accumulate(next(parameters.begin()), parameters.end(), parameters.size() ? parameters[0].get().str() : "",
-								[](string& acc, TypeSymbol& symb)
-								{
-									return acc += ", " + symb.str();
-								});
+
+
+	string params;
+
+	if(parameters.size() > 0)
+		params = accumulate(next(parameters.begin()), parameters.end(), parameters[0].get().str(),
+							[](string& acc, TypeSymbol& symb)
+							{
+								return acc += ", " + symb.str();
+							});
 	ss << "(" << params << ") : (" << return_type.str() << ")";
 	return ss.str();
 }
