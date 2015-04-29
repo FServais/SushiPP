@@ -167,6 +167,8 @@ namespace visitor
 		std::map<std::string, llvm::Value*> NamedValues;
 
 		std::stack<llvm::Value*> return_stack;
+
+		error::ErrorHandler& error_handler;
 	};
 }
 
