@@ -604,7 +604,7 @@ expression-list:
 | expression ',' expression-list
 	{
 		ast::ExpressionList* expression_list = (ast::ExpressionList*)$3;
-		ast::Expression* expression = (ast::Expression*)$1;
+		ast::Expression* expression = new ast::Expression((ast::ASTNode*)$1, curr_loc());
 		expression_list->add_expression(expression);
 
 		$$ = (void*) expression_list;
