@@ -105,6 +105,8 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
 	cout << "Op_Plus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
+	// operands can only be integers or float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -122,6 +124,8 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 {
 	cout << "Op_Minus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
+	// operands can only be integers or float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -139,6 +143,8 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 {
 	cout << "Op_Mult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
+	// operands can only be integers or float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -156,6 +162,8 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 {
 	cout << "Op_Div" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
+	// operands can only be integers or float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -192,6 +200,9 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 {
 	cout << "Op_Exponentiation" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+	
+	// base can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	string beta = type_table.new_variable(); // add a type variable for the exponent
 	type_table.unify_int(beta); // exponent must be an integer
@@ -211,6 +222,9 @@ void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 {
 	cout << "Op_UnaryMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+
+	// base can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -352,8 +366,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float or int)
+	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
 
 	params.add_param(beta);
 	params.call();
@@ -374,8 +388,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float or int)
+	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
 
 	params.add_param(beta);
 	params.call();
@@ -396,8 +410,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float or int)
+	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
 
 	params.add_param(beta);
 	params.call();
@@ -418,8 +432,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float or int)
+	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
 
 	params.add_param(beta);
 	params.call();
@@ -440,8 +454,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float, bool or int)
+	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
 
 	params.add_param(beta);
 	params.call();
@@ -462,8 +476,8 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
 
-	// operands can have a different types
-	string beta = type_table.new_variable();
+	// operands can have a different types (but must be both either float, bool or int)
+	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
 
 	params.add_param(beta);
 	params.call();
@@ -538,6 +552,8 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 {
 	cout << "Op_PrefixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+	// operand can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -550,6 +566,8 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 {
 	cout << "Op_PrefixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+	// operand can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -562,6 +580,8 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 {
 	cout << "Op_PostfixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+	// operand can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -574,6 +594,8 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 {
 	cout << "Op_PostfixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
+	// operand can only be an integer or a float
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -604,6 +626,9 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 	cout << "Op_AssignPlus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
 
+	// operands must be either Float or Int
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
@@ -620,6 +645,9 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 {
 	cout << "Op_AssignMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
+
+	// operands must be either Float or Int
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -638,6 +666,9 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 	cout << "Op_AssignMult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
 
+	// operands must be either Float or Int
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
@@ -655,6 +686,9 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 	cout << "Op_AssignDiv" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); 
 
+	// operands must be either Float or Int
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
@@ -670,7 +704,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 {
 	cout << "Op_AssignExpo" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
+
+	// left operand can be either an float or an int
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
 
 	// exponent must be an integer
 	string beta = type_table.new_variable();
@@ -1175,7 +1212,7 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 	if(alpha.empty()) // empty string means that nothing is expected as return type
 	{
 		// the scope is not expected to return something 
-		beta = type_table.new_variable();
+		beta = type_table.new_variable(TypesHint(VOID));
 		type_table.unify_void(beta);
 	}
 	else beta = alpha; 
@@ -1222,7 +1259,7 @@ void TypeInferenceVisitor::visit( ast::Menu& menu )
 {
 	cout << "Menu" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), // type that should be returned by the element of the body
-			beta = type_table.new_variable(); // type of the menu expression
+			beta = type_table.new_variable(TypesHint(CHAR | INT)); // type of the menu expression
 
 	params.add_param(beta);
 	params.call();

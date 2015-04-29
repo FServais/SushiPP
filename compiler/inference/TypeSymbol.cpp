@@ -43,14 +43,14 @@ const TypeSymbol& TypeLink::symbol() const
 	return *linked_symbol;
 }
 
-TypeSymbol& TypeLink::resolve()
+TerminalTypeSymbol& TypeLink::resolve()
 {
-	return resolve_last_link().symbol();
+	return dynamic_cast<TerminalTypeSymbol&>(resolve_last_link().symbol());
 }
 
-const TypeSymbol& TypeLink::resolve() const
+const TerminalTypeSymbol& TypeLink::resolve() const
 {
-	return resolve_last_link().symbol();
+	return dynamic_cast<const TerminalTypeSymbol&>(resolve_last_link().symbol());
 }
 
 TypeLink& TypeLink::resolve_last_link()
@@ -89,6 +89,8 @@ bool TypeLink::equals(const TypeSymbol& symb) const
 	return !t_link ? symb.equals(resolve()) : resolve().equals(t_link->resolve());
 }
 
+Bool::Bool() { hints = TypesHint(BOOL); }
+
 bool Bool::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -98,6 +100,8 @@ bool Bool::equals(const TypeSymbol& symb) const
 	return t_bool;
 }
 
+Char::Char() { hints = TypesHint(CHAR); }
+
 bool Char::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -106,6 +110,9 @@ bool Char::equals(const TypeSymbol& symb) const
 
 	return t_char;
 }
+
+Int::Int() { hints = TypesHint(INT); }
+
 bool Int::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -114,6 +121,8 @@ bool Int::equals(const TypeSymbol& symb) const
 	
 	return t_int;
 }
+
+Float::Float() { hints = TypesHint(FLOAT); }
 
 bool Float::equals(const TypeSymbol& symb) const
 {
@@ -124,6 +133,8 @@ bool Float::equals(const TypeSymbol& symb) const
 	return t_float;
 }
 
+Void::Void() { hints = TypesHint(VOID); }
+
 bool Void::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -132,6 +143,8 @@ bool Void::equals(const TypeSymbol& symb) const
 
 	return t_void;
 }
+
+String::String() { hints = TypesHint(STRING); }
 
 bool String::equals(const TypeSymbol& symb) const
 {
@@ -146,7 +159,7 @@ Function::Function(const vector<reference_wrapper<TypeLink>>& params, TypeLink& 
   : return_type(ret),
   	parameters(params)
 {
-
+	hints = TypesHint(FUNCTION);
 }
 
 bool Function::equals(const TypeSymbol& symb) const
@@ -180,9 +193,6 @@ bool Function::is_resolved() const
 
 string Function::str() const
 {
-	stringstream ss;
-
-
 	string params;
 
 	if(parameters.size() > 0)
@@ -191,6 +201,8 @@ string Function::str() const
 							{
 								return acc += ", " + symb.str();
 							});
+
+	stringstream ss;
 	ss << "(" << params << ") : (" << return_type.str() << ")";
 	return ss.str();
 }
@@ -202,7 +214,7 @@ bool UniparameterType::is_resolved() const
 	return parameter_type.is_resolved();
 }
 
-Array::Array(TypeLink& type) : UniparameterType(type) { }
+Array::Array(TypeLink& type) : UniparameterType(type) { hints = TypesHint(ARRAY); }
 
 string Array::str() const
 {
@@ -219,7 +231,7 @@ bool Array::equals(const TypeSymbol& symb) const
 	return t_arr && parameter_type.equals(t_arr->parameter_type);
 }
 
-List::List(TypeLink& type) : UniparameterType(type) { }
+List::List(TypeLink& type) : UniparameterType(type) { hints = TypesHint(LIST); }
 
 string List::str() const
 {

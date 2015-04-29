@@ -6,6 +6,7 @@
 #include <map>
 
 #include "../exceptions/Exceptions.hpp"
+#include "Types.hpp"
 
 using namespace std;
 using namespace inference;
@@ -23,6 +24,28 @@ string TypeSymbolTable::new_variable()
 
 string TypeSymbolTable::new_variable(const string& varname)
 {
+	TypesHint hint;
+	hint.remove(VOID);
+	return new_variable(varname, hint);
+}
+
+string TypeSymbolTable::new_variable(const vector<ShallowType>& types)
+{
+	return new_variable(unique_varname(), types);
+}
+
+string TypeSymbolTable::new_variable(const string& varname, const vector<ShallowType>& types)
+{
+	return new_variable(varname, TypesHint(types));
+}
+
+string TypeSymbolTable::new_variable(const TypesHint& hint)
+{
+	return new_variable(unique_varname(), hint);
+}
+
+string TypeSymbolTable::new_variable(const string& varname, const TypesHint& hint)
+{
 	if(count(varname) == 1)
 		throw except::ExistingTypeSymbolException(varname);
 
@@ -30,6 +53,9 @@ string TypeSymbolTable::new_variable(const string& varname)
 	emplace(piecewise_construct, 
 			forward_as_tuple(varname), 
 			forward_as_tuple(new TypeVariable(varname)));
+
+	// type of the variable can be anything except void
+	dynamic_cast<TypeVariable&>(at(varname).resolve()).set_hints(hint);
 
 	return varname;
 }
@@ -60,6 +86,9 @@ pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_n
 			forward_as_tuple(func_name), 
 			forward_as_tuple(new Function(param_links, at(ret_type_var))));
 
+	// a function can return void
+	dynamic_cast<TypeVariable&>(at(ret_type_var).resolve()).set_hints(TypesHint(VOID));
+
 	return make_pair(func_name, ret_type_var);
 }
 
@@ -67,14 +96,14 @@ pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_n
 {
 	return new_function(param_names, unique_varname(), hints);
 }
-		
+
 pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_names, const string& func_name, const vector<ShallowType>& hints)
 {
 	pair<string, string> func_type_names = new_function(param_names, func_name);
 
 	for(size_t i = 0; i < hints.size(); ++i)
 		unify(param_names[i], hints[i]);
-
+	
 	return func_type_names;
 }
 
@@ -82,7 +111,8 @@ pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_n
 pair<string, string> TypeSymbolTable::new_array()
 {
 	// create the array type entry in the map
-	string array_type_varname = new_variable(unique_varname());
+	int array_type_hints = FLOAT | INT | BOOL | STRING | CHAR;
+	string array_type_varname = new_variable(TypesHint(array_type_hints));
 
 	// create the array entry
 	string array_name = unique_varname();
@@ -97,9 +127,10 @@ pair<string, string> TypeSymbolTable::new_array()
 pair<string, string> TypeSymbolTable::new_list()
 {
 	// create the list type entry in the map
-	string list_type_varname = new_variable(unique_varname());
+	int list_type_hints = FLOAT | INT | BOOL | STRING | CHAR;
+	string list_type_varname = new_variable(TypesHint(list_type_hints));
 
-	// create the array entry
+	// create the list entry
 	string list_name = unique_varname();
 	
 	emplace(piecewise_construct,
@@ -111,12 +142,12 @@ pair<string, string> TypeSymbolTable::new_list()
 
 string TypeSymbolTable::unique_varname()
 {
-	return to_string(type_variable_count++);
+	return std::to_string(type_variable_count++);
 }
 
 string TypeSymbolTable::unique_id_name(size_t scope, const string& identfier)
 {
-	return identfier + "@" + to_string(scope);
+	return identfier + "@" + std::to_string(scope);
 }
 
 namespace inference
@@ -127,7 +158,7 @@ namespace inference
     	map<TypeSymbolTable::key_type, string> omap;
         
         for(auto& symbol : table)
-        	omap[symbol.first] = symbol.second.str();
+        	omap[symbol.first] = symbol.second.str() + " (hints : " + symbol.second.resolve().get_hints().str() + ")";
 
         for(auto& symbol : omap)
             out << symbol.first << " => " << symbol.second << endl;
@@ -166,7 +197,6 @@ void TypeSymbolTable::unify_char(const std::string& type)
 	unify(type, new Char);
 }
 
-
 void TypeSymbolTable::unify(const string& type1, const string& type2)
 {
 	if(count(type1) == 0)
@@ -181,8 +211,16 @@ void TypeSymbolTable::unify(const string& type1, const string& type2)
 void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 {
 	// extract actual pointed symbols and last links
-	TypeSymbol &symbol1 = link1.resolve(),
-			   &symbol2 = link2.resolve();
+	TerminalTypeSymbol &symbol1 = link1.resolve(),
+			   		   &symbol2 = link2.resolve();
+
+	// check hints compatiblity
+	if(!symbol1.get_hints().compatible(symbol2.get_hints()))
+	{
+		throw except::UnificationException("couldn't unify the type symbols " + symbol1.str() + " and " + symbol2.str() +
+										   " because their hints are incompatible : (" + symbol1.get_hints().str() + 
+										   ") vs. (" + symbol2.get_hints().str() + ")");
+	}
 
 	// one or both symbol(s) is (are) variable(s)
 	if(symbol1.is_variable() || symbol2.is_variable())
@@ -198,6 +236,11 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 				 &to_be_linked = symbol1.is_variable() ? last_link2 : last_link1;
 
 		to_relink.set_symbol(&to_be_linked);
+		
+		// update the hints
+		dynamic_cast<TypeVariable&>(symbol1).get_hints().hints_intersection(symbol2.get_hints());
+		dynamic_cast<TypeVariable&>(symbol2).get_hints().hints_intersection(symbol1.get_hints());
+
 		return;
 	}
 
@@ -213,8 +256,8 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 
 		if(parameters1.size() != parameters1.size())
 			throw except::UnificationException("couldn't unify function types because of an parameter count mismatch "
-											   "(function 1 expects " + to_string(parameters1.size()) + " parameter(s) and "
-											   "function 2 expects " + to_string(parameters2.size()) + " parameter(s))");
+											   "(function 1 expects " + std::to_string(parameters1.size()) + " parameter(s) and "
+											   "function 2 expects " + std::to_string(parameters2.size()) + " parameter(s))");
 
 		for(size_t i = 0; i < parameters1.size(); ++i)
 			unify(parameters1[i], parameters2[i]);
@@ -258,8 +301,16 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 		throw except::NoSuchTypeSymbolException(type);
 
 	TypeLink& link = at(type);
-	TypeSymbol& actual_type = link.resolve();
+	TerminalTypeSymbol& actual_type = link.resolve();
 	string err_type(flat->str());
+
+	// check hints compatibility :
+	if(!flat->get_hints().compatible(actual_type.get_hints()))
+	{
+		delete flat;
+		throw except::UnificationException("couln't unify flat type '" + err_type +  "' with type '" + actual_type.str() + 
+										   "' because his hints are incompatible : (" + actual_type.get_hints().str() + ")");
+	}	
 
 	// if the type mapped by the symbol is an array, list or function type
 	// unification is impossible
@@ -285,6 +336,24 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 	link.resolve_last_link().set_symbol(flat);
 }
 
+void TypeSymbolTable::update_hints(const std::string& varname, const TypesHint& hints)
+{
+	TerminalTypeSymbol& symbol = at(varname).resolve();
+
+	if(!symbol.is_variable())
+		throw except::NoSuchTypeSymbolException("hints update can only be performed on type variables. " + varname + " is not a type variable.");
+		
+	// check compatibility between hints
+	TypeVariable& var = dynamic_cast<TypeVariable&>(symbol);
+
+	if(!var.get_hints().compatible(hints))
+		throw except::UnificationException("couldn't update the hints of the type variable " + symbol.str() + 
+										   " because of incompatibility between the variable's hints (" + var.get_hints().str() +
+										   ") and the given hints (" + hints.str() + ")");
+	
+	var.get_hints().hints_intersection(hints);
+}
+
 void TypeSymbolTable::unify(const std::string& type_str, ShallowType s_type)
 {
 	switch(s_type)
@@ -295,6 +364,9 @@ void TypeSymbolTable::unify(const std::string& type_str, ShallowType s_type)
 	case STRING: unify_string(type_str); break;
 	case BOOL: unify_bool(type_str); break;
 	case CHAR: unify_char(type_str); break;
-	default: break;
+	case NO_TYPE: break;
+	default: 
+		update_hints(type_str, TypesHint(s_type));
+		break;
 	}
 }

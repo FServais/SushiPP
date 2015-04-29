@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+#include "Types.hpp"
+
 namespace inference
 {
 	/**
@@ -42,16 +44,34 @@ namespace inference
 	};
 
 	/**
+	 * @class TerminalTypeSymbol
+	 * @brief Base class for all the type symbol that can lie at then end of a type symbol chain
+	 */
+	class TerminalTypeSymbol : public TypeSymbol
+	{
+	public:
+		virtual bool is_link() const { return false; }
+		
+/**
+		 * @brief Return the hints associated with the TypeSymbol
+		 * @retval TypeHints A reference to the TypesHint object
+		 */
+		const TypesHint& get_hints() const { return hints; }
+
+	protected:
+		TypesHint hints; // the set of types that could be taken by this symbol
+	};
+
+	/**
 	 * @class TypeVariable
 	 * @brief A type variable
 	 */
-	class TypeVariable : public TypeSymbol
+	class TypeVariable : public TerminalTypeSymbol
 	{
 	public:
 		explicit TypeVariable(const std::string&);
 
 		virtual std::string str() const { return varname; };
-		virtual bool is_link() const { return false; }
 		virtual bool is_variable() const { return true; }
 		virtual bool is_type() const { return false; }
 		virtual bool is_flat_type() const { return false; }
@@ -61,6 +81,18 @@ namespace inference
 		virtual bool equals(const TypeSymbol&) const;
 		virtual bool is_resolved() const { return false; }
 
+		/**
+		 * @brief Set the hints object of the terminal symbol
+		 * @retval 
+		 */
+		void set_hints(const TypesHint& hints_) { hints = hints_; }
+
+		/**
+		 * @brief Return the hints associated with the TypeSymbol
+		 * @retval TypeHints A reference to the TypesHint object
+		 */
+		TypesHint& get_hints() { return hints; }
+
 	private:
 		std::string varname;
 	};
@@ -69,10 +101,9 @@ namespace inference
 	 * @class Type
 	 * @brief Base class for any actual type
 	 */
-	class Type : public TypeSymbol
+	class Type : public TerminalTypeSymbol
 	{
 	public:
-		virtual bool is_link() const { return false; }
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return true; }
 	};
@@ -111,8 +142,8 @@ namespace inference
 		/**
 		 * @brief Get the actual type object or type linked to the current link
 		 */
-		TypeSymbol& resolve();
-		const TypeSymbol& resolve() const;
+		TerminalTypeSymbol& resolve();
+		const TerminalTypeSymbol& resolve() const;
 
 		/**
 		 * @brief Get the last link before the an actual type object or type variable
@@ -163,6 +194,7 @@ namespace inference
 	class Bool : public FlatType
 	{
 	public:
+		Bool();
 		virtual std::string str() const { return "BOOL"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
@@ -174,6 +206,7 @@ namespace inference
 	class String : public FlatType
 	{
 	public:
+		String();
 		virtual std::string str() const { return "STRING"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
@@ -185,6 +218,7 @@ namespace inference
 	class Int : public FlatType
 	{
 	public:
+		Int();
 		virtual std::string str() const { return "INT"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
@@ -196,6 +230,7 @@ namespace inference
 	class Float : public FlatType
 	{
 	public:
+		Float();
 		virtual std::string str() const { return "FLOAT"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
@@ -207,6 +242,7 @@ namespace inference
 	class Void : public FlatType
 	{
 	public:
+		Void();
 		virtual std::string str() const { return "VOID"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
@@ -218,6 +254,7 @@ namespace inference
 	class Char : public FlatType
 	{
 	public:
+		Char();
 		virtual std::string str() const { return "CHAR"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
