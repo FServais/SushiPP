@@ -632,6 +632,15 @@ void PrintASTVisitor::visit( ast::Expression& token )
 	curr_depth--;
 }
 
+void PrintASTVisitor::visit( ast::ExpressionList& token)
+{
+	print_single(token.node_name());
+	curr_depth++;
+	for(auto child : token.get_children())
+		child->accept(*this);
+	curr_depth--;
+}
+
 void PrintASTVisitor::visit( ast::ModifyingExpression& token )
 {
 	print_single(token.node_name());

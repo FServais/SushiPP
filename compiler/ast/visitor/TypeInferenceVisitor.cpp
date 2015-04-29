@@ -1013,6 +1013,20 @@ void TypeInferenceVisitor::visit( ast::Expression& expression )
 	params.ret();
 }
 
+void TypeInferenceVisitor::visit( ast::ExpressionList& expr_list )
+{
+	string alpha = params.get_param(1); // type of the elements of the list
+
+	for(size_t i = 0; i < expr_list.nb_expressions(); ++i)
+	{
+		params.add_param(alpha);
+		params.call();
+		expr_list.get_nth_expression(i).accept(*this);
+	}
+
+	params.ret();
+}
+
 void TypeInferenceVisitor::visit( ast::ModifyingExpression& expression )
 {
 	cout << "ModifyingExpression" << endl << type_table << endl << endl;

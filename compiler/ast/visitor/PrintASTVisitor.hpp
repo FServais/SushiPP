@@ -114,6 +114,7 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
