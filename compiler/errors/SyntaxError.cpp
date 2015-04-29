@@ -13,5 +13,5 @@ void SyntaxError::print(bool is_from_file) const
 		cout << "Line ";
 	cout << line << ":" << col << ": "<< BOLDRED << error_type << RESET << ": " << additional_desc << endl;
 	
-	print_location_error();
+	//print_location_error();
 }

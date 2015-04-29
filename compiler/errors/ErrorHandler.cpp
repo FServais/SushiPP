@@ -102,3 +102,8 @@ void ErrorHandler::add_mem_error(MemoryError& err)
 {
 	errors.push_back(unique_ptr<MemoryError>(new MemoryError(err)));
 }
+
+bool ErrorHandler::error_occurred()
+{
+	return errors.size() != 0;
+}
