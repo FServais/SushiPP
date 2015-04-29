@@ -364,6 +364,11 @@ func-call:
 		// delete the memory allocated for the string
 		delete $2;
 	}
+| KEYWORD_CALL soy-expression arg-list
+	{
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
+		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$2), arglist));
+	}
 ;
 
 arg-list:
