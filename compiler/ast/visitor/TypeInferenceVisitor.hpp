@@ -13,6 +13,7 @@ namespace visitor
 	class TypeInferenceVisitor : public ASTVisitor
 	{
 	public:
+		TypeInferenceVisitor();
 
 		/****************
 		 * 		Node    *
@@ -97,7 +98,6 @@ namespace visitor
 		 * 		Datastructure non-terminal    *
 		 **************************************/
 
-		virtual void visit( ast::Datastructure& );
 		virtual void visit( ast::Array& );
 		virtual void visit( ast::List& );
 		virtual void visit( ast::MakeSequenceList& );
@@ -118,10 +118,8 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
-		virtual void visit( ast::IncrExpression& );
-		virtual void visit( ast::Assignment& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
-		virtual void visit( ast::AssignableExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
 		/*************************************
@@ -147,6 +145,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -156,6 +155,14 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
+
+		/**
+		 * @brief Return the type table built by the visitor
+		 */
+		inference::TypeSymbolTable& get_table() { return type_table; }
+		const inference::TypeSymbolTable& get_table() const { return type_table; }
 
 	private:
 		/**
@@ -170,7 +177,7 @@ namespace visitor
 
 		/**
 		 * @brief Update the symbol table for a function declaration (either named or anonymous)
-		 * @param const ast::ParamList param_list The function parameters list
+		 * @param const ast::ParamList param_list The function parameters list (optionnal: if the function has no parameters)
 		 * @param const std::string& func_name The name of the function 
 		 * @param size_t scope_id The function body scope id 
 		 * @param std::pair<std::string, std::string> The pair containing the type variable name of the function (first)
@@ -178,6 +185,14 @@ namespace visitor
 		 * @note The VisitorParameters object is not modified
 		 */
 		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
+		std::pair<std::string, std::string> add_function_declaration_rule(const std::string&, size_t);
+		
+		/**
+		 * @brief Check whether, from a scope node, a type variable must be propagate
+		 * @retuval bool True if the variable must be propagated, false otherwise
+		 * @note A type should be propagated on statement
+		 */
+		bool propagate_type_from_scope(ast::ASTNode&);
 	};
 }
 

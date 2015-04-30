@@ -57,7 +57,7 @@ namespace visitor
 		 *					 is the number of parameters given to the current context
 		 * curr_nb_params -> The number of parameters added in the current context
 		 */
-		std::vector<P&> parameters;
+		std::vector<P> parameters;
 		std::stack<size_t> number_params;
 		size_t curr_nb_params;
 	};

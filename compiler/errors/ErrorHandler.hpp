@@ -87,7 +87,11 @@ namespace errors
 		void add_mem_error(const std::string&, int, int, const std::string& desc = "Memory error");
 		void add_mem_error(MemoryError&);
 		
-
+		/**
+		 * @brief Check wether an error was reported previously
+		 * @retval bool True if an error occurred, false otherwise
+		 */
+		bool error_occurred();
 	};
 }
 

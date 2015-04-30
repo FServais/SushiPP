@@ -364,6 +364,11 @@ func-call:
 		// delete the memory allocated for the string
 		delete $2;
 	}
+| KEYWORD_CALL soy-expression arg-list
+	{
+		ast::ArgList* arglist = ((ast::ArgList*)$3);
+		$$ = (void*) (new ast::FuncCall(((ast::ASTNode*)$2), arglist));
+	}
 ;
 
 arg-list:
@@ -599,7 +604,7 @@ expression-list:
 | expression ',' expression-list
 	{
 		ast::ExpressionList* expression_list = (ast::ExpressionList*)$3;
-		ast::Expression* expression = (ast::Expression*)$1;
+		ast::Expression* expression = new ast::Expression((ast::ASTNode*)$1, curr_loc());
 		expression_list->add_expression(expression);
 
 		$$ = (void*) expression_list;
@@ -612,40 +617,35 @@ expression-list:
 constant:
   CONST_INT
     {
-    	ast::Integer* i = new ast::Integer(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(i, curr_loc()));
+		$$ = (void*) (new ast::Integer(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
-    	ast::Float* f = new ast::Float(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(f, curr_loc()));
+		$$ = (void*) (new ast::Float(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
-    	ast::String* s = new ast::String(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(s, curr_loc()));
+		$$ = (void*) (new ast::String(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
-    	ast::Bool* b = new ast::Bool(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(b, curr_loc()));
+		$$ = (void*) (new ast::Bool(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
-    	ast::Character* c = new ast::Character(*$1, curr_loc());
-		$$ = (void*) (new ast::Constant(c, curr_loc()));
+		$$ = (void*) (new ast::Character(*$1, curr_loc()));
 
 		// delete allocated string
 		delete $1;

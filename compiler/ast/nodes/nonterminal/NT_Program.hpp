@@ -44,6 +44,7 @@ namespace ast
 		virtual void accept(visitor::ASTVisitor&);
 	private:
 		size_t scope_id;
+		static size_t cnt;
 	};
 
 	/********************************

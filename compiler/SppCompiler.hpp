@@ -63,6 +63,12 @@ namespace compiler
 		void parse();
 
 		/**
+		 * @brief Run the type inference on the abstract syntax tree
+		 * @note The resulting type table can be found in the private member 
+		 */
+		void inference();
+
+		/**
 		 * @brief Print the abstract syntax tree according to the configuration (file or stdin)
 		 * @brief The syntax_tree variable should contain a valid syntax tree (with at least a root node)
 		 */

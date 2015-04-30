@@ -46,92 +46,92 @@ ALPHA      [a-zA-Z]
 
 %%
 
-\[                      { return '['; }
-\]                      { return ']'; }
-\{                      { return '{'; }
-\}                      { return '}'; }
-#\[                     { return DELIM_ARRAY_BEG; }
-\]#                     { return DELIM_ARRAY_END; }
-\(                      { return '('; }
-\)                      { return ')'; }
-\:                      { return ':'; }
-,                       { return ','; }
-;;                      { return DELIM_EOS; }
-=                       { return '='; }
-\<                      { return '<'; }
-\>                      { return '>'; }
-\.                      { return '.'; }
-\|                      { return '|'; }
-&                       { return '&'; }
-\^                      { return '^'; }
-\+                      { return '+'; }
--                       { return '-'; }
-\*                      { return '*'; }
-\/                      { return '/'; }
-%                       { return '%'; }
-~                       { return '~'; }
-!                       { return '!'; }
-_                       { return '_'; }
--\>                     { return DELIM_ARROW; }
-\+\+                    { return OP_ARITH_INCR; }
-\-\-                    { return OP_ARITH_DECR; }
-\*\*                    { return OP_ARITH_EXPO; }
-\|\|                    { return OP_LOGIC_OR; }
-&&                      { return OP_LOGIC_AND; }
-\<=                     { return OP_COMP_LEQ; }
-\>=                     { return OP_COMP_GEQ; }
-==                      { return OP_COMP_EQ; }
-!=                      { return OP_COMP_NEQ; }
-\<\<                    { return OP_RSHIFT; }
-\>\>                    { return OP_LSHIFT; }
-\+=                     { return OP_ASSIGN_PLUS; }
--=                      { return OP_ASSIGN_MINUS; }
-\*=                     { return OP_ASSIGN_MULT; }
-\/=                     { return OP_ASSIGN_DIV; }
-\*\*=                   { return OP_ASSIGN_EXPO; }
-%=                      { return OP_ASSIGN_MOD; }
-\|=                     { return OP_ASSIGN_OR; }
-\&=                     { return OP_ASSIGN_AND; }
-\^=                     { return OP_ASSIGN_XOR; }
-\.=                     { return OP_ASSIGN_CONCAT; }
-to                      { return KEYWORD_TO; }
-maki                    { return KEYWORD_MAKI; }
-soy                     { return KEYWORD_SOY; }
-nori                    { return KEYWORD_NORI; }
-menu                    { return KEYWORD_MENU; }
-break                   { return KEYWORD_BREAK; }
-continue				{ return KEYWORD_CONTINUE; }
-roll                    { return KEYWORD_ROLL; }
-for                     { return KEYWORD_FOR; }
-foreach                 { return KEYWORD_FOREACH; }
-as                      { return KEYWORD_AS; }
-if                      { return KEYWORD_IF; }
-elseif                  { return KEYWORD_ELSEIF; }
-else                    { return KEYWORD_ELSE; }
-call                    { return KEYWORD_CALL; }
-char                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-int                     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-float                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-bool                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-string                  { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-array                   { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-list                    { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-function 				{ yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-(false|FALSE|true|TRUE) { yylval.vstring = new string(yytext, yyleng); return CONST_BOOL; }
-{ALPHA}{WORD_HYPH}*     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
-[+-]?{DIGIT}+           { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }
-[+-]?{DIGIT}+\.{DIGIT}+ { yylval.vstring = new string(yytext, yyleng); return CONST_FLOAT; }
-\"[^"]*\"               { yylval.vstring = new string(yytext, yyleng); return CONST_STRING; }
-'[^']'                  { yylval.vstring = new string(yytext, yyleng); return CONST_CHAR; }
-({EOL}+|\$.*{EOL})      { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
-[ \t]+                  { }
-.                       {
-							std::stringstream ss;
-							ss << "unrecognized sequence '" << yytext << "'";
-							errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
-							error_handler.add_lex_error(yytext, yylloc.first_line, yylloc.first_column, ss.str());
-							error_occurred = true; 
-						}
+\[                           { return '['; }
+\]                           { return ']'; }
+\{                           { return '{'; }
+\}                           { return '}'; }
+#\[                          { return DELIM_ARRAY_BEG; }
+\]#                          { return DELIM_ARRAY_END; }
+\(                           { return '('; }
+\)                           { return ')'; }
+\:                           { return ':'; }
+,                            { return ','; }
+;;                           { return DELIM_EOS; }
+=                            { return '='; }
+\<                           { return '<'; }
+\>                           { return '>'; }
+\.                           { return '.'; }
+\|                           { return '|'; }
+&                            { return '&'; }
+\^                           { return '^'; }
+\+                           { return '+'; }
+-                            { return '-'; }
+\*                           { return '*'; }
+\/                           { return '/'; }
+%                            { return '%'; }
+~                            { return '~'; }
+!                            { return '!'; }
+_                            { return '_'; }
+-\>                          { return DELIM_ARROW; }
+\+\+                         { return OP_ARITH_INCR; }
+\-\-                         { return OP_ARITH_DECR; }
+\*\*                         { return OP_ARITH_EXPO; }
+\|\|                         { return OP_LOGIC_OR; }
+&&                           { return OP_LOGIC_AND; }
+\<=                          { return OP_COMP_LEQ; }
+\>=                          { return OP_COMP_GEQ; }
+==                           { return OP_COMP_EQ; }
+!=                           { return OP_COMP_NEQ; }
+\<\<                         { return OP_RSHIFT; }
+\>\>                         { return OP_LSHIFT; }
+\+=                          { return OP_ASSIGN_PLUS; }
+-=                           { return OP_ASSIGN_MINUS; }
+\*=                          { return OP_ASSIGN_MULT; }
+\/=                          { return OP_ASSIGN_DIV; }
+\*\*=                        { return OP_ASSIGN_EXPO; }
+%=                           { return OP_ASSIGN_MOD; }
+\|=                          { return OP_ASSIGN_OR; }
+\&=                          { return OP_ASSIGN_AND; }
+\^=                          { return OP_ASSIGN_XOR; }
+\.=                          { return OP_ASSIGN_CONCAT; }
+to                           { return KEYWORD_TO; }
+maki                         { return KEYWORD_MAKI; }
+soy                          { return KEYWORD_SOY; }
+nori                         { return KEYWORD_NORI; }
+menu                         { return KEYWORD_MENU; }
+break                        { return KEYWORD_BREAK; }
+continue				     { return KEYWORD_CONTINUE; }
+roll                         { return KEYWORD_ROLL; }
+for                          { return KEYWORD_FOR; }
+foreach                      { return KEYWORD_FOREACH; }
+as                           { return KEYWORD_AS; }
+if                           { return KEYWORD_IF; }
+elseif                       { return KEYWORD_ELSEIF; }
+else                         { return KEYWORD_ELSE; }
+call                         { return KEYWORD_CALL; }
+char                         { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+int                          { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+float                        { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+bool                         { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+string                       { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+array                        { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+list                         { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+function 				     { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+(false|FALSE|true|TRUE)      { yylval.vstring = new string(yytext, yyleng); return CONST_BOOL; }
+{ALPHA}({WORD_HYPH}*{WORD})* { yylval.vstring = new string(yytext, yyleng); return IDENTIFIER; }
+[+-]?{DIGIT}+                { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }
+[+-]?{DIGIT}+\.{DIGIT}+      { yylval.vstring = new string(yytext, yyleng); return CONST_FLOAT; }
+\"[^"]*\"                    { yylval.vstring = new string(yytext, yyleng); return CONST_STRING; }
+'[^']'                       { yylval.vstring = new string(yytext, yyleng); return CONST_CHAR; }
+({EOL}+|\$.*{EOL})           { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
+[ \t]+                       { }
+.                            {
+								std::stringstream ss;
+								ss << "unrecognized sequence '" << yytext << "'";
+								errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
+								error_handler.add_lex_error(yytext, yylloc.first_line, yylloc.first_column, ss.str());
+								error_occurred = true; 
+							 }
 
 %%
 

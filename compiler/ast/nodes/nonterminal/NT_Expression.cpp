@@ -1,5 +1,6 @@
 #include "NT_Expression.hpp"
 #include "../../visitor/ASTVisitor.hpp"
+#include "../../../exceptions/Exceptions.hpp"
 
 using namespace ast;
 
@@ -141,3 +142,20 @@ void ExpressionList::accept(visitor::ASTVisitor& visitor)
 	visitor.visit(*this);
 
 }
+
+Expression& ExpressionList::get_nth_expression(size_t n)
+{
+	if(nb_expressions() <= n)
+		throw except::NoSuchChildException("there is any " + std::to_string(n + 1) + "th child (only " + std::to_string(nb_expressions()) + ")");
+
+	return *dynamic_cast<Expression*>(children[n]);
+}
+
+const Expression& ExpressionList::get_nth_expression(size_t n) const
+{
+	if(nb_expressions() <= n)
+		throw except::NoSuchChildException("there is any " + std::to_string(n + 1) + "th child (only " + std::to_string(nb_expressions()) + ")");
+
+	return *dynamic_cast<Expression*>(children[n]);
+}
+

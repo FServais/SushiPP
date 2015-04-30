@@ -108,7 +108,7 @@ void ArgList::accept(visitor::ASTVisitor& visitor)
 
 void ArgList::add_argument(Argument* arg)
 {
-	add_child(arg);
+	add_child_first(arg);
 }
 
 size_t ArgList::nb_args() const
