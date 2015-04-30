@@ -9,6 +9,8 @@
 
 #include "ast/visitor/PrintASTVisitor.hpp"
 #include "ast/visitor/TypeInferenceVisitor.hpp"
+#include "ast/visitor/FunctionTableVisitor.hpp"
+#include "ast/visitor/SymbolTableVisitor.hpp"
 
 #include "parser/sushipp.tab.h"
 
@@ -37,7 +39,7 @@ void SppCompiler::execute()
 		init();
 		parse();
 		scope_checking();
-		inference();
+		//inference();
 		terminate();
 	}
 }

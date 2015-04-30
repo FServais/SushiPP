@@ -521,4 +521,7 @@ void FunctionTableVisitor::visit( ast::Conditional& token )
 	visit_children(token);
 } 
 
-
+void FunctionTableVisitor::visit( ast::Elseif& token )
+{
+	visit_children(token);
+} 
