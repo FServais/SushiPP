@@ -28,6 +28,10 @@ using namespace std;
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
 	srand(time(NULL));
+	symb::SymbolTable<symb::FunctionInfo> function_table;
+
+	symb::SymbolTable<symb::VariableInfo> variable_table;
+
 }
 
 void SppCompiler::execute()
@@ -98,14 +102,18 @@ void SppCompiler::parse()
 			print_ast();
 	}
 
-	PrintASTVisitor visitor(cout);
-	syntax_tree.root().accept(visitor);
 	
 	FunctionTableVisitor visitor2(function_table);
 	syntax_tree.root().accept(visitor2);
 
 	SymbolTableVisitor visitor3(function_table, variable_table);
 	syntax_tree.root().accept(visitor3);
+	std::cout<<"FUNCTION TABLE"<<std::endl;
+	function_table.print_table();
+	std::cout<<"VARIABLE TABLE"<<std::endl;
+
+	variable_table.print_table();
+
 }
 
 void SppCompiler::print_ast()
@@ -140,3 +148,5 @@ ErrorHandler& SppCompiler::get_error_handler()
 {
 	return error_handler;
 }
+
+

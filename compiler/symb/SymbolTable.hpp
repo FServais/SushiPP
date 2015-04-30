@@ -66,6 +66,9 @@ namespace symb
 		 */
 		static size_t new_scope_id();
 
+
+		void print_table();
+
 	private:
 		/** 
 		 * root_scope : the root scope object
@@ -73,9 +76,18 @@ namespace symb
 		 * scope_id_counter : a counter for generating unique scope identifiers
 		 */
 		ScopeNode<S> root_scope;
-		ScopeNode<S>& current_scope;
+		ScopeNode<S>* current_scope;
 		static size_t scope_id_counter;
 	};
+
+
+	template <class S>
+	void SymbolTable<S>::print_table() 
+	{
+		root_scope.print_scope();
+	}
+
+
 
 	template <class S>
 	size_t SymbolTable<S>::scope_id_counter = 1;
@@ -87,24 +99,24 @@ namespace symb
 	}
 
 	template <class S>
-	SymbolTable<S>::SymbolTable() : root_scope(new_scope_id()), current_scope(root_scope)
+	SymbolTable<S>::SymbolTable() : root_scope(1)
 	{
-
+		current_scope = &root_scope;
 	}
 
 	template <class S>
 	void SymbolTable<S>::add_symbol(const std::string& symbol, const S& data)
 	{
-		current_scope.add_symbol(symbol, data);
+		current_scope->add_symbol(symbol, data);
 	}
 
 	template <class S>
 	bool SymbolTable<S>::symbol_exists(const std::string& symbol)
 	{
-		if(current_scope.symbol_exists(symbol))
+		if(current_scope->symbol_exists(symbol))
 			return true;
 
-		ScopeNode<S>& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = *current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -119,16 +131,16 @@ namespace symb
 	template <class S>
 	void SymbolTable<S>::delete_symbol(const std::string& symbol)
 	{
-		current_scope.delete_symbol(symbol);
+		current_scope->delete_symbol(symbol);
 	}
 
 	template <class S>
 	S& SymbolTable<S>::symbol_info(const std::string& symbol)
 	{
-		if(current_scope.symbol_exists(symbol))
-			return current_scope.symbol_info(symbol);
+		if(current_scope->symbol_exists(symbol))
+			return current_scope->symbol_info(symbol);
 
-		ScopeNode<S>& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = *current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -143,10 +155,10 @@ namespace symb
 	template <class S>
 	const S& SymbolTable<S>::symbol_info(const std::string& symbol) const
 	{
-		if(current_scope.symbol_exists(symbol))
-			return current_scope.symbol_info(symbol);
+		if(current_scope->symbol_exists(symbol))
+			return current_scope->symbol_info(symbol);
 
-		ScopeNode<S>& iter_scope = current_scope;
+		ScopeNode<S>& iter_scope = *current_scope;
 		
 		while(iter_scope.has_parent())
 		{
@@ -162,38 +174,40 @@ namespace symb
 	size_t SymbolTable<S>::add_scope()
 	{
 		size_t new_id = new_scope_id();
-		current_scope.create_child_scope(new_id);
+		current_scope->create_child_scope(new_id, -1);
 		return new_id;
 	}
 
 	template <class S>
 	void SymbolTable<S>::add_scope(size_t id)
 	{
-		current_scope.create_child_scope(id);
+		current_scope->create_child_scope(id);
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_scope(size_t scope_id)
 	{
-		current_scope = root_scope.find_scope(scope_id);
+
+		current_scope = &(root_scope.find_scope(scope_id));
+
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_parent_scope()
 	{
-		current_scope = current_scope.get_parent();
+		current_scope = &(current_scope->get_parent());
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_child_scope(int child_number)
 	{
-		current_scope = current_scope.get_child(child_number);
+		current_scope = &(current_scope->get_child(child_number));
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_root_scope()
 	{
-		current_scope = root_scope;
+		current_scope = &root_scope;
 	}
 
 }

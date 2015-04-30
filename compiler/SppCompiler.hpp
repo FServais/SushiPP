@@ -34,6 +34,7 @@ namespace compiler
 		 */
 		errors::ErrorHandler& get_error_handler();
 
+
 	private:
 		settings::CompilerSettings config;
 		ast::AbstractSyntaxTree syntax_tree;

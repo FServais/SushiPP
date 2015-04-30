@@ -7,6 +7,7 @@
 #include <iterator>
 #include <algorithm>
 #include <memory>
+#include <iostream>
 
 #include "../exceptions/Exceptions.hpp"
 
@@ -58,7 +59,7 @@ namespace symb
 		 * @param const S& data The information about the symbol
 		 * @note Previous data associated with a symbol of the same name is discarded
 		 */
-		void add_symbol(const std::string&, const S& data) const;
+		void add_symbol(const std::string&, const S& data);
 
 		/**
 		 * @brief Create a new child scope 
@@ -108,6 +109,8 @@ namespace symb
 		ScopeNode<S>& get_child(int pos);
 		const ScopeNode& get_child(int pos) const;
 
+		void print_scope();
+
 
 	private:
 		/**
@@ -129,12 +132,27 @@ namespace symb
 		void free_children();
 	};
 
+	template <class S>
+	void ScopeNode<S>::print_scope()
+	{
+		std::cout<< "------" << scope_id << "--------"<<std::endl;
+		for(auto it = map.begin(); it != map.end(); it++)
+		{
+			std::cout << it->first << std::endl;
+		}
+		std::cout << std::endl;
+		std::cout << std::endl;
+
+		for(auto child : children)
+		{
+			child->print_scope();
+		}
+	}
 
 
 	template <class S>
 	ScopeNode<S>::ScopeNode(size_t scope_id_) : parent(nullptr), scope_id(scope_id_)
 	{
-
 	}
 
 	template <class S>
@@ -146,7 +164,7 @@ namespace symb
 		for(ScopeNode* scope : copy.children)
 		{
 			ScopeNode* new_scope = new ScopeNode(*scope);
-			children.add_child_scope(new_scope);
+			children.push_back(new_scope);
 		}
 	}
 
@@ -165,8 +183,10 @@ namespace symb
 		for(ScopeNode* scope : copy.children)
 		{
 			ScopeNode* new_scope = new ScopeNode(*scope);
-			children.add_child_scope(new_scope);
+			children.push_back(new_scope);
 		}
+
+		return *this;
 	}
 
 	template <class S>
@@ -187,7 +207,7 @@ namespace symb
 		if(!symbol_exists(symb_name))
 			throw except::UndefinedSymbolException(symb_name);
 
-		return *(map.find(symb_name));
+		return (map.find(symb_name))->second;
 	}
 
 	template <class S>
@@ -196,7 +216,7 @@ namespace symb
 		if(!symbol_exists(symb_name))
 			throw except::UndefinedSymbolException(symb_name);
 
-		return *(map.find(symb_name));		
+		return (map.find(symb_name))->second;		
 	}
 
 	template <class S>
@@ -206,15 +226,19 @@ namespace symb
 	}
 
 	template <class S>
-	void ScopeNode<S>::add_symbol(const std::string& symb_name, const S& data) const
+	void ScopeNode<S>::add_symbol(const std::string& symb_name, const S& data)
 	{
-		map[symb_name] = data;
+		if(!map.count(symb_name))
+			map.emplace(symb_name, data);
+	
 	}
 
 	template <class S>
-	size_t ScopeNode<S>::create_child_scope(size_t scope_id_, int pos)
+	size_t ScopeNode<S>::create_child_scope(size_t scope_id, int pos)
 	{
-		if(pos > children.size() || pos < -1)
+
+
+		if(pos > ((int)children.size()) || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
 
 		if(pos == -1)
@@ -222,23 +246,30 @@ namespace symb
 
 		ScopeNode* new_scope = new ScopeNode(scope_id);
 		children.insert(std::next(children.begin(), pos), new_scope);
+
 		new_scope->parent = this;
+		std::cout<<"inserted"<<new_scope->get_id()<<std::endl;
 		return new_scope->get_id();
 	}
 
 	template <class S>
 	ScopeNode<S>& ScopeNode<S>::find_scope(size_t id)
 	{
+		std::cout<<"current id : "<<scope_id<<std::endl;
+		std::cout<<"searched id  : "<<id<<std::endl;
 		if(id == scope_id)
 			return *this;
-
+		std::cout<<children.size()<<std::endl;
 		for(ScopeNode* child : children)
 		{
 			try
 			{
-				return child->find_scope(id);
+
+				return ((*child).find_scope(id)); 
+
 			}
 			catch(except::UndefinedScopeException& e) { }
+
 		}
 
 		throw except::UndefinedScopeException(id);
@@ -254,7 +285,9 @@ namespace symb
 		{
 			try
 			{
-				return child->find_scope(id);
+
+				return (child->find_scope(id));
+
 			}
 			catch(except::UndefinedScopeException& e) { }
 		}

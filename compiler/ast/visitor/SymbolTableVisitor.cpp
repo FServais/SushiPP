@@ -3,9 +3,9 @@
 
 
 SymbolTableVisitor::SymbolTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab)
+: function_table(fct_tab), variable_table(var_tab)
 {
-	function_table = fct_tab;
-	variable_table = var_tab;
+	
 }
 
 
@@ -34,7 +34,7 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 	std::string func_name = token.get_function_name();
 
 	if( !function_table.symbol_exists(func_name) )
-		throw UndefinedSymbolException("Call to an undefined function");
+		throw except::UndefinedSymbolException("Call to an undefined function");
 
 	if( token.contains_arglist() )
 	{
@@ -44,7 +44,7 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 		int nb_args = arg_list.nb_args();
 
 		if( nb_params != nb_args )
-			throw BadParameterNumberException("The number of arguments given does not match the function definition");
+			throw except::BadParameterNumberException("The number of arguments given does not match the function definition");
 
 		arg_list.accept(*this);
 	}
@@ -58,7 +58,7 @@ void SymbolTableVisitor::visit( ast::Identifier& token )
 	std::string id = token.id();
 
 	if( !function_table.symbol_exists(id) && !variable_table.symbol_exists(id) )
-		throw UndefinedSymbolException(id);
+		throw except::UndefinedSymbolException(id);
 }
 
 void SymbolTableVisitor::visit( ast::Scope& token )
