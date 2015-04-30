@@ -22,11 +22,11 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 
 	if( token.contains_params())
 	{
-		ast::ParamList param_list = token.get_param_list();
+		ast::ParamList& param_list = token.get_param_list();
 		// create a VariableInfo for each parameter of the function
 		for(int i = 0; i < param_list.nb_params(); i++)
 		{
-			ast::Param param = param_list.get_param(i);
+			ast::Param& param = param_list.get_param(i);
 			std::string param_name = param.get_param_name();
 
 			if(param.has_type())
@@ -57,11 +57,11 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 
 	if(token.contains_params())
 	{
-		ast::ParamList param_list = token.get_params();
+		ast::ParamList& param_list = token.get_params();
 		// create a VariableInfo for each parameter of the function
 		for(int i = 0; i < param_list.nb_params(); i++)
 		{
-			ast::Param param = param_list.get_param(i);
+			ast::Param& param = param_list.get_param(i);
 			std::string param_name = param.get_param_name();
 
 			if(param.has_type())
@@ -74,9 +74,7 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 				symb::VariableInfo parameter(param_name);
 				params.push_back(parameter);
 			}
-
 		}
-
 	}
 
 	symb::FunctionInfo fct_info(params);
