@@ -67,6 +67,11 @@ namespace compiler
 		 * @brief The syntax_tree variable should contain a valid syntax tree (with at least a root node)
 		 */
 		void print_ast();
+
+		/**
+		 * @brief Perform the scope checking and fills the symbol tables (functions and variables)
+		 */
+		void scope_checking();
 	};
 }
 

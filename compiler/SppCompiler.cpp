@@ -28,10 +28,6 @@ using namespace std;
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
 	srand(time(NULL));
-	symb::SymbolTable<symb::FunctionInfo> function_table;
-
-	symb::SymbolTable<symb::VariableInfo> variable_table;
-
 }
 
 void SppCompiler::execute()
@@ -42,6 +38,7 @@ void SppCompiler::execute()
 	{
 		init();
 		parse();
+		scope_checking();
 		terminate();
 	}
 }
@@ -101,19 +98,24 @@ void SppCompiler::parse()
 		if(config.do_dump_ast())
 			print_ast();
 	}
+}
 
-	
-	FunctionTableVisitor visitor2(function_table);
+void SppCompiler::scope_checking()
+{
+	if(error_handler.error_occurred())
+		return;
+
+	visitor::FunctionTableVisitor visitor1(function_table);
+	syntax_tree.root().accept(visitor1);
+
+	visitor::SymbolTableVisitor visitor2(function_table, variable_table);
 	syntax_tree.root().accept(visitor2);
 
-	SymbolTableVisitor visitor3(function_table, variable_table);
-	syntax_tree.root().accept(visitor3);
 	std::cout<<"FUNCTION TABLE"<<std::endl;
 	function_table.print_table();
+
 	std::cout<<"VARIABLE TABLE"<<std::endl;
-
 	variable_table.print_table();
-
 }
 
 void SppCompiler::print_ast()
@@ -131,11 +133,6 @@ void SppCompiler::print_ast()
 		visitor::PrintASTVisitor visitor(file);
 		syntax_tree.root().accept(visitor);
 		file.close();
-
-		
-
-
-
 	}
 	else
 	{

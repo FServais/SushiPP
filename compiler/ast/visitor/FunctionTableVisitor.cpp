@@ -115,18 +115,13 @@ void FunctionTableVisitor::visit( ast::Scope& token )
  * 		Default case    *
  ************************/
 
-void FunctionTableVisitor::visit_children( ast::ASTNode& )
+void FunctionTableVisitor::visit_children( ast::ASTNode& token )
 { 
 	for(auto child : token.get_children()) 
 		child->accept(*this); 
 }
 
 void FunctionTableVisitor::visit( ast::ASTNode& token )
-{
-	visit_children(token);
-}
-
-void FunctionTableVisitor::visit_children( ast::ASTNode& token )
 {
 	visit_children(token);
 }
