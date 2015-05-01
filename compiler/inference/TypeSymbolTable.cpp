@@ -5,7 +5,7 @@
 #include <iterator>
 #include <map>
 
-#include "../exceptions/Exceptions.hpp"
+#include "InferenceExceptions.hpp"
 #include "Types.hpp"
 
 using namespace std;
@@ -214,19 +214,15 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 	TerminalTypeSymbol &symbol1 = link1.resolve(),
 			   		   &symbol2 = link2.resolve();
 
-	// check hints compatiblity
-	if(!symbol1.get_hints().compatible(symbol2.get_hints()))
-	{
-		throw except::UnificationException("couldn't unify the type symbols " + symbol1.str() + " and " + symbol2.str() +
-										   " because their hints are incompatible : (" + symbol1.get_hints().str() + 
-										   ") vs. (" + symbol2.get_hints().str() + ")");
-	}
-
 	// one or both symbol(s) is (are) variable(s)
 	if(symbol1.is_variable() || symbol2.is_variable())
 	{
 		if(symbol1.equals(symbol2)) // the variables were already unified
 			return;
+
+			// check hints compatiblity
+		if(!symbol1.get_hints().compatible(symbol2.get_hints()))
+			throw except::HintsUnificationException(symbol1.get_hints(), symbol2.get_hints());
 
 		TypeLink &last_link1 = link1.resolve_last_link(),
 				 &last_link2 = link2.resolve_last_link();
@@ -256,10 +252,8 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 		vector<reference_wrapper<TypeLink>> &parameters1 = func_symb1.get_parameters(),
                                      	    &parameters2 = func_symb2.get_parameters();
 
-		if(parameters1.size() != parameters1.size())
-			throw except::UnificationException("couldn't unify function types because of an parameter count mismatch "
-											   "(function 1 expects " + std::to_string(parameters1.size()) + " parameter(s) and "
-											   "function 2 expects " + std::to_string(parameters2.size()) + " parameter(s))");
+		if(parameters1.size() != parameters2.size())
+			throw except::ParameterNumberMismatchException(parameters1.size(), parameters2.size());
 
 		for(size_t i = 0; i < parameters1.size(); ++i)
 			unify(parameters1[i], parameters2[i]);
@@ -268,6 +262,10 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 		unify(func_symb1.get_return_type(), func_symb2.get_return_type());
 		return;
 	}
+	else if(symbol1.is_function_type())
+		throw except::FunctionTypeUnificationException(dynamic_cast<Function&>(symbol1), symbol2);
+	else if(symbol2.is_function_type())
+		throw except::FunctionTypeUnificationException(dynamic_cast<Function&>(symbol2), symbol1);
 
 	// are either arrays or a lists or both
 	if(symbol1.is_uniparameter_type() && symbol2.is_uniparameter_type())
@@ -277,24 +275,22 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 
 		// if they are different -> unification of a list type and an array type : error
 		if(structure_symb1.is_array() != structure_symb2.is_array())
-			throw except::UnificationException("couldn't unify two different datastructure types. Here : '" +
-												structure_symb1.str() + "' and '" + structure_symb2.str() + "'");
+			throw except::UniparameterTypesUnificationException(structure_symb1, structure_symb2);
 
 		// unify the only parameter type
 		unify(structure_symb1.get_param_type(), structure_symb2.get_param_type());
 		return;
 	}
-
-	// are both flat types
-	if(symbol1.is_flat_type() && symbol2.is_flat_type())
-	{
-		if(!symbol1.equals(symbol2))
-			throw except::UnificationException("couldn't unify two different flat types '" + symbol1.str() + "' and '" + symbol2.str() + "'");
-		return; // unification succeeds as the flat type are the same
-	}
-
-	// at this point, any unifiable combination was examined and there is no more way to unify the given type links
-	throw except::UnificationException("couldn't unify the given types '" + symbol1.str() + "' and '" + symbol2.str() + "'");
+	else if(symbol1.is_uniparameter_type())
+		throw except::UniparameterTypesUnificationException(dynamic_cast<UniparameterType&>(symbol1), symbol2);
+	else if(symbol2.is_uniparameter_type())
+		throw except::UniparameterTypesUnificationException(dynamic_cast<UniparameterType&>(symbol2), symbol1);
+	
+	// at this stage, both symbol must be flat types 
+	if(!symbol1.equals(symbol2))
+		throw except::FlatTypesUnificationException(dynamic_cast<FlatType&>(symbol1), symbol2);
+	
+	// flat type are the same at this stage
 }
 
 void TypeSymbolTable::unify(const string& type, FlatType* flat)
@@ -306,33 +302,36 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 	TerminalTypeSymbol& actual_type = link.resolve();
 	string err_type(flat->str());
 
-	// check hints compatibility :
-	if(!flat->get_hints().compatible(actual_type.get_hints()))
-	{
-		delete flat;
-		throw except::UnificationException("couln't unify flat type '" + err_type +  "' with type '" + actual_type.str() + 
-										   "' because his hints are incompatible : (" + actual_type.get_hints().str() + ")");
-	}	
-
 	// if the type mapped by the symbol is an array, list or function type
 	// unification is impossible
 	if(actual_type.is_structured_type())
 	{
+		except::FlatTypesUnificationException exception(*flat, actual_type);
 		delete flat;
-		throw except::UnificationException("couln't unify flat type '" + err_type + "' with structured type '" + actual_type.str() + "'");
+		throw exception;
 	}
+
 	// if the type mapped is a flat type, it must be the same than the other
 	if(actual_type.is_flat_type())
 	{
 		if(!flat->equals(actual_type))
 		{
+			except::FlatTypesUnificationException exception(*flat, actual_type);
 			delete flat;
-			throw except::UnificationException("couldn't unify two different flat types '" + err_type + "' and '" + actual_type.str() + "'");
+			throw exception;
 		}
 
 		delete flat;
 		return;
 	}
+
+	// check hints compatibility :
+	if(!flat->get_hints().compatible(actual_type.get_hints()))
+	{
+		except::HintsUnificationException exception(flat->get_hints(), actual_type.get_hints());
+		delete flat;
+		throw exception;
+	}	
 
 	// set the last link
 	link.resolve_last_link().set_symbol(flat);
