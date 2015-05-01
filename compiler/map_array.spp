@@ -1,8 +1,16 @@
 maki map_array array size func :
+	maki i
+	maki variable 
 	for i = 0, i < size, ++i
 		array[i] = (call func array[i]) 
 	;;
 ;;
 
-array = #[ 12, 3, 7, 42 ]#
+maki array = #[ 12, 3, 7, 42 ]#
 call map_array array 4 (soy x : nori x*x)
+
+maki coucou
+
+foreach array as item
+	item = item++
+;;

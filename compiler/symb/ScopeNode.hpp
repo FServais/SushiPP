@@ -109,11 +109,20 @@ namespace symb
 		ScopeNode<S>& get_child(int pos);
 		const ScopeNode& get_child(int pos) const;
 
+		/**
+		 * @brief	print the symbols of the scope
+		 */
 		void print_scope();
 
-		void print_children();
+		/**
+		 * @brief returns the numbers of symbols in the scope
+		 */
+		size_t get_nb_symb(){return map.size();}
 
-		size_t get_id_for_symb(const std::string );
+		/**
+		 * @brief returns the symbol placed at index 
+		 */
+		S& get_symbol(size_t index);
 
 	private:
 		/**
@@ -136,39 +145,11 @@ namespace symb
 	};
 
 	template<class S>
-	size_t ScopeNode<S>::get_id_for_symb(const std::string name)
+	S& ScopeNode<S>::get_symbol(size_t index)
 	{
-
-
-		if(symbol_exists(name))
-		{	
-			std::cout<<"TU ME CHERCHES???"<<std::endl;
-			return scope_id;
-		}
-		for(ScopeNode* child : children)
-		{
-			try
-			{
-				return child->get_id_for_symb(name); 
-
-			}
-			catch(except::UndefinedSymbolException& e) { }
-
-		}
-
-		throw except::UndefinedSymbolException(name);
-
+		return next(map.begin(), index)->second;
 	}
 
-	template <class S>
-	void ScopeNode<S>::print_children()
-	{
-		std::cout << "Children of "<<scope_id<<std::endl;
-		for(ScopeNode* c : children)
-		{
-			std::cout<<" 	Node : "<<c->get_id()<<std::endl;
-		}
-	}
 
 	template <class S>
 	void ScopeNode<S>::print_scope()

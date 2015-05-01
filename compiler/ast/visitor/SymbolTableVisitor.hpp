@@ -6,8 +6,10 @@
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
 #include "../../exceptions/Exceptions.hpp"
+#include "../../errors/ErrorHandler.hpp"
 #include "../../util.hpp"
 #include "ASTVisitor.hpp"
+#include <set>
 
 using namespace symb;
 
@@ -17,7 +19,8 @@ namespace visitor
 	{
 	public:
 
-		SymbolTableVisitor(SymbolTable<FunctionInfo>& , SymbolTable<VariableInfo>& );
+		// constructor & destructor
+		SymbolTableVisitor(SymbolTable<FunctionInfo>& , SymbolTable<VariableInfo>& , errors::ErrorHandler&);
 		~SymbolTableVisitor(){};
 
 		virtual void visit( ast::ASTNode& );
@@ -26,7 +29,23 @@ namespace visitor
 		virtual void visit( ast::Identifier& );
 		virtual void visit( ast::Scope& );
 
+		/**
+		*	@brief	checks whether the symbol is declared in the table for the  allowed scopes 
+		*	@param 		std::string&			the symbol name
+		*	@param 		symb::SymbolTable<S>& 	the table
+		*	@ retval 	true if the symbol is declared in one of the scopes	
+		*/
+		template<class S>
+		bool symbol_exists(std::string& , symb::SymbolTable<S>& );
 
+
+
+		/**
+		*	@brief 		Generate errors when it find variables declared but never used
+		*	@param 		size_t scope 		the id of the scope that we are checking
+		*
+		*/
+		void check_unused(size_t scope);
 		/*************************
 		 * 		Keyword token    *
 		 *************************/
@@ -155,8 +174,10 @@ namespace visitor
 	private:
 		SymbolTable<FunctionInfo>& function_table;
 		SymbolTable<VariableInfo>& variable_table;
+		errors::ErrorHandler& error_handler;
 
-
+		std::set<size_t> allowed_scopes;
+		std::set<size_t> prev_allowed_scopes;
 
 			
 		void visit_children( ast::ASTNode& );

@@ -2,10 +2,48 @@
 
 using namespace visitor;
 
-SymbolTableVisitor::SymbolTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab)
-: function_table(fct_tab), variable_table(var_tab)
+SymbolTableVisitor::SymbolTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab,
+		 errors::ErrorHandler& err_han)
+: function_table(fct_tab), variable_table(var_tab), error_handler(err_han)
 {
 	
+}
+
+
+void SymbolTableVisitor::check_unused(size_t scp_id)
+{
+	size_t nb_symbol = variable_table.curr_nb_symbol(scp_id);
+	for(size_t i = 0 ; i < nb_symbol ; i++)
+	{
+		VariableInfo v = variable_table.get_symbol(scp_id, i);
+		// If a variable is found unused, then an error is created
+		if(!v.get_used())
+			error_handler.add_sem_error(" ",v.get_line(), v.get_column(), " Unused variable : "+v.name());
+	}
+}
+
+template <class S>
+bool SymbolTableVisitor::symbol_exists(std::string& name, symb::SymbolTable<S>& table)
+{
+	size_t where = table.get_curr_scope_id();
+
+	// check if the scope is allowed and if it contains the symbol
+	if(allowed_scopes.count(where) && table.symbol_in_scope(name))
+		return true;
+
+	// check if a parent scope is allowed and contains the symbol
+	while( !table.is_root() )
+	{
+		table.move_to_parent_scope();
+		if(allowed_scopes.count(table.get_curr_scope_id()) && table.symbol_in_scope(name))
+		{
+			table.move_to_scope(where);
+			return true;
+		}
+			
+	}
+	table.move_to_scope(where);
+	return false;
 }
 
 void SymbolTableVisitor::visit(ast::ASTNode& token)
@@ -21,7 +59,7 @@ void SymbolTableVisitor::visit( ast::DeclVar& token)
 	VariableInfo data(name, token.get_location());
 
 	if(variable_table.symbol_in_scope(name))
-		throw except::RedefinedSymbolException();
+		error_handler.add_sem_error(" ",data.get_line(), data.get_column(), " Redefined variable : "+name);
 
 	variable_table.add_symbol(name, data);
 
@@ -35,17 +73,16 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 
 	std::string func_name = token.get_function_name();
 
-	if( !function_table.symbol_exists(func_name) && !variable_table.symbol_exists(func_name))
+	if( !function_table.symbol_exists(func_name) && !symbol_exists<VariableInfo>(func_name,variable_table))
 	{
-		std::cout<<"OUUUPSII"<<std::endl;
-
-		throw except::UndefinedSymbolException(func_name);
+		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_column(), 
+			" Undefined function : "+func_name);
 	}
 		
 	if(function_table.symbol_exists(func_name))
 		function_table.symbol_info(func_name).is_used();
 
-	else if(variable_table.symbol_exists(func_name))
+	else if(symbol_exists(func_name, variable_table))
 		variable_table.symbol_info(func_name).is_used();
 
 }
@@ -58,14 +95,15 @@ void SymbolTableVisitor::visit( ast::Identifier& token )
 	if( function_table.symbol_exists(id) )
 		function_table.symbol_info(id).is_used();
 
-	
-	else if( variable_table.symbol_exists(id))
+	else if( symbol_exists(id, variable_table))
 		variable_table.symbol_info(id).is_used();
 		
 	else 
 	{
-		std::cout<<"OUUUPSII"<<std::endl;
-		throw except::UndefinedSymbolException(id);
+		for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
+			std::cout<<*it<<std::endl;
+		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_line(), 
+			" Undefined identifier : "+id);
 	}
 		
 
@@ -75,34 +113,46 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 {
 
 	size_t scp_id = token.get_scope_id();
+	allowed_scopes.insert(scp_id);
 
 	function_table.move_to_scope(scp_id);
-
-
 	variable_table.move_to_scope(scp_id);
 
-
 	visit_children(token);
+	allowed_scopes.erase(scp_id);
+
+	if(!allowed_scopes.empty())
+		allowed_scopes = prev_allowed_scopes;
+
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
+
+
+	check_unused(scp_id);
 }
 
 void SymbolTableVisitor::visit( ast::Foreach& token )
 {
 	token.get_expression().accept(*this);
+
 	std::string id_name = token.get_identifier().id(); 
-	symb::VariableInfo v(id_name, token.get_identifier().get_location());	
+	symb::VariableInfo v(id_name, token.get_identifier().get_location());
+
+	variable_table.move_to_scope(token.get_scope().get_scope_id());
 	variable_table.add_symbol(id_name, v);
+	variable_table.move_to_parent_scope();
+
 	token.get_scope().accept(*this);	
 
 }
 
 void SymbolTableVisitor::visit( ast::DeclFunc& token )
 {
-
+	prev_allowed_scopes = allowed_scopes;
+	allowed_scopes.clear();
 	token.get_scope().accept(*this);
 }
 

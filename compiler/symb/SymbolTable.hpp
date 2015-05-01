@@ -22,8 +22,18 @@ namespace symb
 		 */
 		void add_symbol(const std::string&, const S& data);
 
+		/**
+		* @brief returns the number of symbols in the current scope
+		* @param 	size_t scp 		the scope id
+		* @retval	size_t			the number of symbols
+		*/
+		size_t curr_nb_symbol(size_t scp);
 
-
+		/**
+		* @brief	checks whether a symbol is in the current scope
+		* @param 	std::string&	the name of the symbol 	
+		* @retval 	bool	true if the symbol was found
+		*/
 		bool symbol_in_scope(const std::string&);
 
 		/**
@@ -70,16 +80,39 @@ namespace symb
 		 */
 		static size_t new_scope_id();
 
-
+		/**
+		 * @brief Print the table 
+		 */
 		void print_table();
+
+		/**
+		 * @brief Print the children of the current scope 
+		 */
 		void print_child();
 
 
+		/**
+		 * @brief Checks if the current scope is the root scope
+		 * @retval 	bool	true if root 
+		 */
 		bool is_root();
+
+		/**
+		 * @brief returns the scope id of the current scope 
+		 */
 		size_t get_curr_scope_id(){return current_scope->get_id();}
 
-		//returns the scope in which the symbol is defined
+		/**
+		 * @brief returns the scope in which the symbol is defined 
+		 */
 		size_t get_symbol_scope_id(std::string name);
+
+		/**
+		 * @brief return the symbol placed at index "index" in a given scope
+		 * @param 	size_t scope_id 	the scope id
+		 * @param	size_t index		the index of the variable in the scope. 
+		 */
+		S& get_symbol(size_t scope_id, size_t index);
 
 	private:
 		/** 
@@ -94,8 +127,22 @@ namespace symb
 
 
 	template<class S>
+	S& SymbolTable<S>::get_symbol(size_t scope_id, size_t index)
+	{
+		return current_scope->find_scope(scope_id).get_symbol(index);
+	}
+
+	template<class S>
+	size_t SymbolTable<S>::curr_nb_symbol(size_t scp)
+	{
+		return current_scope->find_scope(scp).get_nb_symb();
+	}
+
+	template<class S>
 	size_t SymbolTable<S>::get_symbol_scope_id(std::string name)
 	{
+		if(current_scope->symbol_exists(name))
+			return current_scope->get_id();
 
 		ScopeNode<S>* iter_scope = current_scope;
 		
@@ -107,8 +154,7 @@ namespace symb
 				return iter_scope->get_id();
 		}
 
-		return current_scope->get_id_for_symb(name);
-
+		throw except::UndefinedSymbolException(name);
 	}
 
 	template <class S>
