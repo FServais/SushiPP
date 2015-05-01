@@ -38,15 +38,15 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 	string alpha = params.get_param(1);
 
 	// unify alpha with the type of the identifier
-	size_t identifier_scope = current_scope; 
+	size_t identifier_scope; 
 
-/*	if(variable_table.symbol_exists(id.id()))
+	if(variable_table.symbol_exists(id.id()))
 		identifier_scope = variable_table.get_symbol_scope_id(id.id());
 	else if(function_table.symbol_exists(id.id()))
 		identifier_scope = function_table.get_symbol_scope_id(id.id());
 	else
 		throw std::logic_error("The symbol is still undefined after scope checking");
-*/
+
 	string id_type_name = type_table.unique_id_name(identifier_scope, id.id());
 	
 	cout << alpha << " - > " << id_type_name << endl;
@@ -1415,7 +1415,7 @@ void TypeInferenceVisitor::visit( ast::For& for_loop )
 	params.ret();
 }
 
-void TypeInferenceVisitor::visit( ast::ForInitializer& initializer)
+void TypeInferenceVisitor::visit( ast::ForInitializer& initializer )
 {
 	cout << "ForInitializer" << endl << type_table << endl << endl;
 	params.call();

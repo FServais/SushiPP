@@ -184,8 +184,3 @@ void ASTNode::clear_children()
 	free_node();
 	children.clear();
 }
-
-NodeLocation ASTNode::get_location()
-{
-	return loc;
-}

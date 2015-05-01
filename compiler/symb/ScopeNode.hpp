@@ -110,10 +110,7 @@ namespace symb
 		const ScopeNode& get_child(int pos) const;
 
 		void print_scope();
-
 		void print_children();
-
-		size_t get_id_for_symb(const std::string );
 
 	private:
 		/**
@@ -135,31 +132,6 @@ namespace symb
 		void free_children();
 	};
 
-	template<class S>
-	size_t ScopeNode<S>::get_id_for_symb(const std::string name)
-	{
-
-
-		if(symbol_exists(name))
-		{	
-			std::cout<<"TU ME CHERCHES???"<<std::endl;
-			return scope_id;
-		}
-		for(ScopeNode* child : children)
-		{
-			try
-			{
-				return child->get_id_for_symb(name); 
-
-			}
-			catch(except::UndefinedSymbolException& e) { }
-
-		}
-
-		throw except::UndefinedSymbolException(name);
-
-	}
-
 	template <class S>
 	void ScopeNode<S>::print_children()
 	{
@@ -175,19 +147,15 @@ namespace symb
 	{
 		std::cout<< "------" << scope_id << "--------"<<std::endl;
 		for(auto it = map.begin(); it != map.end(); it++)
-		{
 			std::cout << it->first << std::endl;
-		}
+		
 		std::cout << std::endl;
 		std::cout << std::endl;
 
 		for(auto child : children)
-		{
-			
 			child->print_scope();
-		}
+		
 	}
-
 
 	template <class S>
 	ScopeNode<S>::ScopeNode(size_t scope_id_) : parent(nullptr), scope_id(scope_id_)

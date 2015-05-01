@@ -87,7 +87,7 @@ pair<string, string> TypeSymbolTable::new_function(const vector<string>& param_n
 			forward_as_tuple(new Function(param_links, at(ret_type_var))));
 
 	// a function can return void
-	dynamic_cast<TypeVariable&>(at(ret_type_var).resolve()).set_hints(TypesHint(VOID));
+	dynamic_cast<TypeVariable&>(at(ret_type_var).resolve()).set_hints(TypesHint());
 
 	return make_pair(func_name, ret_type_var);
 }
@@ -235,11 +235,13 @@ void TypeSymbolTable::unify(TypeLink& link1, TypeLink& link2)
 		TypeLink &to_relink = symbol1.is_variable() ? last_link1 : last_link2,
 				 &to_be_linked = symbol1.is_variable() ? last_link2 : last_link1;
 
-		to_relink.set_symbol(&to_be_linked);
-		
 		// update the hints
-		dynamic_cast<TypeVariable&>(symbol1).get_hints().hints_intersection(symbol2.get_hints());
-		dynamic_cast<TypeVariable&>(symbol2).get_hints().hints_intersection(symbol1.get_hints());
+		if(symbol1.is_variable())
+			dynamic_cast<TypeVariable&>(symbol1).get_hints().hints_intersection(symbol2.get_hints());
+		if(symbol2.is_variable())
+			dynamic_cast<TypeVariable&>(symbol2).get_hints().hints_intersection(symbol1.get_hints());
+
+		to_relink.set_symbol(&to_be_linked);
 
 		return;
 	}

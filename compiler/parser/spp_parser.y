@@ -862,7 +862,11 @@ for:
 
 for-initializer:
   %empty     { $$ = nullptr; }
-| assignment { $$ = (void*) (new ast::ForInitializer((ast::ASTNode*)$1, location(@$))); }
+| assignment 
+	{ 
+		ast::ModifyingExpression* expr = new ast::ModifyingExpression((ast::ASTNode*)$1, location(@1));
+		$$ = (void*) (new ast::ForInitializer(expr, location(@$))); 
+	}
 ;
 
 for-update:

@@ -22,8 +22,6 @@ namespace symb
 		 */
 		void add_symbol(const std::string&, const S& data);
 
-
-
 		bool symbol_in_scope(const std::string&);
 
 		/**
@@ -92,10 +90,11 @@ namespace symb
 		static size_t scope_id_counter;
 	};
 
-
 	template<class S>
 	size_t SymbolTable<S>::get_symbol_scope_id(std::string name)
 	{
+		if(current_scope->symbol_exists(name))
+			return current_scope->get_id();
 
 		ScopeNode<S>* iter_scope = current_scope;
 		
@@ -107,8 +106,7 @@ namespace symb
 				return iter_scope->get_id();
 		}
 
-		return current_scope->get_id_for_symb(name);
-
+		throw except::UndefinedSymbolException(name);
 	}
 
 	template <class S>
@@ -130,8 +128,6 @@ namespace symb
 	{
 		root_scope.print_scope();
 	}
-
-
 
 	template <class S>
 	size_t SymbolTable<S>::scope_id_counter = 1;
@@ -172,10 +168,7 @@ namespace symb
 		{	
 			iter_scope = &(iter_scope->get_parent());
 			if(iter_scope->symbol_exists(symbol))
-			{
-
 				return true;
-			}
 		}
 		return false;
 	}

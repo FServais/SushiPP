@@ -120,7 +120,6 @@ void SppCompiler::scope_checking()
 	std::cout<<"VARIABLE TABLE"<<std::endl;
 	variable_table.print_table();
 
-	std::cout<<variable_table.get_symbol_scope_id("x")<<std::endl;
 	//function_table.check_unused();
 	//variable_table.check_unused();
 }
