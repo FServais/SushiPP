@@ -53,7 +53,11 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 	
 	cout << alpha << " - > " << id_type_name << endl;
 	
-	type_table.unify(alpha, id_type_name);
+	try {
+		type_table.unify(alpha, id_type_name);
+	} catch(except::UnificationException& e) {
+		error_handler.
+	}
 
 	params.ret();
 }
