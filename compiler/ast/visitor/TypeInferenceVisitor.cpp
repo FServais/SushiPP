@@ -3,14 +3,18 @@
 #include "../../inference/Types.hpp"
 
 #include <algorithm>
+#include <stdexcept>
 
 using namespace std;
 using namespace visitor;
 using namespace inference;
+using namespace symb;
 
 #include <iostream>
 
-TypeInferenceVisitor::TypeInferenceVisitor() : current_scope(0)
+TypeInferenceVisitor::TypeInferenceVisitor(SymbolTable<FunctionInfo>& function_table_, 
+										   SymbolTable<VariableInfo>& variable_table_) 
+  : current_scope(0), function_table(function_table_), variable_table(variable_table_)
 {
 
 }
@@ -34,8 +38,19 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 	string alpha = params.get_param(1);
 
 	// unify alpha with the type of the identifier
-	string id_type_name = type_table.unique_id_name(current_scope, id.id());
+	size_t identifier_scope = current_scope; 
+
+/*	if(variable_table.symbol_exists(id.id()))
+		identifier_scope = variable_table.get_symbol_scope_id(id.id());
+	else if(function_table.symbol_exists(id.id()))
+		identifier_scope = function_table.get_symbol_scope_id(id.id());
+	else
+		throw std::logic_error("The symbol is still undefined after scope checking");
+*/
+	string id_type_name = type_table.unique_id_name(identifier_scope, id.id());
+	
 	cout << alpha << " - > " << id_type_name << endl;
+	
 	type_table.unify(alpha, id_type_name);
 
 	params.ret();
@@ -104,7 +119,7 @@ void TypeInferenceVisitor::visit( ast::Type_Function& type )
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
 	cout << "Op_Plus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1);
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -1202,12 +1217,14 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 {
 	cout << "Scope" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), 
-		   beta; // beta is the type to pass to the child nodes
+			beta; // type to pass to the children nodes
 
-    size_t prev_scope = current_scope;
-    current_scope = scope.get_scope_id();
-	cout << "from " << prev_scope << endl;
-    cout << "to   " << current_scope << endl;
+	size_t prev_scope = current_scope;
+	current_scope = scope.get_scope_id();
+	cout << "Move to scope " << current_scope << endl;
+	// move to the new scope in the symbol tables
+	variable_table.move_to_scope(current_scope);
+	function_table.move_to_scope(current_scope);
 
 	if(alpha.empty()) // empty string means that nothing is expected as return type
 	{
@@ -1226,7 +1243,11 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 		child->accept(*this);
 	}
 
+	// go back to the previous scope
+	variable_table.move_to_scope(prev_scope);
+	function_table.move_to_scope(prev_scope);
 	current_scope = prev_scope;
+
 	cout << "Go back to " << current_scope << endl;
 
 	params.ret();

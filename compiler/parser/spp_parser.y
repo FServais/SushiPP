@@ -30,7 +30,7 @@
 	#include "../ast/nodes/nonterminal/NT_Statement.hpp"
 
 	/* Macro for getting the children of a ast::ASTNode* of type void* */
-	#define children(node) ((ast::ASTNode*)node)->delete_children()
+	#define children(node) ((ast::ASTNode*)node)->delete_children();
 
 	extern "C" int yylex();
 
@@ -38,20 +38,25 @@
 
 	/** print the current location data */
 	static std::string curr_line_row();
-	/** Return a pointer to the type node for the given string*/
-	static ast::Type* get_type_node(const std::string&);
-	/** Add an error to the handler and invokes yyerror */
-	//static void add_error(std::string, std::string);
-	/** Return the NodeLocation object containing the current location informations */
-	static ast::NodeLocation curr_loc();
+	/** Return a pointer to the type node for the given string and node location */
+	static ast::Type* get_type_node(const std::string&, const ast::NodeLocation&);
 
 	typedef std::pair<ast::Expression*, ast::Expression*> ExpressionPair;
 
-	// pointer to 
+	// pointer to the compiler object
 	extern compiler::SppCompiler* g_compiler;
 	// true if an error occurred -> used for exiting yyparse with correct code if the parser
 	// reaches the end of file after error recovery
 	bool error_occurred;
+
+	struct YYLTYPE;
+	/**
+	 * @brief Return the location of the node of which the leftmost and rightmost children are given
+	 * @param const yyltype& A location object
+	 * @retval The node location resulting from the given YYLLOC location
+	 */
+	static ast::NodeLocation location(struct YYLTYPE);
+	static ast::NodeLocation location2(struct YYLTYPE, struct YYLTYPE);
 %}
 
 %define parse.error verbose
@@ -191,16 +196,16 @@ program:
 			delete ((ast::ASTNode*) $1);
 			YYABORT;
 		}
-
-		g_compiler->set_syntax_tree_root(new ast::Program((ast::Scope*)$1)); 
+		
+		g_compiler->set_syntax_tree_root(new ast::Program((ast::Scope*)$1, location(@$))); 
 	}
 ;
 
 /* Scope containing sushi++ code */
 
 scope:
-  program-element           { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1)); }
-| program-element DELIM_EOL { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1)); }
+  program-element           { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1, location(@$))); }
+| program-element DELIM_EOL { $$ = (void*) (new ast::Scope((ast::ASTNode*)$1, location(@$))); }
 | program-element DELIM_EOL scope
 	{
 		ast::Scope* scope = ((ast::Scope*)$3);
@@ -226,16 +231,18 @@ declaration:
 
 /* variable declaration */
 decl-vars:
-  decl-var { $$ = (void*) (new ast::DeclVars((ast::DeclVar*)$1, curr_loc())); }
+  decl-var { $$ = (void*) (new ast::DeclVars((ast::DeclVar*)$1, location(@$))); }
 | decl-var ',' decl-vars
 	{
 		ast::DeclVars* decl = ((ast::DeclVars*)$3);
+		decl->set_location(location(@$));
 		decl->add_variable((ast::DeclVar*)$1);
 		$$ = (void*) decl;
 	}
 | decl-var ',' DELIM_EOL decl-vars
 	{
 		ast::DeclVars* decl = ((ast::DeclVars*)$4);
+		decl->set_location(location(@$));
 		decl->add_variable((ast::DeclVar*)$1);
 		$$ = (void*) decl;
 	}
@@ -244,16 +251,16 @@ decl-vars:
 decl-var:
   IDENTIFIER
 	{
-		$$ = (void*) (new ast::DeclVar(new ast::Identifier(*$1, curr_loc())));
+		$$ = (void*) (new ast::DeclVar(new ast::Identifier(*$1, location(@1)), location(@$)));
 		
 		// delete the memory allocated for the string
 		delete $1;
 	}
 | IDENTIFIER '=' expression
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$3, curr_loc());
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		$$ = (void*) (new ast::DeclVar(iden, expr, curr_loc()));
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$3, location(@3));
+		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));
+		$$ = (void*) (new ast::DeclVar(iden, expr, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -279,10 +286,10 @@ decl-var:
 decl-func:
   IDENTIFIER param-list ':' scope DELIM_EOS
 	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
+		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));
 		ast::ParamList* params = ((ast::ParamList*)$2);
 		ast::Scope* scope = ((ast::Scope*)$4);
-		$$ = (void*) (new ast::DeclFunc(iden, params, scope, curr_loc()));
+		$$ = (void*) (new ast::DeclFunc(iden, params, scope, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -298,10 +305,11 @@ param-list:
 | param param-list
 	{
 		if(!$2)
-			$$ = (void*) (new ast::ParamList((ast::Param*)$1, curr_loc()));
+			$$ = (void*) (new ast::ParamList((ast::Param*)$1, location(@$)));
 		else
 		{
 			ast::ParamList* params = ((ast::ParamList*)$2);
+			params->set_location(location(@$));
 			params->add_param((ast::Param*)$1);
 			$$ = (void*) params;
 		}
@@ -311,8 +319,8 @@ param-list:
 param:
   IDENTIFIER
 	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		$$ = (void*) (new ast::Param(iden, curr_loc()));
+		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));
+		$$ = (void*) (new ast::Param(iden, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -320,8 +328,8 @@ param:
 | IDENTIFIER '<' IDENTIFIER '>'
 	{
 		// get the type 
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		ast::Type* type = get_type_node(*$3);
+		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));
+		ast::Type* type = get_type_node(*$3, location(@3));
 
 		if(!type)
 		{
@@ -341,7 +349,7 @@ param:
 			$$ = (void*) (new ast::ErrorNode);
 		}
 		else
-			$$ = (void*) (new ast::Param(iden, type, curr_loc()));
+			$$ = (void*) (new ast::Param(iden, type, location(@$)));
 
 
 		// delete the memory allocated for the string
@@ -357,9 +365,9 @@ param:
 func-call:
   KEYWORD_CALL IDENTIFIER arg-list
 	{
-		ast::Identifier* iden = new ast::Identifier(*$2, curr_loc());
+		ast::Identifier* iden = new ast::Identifier(*$2, location(@2));
 		ast::ArgList* arglist = ((ast::ArgList*)$3);
-		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
+		$$ = (void*) (new ast::FuncCall(iden, arglist, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $2;
@@ -379,10 +387,11 @@ arg-list:
 | argument arg-list
 	{
 		if(!$2)
-			$$ = (void*) (new ast::ArgList(((ast::Argument*)$1),curr_loc()));
+			$$ = (void*) (new ast::ArgList(((ast::Argument*)$1),location(@$)));
 		else
 		{
 			ast::ArgList* arglist = ((ast::ArgList*)$2);
+			arglist->set_location(location(@$));
 			arglist->add_argument(((ast::Argument*)$1));;
 			$$ = (void*) arglist;
 		}
@@ -392,24 +401,24 @@ arg-list:
 argument:
   IDENTIFIER
 	{
-		ast::Identifier* iden = new ast::Identifier(*$1, curr_loc());
-		$$ = (void*) (new ast::Argument(iden, curr_loc()));
+		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));
+		$$ = (void*) (new ast::Argument(iden, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $1;
 	}
-| constant { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
-| datastructure { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
+| constant { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, location(@$))); }
+| datastructure { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, location(@$))); }
 | '(' expression ')'
 	{
 		// as the expression rule does not return an expression but the actual expression tree,
 		// we create the expression node here
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
-		$$ = (void*) (new ast::Argument(expr, curr_loc()));
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
+		$$ = (void*) (new ast::Argument(expr, location(@$)));
 	}
-| soy-expression       { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
-| datastructure-access { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
-| braced-func-call     { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, curr_loc())); }
+| soy-expression       { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, location(@$))); }
+| datastructure-access { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, location(@$))); }
+| braced-func-call     { $$ = (void*) (new ast::Argument((ast::ASTNode*)$1, location(@$))); }
 | error
 	{
 		$$ = (void*) (new ast::ErrorNode);
@@ -432,9 +441,9 @@ braced-func-call:
 func-call-eol:
   KEYWORD_CALL IDENTIFIER arg-list-eol
 	{
-		ast::Identifier* iden = new ast::Identifier(*$2, curr_loc());
+		ast::Identifier* iden = new ast::Identifier(*$2, location(@2));
 		ast::ArgList* arglist = ((ast::ArgList*)$3);
-		$$ = (void*) (new ast::FuncCall(iden, arglist, curr_loc()));
+		$$ = (void*) (new ast::FuncCall(iden, arglist, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $2;
@@ -456,10 +465,11 @@ arg-list-eol:
 		ast::ArgList* arglist;
 
 		if($2 == nullptr)
-			arglist = new ast::ArgList(((ast::Argument*)$1),curr_loc()); 
+			arglist = new ast::ArgList(((ast::Argument*)$1),location(@$)); 
 		else 
 		{	
 			arglist = ((ast::ArgList*)$2);
+			arglist->set_location(location(@$));
 			arglist->add_argument(((ast::Argument*)$1));;
 		}
 		
@@ -470,10 +480,11 @@ arg-list-eol:
 		ast::ArgList* arglist;
 
 		if($3 == nullptr)
-			arglist = new ast::ArgList(((ast::Argument*)$1),curr_loc()); 
+			arglist = new ast::ArgList(((ast::Argument*)$1),location(@$)); 
 		else 
 		{	
 			arglist = ((ast::ArgList*)$3);
+			arglist->set_location(location(@$));
 			arglist->add_argument(((ast::Argument*)$1));
 		}
 
@@ -491,7 +502,7 @@ soy-func:
 	{
 		ast::ParamList* params = ((ast::ParamList*)$2);
 		ast::Scope* scope = ((ast::Scope*)$4);
-		$$ = (void*) (new ast::SoyFunc(params, scope, curr_loc()));
+		$$ = (void*) (new ast::SoyFunc(params, scope, location(@$)));
 	}
 ;
 
@@ -503,7 +514,7 @@ expression:
 | '(' expression ')' { $$ = $2; }
 | IDENTIFIER
 	{
-		$$ = new ast::Identifier(*$1, curr_loc());
+		$$ = new ast::Identifier(*$1, location(@1));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -514,50 +525,50 @@ expression:
 | incr-expression                     { $$ = $1; }
 | assignment                          { $$ = $1; }
 | braced-func-call                    { $$ = $1; }
-| expression '+' expression           { $$ = (void*) (new ast::Op_Plus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '-' expression           { $$ = (void*) (new ast::Op_Minus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '*' expression           { $$ = (void*) (new ast::Op_Mult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '/' expression           { $$ = (void*) (new ast::Op_Div(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '%' expression           { $$ = (void*) (new ast::Op_Modulo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_ARITH_EXPO expression { $$ = (void*) (new ast::Op_Exponentiation(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| '-' expression %prec UNARY_MINUS    { $$ = (void*) (new ast::Op_UnaryMinus(((ast::ASTNode*)$2), curr_loc())); }
-| expression '|' expression           { $$ = (void*) (new ast::Op_BitwiseOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '&' expression           { $$ = (void*) (new ast::Op_BitwiseAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '^' expression           { $$ = (void*) (new ast::Op_BitwiseXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| '~' expression                      { $$ = (void*) (new ast::Op_BitwiseNot(((ast::ASTNode*)$2), curr_loc())); }
-| expression OP_LOGIC_OR expression   { $$ = (void*) (new ast::Op_LogicalOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_LOGIC_AND expression  { $$ = (void*) (new ast::Op_LogicalAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| '!' expression                      { $$ = (void*) (new ast::Op_LogicalNot(((ast::ASTNode*)$2), curr_loc())); }
-| expression '<' expression           { $$ = (void*) (new ast::Op_CompLessThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '>' expression           { $$ = (void*) (new ast::Op_CompGreaterThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_COMP_LEQ expression   { $$ = (void*) (new ast::Op_CompLessEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_COMP_GEQ expression   { $$ = (void*) (new ast::Op_CompGreaterEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_COMP_EQ  expression   { $$ = (void*) (new ast::Op_CompEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_COMP_NEQ expression   { $$ = (void*) (new ast::Op_CompNotEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_LSHIFT expression     { $$ = (void*) (new ast::Op_RightShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression OP_RSHIFT expression     { $$ = (void*) (new ast::Op_LeftShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| expression '.' expression           { $$ = (void*) (new ast::Op_StringConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+| expression '+' expression           { $$ = (void*) (new ast::Op_Plus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '-' expression           { $$ = (void*) (new ast::Op_Minus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '*' expression           { $$ = (void*) (new ast::Op_Mult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '/' expression           { $$ = (void*) (new ast::Op_Div(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '%' expression           { $$ = (void*) (new ast::Op_Modulo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_ARITH_EXPO expression { $$ = (void*) (new ast::Op_Exponentiation(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| '-' expression %prec UNARY_MINUS    { $$ = (void*) (new ast::Op_UnaryMinus(((ast::ASTNode*)$2), location(@$))); }
+| expression '|' expression           { $$ = (void*) (new ast::Op_BitwiseOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '&' expression           { $$ = (void*) (new ast::Op_BitwiseAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '^' expression           { $$ = (void*) (new ast::Op_BitwiseXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| '~' expression                      { $$ = (void*) (new ast::Op_BitwiseNot(((ast::ASTNode*)$2), location(@$))); }
+| expression OP_LOGIC_OR expression   { $$ = (void*) (new ast::Op_LogicalOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_LOGIC_AND expression  { $$ = (void*) (new ast::Op_LogicalAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| '!' expression                      { $$ = (void*) (new ast::Op_LogicalNot(((ast::ASTNode*)$2), location(@$))); }
+| expression '<' expression           { $$ = (void*) (new ast::Op_CompLessThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '>' expression           { $$ = (void*) (new ast::Op_CompGreaterThan(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_COMP_LEQ expression   { $$ = (void*) (new ast::Op_CompLessEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_COMP_GEQ expression   { $$ = (void*) (new ast::Op_CompGreaterEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_COMP_EQ  expression   { $$ = (void*) (new ast::Op_CompEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_COMP_NEQ expression   { $$ = (void*) (new ast::Op_CompNotEqual(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_LSHIFT expression     { $$ = (void*) (new ast::Op_RightShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression OP_RSHIFT expression     { $$ = (void*) (new ast::Op_LeftShift(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| expression '.' expression           { $$ = (void*) (new ast::Op_StringConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
 ;
 
 incr-expression:
-  OP_ARITH_INCR assignable-expression %prec PREFIX_INCR { $$ = (void*) (new ast::Op_PrefixIncrement(((ast::ASTNode*)$2), curr_loc())); }
-| OP_ARITH_DECR assignable-expression %prec PREFIX_DECR { $$ = (void*) (new ast::Op_PrefixDecrement(((ast::ASTNode*)$2), curr_loc())); }
-| assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR { $$ = (void*) (new ast::Op_PostfixIncrement(((ast::ASTNode*)$1), curr_loc())); }
-| assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR { $$ = (void*) (new ast::Op_PostfixDecrement(((ast::ASTNode*)$1), curr_loc())); }
+  OP_ARITH_INCR assignable-expression %prec PREFIX_INCR { $$ = (void*) (new ast::Op_PrefixIncrement(((ast::ASTNode*)$2), location(@$))); }
+| OP_ARITH_DECR assignable-expression %prec PREFIX_DECR { $$ = (void*) (new ast::Op_PrefixDecrement(((ast::ASTNode*)$2), location(@$))); }
+| assignable-expression OP_ARITH_INCR %prec SUFFIX_INCR { $$ = (void*) (new ast::Op_PostfixIncrement(((ast::ASTNode*)$1), location(@$))); }
+| assignable-expression OP_ARITH_DECR %prec SUFFIX_DECR { $$ = (void*) (new ast::Op_PostfixDecrement(((ast::ASTNode*)$1), location(@$))); }
 ;
 
 assignment:
-  assignable-expression '=' expression              { $$ = (void*) (new ast::Op_Assignment(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_PLUS expression   { $$ = (void*) (new ast::Op_AssignPlus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_MINUS expression  { $$ = (void*) (new ast::Op_AssignMinus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_MULT expression   { $$ = (void*) (new ast::Op_AssignMult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_DIV expression    { $$ = (void*) (new ast::Op_AssignDiv(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_EXPO expression   { $$ = (void*) (new ast::Op_AssignExpo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_MOD expression    { $$ = (void*) (new ast::Op_AssignMod(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_AND expression    { $$ = (void*) (new ast::Op_AssignAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_OR expression     { $$ = (void*) (new ast::Op_AssignOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_XOR expression    { $$ = (void*) (new ast::Op_AssignXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
-| assignable-expression OP_ASSIGN_CONCAT expression { $$ = (void*) (new ast::Op_AssignConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), curr_loc())); }
+  assignable-expression '=' expression              { $$ = (void*) (new ast::Op_Assignment(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_PLUS expression   { $$ = (void*) (new ast::Op_AssignPlus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_MINUS expression  { $$ = (void*) (new ast::Op_AssignMinus(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_MULT expression   { $$ = (void*) (new ast::Op_AssignMult(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_DIV expression    { $$ = (void*) (new ast::Op_AssignDiv(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_EXPO expression   { $$ = (void*) (new ast::Op_AssignExpo(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_MOD expression    { $$ = (void*) (new ast::Op_AssignMod(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_AND expression    { $$ = (void*) (new ast::Op_AssignAnd(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_OR expression     { $$ = (void*) (new ast::Op_AssignOr(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_XOR expression    { $$ = (void*) (new ast::Op_AssignXor(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
+| assignable-expression OP_ASSIGN_CONCAT expression { $$ = (void*) (new ast::Op_AssignConcat(((ast::ASTNode*)$1), ((ast::ASTNode*)$3), location(@$))); }
 ;
 
 /* A modifying expression is an expression that could bring about
@@ -565,10 +576,10 @@ assignment:
  * expressions that can be as such in a program (see program-element rule)
  */
 modifying-expression:
-  assignment       { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
-| incr-expression  { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
-| braced-func-call { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
-| func-call        { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, curr_loc())); }
+  assignment       { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, location(@$))); }
+| incr-expression  { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, location(@$))); }
+| braced-func-call { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, location(@$))); }
+| func-call        { $$ = (void*) (new ast::ModifyingExpression((ast::ASTNode*)$1, location(@$))); }
 ;
 
 /* An assignable expression is an expression that represents a
@@ -577,7 +588,7 @@ modifying-expression:
 assignable-expression:
   IDENTIFIER
     {
-		$$ = new ast::Identifier(*$1, curr_loc());
+		$$ = new ast::Identifier(*$1, location(@1));
 
 		// delete the memory allocated for the string
 		delete $1;
@@ -588,7 +599,9 @@ assignable-expression:
 datastructure-access: 
   IDENTIFIER '[' expression ']'
     {
-		$$ = (void*) (new ast::DatastructureAccess(new ast::Identifier(*$1, curr_loc()), new ast::Expression((ast::ASTNode*)$3, curr_loc()), curr_loc()));
+		$$ = (void*) (new ast::DatastructureAccess(new ast::Identifier(*$1, location(@1)), 
+					    						   new ast::Expression((ast::ASTNode*)$3, location(@3)), 
+					    						   location(@$)));
 
 		// delete allocated string
 		delete $1;
@@ -599,12 +612,13 @@ datastructure-access:
 expression-list:
   expression
 	{
-		$$ = (void*) (new ast::ExpressionList(new ast::Expression((ast::ASTNode*)$1, curr_loc()), curr_loc()));
+		$$ = (void*) (new ast::ExpressionList(new ast::Expression((ast::ASTNode*)$1, location(@1)), location(@$)));
 	}
 | expression ',' expression-list
 	{
 		ast::ExpressionList* expression_list = (ast::ExpressionList*)$3;
-		ast::Expression* expression = new ast::Expression((ast::ASTNode*)$1, curr_loc());
+		ast::Expression* expression = new ast::Expression((ast::ASTNode*)$1, location(@1));
+		expression->set_location(location(@$));
 		expression_list->add_expression(expression);
 
 		$$ = (void*) expression_list;
@@ -617,35 +631,35 @@ expression-list:
 constant:
   CONST_INT
     {
-		$$ = (void*) (new ast::Integer(*$1, curr_loc()));
+		$$ = (void*) (new ast::Integer(*$1, location(@1)));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_FLOAT
     {
-		$$ = (void*) (new ast::Float(*$1, curr_loc()));
+		$$ = (void*) (new ast::Float(*$1, location(@1)));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_STRING
     {
-		$$ = (void*) (new ast::String(*$1, curr_loc()));
+		$$ = (void*) (new ast::String(*$1, location(@1)));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_BOOL
     {
-		$$ = (void*) (new ast::Bool(*$1, curr_loc()));
+		$$ = (void*) (new ast::Bool(*$1, location(@1)));
 
 		// delete allocated string
 		delete $1;
 	}
 | CONST_CHAR
     {
-		$$ = (void*) (new ast::Character(*$1, curr_loc()));
+		$$ = (void*) (new ast::Character(*$1, location(@1)));
 
 		// delete allocated string
 		delete $1;
@@ -664,22 +678,22 @@ datastructure:
 array:
   DELIM_ARRAY_BEG DELIM_ARRAY_END /* empty array */
     {
-		$$ = (void*) (new ast::Array(curr_loc()));
+		$$ = (void*) (new ast::Array(location(@$)));
 	}
 | DELIM_ARRAY_BEG expression-list DELIM_ARRAY_END
     {
-		$$ = (void*) (new ast::Array((ast::ASTNode*)$2, curr_loc()));
+		$$ = (void*) (new ast::Array((ast::ASTNode*)$2, location(@$)));
 	}
 ;
 
 list:
   '{' '}' /* empty list */
     {
-		$$ = (void*) (new ast::List(curr_loc()));
+		$$ = (void*) (new ast::List(location(@$)));
 	}
 | '{' expression-list '}'
     {
-		$$ = (void*) (new ast::List((ast::ASTNode*)$2, curr_loc()));
+		$$ = (void*) (new ast::List((ast::ASTNode*)$2, location(@$)));
 	}
 ;
 
@@ -695,7 +709,7 @@ make-sequence-list:
   '{' seq-expression '}'
 	{
 		ExpressionPair* exp_pair = (ExpressionPair*) $2;
-		$$ = (void*) (new ast::MakeSequenceList(exp_pair->first, exp_pair->second, curr_loc()));
+		$$ = (void*) (new ast::MakeSequenceList(exp_pair->first, exp_pair->second, location(@$)));
 		delete exp_pair;
 	}
 ;
@@ -704,7 +718,7 @@ make-sequence-array:
   DELIM_ARRAY_BEG seq-expression DELIM_ARRAY_END
 	{
 		ExpressionPair* exp_pair = (ExpressionPair*) $2;
-		$$ = (void*) (new ast::MakeSequenceArray(exp_pair->first, exp_pair->second, curr_loc()));
+		$$ = (void*) (new ast::MakeSequenceArray(exp_pair->first, exp_pair->second, location(@$)));
 		delete exp_pair;
 	}
 ;
@@ -713,8 +727,8 @@ make-sequence-array:
 seq-expression: 
   expression KEYWORD_TO expression
 	{
-		ast::Expression *expr1 = new ast::Expression((ast::ASTNode*)$1, curr_loc()), 
-						*expr2 = new ast::Expression((ast::ASTNode*)$3, curr_loc());
+		ast::Expression *expr1 = new ast::Expression((ast::ASTNode*)$1, location(@1)), 
+						*expr2 = new ast::Expression((ast::ASTNode*)$3, location(@3));
 		ExpressionPair* exp_pair = new ExpressionPair(expr1, expr2);
 		$$ = (void*) exp_pair;
 	}
@@ -727,8 +741,8 @@ statement:
   return           { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
 | menu             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
 | loop             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
-| KEYWORD_CONTINUE { $$ = (void*) (new ast::Statement(new ast::K_Continue)); }
-| KEYWORD_BREAK    { $$ = (void*) (new ast::Statement(new ast::K_Break)); }
+| KEYWORD_CONTINUE { $$ = (void*) (new ast::Statement(new ast::K_Continue(location(@1)), location(@$))); }
+| KEYWORD_BREAK    { $$ = (void*) (new ast::Statement(new ast::K_Break(location(@1)), location(@$))); }
 | conditional      { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
 ;
 
@@ -736,12 +750,12 @@ statement:
 return:
   KEYWORD_NORI
 	{
-		$$ = (void*) (new ast::Return(curr_loc()));
+		$$ = (void*) (new ast::Return(location(@$)));
 	}
 | KEYWORD_NORI expression
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2);
-		$$ = (void*) (new ast::Return(expr, curr_loc()));
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
+		$$ = (void*) (new ast::Return(expr, location(@$)));
 	}
 ;
 
@@ -749,9 +763,9 @@ return:
 menu: 
   KEYWORD_MENU expression DELIM_EOL menu-body DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2);
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::MenuBody* menu_body = ((ast::MenuBody*)$4);
-		$$ = (void*) (new ast::Menu(menu_body, expr, curr_loc()));
+		$$ = (void*) (new ast::Menu(menu_body, expr, location(@$)));
 	}
 ;
 
@@ -759,12 +773,12 @@ menu-body:
   menu-def DELIM_EOL
 	{
 		ast::MenuDef* menu_def = ((ast::MenuDef*)$1);
-		$$ = (void*) (new ast::MenuBody(menu_def, curr_loc()));
+		$$ = (void*) (new ast::MenuBody(menu_def, location(@$)));
 	}
 | menu-case DELIM_EOL
 	{
 		ast::MenuCase* menu_case = ((ast::MenuCase*)$1);
-		$$ = (void*) (new ast::MenuBody(menu_case, curr_loc()));
+		$$ = (void*) (new ast::MenuBody(menu_case, location(@$)));
 	}
 | menu-case DELIM_EOL menu-body
 	{
@@ -778,9 +792,9 @@ menu-body:
 menu-case: 
   expression DELIM_ARROW scope DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$1, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$1, location(@1));
 		ast::Scope* scope = ((ast::Scope*)$3);
-		$$ = (void*) (new ast::MenuCase(scope, expr, curr_loc()));
+		$$ = (void*) (new ast::MenuCase(scope, expr, location(@$)));
 	}
 ;
 
@@ -788,7 +802,7 @@ menu-def:
  '_' DELIM_ARROW scope DELIM_EOS
 	{
 		ast::Scope* scope = ((ast::Scope*)$3);
-		$$ = (void*) (new ast::MenuDef(scope, curr_loc()));
+		$$ = (void*) (new ast::MenuDef(scope, location(@$)));
 	}
 ;
 
@@ -805,9 +819,9 @@ loop :
 roll : 
   KEYWORD_ROLL expression DELIM_EOL scope DELIM_EOS 
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		$$ = (void*) (new ast::Roll(expr, scope, curr_loc()));
+		$$ = (void*) (new ast::Roll(expr, scope, location(@$)));
 	}
 ;
 
@@ -817,10 +831,10 @@ roll :
 foreach: 
   KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$6);
-		ast::Identifier* id = new ast::Identifier(*$4, curr_loc());
-		$$ = (void*) (new ast::Foreach(expr, id, scope, curr_loc()));
+		ast::Identifier* id = new ast::Identifier(*$4, location(@4));
+		$$ = (void*) (new ast::Foreach(expr, id, scope, location(@$)));
 
 		// delete the memory allocated for the string
 		delete $4;
@@ -839,59 +853,59 @@ for:
   KEYWORD_FOR for-initializer ',' expression ',' for-update DELIM_EOL scope DELIM_EOS
 	{	
 		ast::ForInitializer* initializer = ((ast::ForInitializer*)$2);
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$4, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$4, location(@4));
 		ast::ForUpdate* update = ((ast::ForUpdate*)$6);
 		ast::Scope* scope = ((ast::Scope*)$8);
-		$$ = (void*) (new ast::For(initializer, expr, update, scope, curr_loc()));
+		$$ = (void*) (new ast::For(initializer, expr, update, scope, location(@$)));
 	}
 ;
 
 for-initializer:
   %empty     { $$ = nullptr; }
-| assignment { $$ = (void*) (new ast::ForInitializer((ast::ASTNode*)$1, curr_loc())); }
+| assignment { $$ = (void*) (new ast::ForInitializer((ast::ASTNode*)$1, location(@$))); }
 ;
 
 for-update:
   %empty               { $$ = nullptr; }
-| modifying-expression { $$ = (void*) (new ast::ForUpdate((ast::ASTNode*)$1, curr_loc())); }
+| modifying-expression { $$ = (void*) (new ast::ForUpdate((ast::ASTNode*)$1, location(@$))); }
 ;
 
 /* Conditionnal */
 conditional:
   KEYWORD_IF expression DELIM_EOL scope DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::If* if_node = new ast::If(expr, scope, curr_loc());
-		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), nullptr, curr_loc()));
+		ast::If* if_node = new ast::If(expr, scope, location2(@1, @4));
+		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), nullptr, location(@$)));
 	}
 | KEYWORD_IF expression DELIM_EOL scope else DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		ast::If* if_node = new ast::If(expr, scope, location2(@1, @4));
 		ast::Else* else_node = ((ast::Else*)$5);
-		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), else_node, curr_loc()));
+		$$ = (void*) (new ast::Conditional(if_node, std::list<ast::Elseif*>(), else_node, location(@$)));
 	}
 | KEYWORD_IF expression DELIM_EOL scope elseif DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		ast::If* if_node = new ast::If(expr, scope, location2(@1, @4));
 		std::list<ast::Elseif*>* elsif_list = ((std::list<ast::Elseif*>*)$5);
-		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, nullptr, curr_loc()));
+		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, nullptr, location(@$)));
 		
 		// delete the list
 		delete elsif_list;
 	}
 | KEYWORD_IF expression DELIM_EOL scope elseif else DELIM_EOS
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::If* if_node = new ast::If(expr, scope, curr_loc());
+		ast::If* if_node = new ast::If(expr, scope, location2(@1, @4));
 		ast::Else* else_node = ((ast::Else*)$6);
 		std::list<ast::Elseif*>* elsif_list = ((std::list<ast::Elseif*>*)$5);
-		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, else_node, curr_loc()));
+		$$ = (void*) (new ast::Conditional(if_node, *elsif_list, else_node, location(@$)));
 		
 		// delete the list
 		delete elsif_list;
@@ -902,9 +916,9 @@ conditional:
 elseif:
   KEYWORD_ELSEIF expression DELIM_EOL scope
 	{
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@$));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::Elseif* elseif = new ast::Elseif(expr, scope, curr_loc());
+		ast::Elseif* elseif = new ast::Elseif(expr, scope, location(@$));
 		std::list<ast::Elseif*>* elseif_list = new std::list<ast::Elseif*>();
 		elseif_list->push_front(elseif);
 		$$ = (void*) elseif_list;
@@ -912,9 +926,9 @@ elseif:
 | KEYWORD_ELSEIF expression DELIM_EOL scope elseif
 	{
 		// build the elsif
-		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, curr_loc());
+		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@$));
 		ast::Scope* scope = ((ast::Scope*)$4);
-		ast::Elseif* elseif = new ast::Elseif(expr, scope, curr_loc());
+		ast::Elseif* elseif = new ast::Elseif(expr, scope, location(@$));
 		// add it to the list
 		std::list<ast::Elseif*>* elseif_list = ((std::list<ast::Elseif*>*)$5);
 		elseif_list->push_front(elseif);
@@ -926,7 +940,7 @@ else:
   KEYWORD_ELSE scope 
 	{
 		ast::Scope* scope = ((ast::Scope*)$2);
-		$$ = (void*) (new ast::Else(scope, curr_loc()));
+		$$ = (void*) (new ast::Else(scope, location(@$)));
 	}
 ;
 
@@ -947,37 +961,31 @@ static std::string curr_line_row()
 	return ss.str();
 }
 
-static ast::Type* get_type_node(const std::string& type_string)
+static ast::Type* get_type_node(const std::string& type_string, const ast::NodeLocation& loc)
 {
 	if(!type_string.compare("int"))
-		return new ast::Type_Int(curr_loc());
+		return new ast::Type_Int(loc);
 	else if(!type_string.compare("bool"))
-		return new ast::Type_Bool(curr_loc());
+		return new ast::Type_Bool(loc);
 	else if(!type_string.compare("float"))
-		return new ast::Type_Float(curr_loc());
+		return new ast::Type_Float(loc);
 	else if(!type_string.compare("string"))
-		return new ast::Type_String(curr_loc());
+		return new ast::Type_String(loc);
 	else if(!type_string.compare("list"))
-		return new ast::Type_List(curr_loc());
+		return new ast::Type_List(loc);
 	else if(!type_string.compare("array"))
-		return new ast::Type_Array(curr_loc());
+		return new ast::Type_Array(loc);
 	else if(!type_string.compare("function"))
-		return new ast::Type_Function(curr_loc());
+		return new ast::Type_Function(loc);
 	else return nullptr;
 }
 
-/*
-static void add_error(std::string context, std::string desc)
+static ast::NodeLocation location(struct YYLTYPE loc)
 {
-	errors::ErrorHandler& error_handler = g_compiler->get_error_handler();
-	error_handler.add_synt_error(context, yylloc.first_line, yylloc.first_column, desc);
-	yyerror(desc.c_str());
-}
-*/
-
-ast::NodeLocation curr_loc()
-{
-	ast::NodeLocation loc(yylloc.first_line, yylloc.last_line, yylloc.first_column, yylloc.last_column);
-	return loc;
+	return ast::NodeLocation(loc.first_line, loc.last_line, loc.first_column, loc.last_column);
 }
 
+static ast::NodeLocation location2(struct YYLTYPE loc1, struct YYLTYPE loc2)
+{
+	return ast::NodeLocation(loc1.first_line, loc2.last_line, loc1.first_column, loc2.last_column);
+}

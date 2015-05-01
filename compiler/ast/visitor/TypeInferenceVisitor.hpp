@@ -7,13 +7,20 @@
 #include "ASTVisitor.hpp"
 #include "VisitorParameters.hpp"
 #include "../../inference/TypeSymbolTable.hpp"
+#include "../../symb/SymbolTable.hpp"
+#include "../../symb/SymbolInfo.hpp"
 
 namespace visitor
 {
 	class TypeInferenceVisitor : public ASTVisitor
 	{
 	public:
-		TypeInferenceVisitor();
+		/**
+		 * @brief Construct tthe TypeInferenceVisitor with the symbol tables
+		 * @param symb::SymbolTable<symb::FunctionInfo>& function_table The function table
+		 * @param symb::SymbolTable<symb::VariableInfo>& variable_table The variable talble
+		 */
+		TypeInferenceVisitor(symb::SymbolTable<symb::FunctionInfo>&, symb::SymbolTable<symb::VariableInfo>&);
 
 		/****************
 		 * 		Node    *
@@ -174,6 +181,11 @@ namespace visitor
 		VisitorParameters<std::string> params;
 		size_t current_scope;
 
+		/**
+		 * Symbol tables
+		 */
+		symb::SymbolTable<symb::FunctionInfo>& function_table;
+		symb::SymbolTable<symb::VariableInfo>& variable_table;
 
 		/**
 		 * @brief Update the symbol table for a function declaration (either named or anonymous)

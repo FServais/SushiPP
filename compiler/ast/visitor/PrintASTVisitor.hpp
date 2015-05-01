@@ -162,7 +162,10 @@ namespace visitor
 		size_t curr_depth;
 
 		void print_pair( std::string& p_name, std::string& p_value );
+		void print_pair( std::string& p_name, std::string& p_value, const ast::NodeLocation& );
 		void print_single( std::string& name );
+		void print_single( std::string& name, const ast::NodeLocation& );
+		void print_single_and_go( ast::ASTNode& );
 	};	
 }
 

@@ -39,7 +39,7 @@ void SppCompiler::execute()
 		init();
 		parse();
 		scope_checking();
-		//inference();
+		inference();
 		terminate();
 	}
 }
@@ -124,7 +124,7 @@ void SppCompiler::inference()
 	if(error_handler.error_occurred())
 		return;
 	
-	visitor::TypeInferenceVisitor visitor;
+	visitor::TypeInferenceVisitor visitor(function_table, variable_table);
 	syntax_tree.root().accept(visitor);
 	cout << endl << visitor.get_table() << endl << endl;
 }
