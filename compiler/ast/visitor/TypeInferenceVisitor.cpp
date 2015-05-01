@@ -1,6 +1,7 @@
 #include "TypeInferenceVisitor.hpp"
 
 #include "../../inference/Types.hpp"
+#include "../../inference/InferenceExceptions.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -53,11 +54,7 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 	
 	cout << alpha << " - > " << id_type_name << endl;
 	
-	try {
-		type_table.unify(alpha, id_type_name);
-	} catch(except::UnificationException& e) {
-		error_handler.
-	}
+	type_table.unify(alpha, id_type_name);
 
 	params.ret();
 }
@@ -132,11 +129,31 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '+' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '+' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -151,11 +168,31 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '-' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '-' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -170,11 +207,31 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '*' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '*' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -189,11 +246,31 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '/' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '/' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -208,11 +285,31 @@ void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '%' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '%' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -230,11 +327,31 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+	
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '**' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta); 
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '**' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -249,7 +366,17 @@ void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
-	op.get_operand().accept(*this);
+	
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '-' unary operator's operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -264,11 +391,31 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '|' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '|' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -283,11 +430,31 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -302,11 +469,31 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '^' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '^' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -321,7 +508,17 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_operand().accept(*this);
+	
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '~' unary operator's operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -336,11 +533,31 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '||' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '||' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -355,11 +572,31 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&&' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&&' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -374,7 +611,17 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_operand().accept(*this);
+
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '!' unary operator's left operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -392,11 +639,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -414,11 +681,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -436,11 +723,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<=' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -458,11 +765,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>=' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -480,11 +807,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '==' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '==' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -502,11 +849,31 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 
 	params.add_param(beta);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '!=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '!=' operator's right operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -521,12 +888,32 @@ void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<<' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
-	
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '<<' operator's right operand : " + string(e.what()));
+	}
+
 	params.ret();
 }
 
@@ -540,11 +927,31 @@ void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>>' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '>>' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -559,11 +966,31 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '.' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '.' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -577,7 +1004,17 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
-	op.get_operand().accept(*this);
+
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '++' unary operator's operand : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -591,7 +1028,18 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
-	op.get_operand().accept(*this);
+
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '--' unary operator's operand : " + string(e.what()));
+	}
+
 	
 	params.ret();
 }
@@ -605,7 +1053,17 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
-	op.get_operand().accept(*this);
+
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '++' unary operator's operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -619,7 +1077,17 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
-	op.get_operand().accept(*this);
+
+	try 
+	{
+		op.get_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '--' unary operator's operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -632,11 +1100,31 @@ void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -652,11 +1140,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '+=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '+=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -672,11 +1180,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '-=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '-=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -692,11 +1220,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '*=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '*=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -712,11 +1260,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '/=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '/=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -736,11 +1304,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '**=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '**=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -756,11 +1344,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '%=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '%=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -776,11 +1384,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '&=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -796,11 +1424,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '|=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '|=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -816,11 +1464,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '^=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '^=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
@@ -835,11 +1503,31 @@ void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 
 	params.add_param(alpha);
 	params.call();
-	op.get_left_operand().accept(*this);
+
+	try 
+	{
+		op.get_left_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '.=' operator's left operand : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
-	op.get_right_operand().accept(*this);
+
+	try 
+	{
+		op.get_right_operand().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", op.get_location().first_line(), 
+									op.get_location().first_column(), 
+									"invalid type for the '.=' operator's right operand : " + string(e.what()));
+	}
 	
 	params.ret();
 }
