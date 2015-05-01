@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-
+#include "../ast/nodes/NodeLocation.hpp"
 namespace symb
 {
 	/**
@@ -17,16 +17,20 @@ namespace symb
 		 * @param const std::string& name The variable name
 		 * @note The type is left undefined
 		 */
-		VariableInfo(const std::string&);
+		VariableInfo(const std::string&, ast::NodeLocation);
 
 		// getters 
 		const std::string& name() const { return name_; };
+		void is_used(){used = true;};
 
 		// setters
 
 	private:
 		std::string name_;
+		bool used;
+		ast::NodeLocation location;
 	};
+
 
 	/**
 	 * @class FunctionInfo
@@ -40,7 +44,7 @@ namespace symb
 		 * @param std::vector<VariableInfo>& params The functions VariableInfos info
 		 * @param Type return_type The return type of the function
 		 */
-		FunctionInfo(const std::string&, std::vector<VariableInfo>&);
+		FunctionInfo(const std::string&, std::vector<VariableInfo>&, ast::NodeLocation);
 
 		/**
 		 * @brief Construct an object containing the information of an ANONYMOUS (soy) function
@@ -48,7 +52,7 @@ namespace symb
 		 * @param Type return_type The return type of the function
 		 * @note A random name is generated. It can be obtained after construction with the 'name()' function
 		 */
-		FunctionInfo(std::vector<VariableInfo>&);
+		FunctionInfo(std::vector<VariableInfo>&, ast::NodeLocation);
 
 		// getters
 		const std::string& name() const { return name_; };
@@ -56,6 +60,7 @@ namespace symb
 		const VariableInfo& param(size_t i) const { return params_[i]; }; // get the ith VariableInfo
 		size_t nb_params() const { return params_.size(); };
 		bool is_anonymous() const { return anonymous_; };
+		void is_used(){used = true;};
 
 		// setters
 
@@ -64,6 +69,8 @@ namespace symb
 		std::string name_;
 		std::vector<VariableInfo>& params_;
 		bool anonymous_;
+		bool used;
+		ast::NodeLocation location;
 	};
 
 	

@@ -155,6 +155,9 @@ namespace visitor
 	private:
 		SymbolTable<FunctionInfo>& function_table;
 		SymbolTable<VariableInfo>& variable_table;
+
+
+
 			
 		void visit_children( ast::ASTNode& );
 	};

@@ -3,6 +3,14 @@
 using namespace except;
 using namespace std;
 
+
+RedefinedSymbolException::RedefinedSymbolException() 
+	: runtime_error("The symbol already exists in this scope.")
+{
+
+
+}
+
 UndefinedSymbolException::UndefinedSymbolException() 
 	: runtime_error("The symbol doesn't exist in the table.")
 {

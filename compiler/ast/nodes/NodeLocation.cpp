@@ -68,3 +68,4 @@ void NodeLocation::set_lines(int first_line, int last_line)
 	first_line_ = first_line;
 	last_line_ = last_line;
 }
+
