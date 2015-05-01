@@ -9,12 +9,14 @@ using namespace std;
 using namespace visitor;
 using namespace inference;
 using namespace symb;
+using namespace errors;
 
 #include <iostream>
 
-TypeInferenceVisitor::TypeInferenceVisitor(SymbolTable<FunctionInfo>& function_table_, 
+TypeInferenceVisitor::TypeInferenceVisitor(ErrorHandler& handler,
+										   SymbolTable<FunctionInfo>& function_table_, 
 										   SymbolTable<VariableInfo>& variable_table_) 
-  : current_scope(0), function_table(function_table_), variable_table(variable_table_)
+  : error_handler(handler), function_table(function_table_), variable_table(variable_table_), current_scope(0)
 {
 
 }

@@ -129,7 +129,7 @@ void SppCompiler::inference()
 	if(error_handler.error_occurred())
 		return;
 	
-	visitor::TypeInferenceVisitor visitor(function_table, variable_table);
+	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
 	syntax_tree.root().accept(visitor);
 	cout << endl << visitor.get_table() << endl << endl;
 }

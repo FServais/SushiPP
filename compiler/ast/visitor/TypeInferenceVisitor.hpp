@@ -9,6 +9,7 @@
 #include "../../inference/TypeSymbolTable.hpp"
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
+#include "../../errors/ErrorHandler.hpp"
 
 namespace visitor
 {
@@ -17,10 +18,11 @@ namespace visitor
 	public:
 		/**
 		 * @brief Construct tthe TypeInferenceVisitor with the symbol tables
+		 * @param errors::ErrorHandler& The error handler
 		 * @param symb::SymbolTable<symb::FunctionInfo>& function_table The function table
 		 * @param symb::SymbolTable<symb::VariableInfo>& variable_table The variable talble
 		 */
-		TypeInferenceVisitor(symb::SymbolTable<symb::FunctionInfo>&, symb::SymbolTable<symb::VariableInfo>&);
+		TypeInferenceVisitor(errors::ErrorHandler&, symb::SymbolTable<symb::FunctionInfo>&, symb::SymbolTable<symb::VariableInfo>&);
 
 		/****************
 		 * 		Node    *
@@ -173,10 +175,12 @@ namespace visitor
 
 	private:
 		/**
+		 * error_handler : the error handler
 		 * type_table : maps type identifiers and their actual value 
 		 * params     : an object for emulating parameters passing 
 		 * current_scope : the current scope id
 		 */
+		errors::ErrorHandler& error_handler;
 		inference::TypeSymbolTable type_table;
 		VisitorParameters<std::string> params;
 		size_t current_scope;
