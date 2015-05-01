@@ -34,7 +34,7 @@ void TypeInferenceVisitor::visit( ast::ASTNode& node )
 
 void TypeInferenceVisitor::visit( ast::Identifier& id )
 {
-	cout << "Identifier  _" << id.id() << endl << type_table << endl << endl;
+	cout << "Identifier  (" << id.id() << ")" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// unify alpha with the type of the identifier
@@ -58,68 +58,68 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 
 void TypeInferenceVisitor::visit( ast::K_Continue& cont )
 {
-	cout << "K_Continue" << endl << type_table << endl << endl;
-	params.ret(); // nothing to do (no type information)
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::K_Break& brk )
 {
-	cout << "K_Break" << endl << type_table << endl << endl;
-	params.ret(); // nothing to do (no type information)
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Int& type )
 {
-	cout << "Type_Int" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Float& type )
 {
-	cout << "Type_Float" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Char& type )
 {
-	cout << "Type_Char" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_String& type )
 {
-	cout << "Type_String" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Array& type )
 {
-	cout << "Type_Array" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_List& type )
 {
-	cout << "Type_List" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Bool& type )
 {
-	cout << "Type_Bool" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Function& type )
 {
-	cout << "Type_Function" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by the decl func node
+	// bypassed by the decl func node
+	throw std::logic_error("This node should be bypassed");
 }
-
+ 
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
 	cout << "Op_Plus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -138,7 +138,7 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 {
 	cout << "Op_Minus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -157,7 +157,7 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 {
 	cout << "Op_Mult" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -176,7 +176,7 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 void TypeInferenceVisitor::visit( ast::Op_Div& op )
 {
 	cout << "Op_Div" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -195,7 +195,7 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 {
 	cout << "Op_Modulo" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	type_table.unify_int(alpha); // module can only have integer operands
 
@@ -214,7 +214,7 @@ void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 {
 	cout << "Op_Exponentiation" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	
 	// base can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
@@ -236,7 +236,7 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 {
 	cout << "Op_UnaryMinus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// base can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
@@ -251,7 +251,7 @@ void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 {
 	cout << "Op_BitwiseOr" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -270,7 +270,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 {
 	cout << "Op_BitwiseAnd" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -289,7 +289,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 {
 	cout << "Op_BitwiseXor" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -308,7 +308,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 {
 	cout << "Op_BitwiseNot" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -323,7 +323,7 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 {
 	cout << "Op_LogicalOr" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// boolean operator expect boolean operands and return a boolean
 	type_table.unify_bool(alpha);
@@ -342,7 +342,7 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 {
 	cout << "Op_LogicalAnd" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// boolean operator expect boolean operands and return a boolean
 	type_table.unify_bool(alpha);
@@ -361,7 +361,7 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 {
 	cout << "Op_LogicalNot" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// boolean operator expect boolean operands and return a boolean
 	type_table.unify_bool(alpha);
@@ -376,7 +376,7 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 {
 	cout << "Op_CompLessThan" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -398,7 +398,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 {
 	cout << "Op_CompGreaterThan" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -420,7 +420,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 {
 	cout << "Op_CompLessEqual" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -442,7 +442,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 {
 	cout << "Op_CompGreaterEqual" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -464,7 +464,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 {
 	cout << "Op_CompEqual" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -486,7 +486,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 {
 	cout << "Op_CompNotEqual" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// comparison operators return a boolean 
 	type_table.unify_bool(alpha);
@@ -508,7 +508,7 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 {
 	cout << "Op_LeftShift" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -527,7 +527,7 @@ void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 {
 	cout << "Op_RightShift" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// bitwise operators applies on int and return int
 	type_table.unify_int(alpha);
@@ -546,10 +546,9 @@ void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 {
 	cout << "Op_StringConcat" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// string concatenation takes strings as operand and return string
-	cout << alpha << endl;
 	type_table.unify_string(alpha);
 
 	params.add_param(alpha);
@@ -566,7 +565,7 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 {
 	cout << "Op_PrefixIncrement" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	// operand can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -580,7 +579,7 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 {
 	cout << "Op_PrefixDecrement" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	// operand can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -594,7 +593,7 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 {
 	cout << "Op_PostfixIncrement" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	// operand can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -608,7 +607,7 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 {
 	cout << "Op_PostfixDecrement" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 	// operand can only be an integer or a float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
@@ -622,7 +621,7 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 {
 	cout << "Op_Assignment" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -639,7 +638,7 @@ void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 {
 	cout << "Op_AssignPlus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// operands must be either Float or Int
 	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
@@ -659,7 +658,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 {
 	cout << "Op_AssignMinus" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// operands must be either Float or Int
 	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
@@ -679,7 +678,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 {
 	cout << "Op_AssignMult" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// operands must be either Float or Int
 	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
@@ -699,7 +698,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 {
 	cout << "Op_AssignDiv" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// operands must be either Float or Int
 	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
@@ -719,7 +718,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 {
 	cout << "Op_AssignExpo" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// left operand can be either an float or an int
 	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
@@ -743,7 +742,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 {
 	cout << "Op_AssignMod" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// modulo op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -763,7 +762,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 {
 	cout << "Op_AssignAnd" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -783,7 +782,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 {
 	cout << "Op_AssignOr" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -803,7 +802,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 {
 	cout << "Op_AssignXor" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); 
+	string alpha = params.get_param(1); // type returned by the operator 
 
 	// bitwise op expects integer operands and return an integer
 	type_table.unify_int(alpha);
@@ -823,7 +822,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 {
 	cout << "Op_AssignConcat" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1);
+	string alpha = params.get_param(1); // type returned by the operator
 
 	// string concatenation takes strings as operand and return string
 	type_table.unify_string(alpha);
@@ -1038,14 +1037,14 @@ void TypeInferenceVisitor::visit( ast::DeclVar& declaration )
 
 void TypeInferenceVisitor::visit( ast::ParamList& param_list )
 {
-	cout << "ParamList" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by DelcFunc and SoyExpression 
+	// bypassed by DelcFunc and SoyExpression 
+	throw std::logic_error("This node should be bypassed"); 
 }
 
 void TypeInferenceVisitor::visit( ast::Param& param )
 {
-	cout << "Param" << endl << type_table << endl << endl;
-	params.ret(); // bypassed by DelcFunc and SoyExpression 
+	// bypassed by DelcFunc and SoyExpression 
+	throw std::logic_error("This node should be bypassed"); 
 }
 
 void TypeInferenceVisitor::visit( ast::Expression& expression )
@@ -1164,8 +1163,8 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 
 void TypeInferenceVisitor::visit( ast::ArgList& arg_list )
 {
-	cout << "ArgList" << endl << type_table << endl << endl;
-	params.ret(); // bypassed in the FuncCall visit
+	// bypassed by FuncCall
+	throw std::logic_error("This node should be bypassed"); 
 }
 
 void TypeInferenceVisitor::visit( ast::Argument& arg )

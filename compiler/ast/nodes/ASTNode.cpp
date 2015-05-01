@@ -129,8 +129,6 @@ void ASTNode::add_children(const std::vector<ASTNode*>& new_children)
 		add_child(child);
 }
 
-
-
 ASTNode* ASTNode::delete_child(size_t index)
 {
 	if(index >= children.size())
@@ -172,7 +170,6 @@ void ASTNode::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
-
 
 void ASTNode::free_node()
 {

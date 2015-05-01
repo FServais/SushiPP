@@ -68,10 +68,8 @@ namespace symb
 		 */
 		static size_t new_scope_id();
 
-
 		void print_table();
 		void print_child();
-
 
 		bool is_root();
 		size_t get_curr_scope_id(){return current_scope->get_id();}
