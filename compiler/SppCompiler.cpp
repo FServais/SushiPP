@@ -111,7 +111,7 @@ void SppCompiler::scope_checking()
 	syntax_tree.root().accept(visitor1);
 
 
-	visitor::SymbolTableVisitor visitor2(function_table, variable_table);
+	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(visitor2);
 
 	std::cout<<"FUNCTION TABLE"<<std::endl;
@@ -119,9 +119,6 @@ void SppCompiler::scope_checking()
 
 	std::cout<<"VARIABLE TABLE"<<std::endl;
 	variable_table.print_table();
-
-	//function_table.check_unused();
-	//variable_table.check_unused();
 }
 
 void SppCompiler::inference()

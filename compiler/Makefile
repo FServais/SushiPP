@@ -158,7 +158,7 @@ $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Visitor #
-$(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(DEP_EXCEP)
+$(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(DEP_EXCEP) $(DEP_ERRORS)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB)

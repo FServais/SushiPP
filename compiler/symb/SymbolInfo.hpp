@@ -23,6 +23,11 @@ namespace symb
 		const std::string& name() const { return name_; };
 		void is_used(){used = true;};
 
+		bool get_used(){return used;};
+		size_t get_line(){return location.first_line();};
+		size_t get_column(){return location.last_line();};
+
+
 		// setters
 
 	private:
@@ -61,6 +66,10 @@ namespace symb
 		size_t nb_params() const { return params_.size(); };
 		bool is_anonymous() const { return anonymous_; };
 		void is_used(){used = true;};
+		bool get_used(){return used;};
+		size_t get_line(){return location.first_line();};
+		size_t get_column(){return location.last_line();};
+
 
 		// setters
 

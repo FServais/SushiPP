@@ -148,6 +148,7 @@ namespace visitor
 	private:
 		symb::SymbolTable<symb::FunctionInfo>& function_table;
 		symb::SymbolTable<symb::VariableInfo>& variable_table;
+		
 
 
 		void visit_children( ast::ASTNode& );

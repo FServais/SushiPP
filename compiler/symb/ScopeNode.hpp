@@ -109,8 +109,20 @@ namespace symb
 		ScopeNode<S>& get_child(int pos);
 		const ScopeNode& get_child(int pos) const;
 
+		/**
+		 * @brief	print the symbols of the scope
+		 */
 		void print_scope();
-		void print_children();
+
+		/**
+		 * @brief returns the numbers of symbols in the scope
+		 */
+		size_t get_nb_symb(){return map.size();}
+
+		/**
+		 * @brief returns the symbol placed at index 
+		 */
+		S& get_symbol(size_t index);
 
 	private:
 		/**
@@ -132,14 +144,10 @@ namespace symb
 		void free_children();
 	};
 
-	template <class S>
-	void ScopeNode<S>::print_children()
+	template<class S>
+	S& ScopeNode<S>::get_symbol(size_t index)
 	{
-		std::cout << "Children of "<<scope_id<<std::endl;
-		for(ScopeNode* c : children)
-		{
-			std::cout<<" 	Node : "<<c->get_id()<<std::endl;
-		}
+		return next(map.begin(), index)->second;
 	}
 
 	template <class S>
@@ -245,9 +253,6 @@ namespace symb
 	template <class S>
 	size_t ScopeNode<S>::create_child_scope(size_t scope_id, int pos)
 	{
-
-
-
 		if(pos > ((int)children.size()) || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
 
