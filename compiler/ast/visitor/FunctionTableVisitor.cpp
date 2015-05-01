@@ -3,8 +3,8 @@
 using namespace visitor;
 
 // Constructor
-FunctionTableVisitor::FunctionTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fct_tab)
- : function_table(fct_tab)
+FunctionTableVisitor::FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab)
+ : function_table(fct_tab), variable_table(var_tab)
 { 
 	
 }
@@ -28,25 +28,28 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 		{
 			ast::Param& param = param_list.get_param(i);
 			std::string param_name = param.get_param_name();
+			symb::VariableInfo parameter(param_name, param.get_location());
+			params.push_back(parameter);
 
-			if(param.has_type())
-			{
-				symb::VariableInfo parameter(param_name);
-				params.push_back(parameter);
-
-			}
-			else 
-			{
-				symb::VariableInfo parameter(param_name);
-				params.push_back(parameter);
-			}
 		}
 	}
 	
-	symb::FunctionInfo fct_info(id, params);
+	symb::FunctionInfo fct_info(id, params, token.get_location());
 	function_table.add_symbol(id, fct_info);
+	std::cout<<id<<"ADDED IN FUNCTION TABLE"<<std::endl;
 	// continue visiting deeper
 	token.get_scope().accept(*this);
+	variable_table.move_to_scope(token.get_scope().get_scope_id());
+
+	for(symb::VariableInfo v : params)
+	{
+		std::cout<<v.name()<<"ADDED IN VARIABLE TABLE"<<std::endl;
+
+		variable_table.add_symbol(v.name(), v);	
+	}
+		
+
+	variable_table.move_to_parent_scope();
 }
 
 void FunctionTableVisitor::visit( ast::SoyFunc& token )
@@ -64,20 +67,13 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 			ast::Param& param = param_list.get_param(i);
 			std::string param_name = param.get_param_name();
 
-			if(param.has_type())
-			{
-				symb::VariableInfo parameter(param_name);
-				params.push_back(parameter);
-			}
-			else 
-			{
-				symb::VariableInfo parameter(param_name);
-				params.push_back(parameter);
-			}
+			symb::VariableInfo parameter(param_name, param.get_location());
+			params.push_back(parameter);
+			
 		}
 	}
 
-	symb::FunctionInfo fct_info(params);
+	symb::FunctionInfo fct_info(params, token.get_location());
 
 	std::string name = util::random_string(10)+"$";
 	
@@ -87,6 +83,14 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 	function_table.add_symbol(name, fct_info);
 	// continue visiting deeper
 	token.get_scope().accept(*this);
+
+	variable_table.move_to_scope(token.get_scope().get_scope_id());
+
+	for(symb::VariableInfo v : params)
+		variable_table.add_symbol(v.name(), v);
+
+	variable_table.move_to_parent_scope();
+
 }
 
 
@@ -96,17 +100,23 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 void FunctionTableVisitor::visit( ast::Scope& token )
 {
 	size_t id_scope = function_table.add_scope();
-		std::cout<<"id_scope"<<std::endl;
+	variable_table.add_scope(id_scope);
 
 	function_table.move_to_scope(id_scope);
+	variable_table.move_to_scope(id_scope);
 
 	token.set_scope_id(id_scope);
 
 	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
 		(*it)->accept(*this);
-	function_table.print_table();
-	function_table.move_to_parent_scope();
-	std::cout<<id_scope<<std::endl;
+
+	if(!function_table.is_root())
+		function_table.move_to_parent_scope();
+
+	if(!variable_table.is_root())
+		variable_table.move_to_parent_scope();
+	
+
 }
 
 /************************

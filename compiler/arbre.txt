@@ -1,22 +1,24 @@
 ˧ Program
---˧ Scope
+--˧ Scope(4)
 ----˧ Function declaration
 ------˧ <Identifier ; map_array>
 ------˧ Parameter list
 --------˧ Parameter
-----------˧ <Identifier ; func>
+----------˧ <Identifier ; array>
 --------˧ Parameter
 ----------˧ <Identifier ; size>
 --------˧ Parameter
-----------˧ <Identifier ; array>
-------˧ Scope
+----------˧ <Identifier ; func>
+------˧ Scope(1)
+--------˧ Variables declaration
+----------˧ Variable declaration
+------------˧ <Identifier ; i>
 --------˧ Statement
 ----------˧ For
 ------------˧ For initializer
 --------------˧ =
 ----------------˧ <Identifier ; i>
-----------------˧ Constant
-------------------˧ <integer ; 0>
+----------------˧ <integer ; 0>
 ------------˧ Expression
 --------------˧ <
 ----------------˧ <Identifier ; i>
@@ -25,7 +27,7 @@
 --------------˧ Modifying expression
 ----------------˧ ++
 ------------------˧ <Identifier ; i>
-------------˧ Scope
+------------˧ Scope(0)
 --------------˧ Modifying expression
 ----------------˧ =
 ------------------˧ Datastructure access
@@ -40,38 +42,48 @@
 --------------------------˧ <Identifier ; array>
 --------------------------˧ Expression
 ----------------------------˧ <Identifier ; i>
-----˧ Modifying expression
-------˧ =
+----˧ Variables declaration
+------˧ Variable declaration
 --------˧ <Identifier ; array>
---------˧ Array
-----------˧ Expression list
-------------˧ Constant
---------------˧ <integer ; 12>
-------------˧ Constant
---------------˧ <integer ; 3>
-------------˧ Constant
---------------˧ <integer ; 7>
-------------˧ Expression
---------------˧ Constant
+--------˧ Expression
+----------˧ Array
+------------˧ Expression list
+--------------˧ Expression
+----------------˧ <integer ; 12>
+--------------˧ Expression
+----------------˧ <integer ; 3>
+--------------˧ Expression
+----------------˧ <integer ; 7>
+--------------˧ Expression
 ----------------˧ <integer ; 42>
 ----˧ Modifying expression
 ------˧ Function call
 --------˧ <Identifier ; map_array>
 --------˧ Argument list
 ----------˧ Argument
+------------˧ <Identifier ; array>
+----------˧ Argument
+------------˧ <integer ; 4>
+----------˧ Argument
 ------------˧ Soy function
 --------------˧ Parameter list
 ----------------˧ Parameter
 ------------------˧ <Identifier ; x>
---------------˧ Scope
+--------------˧ Scope(2)
 ----------------˧ Statement
 ------------------˧ Return
 --------------------˧ Expression
 ----------------------˧ *
 ------------------------˧ <Identifier ; x>
 ------------------------˧ <Identifier ; x>
-----------˧ Argument
-------------˧ Constant
---------------˧ <integer ; 4>
-----------˧ Argument
-------------˧ <Identifier ; array>
+----˧ Statement
+------˧ Foreach
+--------˧ Expression
+----------˧ <Identifier ; array>
+--------˧ <Identifier ; item>
+--------˧ Scope(3)
+----------˧ Modifying expression
+------------˧ =
+--------------˧ <Identifier ; item>
+--------------˧ ++
+----------------˧ <Identifier ; item>

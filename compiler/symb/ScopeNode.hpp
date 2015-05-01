@@ -111,6 +111,9 @@ namespace symb
 
 		void print_scope();
 
+		void print_children();
+
+		size_t get_id_for_symb(const std::string );
 
 	private:
 		/**
@@ -132,6 +135,41 @@ namespace symb
 		void free_children();
 	};
 
+	template<class S>
+	size_t ScopeNode<S>::get_id_for_symb(const std::string name)
+	{
+
+
+		if(symbol_exists(name))
+		{	
+			std::cout<<"TU ME CHERCHES???"<<std::endl;
+			return scope_id;
+		}
+		for(ScopeNode* child : children)
+		{
+			try
+			{
+				return child->get_id_for_symb(name); 
+
+			}
+			catch(except::UndefinedSymbolException& e) { }
+
+		}
+
+		throw except::UndefinedSymbolException(name);
+
+	}
+
+	template <class S>
+	void ScopeNode<S>::print_children()
+	{
+		std::cout << "Children of "<<scope_id<<std::endl;
+		for(ScopeNode* c : children)
+		{
+			std::cout<<" 	Node : "<<c->get_id()<<std::endl;
+		}
+	}
+
 	template <class S>
 	void ScopeNode<S>::print_scope()
 	{
@@ -145,6 +183,7 @@ namespace symb
 
 		for(auto child : children)
 		{
+			
 			child->print_scope();
 		}
 	}
@@ -153,6 +192,7 @@ namespace symb
 	template <class S>
 	ScopeNode<S>::ScopeNode(size_t scope_id_) : parent(nullptr), scope_id(scope_id_)
 	{
+
 	}
 
 	template <class S>
@@ -161,6 +201,7 @@ namespace symb
 		parent(nullptr),
 		scope_id(copy.scope_id)
 	{
+
 		for(ScopeNode* scope : copy.children)
 		{
 			ScopeNode* new_scope = new ScopeNode(*scope);
@@ -238,6 +279,7 @@ namespace symb
 	{
 
 
+
 		if(pos > ((int)children.size()) || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
 
@@ -248,24 +290,21 @@ namespace symb
 		children.insert(std::next(children.begin(), pos), new_scope);
 
 		new_scope->parent = this;
-		std::cout<<"inserted"<<new_scope->get_id()<<std::endl;
 		return new_scope->get_id();
 	}
 
 	template <class S>
 	ScopeNode<S>& ScopeNode<S>::find_scope(size_t id)
 	{
-		std::cout<<"current id : "<<scope_id<<std::endl;
-		std::cout<<"searched id  : "<<id<<std::endl;
 		if(id == scope_id)
 			return *this;
-		std::cout<<children.size()<<std::endl;
+
 		for(ScopeNode* child : children)
 		{
 			try
 			{
 
-				return ((*child).find_scope(id)); 
+				return (child->find_scope(id)); 
 
 			}
 			catch(except::UndefinedScopeException& e) { }

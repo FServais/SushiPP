@@ -13,7 +13,7 @@ namespace visitor
 	class FunctionTableVisitor  : public visitor::ASTVisitor
 	{
 	public:
-		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& );
+		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& , symb::SymbolTable<symb::VariableInfo>& );
 
 		virtual void visit( ast::ASTNode& );
 		virtual void visit( ast::SoyFunc&  );
@@ -147,6 +147,8 @@ namespace visitor
 
 	private:
 		symb::SymbolTable<symb::FunctionInfo>& function_table;
+		symb::SymbolTable<symb::VariableInfo>& variable_table;
+
 
 		void visit_children( ast::ASTNode& );
 	};

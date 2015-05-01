@@ -6,6 +6,13 @@
 
 namespace except
 {
+	class RedefinedSymbolException : public std::runtime_error
+	{
+	public:
+		RedefinedSymbolException();
+		// param : the symbol name
+		explicit RedefinedSymbolException(const std::string&);
+	};
 	class UndefinedSymbolException : public std::runtime_error
 	{
 	public:

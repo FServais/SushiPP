@@ -106,8 +106,10 @@ void SppCompiler::scope_checking()
 	if(error_handler.error_occurred())
 		return;
 
-	visitor::FunctionTableVisitor visitor1(function_table);
+
+	visitor::FunctionTableVisitor visitor1(function_table, variable_table);
 	syntax_tree.root().accept(visitor1);
+
 
 	visitor::SymbolTableVisitor visitor2(function_table, variable_table);
 	syntax_tree.root().accept(visitor2);
@@ -117,6 +119,10 @@ void SppCompiler::scope_checking()
 
 	std::cout<<"VARIABLE TABLE"<<std::endl;
 	variable_table.print_table();
+
+	std::cout<<variable_table.get_symbol_scope_id("x")<<std::endl;
+	//function_table.check_unused();
+	//variable_table.check_unused();
 }
 
 void SppCompiler::inference()
