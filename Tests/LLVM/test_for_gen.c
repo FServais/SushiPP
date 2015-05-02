@@ -2,16 +2,10 @@
 
 int main(int ac, char **av)
 {
-int i = 0;
-int j = 2;
-int k = 3;
+    int i = 0;
+    int j = 2;
+    int k = 3;
 
-k = i + j * k;
+    int p = k + i + j;
 
-func(i,j);
-}
-
-int func(int a, int b)
-{
-return a + b;
 }
