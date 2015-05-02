@@ -23,6 +23,7 @@ int main(int argc, char const *argv[]) {
     Variable rhs("super_var", "i32");
 
     Value res = block.create_op_plus(lhs, rhs);
+    Value assign = block.create_decl_var(rhs);
 
     builder.dump(cout);
 

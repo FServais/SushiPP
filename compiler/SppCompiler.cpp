@@ -11,6 +11,7 @@
 #include "ast/visitor/TypeInferenceVisitor.hpp"
 #include "ast/visitor/FunctionTableVisitor.hpp"
 #include "ast/visitor/SymbolTableVisitor.hpp"
+#include "ast/visitor/CodeGenVisitor.hpp"
 
 #include "parser/sushipp.tab.h"
 
@@ -41,6 +42,7 @@ void SppCompiler::execute()
 		scope_checking();
 		inference();
 		terminate();
+		export_llvm();
 	}
 }
 
@@ -52,7 +54,7 @@ void SppCompiler::init()
 		if(config.is_verbose())
 			cout << "Compiling from file '" << config.get_input_file() << "'..." << endl;
 
-		// tough we use c++, we use FILE* here to 
+		// tough we use c++, we use FILE* here to
 		// provide the file input to the yyin scanner input stream
 		FILE* input = fopen(config.get_input_file().c_str(), "r");
 
@@ -85,7 +87,7 @@ void SppCompiler::parse()
 {
 	int ret = yyparse();
 
-	switch(ret) 
+	switch(ret)
 	{
 	case 1:
 	case 2:
@@ -123,7 +125,7 @@ void SppCompiler::inference()
 {
 	if(error_handler.error_occurred())
 		return;
-	
+
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
 	syntax_tree.root().accept(visitor);
 	cout << endl << visitor.get_table() << endl << endl;
@@ -152,9 +154,34 @@ void SppCompiler::print_ast()
 	}
 }
 
+void SppCompiler::export_llvm()
+{
+	/*
+	if(config.do_dump_ast_in_file())
+	{
+		ofstream file(config.get_ast_dump_file().c_str());
+
+		if(!file.is_open())
+		{
+			cerr << "[IO Error] Cannot open the file '" << config.get_ast_dump_file() << "'..." << endl;
+			return;
+		}
+
+		visitor::CodeGenVisitor visitor(file);
+		syntax_tree.root().accept(visitor);
+		file.close();
+	}
+	else
+	{
+	*/
+		visitor::CodeGenVisitor visitor(cout);
+		syntax_tree.root().accept(visitor);
+		visitor.print(cout);
+	//}
+
+}
+
 ErrorHandler& SppCompiler::get_error_handler()
 {
 	return error_handler;
 }
-
-
