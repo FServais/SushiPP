@@ -107,7 +107,7 @@ void SppCompiler::scope_checking()
 		return;
 
 
-	visitor::FunctionTableVisitor visitor1(function_table, variable_table);
+	visitor::FunctionTableVisitor visitor1(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(visitor1);
 
 

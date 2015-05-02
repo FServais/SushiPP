@@ -3,10 +3,11 @@
 using namespace visitor;
 
 // Constructor
-FunctionTableVisitor::FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab)
- : function_table(fct_tab), variable_table(var_tab)
+FunctionTableVisitor::FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab,
+	errors::ErrorHandler& err_han)
+ : function_table(fct_tab), variable_table(var_tab), error_handler(err_han)
 { 
-	
+	counter = 0;	
 }
 
 /************************************
@@ -14,6 +15,9 @@ FunctionTableVisitor::FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo
  ************************************/
 void FunctionTableVisitor::visit( ast::DeclFunc& token )
 {
+	if(counter > 1)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
+
 	// first child is a identifier
 	std::string id = token.get_id().id();
 	// second child is a param list whose children are params
@@ -36,15 +40,25 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 	
 	symb::FunctionInfo fct_info(id, params, token.get_location());
 	function_table.add_symbol(id, fct_info);
-	std::cout<<id<<"ADDED IN FUNCTION TABLE"<<std::endl;
-	// continue visiting deeper
+
+	
+	is_there_a_return_gen = false;
+	ret = true;
+	counter = 0;
+
 	token.get_scope().accept(*this);
+
+	if(is_there_a_return_gen & !ret)
+	{
+		//find the last statement, which must return in any case
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Wrong termination");
+
+	}
+	counter = 0;
 	variable_table.move_to_scope(token.get_scope().get_scope_id());
 
 	for(symb::VariableInfo v : params)
 	{
-		std::cout<<v.name()<<"ADDED IN VARIABLE TABLE"<<std::endl;
-
 		variable_table.add_symbol(v.name(), v);	
 	}
 		
@@ -82,7 +96,19 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 
 	function_table.add_symbol(name, fct_info);
 	// continue visiting deeper
+	is_there_a_return_gen = false;
+	ret = true;
+	counter = 0;
 	token.get_scope().accept(*this);
+
+	if(is_there_a_return_gen & !ret)
+	{
+		//find the last statement, which must return in any case
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Wrong function termination");
+
+	}
+
+	counter = 0;
 
 	variable_table.move_to_scope(token.get_scope().get_scope_id());
 
@@ -106,9 +132,18 @@ void FunctionTableVisitor::visit( ast::Scope& token )
 	variable_table.move_to_scope(id_scope);
 
 	token.set_scope_id(id_scope);
+	counter = 0;
+	prev_ret = ret; 
+	ret = true;
 
 	for(auto it = token.get_children().begin() ; it != token.get_children().end() ; ++it)
 		(*it)->accept(*this);
+
+	// if ret is false, it should stay false, otherwise restore old value
+	if(ret)
+		ret = prev_ret;
+	prev_ret = true;
+	counter = 0;
 
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
@@ -119,6 +154,111 @@ void FunctionTableVisitor::visit( ast::Scope& token )
 
 }
 
+void FunctionTableVisitor::visit( ast::Return& token )
+{
+	if(!token.empty_nori())
+	{
+		is_there_a_return_loc = true;
+		is_there_a_return_gen = true;
+	}
+	visit_children(token);
+} 
+
+void FunctionTableVisitor::visit( ast::Statement& token )
+{
+	if(counter > 0)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
+
+	ret = true;
+	visit_children(token);
+	if(ret)
+		counter++;
+} 
+
+void FunctionTableVisitor::visit( ast::Conditional& token )
+{
+	def_case = false;
+	visit_children(token);
+	if(!def_case)
+		ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::Elseif& token )
+{
+	is_there_a_return_loc = false;
+	visit_children(token);
+	if(!is_there_a_return_loc)
+		ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::If& token )
+{
+	is_there_a_return_loc = false;
+	visit_children(token);
+	if(!is_there_a_return_loc)
+		ret = false;
+}
+
+void FunctionTableVisitor::visit( ast::Else& token )
+{
+	def_case = true;
+	is_there_a_return_loc = false;
+	visit_children(token);
+	if(!is_there_a_return_loc)
+		ret = false;
+}
+
+
+void FunctionTableVisitor::visit( ast::Menu& token )
+{
+	def_case = false;
+	visit_children(token);
+	if(!def_case)
+		ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::MenuDef& token )
+{
+	def_case = true;
+	is_there_a_return_loc = false;
+	visit_children(token);
+	if(!is_there_a_return_loc)
+		ret = false;
+
+} 
+
+void FunctionTableVisitor::visit( ast::MenuCase& token )
+{
+	is_there_a_return_loc = false;
+	visit_children(token);
+	if(!is_there_a_return_loc)
+		ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::MenuBody& token) 
+{
+	visit_children(token);
+}
+
+void FunctionTableVisitor::visit( ast::Roll& token )
+{
+	visit_children(token);
+	ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::Foreach& token )
+{
+	visit_children(token);
+	ret = false;
+} 
+
+void FunctionTableVisitor::visit( ast::For& token )
+{
+	visit_children(token);
+	ret = false;
+} 
+
+
 /************************
  * 		Default case    *
  ************************/
@@ -128,6 +268,7 @@ void FunctionTableVisitor::visit_children( ast::ASTNode& token )
 	for(auto child : token.get_children()) 
 		child->accept(*this); 
 }
+
 
 void FunctionTableVisitor::visit( ast::ASTNode& token )
 {
@@ -421,6 +562,9 @@ void FunctionTableVisitor::visit( ast::MakeSequenceArray& token )
 
 void FunctionTableVisitor::visit( ast::DeclVars& token )
 {
+	if(counter > 0)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
+
 	visit_children(token);
 } 
 
@@ -446,6 +590,9 @@ void FunctionTableVisitor::visit( ast::Expression& token )
 
 void FunctionTableVisitor::visit( ast::ModifyingExpression& token )
 {
+	if(counter > 0)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
+
 	visit_children(token);
 } 
 
@@ -474,45 +621,7 @@ void FunctionTableVisitor::visit( ast::Program& token )
 	visit_children(token);
 } 
 
-void FunctionTableVisitor::visit( ast::Statement& token )
-{
-	visit_children(token);
-} 
 
-void FunctionTableVisitor::visit( ast::Return& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::Menu& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::MenuDef& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::MenuCase& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::Roll& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::Foreach& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::For& token )
-{
-	visit_children(token);
-} 
 
 void FunctionTableVisitor::visit( ast::ForInitializer& token )
 {
@@ -524,24 +633,4 @@ void FunctionTableVisitor::visit( ast::ForUpdate& token )
 	visit_children(token);
 } 
 
-void FunctionTableVisitor::visit( ast::Conditional& token )
-{
-	visit_children(token);
-} 
 
-void FunctionTableVisitor::visit( ast::Elseif& token )
-{
-	visit_children(token);
-} 
-
-void FunctionTableVisitor::visit( ast::If& token )
-{
-
-	visit_children(token);
-}
-
-void FunctionTableVisitor::visit( ast::Else& token )
-{
-
-	visit_children(token);
-}
