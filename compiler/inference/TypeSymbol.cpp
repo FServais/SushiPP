@@ -5,8 +5,6 @@
 #include <iterator>
 #include <numeric>
 
-#include "../exceptions/Exceptions.hpp"
-
 using namespace std;
 using namespace inference;
 
@@ -17,8 +15,8 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 	if(this == &symb) return true;
 
 	const TypeVariable* t_var = dynamic_cast<const TypeVariable*>(&symb);
-
-	return t_var // symb is not of class TypeVariable
+	
+	return t_var // symb is of class TypeVariable
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
 }
 
@@ -43,14 +41,14 @@ const TypeSymbol& TypeLink::symbol() const
 	return *linked_symbol;
 }
 
-TypeSymbol& TypeLink::resolve()
+TerminalTypeSymbol& TypeLink::resolve()
 {
-	return resolve_last_link().symbol();
+	return dynamic_cast<TerminalTypeSymbol&>(resolve_last_link().symbol());
 }
 
-const TypeSymbol& TypeLink::resolve() const
+const TerminalTypeSymbol& TypeLink::resolve() const
 {
-	return resolve_last_link().symbol();
+	return dynamic_cast<const TerminalTypeSymbol&>(resolve_last_link().symbol());
 }
 
 TypeLink& TypeLink::resolve_last_link()
@@ -72,6 +70,11 @@ void TypeLink::set_symbol(TypeSymbol* new_symb)
 	symbol_is_link = linked_symbol->is_link();
 }
 
+bool TypeLink::is_resolved() const 
+{
+	return linked_symbol->is_resolved();
+}
+
 string TypeLink::str() const
 {
 	return resolve().str();
@@ -84,6 +87,8 @@ bool TypeLink::equals(const TypeSymbol& symb) const
 	return !t_link ? symb.equals(resolve()) : resolve().equals(t_link->resolve());
 }
 
+Bool::Bool() { hints = TypesHint(BOOL); }
+
 bool Bool::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -92,6 +97,8 @@ bool Bool::equals(const TypeSymbol& symb) const
 
 	return t_bool;
 }
+
+Char::Char() { hints = TypesHint(CHAR); }
 
 bool Char::equals(const TypeSymbol& symb) const
 {
@@ -102,14 +109,18 @@ bool Char::equals(const TypeSymbol& symb) const
 	return t_char;
 }
 
+Int::Int() { hints = TypesHint(INT); }
+
 bool Int::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
 	const Int* t_int = dynamic_cast<const Int*>(&symb);
-
+	
 	return t_int;
 }
+
+Float::Float() { hints = TypesHint(FLOAT); }
 
 bool Float::equals(const TypeSymbol& symb) const
 {
@@ -120,6 +131,8 @@ bool Float::equals(const TypeSymbol& symb) const
 	return t_float;
 }
 
+Void::Void() { hints = TypesHint(VOID); }
+
 bool Void::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
@@ -129,20 +142,22 @@ bool Void::equals(const TypeSymbol& symb) const
 	return t_void;
 }
 
+String::String() { hints = TypesHint(STRING); }
+
 bool String::equals(const TypeSymbol& symb) const
 {
 	if(this == &symb) return true;
 
 	const String* t_string = dynamic_cast<const String*>(&symb);
 
-	return !t_string;
+	return t_string;
 }
 
 Function::Function(const vector<reference_wrapper<TypeLink>>& params, TypeLink& ret)
   : return_type(ret),
   	parameters(params)
 {
-
+	hints = TypesHint(FUNCTION);
 }
 
 bool Function::equals(const TypeSymbol& symb) const
@@ -168,25 +183,40 @@ bool Function::equals(const TypeSymbol& symb) const
 	return all_of(equality.begin(), equality.end(), [](bool val) { return val; });
 }
 
+bool Function::is_resolved() const 
+{
+	return return_type.is_resolved() 
+			&& all_of(parameters.begin(), parameters.end(), [](const TypeLink& link) { return link.is_resolved(); });
+}
+
 string Function::str() const
 {
+	string params;
+
+	if(parameters.size() > 0)
+		params = accumulate(next(parameters.begin()), parameters.end(), parameters[0].get().str(),
+							[](string& acc, TypeSymbol& symb)
+							{
+								return acc += ", " + symb.str();
+							});
+
 	stringstream ss;
-	string params = accumulate(next(parameters.begin()), parameters.end(), parameters.size() ? parameters[0].get().str() : "",
-								[](string& acc, TypeSymbol& symb)
-								{
-									return acc += ", " + symb.str();
-								});
-	ss << "(" << params << ") : (" << return_type.str() << ")";
+	ss << "Function(" << params << " -> " << return_type.str() << ")";
 	return ss.str();
 }
 
 UniparameterType::UniparameterType(TypeLink& param_type) : parameter_type(param_type) { }
 
-Array::Array(TypeLink& type) : UniparameterType(type) { }
+bool UniparameterType::is_resolved() const 
+{
+	return parameter_type.is_resolved();
+}
+
+Array::Array(TypeLink& type) : UniparameterType(type) { hints = TypesHint(ARRAY); }
 
 string Array::str() const
 {
-	return "ARRAY ( " + parameter_type.str() + " )";
+	return "Array( " + parameter_type.str() + " )";
 }
 
 bool Array::equals(const TypeSymbol& symb) const
@@ -199,11 +229,11 @@ bool Array::equals(const TypeSymbol& symb) const
 	return t_arr && parameter_type.equals(t_arr->parameter_type);
 }
 
-List::List(TypeLink& type) : UniparameterType(type) { }
+List::List(TypeLink& type) : UniparameterType(type) { hints = TypesHint(LIST); }
 
 string List::str() const
 {
-	return "LIST ( " + parameter_type.str() + " )";
+	return "List( " + parameter_type.str() + " )";
 }
 
 bool List::equals(const TypeSymbol& symb) const

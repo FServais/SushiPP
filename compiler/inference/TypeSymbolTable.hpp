@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "TypeSymbol.hpp"
+#include "Types.hpp"
 
 namespace inference
 {
@@ -30,25 +31,42 @@ namespace inference
 		/**
 		 * @brief Adds a new variable in the table
 		 * @param const std::string& The variable name (optional)
+		 * @param const std::vector<ShallowType>& remove_hints The hints that should be associated with the variable
+		 * @param const TypesHint& hints The hints that should be associated with the variable
 		 * @retval std::string The variable name in the map
+		 * @note The variable's hint is any type except void if no hints are provided
 		 */
 		std::string new_variable();
 		std::string new_variable(const std::string&);
+		std::string new_variable(const std::vector<ShallowType>&);
+		std::string new_variable(const std::string&, const std::vector<ShallowType>&);
+		std::string new_variable(const TypesHint&);
+		std::string new_variable(const std::string&, const TypesHint&);
 
 		/**
 		 * @brief Adds a new function in the table
 		 * @param const std::vector<std::string>& param_names Names of the parameters (must be unique)
 		 * @param const std::string& name The function name (optional)
+		 * @param const std::vector<ShallowType>& hints Some hints about the types of the parameters (must be the same size 
+		 * as param_names, only the flat types are unified, other are saved as hints)
 		 * @retval std::pair<std::string, std::string> A pair of string of which the first is the name of the function 
 		 * and the second is the name of the return type variable
+		 * @note The function name's hint is 'function'
+		 * @note The parameters' hints are the same as the ones given in the hints vector (and that are different than NO_TYPE), 
+		 * otherwise the hints is any type except VOID
+		 * @note The return type's hints are any type (including void)
 		 */
 		std::pair<std::string, std::string> new_function(const std::vector<std::string>&);
+		std::pair<std::string, std::string> new_function(const std::vector<std::string>&, const std::vector<ShallowType>&);
 		std::pair<std::string, std::string> new_function(const std::vector<std::string>&, const std::string&);
-
+		std::pair<std::string, std::string> new_function(const std::vector<std::string>&, const std::string&, const std::vector<ShallowType>&);
+		
 		/**
 		 * @brief Adds a new array in the table
 		 * @retval std::pair<std::string, std::string> A pair of which the first element is the array name in the map
 		 * and the second is the array type name in the map
+		 * @note The array variable's hints is the type array
+		 * @note The array type variable's hints are any type except LIST, ARRAY, FUNCTION and VOID
 		 */
 		std::pair<std::string, std::string> new_array();
 
@@ -56,6 +74,8 @@ namespace inference
 		 * @brief Adds a new list in the table
 		 * @retval std::pair<std::string, std::string> A pair of which the first element is the list name in the map
 		 * and the second is the list type name in the map
+		 * @note The list variable's hints is the type list
+		 * @note The list type variable's hints are any type except LIST, ARRAY, FUNCTION and VOID
 		 */
 		std::pair<std::string, std::string> new_list();
 
@@ -78,6 +98,8 @@ namespace inference
 		 * @param const std::string& type1 The first type
 		 * @param const std::string& type2 The second type
 		 * @throw UnificationException if the unification fails
+		 * @note If some precedence occurs in the types declarations, type1 should be the expected type and
+		 * type2 the given type
 		 */
 		void unify(const std::string&, const std::string&);
 
@@ -92,6 +114,31 @@ namespace inference
 		void unify_void(const std::string&);
 		void unify_char(const std::string&);
 
+		/**
+		 * @brief Unification of the given element with the given shallow type
+		 * @param const std::string& type_str The element to unify
+		 * @param ShallowType s_type The type to unify with
+		 * @note The unification is performed only of the shallow type is a flat type, otherwise nothing is done 
+		 * @note The flat types are the following (string, int, float, char, bool, void)
+		 */
+		void unify(const std::string&, ShallowType);
+
+		/**
+		 * @brief Check whether the type variable points to a complete type (of which all the elements are actual types)
+		 * @param const std::string& type_str The string identifying the type variable
+		 * @retval bool True if it is resolved, false otherwise
+ 		 */
+		bool is_resolved(const std::string&);
+
+		/**
+		 * @brief Update the hints associated with a variable. 
+		 * @param const std::string& var The type variable name
+		 * @param const TypesHint& hint The updater hint (should be compatible with the current hints of the variable)
+		 * @throws NoSuchTypeSymbolException if the string does not refer to a type variable
+		 * @throws UnificaitonException if the given type hint is not compatible with the variable current hint
+		 */
+		void update_hints(const std::string&, const TypesHint&);
+		 
 	private:
 		/**
 		 * type_variable_count : count the number of type variable already created

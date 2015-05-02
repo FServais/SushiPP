@@ -3,6 +3,8 @@
 
 using namespace ast;
 
+size_t Scope::cnt = 0;
+
 /** Constant base class */
 NT_Program::NT_Program(const std::string& node_name) : NonTerminal(node_name) {}
 
@@ -44,24 +46,33 @@ Program::Program(Scope* scope, const NodeLocation& node_loc) : NT_Program("Progr
 		add_child(scope);
 }
 
+Scope& Program::get_scope()
+{
+	return dynamic_cast<Scope&>(*children[0]);
+}
+
+const Scope& Program::get_scope() const
+{
+	return dynamic_cast<Scope&>(*children[0]);
+} 
+
 void Program::accept(visitor::ASTVisitor& visitor)
 {
 	visitor.visit(*this);
 }
 
 /* Scope */
-Scope::Scope(ASTNode* program_elem) : NT_Program("Scope") 
+Scope::Scope(ASTNode* program_elem) : NT_Program("Scope"), scope_id(cnt++)
 {
 	add_child(program_elem);
 }
 
 Scope::Scope(ASTNode* program_elem, int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("Scope", first_line, last_line, first_column, last_column)
+	: NT_Program("Scope", first_line, last_line, first_column, last_column), scope_id(cnt++)
 {
 	add_child(program_elem);
 }
-
-Scope::Scope(ASTNode* program_elem, const NodeLocation& node_loc) : NT_Program("Scope", node_loc)
+Scope::Scope(ASTNode* program_elem, const NodeLocation& node_loc) : NT_Program("Scope", node_loc), scope_id(cnt++)
 {
 	add_child(program_elem);
 }
@@ -80,3 +91,4 @@ size_t Scope::nb_elements() const
 {
 	return children.size();
 }
+

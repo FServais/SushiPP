@@ -70,13 +70,13 @@ namespace ast
 		 * @brief Return the parameters name in a vector
 		 * The return a vector of n strings if the param list contains n parameters
 		 */
-		void get_parameters_name(std::vector<std::string>&);
+		void get_parameters_name(std::vector<std::string>&) const;
 
 		/**
 		 * @brief Return the parameters types in a vector
 		 * The return a vector of n strings if the param list contains n parameters
 		 */
-		void get_parameters_type(std::vector<inference::ShallowType>&);
+		void get_parameters_type(std::vector<inference::ShallowType>&) const;
 	};
 
 	class DeclFunc : public NT_Declaration
@@ -150,10 +150,13 @@ namespace ast
 		virtual void accept(visitor::ASTVisitor&);
 		ParamList& get_params();
 		Scope& get_scope();
+		void set_name(std::string& n){name = n;}
+		std::string& get_name() { return name; }
 
 		bool contains_params() const { return has_params; }
 	private:
 		bool has_params;
+		std::string name;
 	};
 }
 

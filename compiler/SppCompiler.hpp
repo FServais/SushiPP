@@ -34,6 +34,7 @@ namespace compiler
 		 */
 		errors::ErrorHandler& get_error_handler();
 
+
 	private:
 		settings::CompilerSettings config;
 		ast::AbstractSyntaxTree syntax_tree;
@@ -62,10 +63,21 @@ namespace compiler
 		void parse();
 
 		/**
+		 * @brief Run the type inference on the abstract syntax tree
+		 * @note The resulting type table can be found in the private member 
+		 */
+		void inference();
+
+		/**
 		 * @brief Print the abstract syntax tree according to the configuration (file or stdin)
 		 * @brief The syntax_tree variable should contain a valid syntax tree (with at least a root node)
 		 */
 		void print_ast();
+
+		/**
+		 * @brief Perform the scope checking and fills the symbol tables (functions and variables)
+		 */
+		void scope_checking();
 	};
 }
 

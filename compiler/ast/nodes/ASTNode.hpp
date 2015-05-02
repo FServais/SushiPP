@@ -75,6 +75,10 @@ namespace ast
 		// function for accepting a visitor
 		virtual void accept(visitor::ASTVisitor&);
 
+		// set the location
+		void set_location(const NodeLocation& new_loc) { loc = new_loc; };
+		const NodeLocation& get_location() const { return loc; }
+
 	protected:
 		// add a child(ren) to the node
 		void add_child(ASTNode*);

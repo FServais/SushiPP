@@ -2,10 +2,9 @@
 
 using namespace std;
 using namespace visitor;
-using namespace llvm;
-using namespace error;
+using namespace errors;
 
-CodeGenVisitor::CodeGenVisitor(ErrorHandler& _error_handler, ostream& out = cout)
+CodeGenVisitor::CodeGenVisitor(ostream& out) : out_(out)
 {
 
 }
@@ -91,7 +90,7 @@ void CodeGenVisitor::visit( ast::Type_Function& token )
 
 void CodeGenVisitor::visit( ast::Op_Plus& token )
 {
-	
+
 }
 
 

@@ -35,8 +35,6 @@ namespace ast
 
 		virtual void accept(visitor::ASTVisitor&);
 		ASTNode& get_child();
-
-
 	};
 
 	class ArgList : public NT_FunctionCall
@@ -69,6 +67,7 @@ namespace ast
 		 */
 		ArgList& get_arg_list();
 		bool contains_arglist() const { return has_arglist; };
+		std::string& get_function_name();
 
 	private:
 		bool has_arglist;

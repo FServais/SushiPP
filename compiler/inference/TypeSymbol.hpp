@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+#include "Types.hpp"
+
 namespace inference
 {
 	/**
@@ -33,25 +35,43 @@ namespace inference
 		virtual bool is_uniparameter_type() const = 0;  // true if the TypeSymbol is the array or list type
 		virtual bool equals(const TypeSymbol&) const = 0; // return true if the given type symbol is equal to the one given as argument
 													// if one of the element is a link it is resolved before comparison
+
 		/**
-		 * @brief Return the actual type of the type symbol
-		 * @throw TypeSymbolResolutionException If an actual type cannot be returned (if the link is not resolvable
-		 * to a complete type, if the type symbol is a variable)
+		 * @brief Check whether the give type symbol is a complete type (of which all the elements are actual types)
+		 * @retval bool True if it is resolved, false otherwise
+ 		 */
+		virtual bool is_resolved() const = 0;
+	};
+
+	/**
+	 * @class TerminalTypeSymbol
+	 * @brief Base class for all the type symbol that can lie at then end of a type symbol chain
+	 */
+	class TerminalTypeSymbol : public TypeSymbol
+	{
+	public:
+		virtual bool is_link() const { return false; }
+		
+/**
+		 * @brief Return the hints associated with the TypeSymbol
+		 * @retval TypeHints A reference to the TypesHint object
 		 */
-		//virtual void get_type(types::Type*) const = 0;
+		const TypesHint& get_hints() const { return hints; }
+
+	protected:
+		TypesHint hints; // the set of types that could be taken by this symbol
 	};
 
 	/**
 	 * @class TypeVariable
 	 * @brief A type variable
 	 */
-	class TypeVariable : public TypeSymbol
+	class TypeVariable : public TerminalTypeSymbol
 	{
 	public:
 		explicit TypeVariable(const std::string&);
 
-		virtual std::string str() const { return varname; };
-		virtual bool is_link() const { return false; }
+		virtual std::string str() const { return "."; };
 		virtual bool is_variable() const { return true; }
 		virtual bool is_type() const { return false; }
 		virtual bool is_flat_type() const { return false; }
@@ -59,6 +79,19 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual bool is_resolved() const { return false; }
+
+		/**
+		 * @brief Set the hints object of the terminal symbol
+		 * @retval 
+		 */
+		void set_hints(const TypesHint& hints_) { hints = hints_; }
+
+		/**
+		 * @brief Return the hints associated with the TypeSymbol
+		 * @retval TypeHints A reference to the TypesHint object
+		 */
+		TypesHint& get_hints() { return hints; }
 
 	private:
 		std::string varname;
@@ -68,10 +101,9 @@ namespace inference
 	 * @class Type
 	 * @brief Base class for any actual type
 	 */
-	class Type : public TypeSymbol
+	class Type : public TerminalTypeSymbol
 	{
 	public:
-		virtual bool is_link() const { return false; }
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return true; }
 	};
@@ -110,8 +142,8 @@ namespace inference
 		/**
 		 * @brief Get the actual type object or type linked to the current link
 		 */
-		TypeSymbol& resolve();
-		const TypeSymbol& resolve() const;
+		TerminalTypeSymbol& resolve();
+		const TerminalTypeSymbol& resolve() const;
 
 		/**
 		 * @brief Get the last link before the an actual type object or type variable
@@ -134,6 +166,7 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual bool is_resolved() const;
 
 	private:
 		TypeSymbol* linked_symbol; // underlying link object, nullptr if (*this) does not point to a type link object
@@ -151,6 +184,7 @@ namespace inference
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
+		virtual bool is_resolved() const { return true; }
 	};
 
 	/**
@@ -160,7 +194,8 @@ namespace inference
 	class Bool : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "BOOL"; }
+		Bool();
+		virtual std::string str() const { return "bool"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -171,7 +206,8 @@ namespace inference
 	class String : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "STRING"; }
+		String();
+		virtual std::string str() const { return "string"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -182,7 +218,8 @@ namespace inference
 	class Int : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "INT"; }
+		Int();
+		virtual std::string str() const { return "int"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -193,7 +230,8 @@ namespace inference
 	class Float : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "FLOAT"; }
+		Float();
+		virtual std::string str() const { return "float"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -204,7 +242,8 @@ namespace inference
 	class Void : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "VOID"; }
+		Void();
+		virtual std::string str() const { return "void"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -215,7 +254,8 @@ namespace inference
 	class Char : public FlatType
 	{
 	public:
-		virtual std::string str() const { return "CHAR"; }
+		Char();
+		virtual std::string str() const { return "char"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -243,11 +283,7 @@ namespace inference
 		virtual bool is_function_type() const { return true; };
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool equals(const TypeSymbol&) const;
-/*
-		types::Type get_return_type() const;
-		types::Type get_parameter_type(size_t) const;
-		void get_parameter_types(std::vector<types::Type>&) const;
-		*/
+		virtual bool is_resolved() const;
 
 		/** Getters for the return type */
 		TypeLink& get_return_type() { return return_type; };
@@ -273,6 +309,7 @@ namespace inference
 
 		virtual bool is_function_type() const { return false; };
 		virtual bool is_uniparameter_type() const { return true; };
+		virtual bool is_resolved() const;
 
 		virtual bool is_array() const = 0;
 		virtual bool is_list() const = 0;

@@ -8,6 +8,10 @@
 #include <ios> // failure
 
 #include "ast/visitor/PrintASTVisitor.hpp"
+#include "ast/visitor/TypeInferenceVisitor.hpp"
+#include "ast/visitor/FunctionTableVisitor.hpp"
+#include "ast/visitor/SymbolTableVisitor.hpp"
+
 #include "parser/sushipp.tab.h"
 
 // bison parsing function
@@ -34,6 +38,8 @@ void SppCompiler::execute()
 	{
 		init();
 		parse();
+		scope_checking();
+		inference();
 		terminate();
 	}
 }
@@ -95,6 +101,34 @@ void SppCompiler::parse()
 	}
 }
 
+void SppCompiler::scope_checking()
+{
+	if(error_handler.error_occurred())
+		return;
+
+	visitor::FunctionTableVisitor visitor1(function_table, variable_table);
+	syntax_tree.root().accept(visitor1);
+
+	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
+	syntax_tree.root().accept(visitor2);
+
+	/*std::cout<<"FUNCTION TABLE"<<std::endl;
+	function_table.print_table();
+
+	std::cout<<"VARIABLE TABLE"<<std::endl;
+	variable_table.print_table();*/
+}
+
+void SppCompiler::inference()
+{
+	if(error_handler.error_occurred())
+		return;
+	
+	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
+	syntax_tree.root().accept(visitor);
+	cout << endl << visitor.get_table() << endl << endl;
+}
+
 void SppCompiler::print_ast()
 {
 	if(config.do_dump_ast_in_file())
@@ -122,3 +156,5 @@ ErrorHandler& SppCompiler::get_error_handler()
 {
 	return error_handler;
 }
+
+

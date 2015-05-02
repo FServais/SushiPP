@@ -19,7 +19,6 @@ void ErrorHandler::print_errors() const
 	for(size_t i = 0 ; i < errors.size() ; ++i)
 	{
 		get_nth_error(i).print(is_from_file);
-		cout << endl;
 	}
 }
 
@@ -101,4 +100,9 @@ void ErrorHandler::add_mem_error(const string& context, int line, int col, const
 void ErrorHandler::add_mem_error(MemoryError& err)
 {
 	errors.push_back(unique_ptr<MemoryError>(new MemoryError(err)));
+}
+
+bool ErrorHandler::error_occurred()
+{
+	return errors.size() != 0;
 }

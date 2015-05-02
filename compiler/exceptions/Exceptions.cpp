@@ -3,6 +3,14 @@
 using namespace except;
 using namespace std;
 
+
+RedefinedSymbolException::RedefinedSymbolException() 
+	: runtime_error("The symbol already exists in this scope.")
+{
+
+
+}
+
 UndefinedSymbolException::UndefinedSymbolException() 
 	: runtime_error("The symbol doesn't exist in the table.")
 {
@@ -107,30 +115,6 @@ NoSuchParameterException::NoSuchParameterException(size_t param)
 
 NoSuchParameterException::NoSuchParameterException(size_t param, const string& details)
   : logic_error("There is no parameter number " + to_string(param) + " in the VisitorParameters object : " + details)
-{
-
-}
-
-UnificationException::UnificationException(const string& details)
-  : runtime_error(details)
-{
-
-}
-
-ExistingTypeSymbolException::ExistingTypeSymbolException(const string& symbol)
-  : logic_error("Attempting to add the existing symbol '" + symbol + "' in the type symbol table")
-{
-
-}
-
-UnresolvableTypeException::UnresolvableTypeException(const string& symbol)
-  : runtime_error("The type of the type symbol '" + symbol + "' cannot be resolved")
-{
-
-}
-
-NoSuchTypeSymbolException::NoSuchTypeSymbolException(const string& symbol)
-  : runtime_error("Unable to find the type symbol '" + symbol + "'")
 {
 
 }

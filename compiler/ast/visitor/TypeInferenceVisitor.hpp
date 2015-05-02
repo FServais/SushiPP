@@ -7,12 +7,22 @@
 #include "ASTVisitor.hpp"
 #include "VisitorParameters.hpp"
 #include "../../inference/TypeSymbolTable.hpp"
+#include "../../symb/SymbolTable.hpp"
+#include "../../symb/SymbolInfo.hpp"
+#include "../../errors/ErrorHandler.hpp"
 
 namespace visitor
 {
 	class TypeInferenceVisitor : public ASTVisitor
 	{
 	public:
+		/**
+		 * @brief Construct tthe TypeInferenceVisitor with the symbol tables
+		 * @param errors::ErrorHandler& The error handler
+		 * @param symb::SymbolTable<symb::FunctionInfo>& function_table The function table
+		 * @param symb::SymbolTable<symb::VariableInfo>& variable_table The variable talble
+		 */
+		TypeInferenceVisitor(errors::ErrorHandler&, symb::SymbolTable<symb::FunctionInfo>&, symb::SymbolTable<symb::VariableInfo>&);
 
 		/****************
 		 * 		Node    *
@@ -22,7 +32,7 @@ namespace visitor
 		/******************************
 		 * 		Identifier token    *
 		 ******************************/
-
+		 
 		virtual void visit( ast::Identifier& );
 
 		/*************************
@@ -97,7 +107,6 @@ namespace visitor
 		 * 		Datastructure non-terminal    *
 		 **************************************/
 
-		virtual void visit( ast::Datastructure& );
 		virtual void visit( ast::Array& );
 		virtual void visit( ast::List& );
 		virtual void visit( ast::MakeSequenceList& );
@@ -118,10 +127,8 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
-		virtual void visit( ast::IncrExpression& );
-		virtual void visit( ast::Assignment& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
-		virtual void visit( ast::AssignableExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
 		/*************************************
@@ -147,6 +154,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -156,16 +164,51 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
+
+		/**
+		 * @brief Return the type table built by the visitor
+		 */
+		inference::TypeSymbolTable& get_table() { return type_table; }
+		const inference::TypeSymbolTable& get_table() const { return type_table; }
 
 	private:
 		/**
-		 * type_table : maps type identifiers and their actual value
-		 * params     : an object for emulating parameters passing
+		 * error_handler : the error handler
+		 * type_table : maps type identifiers and their actual value 
+		 * params     : an object for emulating parameters passing 
 		 * current_scope : the current scope id
 		 */
+		errors::ErrorHandler& error_handler;
 		inference::TypeSymbolTable type_table;
 		VisitorParameters<std::string> params;
 		size_t current_scope;
+
+		/**
+		 * Symbol tables
+		 */
+		symb::SymbolTable<symb::FunctionInfo>& function_table;
+		symb::SymbolTable<symb::VariableInfo>& variable_table;
+
+		/**
+		 * @brief Update the symbol table for a function declaration (either named or anonymous)
+		 * @param const ast::ParamList param_list The function parameters list (optionnal: if the function has no parameters)
+		 * @param const std::string& func_name The name of the function 
+		 * @param size_t scope_id The function body scope id 
+		 * @param std::pair<std::string, std::string> The pair containing the type variable name of the function (first)
+		 * and of the return value (second)
+		 * @note The VisitorParameters object is not modified
+		 */
+		std::pair<std::string, std::string> add_function_declaration_rule(const ast::ParamList&, const std::string&, size_t);
+		std::pair<std::string, std::string> add_function_declaration_rule(const std::string&, size_t);
+		
+		/**
+		 * @brief Check whether, from a scope node, a type variable must be propagate
+		 * @retuval bool True if the variable must be propagated, false otherwise
+		 * @note A type should be propagated on statement
+		 */
+		bool propagate_type_from_scope(ast::ASTNode&);
 	};
 }
 

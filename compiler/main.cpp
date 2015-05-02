@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 		g_compiler = &comp;
 		comp.execute();
 	}
-	catch(std::exception& e)
+	catch(std::runtime_error& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;

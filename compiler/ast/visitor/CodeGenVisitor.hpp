@@ -22,8 +22,7 @@ namespace visitor
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor();
-		CodeGenVisitor(std::ostream&); // arg: the stream in which to output the tree
+		CodeGenVisitor(std::ostream& out = std::cout); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -173,7 +172,7 @@ namespace visitor
 		std::stack<llvm::Value*> return_stack;
 		*/
 
-		error::ErrorHandler& error_handler;
+		//errors::ErrorHandler& error_handler;
 	};
 }
 
