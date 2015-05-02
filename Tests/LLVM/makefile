@@ -1,4 +1,4 @@
-EXECUTABLE=map_array
+EXECUTABLE=test_for_gen
 DEP_LIST=$(EXECUTABLE).ll
 FILE=$(EXECUTABLE).ll
 
