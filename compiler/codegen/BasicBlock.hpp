@@ -63,6 +63,13 @@ namespace codegen
         Value create_op_assign_xor(Value&, Value&);
         Value create_op_assign_concat(Value&, Value&);
 
+
+        /************************************
+		 * 		Declaration non-terminal    *
+		 ************************************/
+        // Value : Variable
+        Value create_decl_var(Value&);
+
     private:
         std::string label;
         std::vector<std::string> lines;

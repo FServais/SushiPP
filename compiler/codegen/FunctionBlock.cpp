@@ -49,3 +49,8 @@ BasicBlock& FunctionBlock::get_block(int n)
 {
     return blocks[n];
 }
+
+BasicBlock& FunctionBlock::get_last_block()
+{
+    return get_block(blocks.size()-1);
+}

@@ -23,11 +23,6 @@ void BasicBlock::dump(std::ostream& out) const
 }
 
 
-void BasicBlock::add_line(std::string line)
-{
-    lines.push_back(line);
-}
-
 
 
 Value BasicBlock::create_op_plus(Value& lhs, Value& rhs)
@@ -236,5 +231,25 @@ Value BasicBlock::create_op_assign_concat(Value& lhs, Value& rhs)
 {
 
 }
+
+
+Value BasicBlock::create_decl_var(Value& value)
+{
+    Variable& var = dynamic_cast<Variable&>(value);
+
+    stringstream ss;
+    ss << var.str_value() << " = " << "alloca " << var.str_type();
+
+    add_line(ss.str());
+
+    return var;
+}
+
+
+void BasicBlock::add_line(std::string line)
+{
+    lines.push_back(line);
+}
+
 
 #endif

@@ -28,6 +28,7 @@ namespace codegen
         std::string str_arguments() const;
 
         BasicBlock& get_block(int n);
+        BasicBlock& get_last_block();
 
     private:
 
