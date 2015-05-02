@@ -71,7 +71,7 @@ namespace inference
 	public:
 		explicit TypeVariable(const std::string&);
 
-		virtual std::string str() const { return varname; };
+		virtual std::string str() const { return "."; };
 		virtual bool is_variable() const { return true; }
 		virtual bool is_type() const { return false; }
 		virtual bool is_flat_type() const { return false; }
@@ -195,7 +195,7 @@ namespace inference
 	{
 	public:
 		Bool();
-		virtual std::string str() const { return "BOOL"; }
+		virtual std::string str() const { return "bool"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -207,7 +207,7 @@ namespace inference
 	{
 	public:
 		String();
-		virtual std::string str() const { return "STRING"; }
+		virtual std::string str() const { return "string"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -219,7 +219,7 @@ namespace inference
 	{
 	public:
 		Int();
-		virtual std::string str() const { return "INT"; }
+		virtual std::string str() const { return "int"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -231,7 +231,7 @@ namespace inference
 	{
 	public:
 		Float();
-		virtual std::string str() const { return "FLOAT"; }
+		virtual std::string str() const { return "float"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -243,7 +243,7 @@ namespace inference
 	{
 	public:
 		Void();
-		virtual std::string str() const { return "VOID"; }
+		virtual std::string str() const { return "void"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 
@@ -255,7 +255,7 @@ namespace inference
 	{
 	public:
 		Char();
-		virtual std::string str() const { return "CHAR"; }
+		virtual std::string str() const { return "char"; }
 		virtual bool equals(const TypeSymbol&) const;
 	};
 

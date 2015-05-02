@@ -90,7 +90,6 @@ namespace symb
 		 */
 		void print_child();
 
-
 		/**
 		 * @brief Checks if the current scope is the root scope
 		 * @retval 	bool	true if root 
@@ -124,7 +123,6 @@ namespace symb
 		ScopeNode<S>* current_scope;
 		static size_t scope_id_counter;
 	};
-
 
 	template<class S>
 	S& SymbolTable<S>::get_symbol(size_t scope_id, size_t index)
@@ -177,8 +175,6 @@ namespace symb
 		root_scope.print_scope();
 	}
 
-
-
 	template <class S>
 	size_t SymbolTable<S>::scope_id_counter = 1;
 
@@ -218,10 +214,7 @@ namespace symb
 		{	
 			iter_scope = &(iter_scope->get_parent());
 			if(iter_scope->symbol_exists(symbol))
-			{
-
 				return true;
-			}
 		}
 		return false;
 	}
@@ -291,25 +284,20 @@ namespace symb
 	template <class S>
 	void SymbolTable<S>::move_to_parent_scope()
 	{
-
 		current_scope = &(current_scope->get_parent());
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_child_scope(int child_number)
 	{
-
-
 		current_scope = &(current_scope->get_child(child_number));
 	}
 
 	template <class S>
 	void SymbolTable<S>::move_to_root_scope()
 	{
-
 		current_scope = &root_scope;
 	}
-
 }
 
 #endif // SYMBOL_TABLE_HPP_DEFINED

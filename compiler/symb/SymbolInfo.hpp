@@ -6,8 +6,6 @@
 #include "../ast/nodes/NodeLocation.hpp"
 namespace symb
 {
-
-
 	/**
 	 * @class VariableInfo
 	 */

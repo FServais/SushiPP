@@ -150,25 +150,20 @@ namespace symb
 		return next(map.begin(), index)->second;
 	}
 
-
 	template <class S>
 	void ScopeNode<S>::print_scope()
 	{
 		std::cout<< "------" << scope_id << "--------"<<std::endl;
 		for(auto it = map.begin(); it != map.end(); it++)
-		{
 			std::cout << it->first << std::endl;
-		}
+		
 		std::cout << std::endl;
 		std::cout << std::endl;
 
 		for(auto child : children)
-		{
-			
 			child->print_scope();
-		}
+		
 	}
-
 
 	template <class S>
 	ScopeNode<S>::ScopeNode(size_t scope_id_) : parent(nullptr), scope_id(scope_id_)
@@ -258,9 +253,6 @@ namespace symb
 	template <class S>
 	size_t ScopeNode<S>::create_child_scope(size_t scope_id, int pos)
 	{
-
-
-
 		if(pos > ((int)children.size()) || pos < -1)
 			throw std::out_of_range("The new scope must inserted in the range of existing children.");
 

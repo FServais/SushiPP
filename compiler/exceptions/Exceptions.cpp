@@ -118,27 +118,3 @@ NoSuchParameterException::NoSuchParameterException(size_t param, const string& d
 {
 
 }
-
-UnificationException::UnificationException(const string& details)
-  : runtime_error(details)
-{
-
-}
-
-ExistingTypeSymbolException::ExistingTypeSymbolException(const string& symbol)
-  : logic_error("Attempting to add the existing symbol '" + symbol + "' in the type symbol table")
-{
-
-}
-
-UnresolvableTypeException::UnresolvableTypeException(const string& symbol)
-  : runtime_error("The type of the type symbol '" + symbol + "' cannot be resolved")
-{
-
-}
-
-NoSuchTypeSymbolException::NoSuchTypeSymbolException(const string& symbol)
-  : runtime_error("Unable to find the type symbol '" + symbol + "'")
-{
-
-}

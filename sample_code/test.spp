@@ -1,0 +1,5 @@
+
+$ variable decl-assign
+maki a = 2
+
+maki c = a + a

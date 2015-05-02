@@ -22,3 +22,6 @@ Tests/AST-diagram/AST.vpp~12
 .vpp~1
 compiler/parser/sushipp.tab.c
 compiler/parser/sushipp.tab.h
+Tests/LLVM/test_for_gen
+Tests/LLVM/test_for_gen.bc
+Tests/LLVM/test_for_gen.s

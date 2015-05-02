@@ -98,6 +98,8 @@ namespace inference
 		 * @param const std::string& type1 The first type
 		 * @param const std::string& type2 The second type
 		 * @throw UnificationException if the unification fails
+		 * @note If some precedence occurs in the types declarations, type1 should be the expected type and
+		 * type2 the given type
 		 */
 		void unify(const std::string&, const std::string&);
 

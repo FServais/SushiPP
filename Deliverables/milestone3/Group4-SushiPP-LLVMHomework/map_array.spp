@@ -9,5 +9,5 @@ maki map_array array size func :
 	;;
 ;;
 
-array = #[ 12, 3, 7, 42 ]#
+array = #[ 6, 5, 4, 1 ]#
 map_array array 4 (soy x : nori x*x)
