@@ -75,6 +75,8 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 
 	if( !function_table.symbol_exists(func_name) && !symbol_exists<VariableInfo>(func_name,variable_table))
 	{
+
+
 		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_column(), 
 			" Undefined function : "+func_name);
 	}
@@ -115,13 +117,14 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 	size_t scp_id = token.get_scope_id();
 	allowed_scopes.insert(scp_id);
 
+
 	function_table.move_to_scope(scp_id);
 	variable_table.move_to_scope(scp_id);
 
 	visit_children(token);
 	allowed_scopes.erase(scp_id);
 
-	if(!allowed_scopes.empty())
+	if(!prev_allowed_scopes.empty())
 		allowed_scopes = prev_allowed_scopes;
 
 	if(!function_table.is_root())
@@ -154,6 +157,14 @@ void SymbolTableVisitor::visit( ast::DeclFunc& token )
 	prev_allowed_scopes = allowed_scopes;
 	allowed_scopes.clear();
 	token.get_scope().accept(*this);
+}
+
+void SymbolTableVisitor::visit( ast::SoyFunc& token )
+{
+	prev_allowed_scopes = allowed_scopes;
+	allowed_scopes.clear();
+	token.get_scope().accept(*this);
+	
 }
 
 void SymbolTableVisitor::visit( ast::K_Continue& token )
@@ -542,11 +553,7 @@ void SymbolTableVisitor::visit( ast::Argument& token )
 	visit_children(token);
 }
 
-void SymbolTableVisitor::visit( ast::SoyFunc& token )
-{
 
-	visit_children(token);
-}
 
 void SymbolTableVisitor::visit( ast::Program& token )
 {
