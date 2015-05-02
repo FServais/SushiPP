@@ -12,6 +12,7 @@ PATH_SYMB		 = symb/
 PATH_SETTINGS    = settings/
 PATH_ERRORS		 = errors/
 PATH_INFERENCE   = inference/
+PATH_CODEGEN	 = codegen/
 
 PATH_OBJS		 = obj/
 
@@ -33,8 +34,9 @@ OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(P
 OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
 OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
 OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
+OBJS_CODEGEN		= $(PATH_OBJS)BasicBlock.o $(PATH_OBJS)Builder.o $(PATH_OBJS)FunctionBlock.o $(PATH_OBJS)Module.o $(PATH_OBJS)Value.o $(PATH_OBJS)Variable.o $(PATH_OBJS)VariableManager.o
 
-OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER) $(OBJS_INFERENCE)
+OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER) $(OBJS_INFERENCE) $(OBJS_CODEGEN)
 
 # dependecies #
 # DEP_ASTNODE_DEEP : every header containing AST nodes derived or base class
@@ -63,7 +65,7 @@ DEP_INFERENCE			 = $(PATH_INFERENCE)TypeSymbolTable.hpp $(PATH_INFERENCE)TypeSym
 CC = clang++
 DEBUG = -g
 CCFLAGS = -c --std=c++11 $(DEBUG)
-LDFLAGS = $(LLVM_FLAGS)
+LDFLAGS =
 EXE = sushipp
 BISON_FLAGS = -d -b $(PATH_PARSER)$(EXE) -v
 LLVM_FLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core`
@@ -169,7 +171,7 @@ $(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(DE
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
-	$(CC) $(LLVM_FLAGS) $< -o $@ $(CCFLAGS)
+	$(CC) $< -o $@ $(CCFLAGS)
 
 
 # Compiler #
@@ -223,6 +225,29 @@ $(PATH_OBJS)Types.o: $(PATH_INFERENCE)Types.cpp $(PATH_INFERENCE)Types.hpp $(PAT
 
 $(PATH_OBJS)InferenceExceptions.o: $(PATH_INFERENCE)InferenceExceptions.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
+
+# Code Generation #
+$(PATH_OBJS)BasicBlock.o: $(PATH_CODEGEN)BasicBlock.cpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)Value.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)Builder.o: $(PATH_CODEGEN)Builder.cpp $(PATH_CODEGEN)Builder.hpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)VariableManager.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)FunctionBlock.o: $(PATH_CODEGEN)FunctionBlock.cpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)BasicBlock.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)Module.o: $(PATH_CODEGEN)Module.cpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)Value.o: $(PATH_CODEGEN)Value.cpp $(PATH_CODEGEN)Value.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)Variable.o: $(PATH_CODEGEN)Variable.cpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)Value.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)VariableManager.o: $(PATH_CODEGEN)VariableManager.cpp $(PATH_CODEGEN)VariableManager.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
 
 ###########################################################
 
