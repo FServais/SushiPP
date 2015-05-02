@@ -533,3 +533,15 @@ void FunctionTableVisitor::visit( ast::Elseif& token )
 {
 	visit_children(token);
 } 
+
+void FunctionTableVisitor::visit( ast::If& token )
+{
+
+	visit_children(token);
+}
+
+void FunctionTableVisitor::visit( ast::Else& token )
+{
+
+	visit_children(token);
+}

@@ -169,6 +169,8 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
 
 
 	private:

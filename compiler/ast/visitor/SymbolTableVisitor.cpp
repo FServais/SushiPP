@@ -87,6 +87,10 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 	else if(symbol_exists(func_name, variable_table))
 		variable_table.symbol_info(func_name).is_used();
 
+
+	if(token.contains_arglist())
+		token.get_arg_list().accept(*this);
+
 }
 
 void SymbolTableVisitor::visit( ast::Identifier& token )
@@ -102,8 +106,7 @@ void SymbolTableVisitor::visit( ast::Identifier& token )
 		
 	else 
 	{
-		for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
-			std::cout<<*it<<std::endl;
+		
 		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_line(), 
 			" Undefined identifier : "+id);
 	}
@@ -116,7 +119,9 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 
 	size_t scp_id = token.get_scope_id();
 	allowed_scopes.insert(scp_id);
-
+	std::cout<<"ENTERING  "<<scp_id<<std::endl;
+	for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
+		std::cout<<"scope  "<<*it<<std::endl;
 
 	function_table.move_to_scope(scp_id);
 	variable_table.move_to_scope(scp_id);
@@ -124,15 +129,15 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 	visit_children(token);
 	allowed_scopes.erase(scp_id);
 
-	if(!prev_allowed_scopes.empty())
-		allowed_scopes = prev_allowed_scopes;
 
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-
+	std::cout<<"LEAVING  "<<scp_id<<std::endl;
+	for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
+		std::cout<<"scope  "<<*it<<std::endl;
 
 	check_unused(scp_id);
 }
@@ -157,6 +162,8 @@ void SymbolTableVisitor::visit( ast::DeclFunc& token )
 	prev_allowed_scopes = allowed_scopes;
 	allowed_scopes.clear();
 	token.get_scope().accept(*this);
+	allowed_scopes = prev_allowed_scopes;
+
 }
 
 void SymbolTableVisitor::visit( ast::SoyFunc& token )
@@ -629,6 +636,17 @@ void SymbolTableVisitor::visit( ast::Elseif& token )
 	visit_children(token);
 }
 
+void SymbolTableVisitor::visit( ast::If& token )
+{
+
+	visit_children(token);
+}
+
+void SymbolTableVisitor::visit( ast::Else& token )
+{
+
+	visit_children(token);
+}
 void SymbolTableVisitor::visit_children( ast::ASTNode& token )
 {
 	for(auto child : token.get_children())
