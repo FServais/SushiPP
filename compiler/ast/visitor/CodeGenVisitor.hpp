@@ -15,7 +15,7 @@
 */
 
 #include "ASTVisitor.hpp"
-#include "../../errors/ErrorHandler.hpp"
+#include "../../codegen/Builder.hpp"
 
 namespace visitor
 {
@@ -159,17 +159,30 @@ namespace visitor
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
 
+		void visit_children( ast::ASTNode& );
+
 		void print(std::ostream&);
 
 	private:
 		std::ostream& out_; // stream in which to write
 
+		codegen::Builder builder;
+		codegen::Module& curr_module;
+		std::string curr_func_name;
+
+		/* Stack */
+		std::stack<codegen::Value> return_stack;
+
+		void add_return(codegen::Value&);
+		codegen::Value pop_return();
+		bool is_stack_empty() const;
+		int get_stack_size() const;
+
+
 		/*
 		llvm::Module *the_module;
 		llvm::IRBuilder<> builder;
 		std::map<std::string, llvm::Value*> NamedValues;
-
-		std::stack<llvm::Value*> return_stack;
 		*/
 
 		//errors::ErrorHandler& error_handler;
