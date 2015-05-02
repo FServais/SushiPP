@@ -6,13 +6,16 @@
 #include <string>
 #include <stack>
 
+/*
 #include "llvm/IR/Verifier.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+*/
 
 #include "ASTVisitor.hpp"
+#include "../../errors/ErrorHandler.hpp"
 
 namespace visitor
 {
@@ -162,11 +165,13 @@ namespace visitor
 	private:
 		std::ostream& out_; // stream in which to write
 
+		/*
 		llvm::Module *the_module;
 		llvm::IRBuilder<> builder;
 		std::map<std::string, llvm::Value*> NamedValues;
 
 		std::stack<llvm::Value*> return_stack;
+		*/
 
 		error::ErrorHandler& error_handler;
 	};
