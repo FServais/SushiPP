@@ -7,13 +7,19 @@
 // opaque type for array_table
 struct array_table;
 
-void print_array_table(const struct array_table*);
+//void print_array_table(const struct array_table*);
 
 /**
  * @brief Create an array table
  * @retval struct array_table* The array table allocated, NULL on error
  */
 struct array_table* create_array_table();
+
+/**
+ * @brief Delete an array table
+ * @param struct array_table* The array table to delete
+ */
+void delete_array_table(struct array_table*);
 
 /**
  * @brief New T array allocation function

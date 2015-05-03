@@ -145,7 +145,7 @@ static struct array_descriptor* find_array_descriptor(const struct array_table* 
 
 static inline void array_descriptor_deallocate(struct array_descriptor* desc)
 {
-	if(!desc)
+	if(desc)
 		free(desc->array_ptr);
 	free(desc);
 }
@@ -159,7 +159,7 @@ static inline void insert_descriptor(struct array_table* table, struct array_des
 static void array_insert_value(struct array_descriptor* desc, size_t pos, const void* val)
 {
 	// realloc the array for storing the new element
-	desc->array_ptr = realloc(desc->array_ptr, desc->array_size + 1);
+	desc->array_ptr = realloc(desc->array_ptr, (desc->array_size + 1) * num_bytes(desc->type));
 
 	if(!desc->array_ptr)
 	{
@@ -168,9 +168,15 @@ static void array_insert_value(struct array_descriptor* desc, size_t pos, const 
 	}
 
 	// move the elements of the array that should follow the ne element
-	void *src = desc->array_ptr + pos,
-		 *dst = src + 1;
+	void *src = desc->array_ptr + num_bytes(desc->type) * pos,
+		 *dst = src + num_bytes(desc->type);
 	size_t num = num_bytes(desc->type) * (desc->array_size - pos);
+
+	// printf("\n");
+	// printf("Array      : %p\n", desc->array_ptr);
+	// printf("Start move : %p\n", src);
+	// printf("End move   : %p\n", dst);
+	// printf("Move 	   : %zu bytes\n", num);
 
 	// move the value at the given position 
 	memmove(dst, src, num);
@@ -187,14 +193,14 @@ static inline size_t num_bytes(size_t type)
 
 static void* array_get_value(struct array_descriptor* desc, size_t pos)
 {
-	return desc->array_ptr + pos;
+	return desc->array_ptr + pos * num_bytes(desc->type);
 }
 
 static void array_remove_value(struct array_descriptor* desc, size_t pos)
 {
 	// move the end of the array over the removed element
-	void *dst = desc->array_ptr + pos,
-		 *src = dst + 1;
+	void *dst = desc->array_ptr + pos * num_bytes(desc->type),
+		 *src = dst + num_bytes(desc->type);
 	size_t num = num_bytes(desc->type) * (desc->array_size - pos - 1);
 	memmove(dst, src, num);
 
@@ -324,7 +330,7 @@ void array_rm_reference(struct array_table* table, size_t arrid)
 	desc->ref_count--;
 
 	if(desc->ref_count == 0) // deallocate memory if the reference count drop to 0
-		array_descriptor_deallocate(desc);
+		array_deallocate(table, arrid);
 }
 
 size_t array_size(const struct array_table* table, size_t arrid)
@@ -355,7 +361,26 @@ size_t array_ref_count(const struct array_table* table, size_t arrid)
 
 void array_deallocate(struct array_table* table, size_t arrid)
 {
-	array_descriptor_deallocate(find_array_descriptor(table, arrid));
+	if(!table) 
+		return;
+	struct array_descriptor *current = table->head, 
+							*previous = NULL;
+
+	while(current)
+	{
+		if(current->array_id == arrid)
+		{
+			if(previous != NULL)
+				previous->next = current->next;
+			else // the descriptor is the first one
+				table->head = current->next;
+			array_descriptor_deallocate(current);
+			return;
+		}
+
+		previous = current;
+		current = current->next;
+	}
 }
 
 void array_insert_int(struct array_table* table, size_t arrid, int value, size_t pos)
@@ -691,49 +716,53 @@ struct array_table* create_array_table()
 	return table;
 }
 
-
-void print_array_table(const struct array_table* table)
+void delete_array_table(struct array_table* table)
 {
-	const struct array_descriptor* current = table->head;
-
-	int cnt = 1;
-	while(current)
-	{
-		printf("\n---------------------------------------------\n");
-		printf("Array number %d (id: %zu)\n", cnt, current->array_id);
-		printf("   Type : ");
-
-		switch(current->type)
-		{
-		case BOOL: printf("bool\n"); break;
-		case INT : printf("integer\n"); break;
-		case STRING : printf("string\n"); break;
-		case CHAR: printf("char\n"); break;
-		case FLOAT: printf("float\n"); break;
-		}
-
-		printf("   Size : %zu\n", current->array_size);
-		printf("   Reference count : %zu\n", current->ref_count);
-		printf("   Values : \n    ");
-
-		for(size_t i = 0; i < current->array_size; ++i)
-		{
-			switch(current->type)
-			{
-			case BOOL: printf("%s", *(((bool*) current->array_ptr ) + i) ? "true" : "false"); break;
-			case INT : printf("%d", *(((int*) current->array_ptr ) + i)); break;
-			case STRING : printf("%zu", *(((size_t*) current->array_ptr ) + i)); break;
-			case CHAR: printf("%c", *(((char*) current->array_ptr ) + i)); break;
-			case FLOAT: printf("%f", *(((float*) current->array_ptr ) + i)); break;
-			}
-
-			if((i + 1) % 10)
-				printf(" ");
-			else
-				printf("\n    ");
-		}
-
-		printf("\n");
-		current = current->next;
-	}
+	free(table);
 }
+
+// void print_array_table(const struct array_table* table)
+// {
+// 	const struct array_descriptor* current = table->head;
+
+// 	int cnt = 1;
+// 	while(current)
+// 	{
+// 		printf("\n---------------------------------------------\n");
+// 		printf("Array number %d (id: %zu)\n", cnt, current->array_id);
+// 		printf("   Type : ");
+
+// 		switch(current->type)
+// 		{
+// 		case BOOL: printf("bool\n"); break;
+// 		case INT : printf("integer\n"); break;
+// 		case STRING : printf("string\n"); break;
+// 		case CHAR: printf("char\n"); break;
+// 		case FLOAT: printf("float\n"); break;
+// 		}
+
+// 		printf("   Size : %zu\n", current->array_size);
+// 		printf("   Reference count : %zu\n", current->ref_count);
+// 		printf("   Values : \n    ");
+
+// 		for(size_t i = 0; i < current->array_size; ++i)
+// 		{
+// 			switch(current->type)
+// 			{
+// 			case BOOL: printf("%s", *(((bool*) current->array_ptr ) + i) ? "true" : "false"); break;
+// 			case INT : printf("%d", *(((int*) current->array_ptr ) + i)); break;
+// 			case STRING : printf("%zu", *(((size_t*) current->array_ptr ) + i)); break;
+// 			case CHAR: printf("%c", *(((char*) current->array_ptr ) + i)); break;
+// 			case FLOAT: printf("%f", *(((float*) current->array_ptr ) + i)); break;
+// 			}
+
+// 			if((i + 1) % 10)
+// 				printf(" ");
+// 			else
+// 				printf("\n    ");
+// 		}
+
+// 		printf("\n");
+// 		current = current->next;
+// 	}
+// }
