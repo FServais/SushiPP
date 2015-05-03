@@ -19,7 +19,6 @@ void ErrorHandler::print_errors() const
 	for(size_t i = 0 ; i < errors.size() ; ++i)
 	{
 		get_nth_error(i).print(is_from_file);
-		cout << endl;
 	}
 }
 

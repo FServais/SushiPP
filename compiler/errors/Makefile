@@ -1,1 +1,0 @@
-clang++ *.cpp ../settings/CompilerSettings.cpp ../exceptions/Exceptions.cpp -o main --std=c++11

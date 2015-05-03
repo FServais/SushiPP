@@ -5,8 +5,6 @@
 #include <iterator>
 #include <numeric>
 
-#include "../exceptions/Exceptions.hpp"
-
 using namespace std;
 using namespace inference;
 
@@ -203,7 +201,7 @@ string Function::str() const
 							});
 
 	stringstream ss;
-	ss << "(" << params << ") : (" << return_type.str() << ")";
+	ss << "Function(" << params << " -> " << return_type.str() << ")";
 	return ss.str();
 }
 
@@ -218,7 +216,7 @@ Array::Array(TypeLink& type) : UniparameterType(type) { hints = TypesHint(ARRAY)
 
 string Array::str() const
 {
-	return "ARRAY ( " + parameter_type.str() + " )";
+	return "Array( " + parameter_type.str() + " )";
 }
 
 bool Array::equals(const TypeSymbol& symb) const
@@ -235,7 +233,7 @@ List::List(TypeLink& type) : UniparameterType(type) { hints = TypesHint(LIST); }
 
 string List::str() const
 {
-	return "LIST ( " + parameter_type.str() + " )";
+	return "List( " + parameter_type.str() + " )";
 }
 
 bool List::equals(const TypeSymbol& symb) const
