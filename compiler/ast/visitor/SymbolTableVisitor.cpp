@@ -119,9 +119,6 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 
 	size_t scp_id = token.get_scope_id();
 	allowed_scopes.insert(scp_id);
-	std::cout<<"ENTERING  "<<scp_id<<std::endl;
-	for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
-		std::cout<<"scope  "<<*it<<std::endl;
 
 	function_table.move_to_scope(scp_id);
 	variable_table.move_to_scope(scp_id);
@@ -129,15 +126,12 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 	visit_children(token);
 	allowed_scopes.erase(scp_id);
 
-
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-	std::cout<<"LEAVING  "<<scp_id<<std::endl;
-	for(auto it = allowed_scopes.begin(); it != allowed_scopes.end(); it++)
-		std::cout<<"scope  "<<*it<<std::endl;
+	
 
 	check_unused(scp_id);
 }

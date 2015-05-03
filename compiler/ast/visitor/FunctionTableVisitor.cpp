@@ -20,8 +20,10 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 
 	// first child is a identifier
 	std::string id = token.get_id().id();
+
+	if(variable_table.symbol_exists(id) || function_table.symbol_exists(id))
+		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_column(), " Redefined function : "+id);
 	// second child is a param list whose children are params
-	
 	std::vector<symb::VariableInfo> params;
 
 	if( token.contains_params())
