@@ -24,6 +24,7 @@ void FunctionBlock::dump(ostream& out) const
         block->dump(out);
         out << endl;
     }
+    cout << "\tret " << return_type << " " << return_value << endl;
     cout << "}" << endl;
 }
 
@@ -41,9 +42,26 @@ string FunctionBlock::str_arguments() const
 {
     stringstream ss;
     for(auto arg = arguments.begin() ; arg != arguments.end() ; ++arg)
-        ss << arg->first << ", %" << arg->second;
+    {
+        ss << arg->first << " %" << arg->second;
+        if(arg != arguments.end()-1)
+            ss << ", ";
+    }
     return ss.str();
 }
+
+void FunctionBlock::add_argument(string type, string name)
+{
+    arguments.push_back(make_pair(type,name));
+}
+
+void FunctionBlock::set_return(string _return_value)
+{
+    return_value = _return_value;
+}
+
+
+
 
 BasicBlock& FunctionBlock::get_block(int n)
 {

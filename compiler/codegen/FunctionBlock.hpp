@@ -27,6 +27,9 @@ namespace codegen
         std::string get_name() const;
         std::string str_arguments() const;
 
+        void add_argument(std::string, std::string);
+        void set_return(std::string);
+
         BasicBlock& get_block(int n);
         BasicBlock& get_last_block();
 
@@ -34,6 +37,8 @@ namespace codegen
 
         std::string name;
         std::string return_type;
+        std::string return_value;
+
         // <type, name>
         std::vector<std::pair<std::string, std::string>> arguments;
         std::vector<BasicBlock> blocks;

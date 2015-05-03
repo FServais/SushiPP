@@ -1,4 +1,4 @@
-EXECUTABLE=test_for_gen
+EXECUTABLE=gen_code
 DEP_LIST=$(EXECUTABLE).ll
 FILE=$(EXECUTABLE).ll
 

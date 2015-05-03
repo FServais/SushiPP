@@ -6,6 +6,9 @@ using namespace std;
 Module::Module(VariableManager& vm) : var_manager(vm)
 {
     FunctionBlock function(vm, "main", "i32");
+    function.add_argument("i32", "ac");
+    function.add_argument("i8**", "av");
+    function.set_return("0");
     add_function(function);
 }
 

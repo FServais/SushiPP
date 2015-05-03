@@ -22,5 +22,27 @@ void Value::set_type(std::string _type)
 
 string Value::str_value()
 {
-    return "";
+    return "wut";
+}
+
+bool Value::is_variable()
+{
+    return variable;
+}
+
+bool Value::is_constant()
+{
+    return constant;
+}
+
+void Value::set_is_variable()
+{
+    variable = true;
+    constant = false;
+}
+
+void Value::set_is_constant()
+{
+    variable = false;
+    constant = true;
 }

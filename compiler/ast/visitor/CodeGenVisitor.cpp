@@ -1,6 +1,4 @@
 #include "CodeGenVisitor.hpp"
-#include "../../codegen/Variable.hpp"
-#include "../../codegen/ConstantInt.hpp"
 
 using namespace std;
 using namespace visitor;
@@ -19,7 +17,8 @@ CodeGenVisitor::CodeGenVisitor(ostream& out) : out_(out), curr_module(builder.ge
 
 void CodeGenVisitor::visit( Identifier& token )
 {
-	Variable v(token.id(), "i32");
+	Variable* v = new Variable(token.id(), "i32");
+
 	add_return(v);
 }
 
@@ -97,15 +96,35 @@ void CodeGenVisitor::visit( Op_Plus& token )
 	visit_children(token);
 
 	// Get 2 arguments
-	Value& rhs = return_stack.top();
-	Value& lhs = return_stack.top();
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	Value result = block.create_op_plus(lhs, rhs);
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_plus(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_plus(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_plus(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_plus(lhs, rhs));
+
+	pop();
+	pop();
 
 	add_return(result);
-
-	return_stack.pop();
-	return_stack.pop();
 }
 
 
@@ -348,7 +367,7 @@ void CodeGenVisitor::visit( Character& token )
 
 void CodeGenVisitor::visit( Integer& token )
 {
-	ConstantInt constant_int(token.value());
+	ConstantInt* constant_int = new ConstantInt(token.value());
 	add_return(constant_int);
 }
 
@@ -397,7 +416,18 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 
 void CodeGenVisitor::visit( DeclFunc& token )
 {
+	auto child = token.get_children().begin();
+	// Visit 1st child : Identifier
+	
+	// Create new FunctionBlock
 
+	// Visit 2nd child (ParameterList: visit all children and add argument for each)
+
+	// Change "cursor" of the visitor to the new function
+
+	// Fullfill it through the visit of the children
+
+	// Get back to previous block
 }
 
 
@@ -414,29 +444,38 @@ void CodeGenVisitor::visit( DeclVar& token )
 	if(token.contains_expr())
 	{
 		// Expression
-		Value expr = return_stack.top();
-		return_stack.pop();
+		Value& expr = get_return_value(0);
 
 		// IDENTIFIER
-		Value id = return_stack.top();
-		return_stack.pop();
+		Value& id = get_return_value(1);
 
 		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-		block.create_decl_var(id);
 
-		
+		// Allocate in memory
+		unique_ptr<Value> lhs = unique_ptr<Value>(block.create_decl_var(id));
+
+		// Store temp variable in location of the pointer
+		unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
+
+		pop();
+		pop();
+
+		//add_return(store);
 	}
 	else
 	{
-
 		// Contains only an IDENTIFIER -> Receive a 'Variable'
-		Value& id = return_stack.top();
+		Value& id = top();
 
 		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 		block.create_decl_var(id);
 
-		return_stack.pop();
-		add_return(id);
+		Variable& var = dynamic_cast<Variable&>(id);
+		Variable* id_ptr = new Variable(var);
+
+		pop();
+
+		//add_return(id_ptr);
 	}
 
 }
@@ -621,25 +660,47 @@ void CodeGenVisitor::print(ostream& out)
 }
 
 
-void CodeGenVisitor::add_return(Value& value)
+
+/************************
+ * 		   Vector       *
+ ************************/
+
+void CodeGenVisitor::add_return(Value* value)
 {
-	return_stack.push(value);
+	return_vector.push_back(unique_ptr<Value>(value));
 }
 
-Value CodeGenVisitor::pop_return()
-{
-	Value val = return_stack.top();
-	return_stack.pop();
 
-	return val;
+Value& CodeGenVisitor::top()
+{
+	return *(return_vector[return_vector.size()-1]);
 }
 
-bool CodeGenVisitor::is_stack_empty() const
+void CodeGenVisitor::pop()
 {
-	return get_stack_size() <= 0;
+	return_vector.erase(return_vector.begin()+return_vector.size()-1);
 }
 
-int CodeGenVisitor::get_stack_size() const
+
+Value& CodeGenVisitor::get_return_value(int n)
 {
-	return return_stack.size();
+	return *(return_vector.at(return_vector.size()-1-n));
+}
+
+void CodeGenVisitor::remove_return_value(int n)
+{
+	return_vector.erase(return_vector.begin()+return_vector.size()-1-n);
+}
+
+
+
+
+bool CodeGenVisitor::is_vector_empty() const
+{
+	return get_vector_size() <= 0;
+}
+
+int CodeGenVisitor::get_vector_size() const
+{
+	return return_vector.size();
 }

@@ -11,8 +11,11 @@ namespace codegen
         Value(const std::string& _type);
 
         // Type
-        bool is_variable() { return variable; }
-        bool is_constant() { return constant; }
+        bool is_variable();
+        bool is_constant();
+
+        void set_is_variable();
+        void set_is_constant();
 
         // std::string -> to change
         std::string get_type();

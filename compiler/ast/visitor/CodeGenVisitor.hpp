@@ -16,6 +16,8 @@
 
 #include "ASTVisitor.hpp"
 #include "../../codegen/Builder.hpp"
+#include "../../codegen/Variable.hpp"
+#include "../../codegen/ConstantInt.hpp"
 
 namespace visitor
 {
@@ -170,13 +172,19 @@ namespace visitor
 		codegen::Module& curr_module;
 		std::string curr_func_name;
 
-		/* Stack */
-		std::stack<codegen::Value> return_stack;
+		/* Vector */
+		std::vector<std::unique_ptr<codegen::Value>> return_vector;
 
-		void add_return(codegen::Value&);
-		codegen::Value pop_return();
-		bool is_stack_empty() const;
-		int get_stack_size() const;
+		void add_return(codegen::Value*);
+		codegen::Value& top();
+		void pop();
+
+		codegen::Value& get_return_value(int n);
+		void remove_return_value(int n);
+
+
+		bool is_vector_empty() const;
+		int get_vector_size() const;
 
 
 		/*

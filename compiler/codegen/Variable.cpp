@@ -8,7 +8,7 @@ using namespace std;
 
 Variable::Variable(string _name, string _type) : Value(_type), name(_name)
 {
-
+    set_is_variable();
 }
 
 
