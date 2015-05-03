@@ -10,6 +10,7 @@ define i32 @main(i32 %ac, i8** %av) #0 {
   %j = alloca i32, align 4
   %k = alloca i32, align 4
   %p = alloca i32, align 4
+  %ret = alloca i32, align 4
   store i32 %ac, i32* %1, align 4
   store i8** %av, i8*** %2, align 8
   store i32 0, i32* %i, align 4
@@ -21,7 +22,22 @@ define i32 @main(i32 %ac, i8** %av) #0 {
   %6 = load i32* %j, align 4
   %7 = add nsw i32 %5, %6
   store i32 %7, i32* %p, align 4
+  %8 = load i32* %p, align 4
+  %9 = call i32 @func(i32 %8)
+  store i32 %9, i32* %ret, align 4
   ret i32 0
+}
+
+; Function Attrs: nounwind ssp uwtable
+define i32 @func(i32 %argument) #0 {
+  %1 = alloca i32, align 4
+  %temp = alloca i32, align 4
+  store i32 %argument, i32* %1, align 4
+  %2 = load i32* %1, align 4
+  %3 = add nsw i32 %2, 1
+  store i32 %3, i32* %temp, align 4
+  %4 = load i32* %temp, align 4
+  ret i32 %4
 }
 
 attributes #0 = { nounwind ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }
