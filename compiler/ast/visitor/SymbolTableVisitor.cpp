@@ -586,6 +586,12 @@ void SymbolTableVisitor::visit( ast::Menu& token )
 	visit_children(token);
 }
 
+void SymbolTableVisitor::visit( ast::MenuBody& token )
+{
+
+	visit_children(token);
+}
+
 void SymbolTableVisitor::visit( ast::MenuDef& token )
 {
 
