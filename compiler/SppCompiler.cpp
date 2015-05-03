@@ -174,10 +174,10 @@ void SppCompiler::export_llvm()
 	}
 	else
 	{
-	*/
+	
 		visitor::CodeGenVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
-		visitor.print(cout);
+		visitor.print(cout);*/
 	//}
 
 }

@@ -328,7 +328,7 @@ void TypeSymbolTable::unify(const string& type, FlatType* flat)
 	// check hints compatibility :
 	if(!flat->get_hints().compatible(actual_type.get_hints()))
 	{
-		except::HintsUnificationException exception(flat->get_hints(), actual_type.get_hints());
+		except::HintsUnificationException exception(actual_type.get_hints(), flat->get_hints());
 		delete flat;
 		throw exception;
 	}	
@@ -342,9 +342,7 @@ void TypeSymbolTable::update_hints(const std::string& varname, const TypesHint& 
 	TerminalTypeSymbol& symbol = at(varname).resolve();
 
 	if(!symbol.get_hints().compatible(hints))
-		throw except::UnificationException("couldn't update the hints of the type variable " + symbol.str() + 
-										   " because of incompatibility between the variable's hints (" + symbol.get_hints().str() +
-										   ") and the given hints (" + hints.str() + ")");
+		throw except::HintsUnificationException(symbol.get_hints(), hints);
 	
 	if(!symbol.is_variable())
 		return; // hints are compatible but cannot be update because the symbol is not a variable
