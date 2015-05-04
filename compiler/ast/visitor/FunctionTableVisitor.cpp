@@ -43,6 +43,7 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 
 	
 	is_there_a_return_gen = false;
+	is_there_an_empty_return_gen = false;
 	ret = true;
 	counter = 0;
 
@@ -54,6 +55,10 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Wrong termination");
 
 	}
+
+	if(is_there_a_return_gen && is_there_an_empty_return_gen)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Non uniform returns");
+			
 	counter = 0;
 	variable_table.move_to_scope(token.get_scope().get_scope_id());
 
@@ -161,6 +166,8 @@ void FunctionTableVisitor::visit( ast::Return& token )
 		is_there_a_return_loc = true;
 		is_there_a_return_gen = true;
 	}
+	else 
+		is_there_an_empty_return_gen = true;
 	visit_children(token);
 } 
 

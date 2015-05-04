@@ -17,6 +17,12 @@ namespace ast
 		Operator(const std::string&,const NodeLocation&);
 
 		virtual void accept(visitor::ASTVisitor&);
+
+		std::string get_type_id() const { return type_id; }
+		void set_type_id(const std::string& new_type_id) { type_id = new_type_id; }
+		
+	public:
+		std::string type_id;
 	};
 
 	class BinaryOperator : public Operator

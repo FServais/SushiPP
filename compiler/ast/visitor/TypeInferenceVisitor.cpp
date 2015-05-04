@@ -126,6 +126,9 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
 
+	// record the operator type id
+	op.set_type_id(alpha);
+
 	// alpha goes to both operand
 	params.add_param(alpha);
 	params.call();
@@ -162,8 +165,10 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 {
 	//cout << "Op_Minus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));	// operands can only be integers or float
+
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -201,8 +206,10 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 {
 	//cout << "Op_Mult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operands can only be integers or float
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -240,8 +247,10 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 {
 	//cout << "Op_Div" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));// operands can only be integers or float
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -279,8 +288,10 @@ void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 {
 	//cout << "Op_Modulo" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
 	type_table.unify_int(alpha); // module can only have integer operands
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -318,9 +329,10 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 {
 	//cout << "Op_Exponentiation" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // base can only be an integer or a float
 	
-	// base can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	string beta = type_table.new_variable(); // add a type variable for the exponent
 	type_table.unify_int(beta); // exponent must be an integer
@@ -360,9 +372,10 @@ void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 {
 	//cout << "Op_UnaryMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // base can only be an integer or a float
 
-	// base can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -385,9 +398,10 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 {
 	//cout << "Op_BitwiseOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -424,9 +438,10 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 {
 	//cout << "Op_BitwiseAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -463,9 +478,10 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 {
 	//cout << "Op_BitwiseXor" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -502,9 +518,10 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 {
 	//cout << "Op_BitwiseNot" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -527,9 +544,10 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 {
 	//cout << "Op_LogicalOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -566,9 +584,10 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 {
 	//cout << "Op_LogicalAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -605,9 +624,10 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 {
 	//cout << "Op_LogicalNot" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -629,14 +649,15 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 {
 	//cout << "Op_CompLessThan" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_bool(alpha); // comparison operators return a boolean
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
-
+	
+	// record the operands type id
+	op.set_type_id(beta);
+	
 	params.add_param(beta);
 	params.call();
 
@@ -672,12 +693,13 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 {
 	//cout << "Op_CompGreaterThan" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -714,12 +736,13 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 {
 	//cout << "Op_CompLessEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -756,12 +779,13 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 {
 	//cout << "Op_CompGreaterEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -798,12 +822,13 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 {
 	//cout << "Op_CompEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float, bool or int)
 	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -840,12 +865,13 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 {
 	//cout << "Op_CompNotEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float, bool or int)
 	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -882,9 +908,10 @@ void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 {
 	//cout << "Op_LeftShift" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -921,9 +948,10 @@ void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 {
 	//cout << "Op_RightShift" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -960,9 +988,10 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 {
 	//cout << "Op_StringConcat" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_string(alpha); // string concatenation takes strings as operand and return string
 
-	// string concatenation takes strings as operand and return string
-	type_table.unify_string(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -999,8 +1028,10 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 {
 	//cout << "Op_PrefixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1023,8 +1054,10 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 {
 	//cout << "Op_PrefixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1048,8 +1081,10 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 {
 	//cout << "Op_PostfixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1072,8 +1107,10 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 {
 	//cout << "Op_PostfixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1096,6 +1133,9 @@ void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 {
 	//cout << "Op_Assignment" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1133,9 +1173,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 {
 	//cout << "Op_AssignPlus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1173,9 +1214,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 {
 	//cout << "Op_AssignMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1213,9 +1255,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 {
 	//cout << "Op_AssignMult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1253,9 +1296,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 {
 	//cout << "Op_AssignDiv" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1293,9 +1337,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 {
 	//cout << "Op_AssignExpo" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // left operand can be either an float or an int
 
-	// left operand can be either an float or an int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// exponent must be an integer
 	string beta = type_table.new_variable();
@@ -1337,9 +1382,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 {
 	//cout << "Op_AssignMod" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // modulo op expects integer operands and return an integer
 
-	// modulo op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1377,9 +1423,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 {
 	//cout << "Op_AssignAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1417,9 +1464,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 {
 	//cout << "Op_AssignOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1457,9 +1505,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 {
 	//cout << "Op_AssignXor" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1497,9 +1546,10 @@ void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 {
 	//cout << "Op_AssignConcat" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_string(alpha); // string concatenation takes strings as operand and return string
 
-	// string concatenation takes strings as operand and return string
-	type_table.unify_string(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();

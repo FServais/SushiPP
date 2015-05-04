@@ -155,6 +155,7 @@ namespace visitor
 		errors::ErrorHandler& error_handler;
 		// boolean to test if there is a non empty nori in the children
 		bool is_there_a_return_gen;
+		bool is_there_an_empty_return_gen;
 		bool is_there_a_return_loc;
 		bool def_case;
 		bool ret;
