@@ -52,44 +52,44 @@ namespace visitor
 		 * 		Operator token    *
 		 **************************/
 
-		virtual void visit( ast::Op_Plus& );
-		virtual void visit( ast::Op_Minus& );
-		virtual void visit( ast::Op_Mult& );
-		virtual void visit( ast::Op_Div& );
-		virtual void visit( ast::Op_Modulo& );
-		virtual void visit( ast::Op_Exponentiation& );
-		virtual void visit( ast::Op_UnaryMinus& );
-		virtual void visit( ast::Op_BitwiseOr& );
-		virtual void visit( ast::Op_BitwiseAnd& );
-		virtual void visit( ast::Op_BitwiseXor& );
-		virtual void visit( ast::Op_BitwiseNot& );
-		virtual void visit( ast::Op_LogicalOr& );
-		virtual void visit( ast::Op_LogicalAnd& );
-		virtual void visit( ast::Op_LogicalNot& );
-		virtual void visit( ast::Op_CompLessThan& );
-		virtual void visit( ast::Op_CompGreaterThan& );
-		virtual void visit( ast::Op_CompLessEqual& );
-		virtual void visit( ast::Op_CompGreaterEqual& );
-		virtual void visit( ast::Op_CompEqual& );
-		virtual void visit( ast::Op_CompNotEqual& );
-		virtual void visit( ast::Op_LeftShift& );
-		virtual void visit( ast::Op_RightShift& );
-		virtual void visit( ast::Op_StringConcat& );
-		virtual void visit( ast::Op_PrefixIncrement& );
-		virtual void visit( ast::Op_PrefixDecrement& );
-		virtual void visit( ast::Op_PostfixIncrement& );
-		virtual void visit( ast::Op_PostfixDecrement& );
-		virtual void visit( ast::Op_Assignment& );
-		virtual void visit( ast::Op_AssignPlus& );
-		virtual void visit( ast::Op_AssignMinus& );
-		virtual void visit( ast::Op_AssignMult& );
+		virtual void visit( ast::Op_Plus& ); // Int or float
+		virtual void visit( ast::Op_Minus& ); // Int or float
+		virtual void visit( ast::Op_Mult& ); // Int or float
+		virtual void visit( ast::Op_Div& ); // Int or float
+		virtual void visit( ast::Op_Modulo& ); // Int
+		virtual void visit( ast::Op_Exponentiation& ); // Base is int of float
+		virtual void visit( ast::Op_UnaryMinus& ); // Int or float
+		virtual void visit( ast::Op_BitwiseOr& ); // int
+		virtual void visit( ast::Op_BitwiseAnd& ); // int
+		virtual void visit( ast::Op_BitwiseXor& ); // int
+		virtual void visit( ast::Op_BitwiseNot& ); // int
+		virtual void visit( ast::Op_LogicalOr& ); // bool
+		virtual void visit( ast::Op_LogicalAnd& ); // bool
+		virtual void visit( ast::Op_LogicalNot& ); // bool
+		virtual void visit( ast::Op_CompLessThan& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompGreaterThan& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompLessEqual& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompGreaterEqual& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompEqual& ); // Int, float or bool, returns bool
+		virtual void visit( ast::Op_CompNotEqual& ); // Int, float or bool, returns bool
+		virtual void visit( ast::Op_LeftShift& ); // int
+		virtual void visit( ast::Op_RightShift& ); // int
+		virtual void visit( ast::Op_StringConcat& ); // string
+		virtual void visit( ast::Op_PrefixIncrement& ); // Int or float
+		virtual void visit( ast::Op_PrefixDecrement& ); // Int or float
+		virtual void visit( ast::Op_PostfixIncrement& ); // Int or float
+		virtual void visit( ast::Op_PostfixDecrement& ); // Int or float
+		virtual void visit( ast::Op_Assignment& ); // Whatever
+		virtual void visit( ast::Op_AssignPlus& ); // Int or float
+		virtual void visit( ast::Op_AssignMinus& ); // Int or float
+		virtual void visit( ast::Op_AssignMult& ); // Int or float
 		virtual void visit( ast::Op_AssignDiv& );
 		virtual void visit( ast::Op_AssignExpo& );
-		virtual void visit( ast::Op_AssignMod& );
+		virtual void visit( ast::Op_AssignMod& ); // int
 		virtual void visit( ast::Op_AssignAnd& );
 		virtual void visit( ast::Op_AssignOr& );
 		virtual void visit( ast::Op_AssignXor& );
-		virtual void visit( ast::Op_AssignConcat& );
+		virtual void visit( ast::Op_AssignConcat& ); // String
 
 		/**************************
 		 * 		Constant token    *
