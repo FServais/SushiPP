@@ -136,6 +136,7 @@ namespace visitor
 		 ***********************************/
 		 
 		virtual void visit( ast::Expression& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 		
@@ -160,6 +161,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -169,6 +171,8 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
 
 
 	private:
@@ -177,9 +181,7 @@ namespace visitor
 		errors::ErrorHandler& error_handler;
 
 		std::set<size_t> allowed_scopes;
-		std::set<size_t> prev_allowed_scopes;
 
-			
 		void visit_children( ast::ASTNode& );
 	};
 }

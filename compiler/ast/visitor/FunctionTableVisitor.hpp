@@ -6,6 +6,7 @@
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
 #include "../../util.hpp"
+#include "../../errors/ErrorHandler.hpp"
 #include "ASTVisitor.hpp"
 
 namespace visitor
@@ -13,7 +14,7 @@ namespace visitor
 	class FunctionTableVisitor  : public visitor::ASTVisitor
 	{
 	public:
-		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& , symb::SymbolTable<symb::VariableInfo>& );
+		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& , symb::SymbolTable<symb::VariableInfo>& , errors::ErrorHandler&);
 
 		virtual void visit( ast::ASTNode& );
 		virtual void visit( ast::SoyFunc&  );
@@ -137,6 +138,7 @@ namespace visitor
 		virtual void visit( ast::Menu& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::Roll& );
 		virtual void visit( ast::Foreach& );
 		virtual void visit( ast::For& );
@@ -144,11 +146,20 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
 
 	private:
 		symb::SymbolTable<symb::FunctionInfo>& function_table;
 		symb::SymbolTable<symb::VariableInfo>& variable_table;
-		
+		errors::ErrorHandler& error_handler;
+		// boolean to test if there is a non empty nori in the children
+		bool is_there_a_return_gen;
+		bool is_there_a_return_loc;
+		bool def_case;
+		bool ret;
+		bool prev_ret;
+		int counter;
 
 
 		void visit_children( ast::ASTNode& );

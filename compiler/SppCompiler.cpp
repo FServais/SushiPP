@@ -42,7 +42,7 @@ void SppCompiler::execute()
 		scope_checking();
 		inference();
 		terminate();
-		export_llvm();
+		//export_llvm();
 	}
 }
 
@@ -108,7 +108,8 @@ void SppCompiler::scope_checking()
 	if(error_handler.error_occurred())
 		return;
 
-	visitor::FunctionTableVisitor visitor1(function_table, variable_table);
+	visitor::FunctionTableVisitor visitor1(function_table, variable_table, error_handler);
+
 	syntax_tree.root().accept(visitor1);
 
 	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
@@ -173,10 +174,10 @@ void SppCompiler::export_llvm()
 	}
 	else
 	{
-	*/
+	
 		visitor::CodeGenVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
-		visitor.print(cout);
+		visitor.print(cout);*/
 	//}
 
 }

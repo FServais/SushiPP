@@ -369,5 +369,7 @@ ParamList& SoyFunc::get_params()
 
 Scope& SoyFunc::get_scope()
 {
+	if(!contains_params())
+		return *dynamic_cast<Scope*>(children[0]);
 	return *dynamic_cast<Scope*>(children[1]);
 }
