@@ -24,7 +24,7 @@ namespace visitor
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor(std::ostream& out = std::cout); // arg: the stream in which to output the tree
+		CodeGenVisitor(); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -125,6 +125,7 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
@@ -151,6 +152,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -160,14 +162,15 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
+
 
 		void visit_children( ast::ASTNode& );
 
 		void print(std::ostream&);
 
 	private:
-		std::ostream& out_; // stream in which to write
-
 		codegen::Builder builder;
 		codegen::Module& curr_module;
 		std::string curr_func_name;

@@ -5,7 +5,7 @@ using namespace visitor;
 using namespace ast;
 using namespace codegen;
 
-CodeGenVisitor::CodeGenVisitor(ostream& out) : out_(out), curr_module(builder.get_curr_module()), curr_func_name("main")
+CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_func_name("main")
 {
 
 }
@@ -536,6 +536,12 @@ void CodeGenVisitor::visit( Expression& token )
 }
 
 
+void CodeGenVisitor::visit( ast::ExpressionList& )
+{
+
+}
+
+
 void CodeGenVisitor::visit( ModifyingExpression& token )
 {
 
@@ -627,6 +633,10 @@ void CodeGenVisitor::visit( Menu& token )
 
 }
 
+void CodeGenVisitor::visit( ast::MenuBody& )
+{
+
+}
 
 void CodeGenVisitor::visit( MenuDef& token )
 {
@@ -678,6 +688,17 @@ void CodeGenVisitor::visit( Elseif& token )
 {
 
 }
+
+void CodeGenVisitor::visit( ast::If& )
+{
+
+}
+
+void CodeGenVisitor::visit( ast::Else& )
+{
+
+}
+
 
 
 /************************

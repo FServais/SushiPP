@@ -67,7 +67,7 @@ void FunctionBlock::add_argument(string type, string name)
     Variable lhs(name, type);
     unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign(lhs, *up));
 
-    arguments.push_back(make_pair(type,newname.str()));}
+    arguments.push_back(make_pair(type,newname.str()));
 }
 
 void FunctionBlock::set_return(string _return_value)

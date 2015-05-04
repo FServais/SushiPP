@@ -25,6 +25,7 @@ using namespace compiler;
 using namespace ast;
 using namespace errors;
 using namespace std;
+using namespace visitor;
 
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
@@ -42,7 +43,7 @@ void SppCompiler::execute()
 		scope_checking();
 		inference();
 		terminate();
-		//export_llvm();
+		export_llvm();
 	}
 }
 
@@ -174,12 +175,16 @@ void SppCompiler::export_llvm()
 	}
 	else
 	{
-	
+
 		visitor::CodeGenVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
-		visitor.print(cout);*/
-	//}
+		visitor.print(cout);
+	}
+	*/
 
+	CodeGenVisitor visitor;
+	syntax_tree.root().accept(visitor);
+	visitor.print(cout);
 }
 
 ErrorHandler& SppCompiler::get_error_handler()
