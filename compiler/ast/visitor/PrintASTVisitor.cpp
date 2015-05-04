@@ -11,26 +11,26 @@ PrintASTVisitor::PrintASTVisitor(ostream& out) : length_line(2), out_(out), curr
 void PrintASTVisitor::print_pair( string& p_name, string& p_value )
 {
 	string tab_line = string(curr_depth * length_line, '-') + "˧";
-	out_ << tab_line << " <" << p_name << " ; " << p_value << ">" << endl;
+	out_ << "|" <<  tab_line << " <" << p_name << " ; " << p_value << ">" << endl;
 }
 
 void PrintASTVisitor::print_pair( std::string& p_name, std::string& p_value, const ast::NodeLocation& loc )
 {
 	string tab_line = string(curr_depth * length_line, '-') + "˧";
-	out_ << tab_line << " <" << p_name << " ; " << p_value << "> (lines " << loc.first_line() << " -> " << loc.last_line() << ") (cols " << loc.first_column() << " -> " << loc.last_column() << ")" << endl;
+	out_ << "|" <<  tab_line << " <" << p_name << " ; " << p_value << "> (lines " << loc.first_line() << " -> " << loc.last_line() << ") (cols " << loc.first_column() << " -> " << loc.last_column() << ")" << endl;
 }
 
 void PrintASTVisitor::print_single( std::string& name, const ast::NodeLocation& loc )
 {
 	string tab_line = string(curr_depth * length_line, '-') + "˧";
-	out_ << tab_line << " " << name << " (lines " << loc.first_line() << " -> " << loc.last_line() << ") (cols " << loc.first_column() << " -> " << loc.last_column() << ")" << endl; 
+	out_ << "|" <<  tab_line << " " << name << " (lines " << loc.first_line() << " -> " << loc.last_line() << ") (cols " << loc.first_column() << " -> " << loc.last_column() << ")" << endl; 
 }
 
 void PrintASTVisitor::print_single( string& name )
 {
 	string tab_line = string(curr_depth * length_line, '-') + "˧";
-	out_ << tab_line << " " << name << endl;
-} 
+	out_ << "|" <<  tab_line << " " << name << endl;
+}
 
 /*****************************
  * 		Identifier token    *

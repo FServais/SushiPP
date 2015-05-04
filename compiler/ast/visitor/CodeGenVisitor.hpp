@@ -18,6 +18,7 @@
 #include "../../codegen/Builder.hpp"
 #include "../../codegen/Variable.hpp"
 #include "../../codegen/ConstantInt.hpp"
+#include "../../codegen/LabelManager.hpp"
 
 namespace visitor
 {
@@ -174,6 +175,8 @@ namespace visitor
 		codegen::Builder builder;
 		codegen::Module& curr_module;
 		std::string curr_func_name;
+
+		codegen::LabelManager label_manager;
 
 		/* Vector */
 		std::vector<std::unique_ptr<codegen::Value>> return_vector;

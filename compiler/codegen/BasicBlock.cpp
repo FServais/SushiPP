@@ -120,7 +120,25 @@ Value* BasicBlock::create_op_cmp_lt(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 {
+    // Create temp variables
+    string temp_name = var_manager.insert_variable("tmp_gt");
 
+    string type = lhs.str_type();
+
+    if(type != rhs.str_type()){
+        cout << "[ERROR] " << endl;
+        throw 0;
+    }
+
+    Variable* ret = new Variable(temp_name, "i1");
+
+    stringstream ss;
+
+    ss << ret->str_value() << " = " << "icmp sgt" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_cmp_le(Value& lhs, Value& rhs)
@@ -306,6 +324,24 @@ Value* BasicBlock::create_get_pointer(Value& variable)
     return var_ptr;
 }
 
+
+void BasicBlock::create_branch(string label)
+{
+    stringstream ss;
+    ss << "br label %" << label;
+
+    add_line(ss.str());
+}
+
+void BasicBlock::create_cond_branch(Value& cond, std::string label_true, std::string label_false)
+{
+    Variable& cond_var = dynamic_cast<Variable&>(cond);
+
+    stringstream ss;
+    ss << "br " << cond_var.str_type() << " " << cond_var.str_value() << ", label %" << label_true << ", label %" << label_false;
+
+    add_line(ss.str());
+}
 
 
 void BasicBlock::add_line(std::string line)

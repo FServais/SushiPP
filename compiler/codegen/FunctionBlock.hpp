@@ -23,6 +23,7 @@ namespace codegen
         void dump(std::ostream&) const;
 
         void add_block(BasicBlock&);
+        void add_block(std::string); // With block_label
 
         std::string get_name() const;
         std::string str_arguments() const;

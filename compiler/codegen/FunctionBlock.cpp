@@ -35,6 +35,12 @@ void FunctionBlock::add_block(BasicBlock& block)
     blocks.push_back(block);
 }
 
+void FunctionBlock::add_block(string block_label)
+{
+    BasicBlock block(var_manager, block_label);
+    blocks.push_back(block);
+}
+
 std::string FunctionBlock::get_name() const
 {
     return name;

@@ -214,7 +214,38 @@ void CodeGenVisitor::visit( Op_CompLessThan& token )
 
 void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(lhs, rhs));
+
+	pop();
+	pop();
+
+	add_return(result);
 }
 
 
@@ -502,7 +533,7 @@ void CodeGenVisitor::visit( DeclVar& token )
 		block.create_decl_var(id);
 
 		Variable& var = dynamic_cast<Variable&>(id);
-		Variable* id_ptr = new Variable(var);
+		//Variable* id_ptr = new Variable(var);
 
 		pop();
 
@@ -680,23 +711,83 @@ void CodeGenVisitor::visit( ForUpdate& token )
 
 void CodeGenVisitor::visit( Conditional& token )
 {
+	token.get_if().accept(*this);
 
+
+	for(int i = 0 ; i < token.count_elseif() ; ++i)
+		token.get_nth_elseif(i).accept(*this);
+
+	if(token.contains_else())
+		token.get_else().accept(*this);
+
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+	curr_function.add_block(label_manager.get_last_occurence("end_if"));
 }
-
 
 void CodeGenVisitor::visit( Elseif& token )
 {
+	// In current block, add operations to compute the condition and the branch
+	token.get_expression().accept(*this);
+	Value& result_comp = top(); // Return the variable where the result is stored
 
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+	BasicBlock& block = curr_function.get_last_block();
+
+	string label_true = label_manager.insert_label("elseif_true");
+	string label_false = label_manager.insert_label("elseif_false");
+	block.create_cond_branch(result_comp, label_true, label_false);
+
+	pop();
+
+	// Create block "true"
+	curr_function.add_block(label_true);
+
+	// Add body of the block "true"
+	token.get_scope().accept(*this);
+
+	// Go to end_if
+	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
+
+	// Create elseif_false
+	curr_function.add_block(label_false);
 }
 
-void CodeGenVisitor::visit( ast::If& )
+void CodeGenVisitor::visit( ast::If& token )
 {
+	// In current block, add operations to compute the condition and the branch
+	token.get_expression().accept(*this);
+	Value& result_comp = top(); // Return the variable where the result is stored
+	Variable& cast_result = dynamic_cast<Variable&>(result_comp);
 
+
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+	BasicBlock& block = curr_function.get_last_block();
+
+
+	string label_true = label_manager.insert_label("if_true");
+	string label_false = label_manager.insert_label("if_false");
+	block.create_cond_branch(result_comp, label_true, label_false);
+
+	pop();
+
+	// Create block "true"
+	curr_function.add_block(label_true);
+
+	// Add body of the block "true"
+	token.get_scope().accept(*this);
+
+	// Go to end_if
+	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
+
+	// Create if_false
+	curr_function.add_block(label_false);
 }
 
-void CodeGenVisitor::visit( ast::Else& )
+void CodeGenVisitor::visit( ast::Else& token )
 {
+	token.get_scope().accept(*this);
 
+	curr_module.get_function(curr_func_name).get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
 }
 
 

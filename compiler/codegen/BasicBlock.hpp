@@ -84,6 +84,10 @@ namespace codegen
 
         //Value* create_get_pointer_array(Value&, Value&);
 
+        void create_branch(std::string);
+
+        // Variable containing the result of the condition, label if true, label if false
+        void create_cond_branch(Value&, std::string, std::string);
 
 
     private:
