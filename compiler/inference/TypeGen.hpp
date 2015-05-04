@@ -14,6 +14,7 @@ namespace typegen
 	{
 	public:
 		virtual inference::ShallowType get_type() = 0;
+		virtual std::string to_str() = 0;
 	};
 
 
@@ -21,36 +22,42 @@ namespace typegen
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::INT;};
+		virtual std::string to_str();
 	};
 
 	class Float : public Type
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::FLOAT;};
+		virtual std::string to_str();
 	};
 
 	class Char : public Type
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::CHAR;};
+		virtual std::string to_str();
 	};
 
 	class Bool : public Type
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::BOOL;};
+		virtual std::string to_str();
 	};
 
 	class String : public Type
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::STRING;};
+		virtual std::string to_str();
 	};
 
 	class Void : public Type
 	{
 	public:
 		virtual inference::ShallowType get_type(){return inference::VOID;};
+		virtual std::string to_str();
 	};
 
 	class List : public Type
@@ -59,6 +66,7 @@ namespace typegen
 		List(std::shared_ptr<Type>);
 		virtual inference::ShallowType get_type(){return inference::LIST;};
 		std::shared_ptr<Type> get_param_type(){return param_type;};
+		virtual std::string to_str();
 
 	private:
 		std::shared_ptr<Type> param_type;
@@ -70,6 +78,8 @@ namespace typegen
 		Array(std::shared_ptr<Type>);
 		virtual inference::ShallowType get_type(){return inference::ARRAY;};
 		std::shared_ptr<Type> get_param_type(){return param_type;};
+		virtual std::string to_str();
+
 
 	private:
 		std::shared_ptr<Type> param_type;
@@ -83,6 +93,7 @@ namespace typegen
 		int nb_param(){return args_types.size();};
 		std::shared_ptr<Type> get_ret_type(){return return_type;};
 		std::shared_ptr<Type> get_arg(size_t );
+		virtual std::string to_str();
 
 	private:
 		std::shared_ptr<Type> return_type;

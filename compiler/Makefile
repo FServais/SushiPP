@@ -30,7 +30,7 @@ OBJS_COMP	  		= $(PATH_OBJS)SppCompiler.o
 OBJS_SCANNER  		= $(PATH_OBJS)sushipp.yy.o
 OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o
 OBJS_UTIL	  		= $(PATH_OBJS)util.o
-OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(PATH_OBJS)Types.o $(PATH_OBJS)InferenceExceptions.o
+OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(PATH_OBJS)Types.o $(PATH_OBJS)InferenceExceptions.o $(PATH_OBJS)TypeGen.o
 OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
 OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
 OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
@@ -59,7 +59,7 @@ DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB
 DEP_COMP				 = SppCompiler.hpp
 DEP_EXCEP				 = $(PATH_EXCEP)Exceptions.hpp
 DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp
-DEP_INFERENCE			 = $(PATH_INFERENCE)TypeSymbolTable.hpp $(PATH_INFERENCE)TypeSymbol.hpp $(PATH_INFERENCE)Types.hpp $(PATH_INFERENCE)InferenceExceptions.hpp
+DEP_INFERENCE			 = $(PATH_INFERENCE)TypeSymbolTable.hpp $(PATH_INFERENCE)TypeSymbol.hpp $(PATH_INFERENCE)Types.hpp $(PATH_INFERENCE)InferenceExceptions.hpp $(PATH_INFERENCE)TypeGen.hpp
 
 # compilation and linking flags #
 CC = clang++
@@ -217,13 +217,16 @@ $(PATH_OBJS)SyntaxError.o: $(PATH_ERRORS)SyntaxError.cpp $(PATH_ERRORS)SyntaxErr
 $(PATH_OBJS)TypeSymbolTable.o: $(PATH_INFERENCE)TypeSymbolTable.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)TypeSymbol.o: $(PATH_INFERENCE)TypeSymbol.cpp $(PATH_INFERENCE)TypeSymbol.hpp $(PATH_INFERENCE)Types.hpp  $(PATH_UTIL)util.hpp
+$(PATH_OBJS)TypeSymbol.o: $(PATH_INFERENCE)TypeSymbol.cpp $(PATH_INFERENCE)TypeSymbol.hpp $(PATH_INFERENCE)Types.hpp  $(PATH_UTIL)util.hpp $(PATH_INFERENCE)TypeGen.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)Types.o: $(PATH_INFERENCE)Types.cpp $(PATH_INFERENCE)Types.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)InferenceExceptions.o: $(PATH_INFERENCE)InferenceExceptions.cpp $(DEP_INFERENCE)
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)TypeGen.o: $(PATH_INFERENCE)TypeGen.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Code Generation #
