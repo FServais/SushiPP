@@ -1,75 +1,77 @@
 
-
+#include <iostream>
 #include "TypeGen.hpp"
+using namespace std; 
 using namespace typegen;
 
-Function::Function(std::shared_ptr<Type> ret_type, std::vector<std::shared_ptr<Type>> arg_type): return_type(ret_type), args_types(arg_type)
+Function::Function(shared_ptr<Type> ret_type, vector<shared_ptr<Type>> arg_type): return_type(ret_type), args_types(arg_type)
 {
 
 }
 
-std::shared_ptr<Type> Function::get_arg(size_t i)
+shared_ptr<Type> Function::get_arg(size_t i)
 {
 	if( i > args_types.size())
 		throw except::BadParameterNumberException("Bad argument : out of bounds");
 	return args_types[i];
 }
 
-Array::Array(std::shared_ptr<Type> type): param_type(type)
+Array::Array(shared_ptr<Type> type): param_type(type)
 {
 
 }
 
-List::List(std::shared_ptr<Type> type): param_type(type)
+List::List(shared_ptr<Type> type): param_type(type)
 {
 
 }
 
-std::string Array::to_str()
+void Array::to_str()
 {
-	std::cout<<"Array : "<<get_param_type()->to_str()<<std::endl;
+	cout<<"Array : "<<endl;
+	get_param_type()->to_str();
 }
 
-std::string List::to_str()
+void List::to_str()
 {
-	std::cout<<"List : "<<get_param_type()->to_str()<<std::endl;
+	cout<<"List : "<<endl;
+	get_param_type()->to_str();
 }
 
-std::string Function::to_str()
+void Function::to_str()
 {
-	std::cout<<"Function : "<<get_return_type()->to_str()<<"(" ;
-		std::string str;
-	for(auto param : get_arg)
-		str += param->to_str() + " , ";
-	std::cout<<str<<std::endl;
+	get_ret_type()->to_str();
+		string str;
+	for(int i = 0; i < nb_param(); i++)
+		get_arg(i)->to_str();
 }
 
-std::string Int::to_str()
+void Int::to_str()
 {
-	std::cout<<"Int"<<std::endl;
+	cout<<"Int"<<endl;
 }
 
-std::string Float::to_str()
+void Float::to_str()
 {
-	std::cout<<"Float"<<std::endl;
+	cout<<"Float"<<endl;
 }
 
-std::string Char::to_str()
+void Char::to_str()
 {
-	std::cout<<"Char"<<std::endl;
+	cout<<"Char"<<endl;
 }
 
-std::string String::to_str()
+void String::to_str()
 {
-	std::cout<<"String"<<std::endl;
+	cout<<"String"<<endl;
 }
 
-std::string Bool::to_str()
+void Bool::to_str()
 {
-	std::cout<<"Bool"<<std::endl;
+	cout<<"Bool"<<endl;
 }
 
-std::string Void::to_str()
+void Void::to_str()
 {
-	std::cout<<"Void"<<std::endl;
+	cout<<"Void"<<endl;
 }

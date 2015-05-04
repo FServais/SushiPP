@@ -129,7 +129,8 @@ void SppCompiler::inference()
 
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
 	syntax_tree.root().accept(visitor);
-	cout << endl << visitor.get_table() << endl << endl;
+	type_table = visitor.get_table();
+	cout << endl << *(visitor.get_table()) << endl << endl;
 }
 
 void SppCompiler::print_ast()
@@ -152,6 +153,7 @@ void SppCompiler::print_ast()
 	{
 		visitor::PrintASTVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
+
 	}
 }
 

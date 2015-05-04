@@ -7,6 +7,7 @@
 
 #include "ASTVisitor.hpp"
 
+
 namespace visitor
 {
 	class PrintASTVisitor : public ASTVisitor
@@ -153,6 +154,7 @@ namespace visitor
 		virtual void visit( ast::Elseif& );
 		virtual void visit( ast::If& );
 		virtual void visit( ast::Else& );
+
 
 	private:
 		int length_line;

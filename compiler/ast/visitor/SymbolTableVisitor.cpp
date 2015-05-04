@@ -16,7 +16,7 @@ void SymbolTableVisitor::check_unused(size_t scp_id)
 	{
 		VariableInfo v = variable_table.get_symbol(scp_id, i);
 		// If a variable is found unused, then an error is created
-		if(!v.get_used())
+		if(!v.get_line())
 			error_handler.add_sem_error(" ",v.get_line(), v.get_column(), " unused variable : "+v.name());
 	}
 }
@@ -107,7 +107,7 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 {
 	size_t scp_id = token.get_scope_id();
 	allowed_scopes.insert(scp_id);
-	
+
 	function_table.move_to_scope(scp_id);
 	variable_table.move_to_scope(scp_id);
 
@@ -500,12 +500,6 @@ void SymbolTableVisitor::visit( ast::Menu& token )
 
 void SymbolTableVisitor::visit( ast::MenuBody& token )
 {
-	visit_children(token);
-}
-
-void SymbolTableVisitor::visit( ast::MenuBody& token )
-{
-
 	visit_children(token);
 }
 
