@@ -9,7 +9,6 @@ SymbolTableVisitor::SymbolTableVisitor(symb::SymbolTable<symb::FunctionInfo>& fc
 	
 }
 
-
 void SymbolTableVisitor::check_unused(size_t scp_id)
 {
 	size_t nb_symbol = variable_table.curr_nb_symbol(scp_id);
@@ -73,8 +72,6 @@ void SymbolTableVisitor::visit( ast::FuncCall& token )
 
 	if( !function_table.symbol_exists(func_name) && !symbol_exists<VariableInfo>(func_name,variable_table))
 	{
-
-
 		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_column(), 
 			" undefined function : "+func_name);
 	}
