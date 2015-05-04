@@ -23,7 +23,7 @@ namespace visitor
 	{
 	public:
 
-		virtual void visit( ast::ASTNode& ) {};
+		virtual void visit( ast::ASTNode& ) = 0;
 		/******************************
 		 * 		Identifier token    *
 		 ******************************/
@@ -43,6 +43,7 @@ namespace visitor
 		virtual void visit( ast::Type_Array& ) {};
 		virtual void visit( ast::Type_List& ) {};
 		virtual void visit( ast::Type_Bool& ) {};
+		virtual void visit( ast::Type_Function& ) {};
 		
 		/**************************
 		 * 		Operator token    *

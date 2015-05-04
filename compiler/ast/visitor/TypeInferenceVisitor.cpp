@@ -24,7 +24,7 @@ TypeInferenceVisitor::TypeInferenceVisitor(ErrorHandler& handler,
 
 void TypeInferenceVisitor::visit( ast::ASTNode& node )
 {
-	cout << "ASTNode" << endl << type_table << endl << endl;
+	//cout << "ASTNode" << endl << type_table << endl << endl;
 	// hopefully, never called because of virtual 
 	for(auto child : node.get_children())
 	{
@@ -37,7 +37,7 @@ void TypeInferenceVisitor::visit( ast::ASTNode& node )
 
 void TypeInferenceVisitor::visit( ast::Identifier& id )
 {
-	cout << "Identifier  (" << id.id() << ")" << endl << type_table << endl << endl;
+	//cout << "Identifier  (" << id.id() << ")" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// unify alpha with the type of the identifier
@@ -121,10 +121,13 @@ void TypeInferenceVisitor::visit( ast::Type_Function& type )
  
 void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 {
-	cout << "Op_Plus" << endl << type_table << endl << endl;
+	//cout << "Op_Plus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
 	// operands can only be integers or float
 	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -160,10 +163,12 @@ void TypeInferenceVisitor::visit( ast::Op_Plus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 {
-	cout << "Op_Minus" << endl << type_table << endl << endl;
+	//cout << "Op_Minus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));	// operands can only be integers or float
+
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -199,10 +204,12 @@ void TypeInferenceVisitor::visit( ast::Op_Minus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 {
-	cout << "Op_Mult" << endl << type_table << endl << endl;
+	//cout << "Op_Mult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operands can only be integers or float
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -238,10 +245,12 @@ void TypeInferenceVisitor::visit( ast::Op_Mult& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Div& op )
 {
-	cout << "Op_Div" << endl << type_table << endl << endl;
+	//cout << "Op_Div" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operands can only be integers or float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT));// operands can only be integers or float
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -277,10 +286,12 @@ void TypeInferenceVisitor::visit( ast::Op_Div& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 {
-	cout << "Op_Modulo" << endl << type_table << endl << endl;
+	//cout << "Op_Modulo" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
 	type_table.unify_int(alpha); // module can only have integer operands
+	
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -316,11 +327,12 @@ void TypeInferenceVisitor::visit( ast::Op_Modulo& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 {
-	cout << "Op_Exponentiation" << endl << type_table << endl << endl;
+	//cout << "Op_Exponentiation" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // base can only be an integer or a float
 	
-	// base can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	string beta = type_table.new_variable(); // add a type variable for the exponent
 	type_table.unify_int(beta); // exponent must be an integer
@@ -358,11 +370,12 @@ void TypeInferenceVisitor::visit( ast::Op_Exponentiation& op )
 
 void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 {
-	cout << "Op_UnaryMinus" << endl << type_table << endl << endl;
+	//cout << "Op_UnaryMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // base can only be an integer or a float
 
-	// base can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -383,11 +396,12 @@ void TypeInferenceVisitor::visit( ast::Op_UnaryMinus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 {
-	cout << "Op_BitwiseOr" << endl << type_table << endl << endl;
+	//cout << "Op_BitwiseOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -422,11 +436,12 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseOr& op )
 
 void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 {
-	cout << "Op_BitwiseAnd" << endl << type_table << endl << endl;
+	//cout << "Op_BitwiseAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -461,11 +476,12 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseAnd& op )
 
 void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 {
-	cout << "Op_BitwiseXor" << endl << type_table << endl << endl;
+	//cout << "Op_BitwiseXor" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -500,11 +516,12 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseXor& op )
 
 void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 {
-	cout << "Op_BitwiseNot" << endl << type_table << endl << endl;
+	//cout << "Op_BitwiseNot" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -525,11 +542,12 @@ void TypeInferenceVisitor::visit( ast::Op_BitwiseNot& op )
 
 void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 {
-	cout << "Op_LogicalOr" << endl << type_table << endl << endl;
+	//cout << "Op_LogicalOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -564,11 +582,12 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalOr& op )
 
 void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 {
-	cout << "Op_LogicalAnd" << endl << type_table << endl << endl;
+	//cout << "Op_LogicalAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -603,11 +622,12 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalAnd& op )
 
 void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 {
-	cout << "Op_LogicalNot" << endl << type_table << endl << endl;
+	//cout << "Op_LogicalNot" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_bool(alpha); // boolean operator expect boolean operands and return a boolean
 
-	// boolean operator expect boolean operands and return a boolean
-	type_table.unify_bool(alpha);
+	// record the operator type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -628,15 +648,16 @@ void TypeInferenceVisitor::visit( ast::Op_LogicalNot& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 {
-	cout << "Op_CompLessThan" << endl << type_table << endl << endl;
-	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	//cout << "Op_CompLessThan" << endl << type_table << endl << endl;
+	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_bool(alpha); // comparison operators return a boolean
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
-
+	
+	// record the operands type id
+	op.set_type_id(beta);
+	
 	params.add_param(beta);
 	params.call();
 
@@ -670,14 +691,15 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessThan& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 {
-	cout << "Op_CompGreaterThan" << endl << type_table << endl << endl;
+	//cout << "Op_CompGreaterThan" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -712,14 +734,15 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterThan& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 {
-	cout << "Op_CompLessEqual" << endl << type_table << endl << endl;
+	//cout << "Op_CompLessEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -754,14 +777,15 @@ void TypeInferenceVisitor::visit( ast::Op_CompLessEqual& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 {
-	cout << "Op_CompGreaterEqual" << endl << type_table << endl << endl;
+	//cout << "Op_CompGreaterEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float or int)
 	string beta = type_table.new_variable(TypesHint(FLOAT | INT));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -796,14 +820,15 @@ void TypeInferenceVisitor::visit( ast::Op_CompGreaterEqual& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 {
-	cout << "Op_CompEqual" << endl << type_table << endl << endl;
+	//cout << "Op_CompEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float, bool or int)
 	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -838,14 +863,15 @@ void TypeInferenceVisitor::visit( ast::Op_CompEqual& op )
 
 void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 {
-	cout << "Op_CompNotEqual" << endl << type_table << endl << endl;
+	//cout << "Op_CompNotEqual" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-
-	// comparison operators return a boolean 
-	type_table.unify_bool(alpha);
+	type_table.unify_bool(alpha); // comparison operators return a boolean 
 
 	// operands can have a different types (but must be both either float, bool or int)
 	string beta = type_table.new_variable(TypesHint(INT | FLOAT | BOOL));
+
+	// record the operands type id
+	op.set_type_id(beta);
 
 	params.add_param(beta);
 	params.call();
@@ -880,11 +906,12 @@ void TypeInferenceVisitor::visit( ast::Op_CompNotEqual& op )
 
 void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 {
-	cout << "Op_LeftShift" << endl << type_table << endl << endl;
+	//cout << "Op_LeftShift" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -919,11 +946,12 @@ void TypeInferenceVisitor::visit( ast::Op_LeftShift& op)
 
 void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 {
-	cout << "Op_RightShift" << endl << type_table << endl << endl;
+	//cout << "Op_RightShift" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_int(alpha); // bitwise operators applies on int and return int
 
-	// bitwise operators applies on int and return int
-	type_table.unify_int(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -958,11 +986,12 @@ void TypeInferenceVisitor::visit( ast::Op_RightShift& op)
 
 void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 {
-	cout << "Op_StringConcat" << endl << type_table << endl << endl;
+	//cout << "Op_StringConcat" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_string(alpha); // string concatenation takes strings as operand and return string
 
-	// string concatenation takes strings as operand and return string
-	type_table.unify_string(alpha);
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -997,10 +1026,12 @@ void TypeInferenceVisitor::visit( ast::Op_StringConcat& op )
 
 void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 {
-	cout << "Op_PrefixIncrement" << endl << type_table << endl << endl;
+	//cout << "Op_PrefixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1021,10 +1052,12 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixIncrement& op )
 
 void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 {
-	cout << "Op_PrefixDecrement" << endl << type_table << endl << endl;
+	//cout << "Op_PrefixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1046,10 +1079,12 @@ void TypeInferenceVisitor::visit( ast::Op_PrefixDecrement& op )
 
 void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 {
-	cout << "Op_PostfixIncrement" << endl << type_table << endl << endl;
+	//cout << "Op_PostfixIncrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1070,10 +1105,12 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixIncrement& op )
 
 void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 {
-	cout << "Op_PostfixDecrement" << endl << type_table << endl << endl;
+	//cout << "Op_PostfixDecrement" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
-	// operand can only be an integer or a float
-	type_table.update_hints(alpha, TypesHint(INT | FLOAT));
+	type_table.update_hints(alpha, TypesHint(INT | FLOAT)); // operand can only be an integer or a float
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha); // alpha is transmitted to the expression
 	params.call();
@@ -1094,8 +1131,11 @@ void TypeInferenceVisitor::visit( ast::Op_PostfixDecrement& op )
 
 void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 {
-	cout << "Op_Assignment" << endl << type_table << endl << endl;
+	//cout << "Op_Assignment" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1131,11 +1171,12 @@ void TypeInferenceVisitor::visit( ast::Op_Assignment& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 {
-	cout << "Op_AssignPlus" << endl << type_table << endl << endl;
+	//cout << "Op_AssignPlus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1171,11 +1212,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignPlus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 {
-	cout << "Op_AssignMinus" << endl << type_table << endl << endl;
+	//cout << "Op_AssignMinus" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1211,11 +1253,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMinus& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 {
-	cout << "Op_AssignMult" << endl << type_table << endl << endl;
+	//cout << "Op_AssignMult" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1251,11 +1294,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMult& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 {
-	cout << "Op_AssignDiv" << endl << type_table << endl << endl;
+	//cout << "Op_AssignDiv" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // operands must be either Float or Int
 
-	// operands must be either Float or Int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the operands type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1291,11 +1335,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignDiv& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 {
-	cout << "Op_AssignExpo" << endl << type_table << endl << endl;
+	//cout << "Op_AssignExpo" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.update_hints(alpha, TypesHint(FLOAT | INT)); // left operand can be either an float or an int
 
-	// left operand can be either an float or an int
-	type_table.update_hints(alpha, TypesHint(FLOAT | INT));
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// exponent must be an integer
 	string beta = type_table.new_variable();
@@ -1335,11 +1380,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignExpo& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 {
-	cout << "Op_AssignMod" << endl << type_table << endl << endl;
+	//cout << "Op_AssignMod" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // modulo op expects integer operands and return an integer
 
-	// modulo op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1375,11 +1421,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignMod& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 {
-	cout << "Op_AssignAnd" << endl << type_table << endl << endl;
+	//cout << "Op_AssignAnd" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1415,11 +1462,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignAnd& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 {
-	cout << "Op_AssignOr" << endl << type_table << endl << endl;
+	//cout << "Op_AssignOr" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1455,11 +1503,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignOr& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 {
-	cout << "Op_AssignXor" << endl << type_table << endl << endl;
+	//cout << "Op_AssignXor" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator 
+	type_table.unify_int(alpha); // bitwise op expects integer operands and return an integer
 
-	// bitwise op expects integer operands and return an integer
-	type_table.unify_int(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	// alpha goes to both operand
 	params.add_param(alpha);
@@ -1495,11 +1544,12 @@ void TypeInferenceVisitor::visit( ast::Op_AssignXor& op )
 
 void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 {
-	cout << "Op_AssignConcat" << endl << type_table << endl << endl;
+	//cout << "Op_AssignConcat" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // type returned by the operator
+	type_table.unify_string(alpha); // string concatenation takes strings as operand and return string
 
-	// string concatenation takes strings as operand and return string
-	type_table.unify_string(alpha);
+	// record the exponent base type id
+	op.set_type_id(alpha);
 
 	params.add_param(alpha);
 	params.call();
@@ -1538,7 +1588,7 @@ void TypeInferenceVisitor::visit( ast::Op_AssignConcat& op )
 
 void TypeInferenceVisitor::visit( ast::String& cste )
 {
-	cout << "String" << endl << type_table << endl << endl;
+	//cout << "String" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// string constant -> alpha is a string
@@ -1548,7 +1598,7 @@ void TypeInferenceVisitor::visit( ast::String& cste )
 
 void TypeInferenceVisitor::visit( ast::Character& cste )
 {
-	cout << "Character" << endl << type_table << endl << endl;
+	//cout << "Character" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// char constant -> alpha is a char
@@ -1558,7 +1608,7 @@ void TypeInferenceVisitor::visit( ast::Character& cste )
 
 void TypeInferenceVisitor::visit( ast::Integer& cste )
 {
-	cout << "Integer" << endl << type_table << endl << endl;
+	//cout << "Integer" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// int constant -> alpha is a int
@@ -1568,7 +1618,7 @@ void TypeInferenceVisitor::visit( ast::Integer& cste )
 
 void TypeInferenceVisitor::visit( ast::Float& cste )
 {
-	cout << "Float" << endl << type_table << endl << endl;
+	//cout << "Float" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// float constant -> alpha is a float
@@ -1578,7 +1628,7 @@ void TypeInferenceVisitor::visit( ast::Float& cste )
 
 void TypeInferenceVisitor::visit( ast::Bool& cste )
 {
-	cout << "Bool" << endl << type_table << endl << endl;
+	//cout << "Bool" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// bool constant -> alpha is a bool
@@ -1588,7 +1638,7 @@ void TypeInferenceVisitor::visit( ast::Bool& cste )
 
 void TypeInferenceVisitor::visit( ast::Array& array )
 {
-	cout << "Array" << endl << type_table << endl << endl;
+	//cout << "Array" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// array constant : alpha is an array of type beta
@@ -1608,7 +1658,7 @@ void TypeInferenceVisitor::visit( ast::Array& array )
 
 void TypeInferenceVisitor::visit( ast::List& list )
 {
-	cout << "List" << endl << type_table << endl << endl;
+	//cout << "List" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// list constant : alpha is an list of type beta
@@ -1628,7 +1678,7 @@ void TypeInferenceVisitor::visit( ast::List& list )
 
 void TypeInferenceVisitor::visit( ast::MakeSequenceList& seq_list )
 {
-	cout << "MakeSequenceList" << endl << type_table << endl << endl;
+	//cout << "MakeSequenceList" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// list constant : alpha is an list of type beta
@@ -1642,18 +1692,38 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceList& seq_list )
 	// begin and end must be of type int
 	params.add_param(beta);
 	params.call();
-	seq_list.get_begin().accept(*this);
+
+	try 
+	{
+		seq_list.get_begin().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", seq_list.get_location().first_line(), 
+									seq_list.get_location().first_column(), 
+									"invalid type for the begin expression of the sequence maker : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	seq_list.get_end().accept(*this);
+
+	try 
+	{
+		seq_list.get_end().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", seq_list.get_location().first_line(), 
+									seq_list.get_location().first_column(), 
+									"invalid type for the end expression of the sequence maker : " + string(e.what()));
+	}
 
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::MakeSequenceArray& seq_array )
 {
-	cout << "MakeSequenceArray" << endl << type_table << endl << endl;
+	//cout << "MakeSequenceArray" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	// array constant : alpha is an array of type beta
@@ -1667,18 +1737,38 @@ void TypeInferenceVisitor::visit( ast::MakeSequenceArray& seq_array )
 	// begin and end must be of type int
 	params.add_param(beta);
 	params.call();
-	seq_array.get_begin().accept(*this);
+	
+	try 
+	{
+		seq_array.get_begin().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", seq_array.get_location().first_line(), 
+									seq_array.get_location().first_column(), 
+									"invalid type for the begin expression of the sequence maker : " + string(e.what()));
+	}
 
 	params.add_param(beta);
 	params.call();
-	seq_array.get_end().accept(*this);
+
+	try 
+	{
+		seq_array.get_end().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", seq_array.get_location().first_line(), 
+									seq_array.get_location().first_column(), 
+									"invalid type for the end expression of the sequence maker : " + string(e.what()));
+	}
 
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 {
-	cout << "DeclFunc" << endl << type_table << endl << endl;
+	//cout << "DeclFunc" << endl << type_table << endl << endl;
 
 	// update the symbol table with function data
 	pair<string, string> func_type_names;
@@ -1701,7 +1791,7 @@ void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 
 void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 {
-	cout << "DeclVars" << endl << type_table << endl << endl;
+	//cout << "DeclVars" << endl << type_table << endl << endl;
 	// no argument expecte
 	for(size_t i = 0; i < declvars.nb_variables(); ++i)
 	{
@@ -1714,7 +1804,7 @@ void TypeInferenceVisitor::visit( ast::DeclVars& declvars )
 
 void TypeInferenceVisitor::visit( ast::DeclVar& declaration )
 {
-	cout << "DeclVar" << endl << type_table << endl << endl;	
+	//cout << "DeclVar" << endl << type_table << endl << endl;	
 	// no argument expected 
 	// create a new type variable
 	string varname = type_table.new_variable(type_table.unique_id_name(current_scope, declaration.get_identifier().id()));
@@ -1743,7 +1833,7 @@ void TypeInferenceVisitor::visit( ast::Param& param )
 
 void TypeInferenceVisitor::visit( ast::Expression& expression )
 {
-	cout << "Expression" << endl << type_table << endl << endl;
+	//cout << "Expression" << endl << type_table << endl << endl;
 	/**
 	 * can either take one or zero parameter. If the number of 
 	 * parameters is 0, then a new type variable is created for the 
@@ -1753,7 +1843,17 @@ void TypeInferenceVisitor::visit( ast::Expression& expression )
 
 	params.add_param(alpha);
 	params.call();
-	expression.get_child().accept(*this);
+
+	try 
+	{
+		expression.get_child().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", expression.get_location().first_line(), 
+									expression.get_location().first_column(), 
+									"invalid type in expression : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -1766,7 +1866,16 @@ void TypeInferenceVisitor::visit( ast::ExpressionList& expr_list )
 	{
 		params.add_param(alpha);
 		params.call();
-		expr_list.get_nth_expression(i).accept(*this);
+		try
+		{
+			expr_list.get_nth_expression(i).accept(*this);
+		}
+		catch(except::UnificationException& e)
+		{
+			error_handler.add_sem_error("", expr_list.get_location().first_line(), 
+										expr_list.get_location().first_column(), 
+										"invalid type for expression " + to_string(i + 1) + " of the expression list : " + string(e.what()));
+		}
 	}
 
 	params.ret();
@@ -1774,7 +1883,7 @@ void TypeInferenceVisitor::visit( ast::ExpressionList& expr_list )
 
 void TypeInferenceVisitor::visit( ast::ModifyingExpression& expression )
 {
-	cout << "ModifyingExpression" << endl << type_table << endl << endl;
+	//cout << "ModifyingExpression" << endl << type_table << endl << endl;
 	/**
 	 * can either take one or zero parameter. If the number of 
 	 * parameters is 0, then a new type variable is created for the 
@@ -1784,14 +1893,24 @@ void TypeInferenceVisitor::visit( ast::ModifyingExpression& expression )
 
 	params.add_param(alpha);
 	params.call();
-	expression.get_child().accept(*this);
+	
+	try 
+	{
+		expression.get_child().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", expression.get_location().first_line(), 
+									expression.get_location().first_column(), 
+									"invalid type in expression : " + string(e.what()));
+	}
 
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::DatastructureAccess& ds_access )
 {
-	cout << "DatastructureAccess" << endl << type_table << endl << endl;
+	//cout << "DatastructureAccess" << endl << type_table << endl << endl;
 	// only array can be access with [ ]
 	string alpha = params.get_param(1); // type of the array
 
@@ -1803,7 +1922,18 @@ void TypeInferenceVisitor::visit( ast::DatastructureAccess& ds_access )
 	// the idenfier should 'contain' an array
 	params.add_param(array_type.first);
 	params.call();
-	ds_access.get_id().accept(*this);
+
+	try
+	{
+		ds_access.get_id().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", ds_access.get_location().first_line(), 
+									ds_access.get_location().first_column(), 
+									"attempt to access array field on an element which is not an array : " + string(e.what()));
+	}
+	
 
 	// the index expression should be an integer
 	string beta = type_table.new_variable();
@@ -1811,14 +1941,25 @@ void TypeInferenceVisitor::visit( ast::DatastructureAccess& ds_access )
 
 	params.add_param(beta);
 	params.call();
-	ds_access.get_index().accept(*this);
+
+	try
+	{
+		ds_access.get_index().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", ds_access.get_index().get_location().first_line(), 
+									ds_access.get_index().get_location().first_column(), 
+									"invalid type for array index : " + string(e.what()));
+	}
+	
 
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 {
-	cout << "FuncCall" << endl << type_table << endl << endl;
+	//cout << "FuncCall" << endl << type_table << endl << endl;
 	string gamma = params.get_param(1); // type that should be returned by the function
 
 	// add function matching the structure of the call
@@ -1842,14 +1983,33 @@ void TypeInferenceVisitor::visit( ast::FuncCall& func_call )
 	// the function id or soy should have the same structure as the one defined here
 	params.add_param(func_type.first);
 	params.call();
-	func_call.get_function().accept(*this);
+
+	try
+	{
+		func_call.get_function().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", func_call.get_function().get_location().first_line(), 
+									func_call.get_function().get_location().first_column(), 
+									"invalid function type : " + string(e.what()));
+	}
 
 	// each argument should have the correct type
 	for(size_t i = 0; i < number_args; ++i)
 	{
 		params.add_param(type_param_name[i]);
 		params.call();
-		func_call.get_arg_list().get_arg(i).accept(*this);
+		try
+		{
+			func_call.get_arg_list().get_arg(i).accept(*this);
+		}
+		catch(except::UnificationException& e)
+		{
+			error_handler.add_sem_error("", func_call.get_arg_list().get_arg(i).get_location().first_line(), 
+										func_call.get_arg_list().get_arg(i).get_location().first_column(), 
+										"invalid type for argument " + to_string(i + 1) + " : " + string(e.what()));
+		}
 	}
 
 	params.ret();
@@ -1863,7 +2023,7 @@ void TypeInferenceVisitor::visit( ast::ArgList& arg_list )
 
 void TypeInferenceVisitor::visit( ast::Argument& arg )
 {
-	cout << "Argument" << endl << type_table << endl << endl;
+	//cout << "Argument" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	params.add_param(alpha);
@@ -1875,7 +2035,7 @@ void TypeInferenceVisitor::visit( ast::Argument& arg )
 
 void TypeInferenceVisitor::visit( ast::SoyFunc& soy )
 {
-	cout << "SoyFunc" << endl << type_table << endl << endl;
+	//cout << "SoyFunc" << endl << type_table << endl << endl;
 	string delta = params.get_param(1); // function type
 
 	// update the symbol table with soy function data
@@ -1896,7 +2056,7 @@ void TypeInferenceVisitor::visit( ast::SoyFunc& soy )
 
 void TypeInferenceVisitor::visit( ast::Program& program )
 {
-	cout << "Program" << endl << type_table << endl << endl;
+	//cout << "Program" << endl << type_table << endl << endl;
 	string alpha("");
 
 	params.add_param(alpha); // empty string means that nothing is expected as return type
@@ -1908,13 +2068,13 @@ void TypeInferenceVisitor::visit( ast::Program& program )
 
 void TypeInferenceVisitor::visit( ast::Scope& scope )
 {
-	cout << "Scope" << endl << type_table << endl << endl;
+	//cout << "Scope" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), 
 			beta; // type to pass to the children nodes
 
 	size_t prev_scope = current_scope;
 	current_scope = scope.get_scope_id();
-	cout << "Move to scope " << current_scope << endl;
+
 	// move to the new scope in the symbol tables
 	variable_table.move_to_scope(current_scope);
 	function_table.move_to_scope(current_scope);
@@ -1936,34 +2096,47 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 		child->accept(*this);
 	}
 
+	// if the unification succeeds, either their was empty nory or no nori at all
+	try { type_table.unify_void(beta); }
+	catch ( except::UnificationException& e ) { }
+
 	// go back to the previous scope
 	variable_table.move_to_scope(prev_scope);
 	function_table.move_to_scope(prev_scope);
 	current_scope = prev_scope;
 
-	cout << "Go back to " << current_scope << endl;
+	//cout << "Go back to " << current_scope << endl;
 
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Statement& statement )
 {
-	cout << "Statement" << endl << type_table << endl << endl;
+	//cout << "Statement" << endl << type_table << endl << endl;
 	statement.get_statement().accept(*this); // forward the type to the actual statement
 }
 
 void TypeInferenceVisitor::visit( ast::Return& nori )
 {
-	cout << "Return" << endl << type_table << endl << endl;
+	//cout << "Return" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
-	if(nori.empty_nori())
-		type_table.unify_void(alpha);
-	else
+	try
 	{
-		params.add_param(alpha);
-		params.call();
-		nori.get_returned_expression().accept(*this);
+		if(nori.empty_nori())
+			type_table.unify_void(alpha);
+		else
+		{
+			params.add_param(alpha);
+			params.call();
+			nori.get_returned_expression().accept(*this);
+		}
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", nori.get_location().first_line(), 
+										nori.get_location().first_column(), 
+										"invalid return type : " + string(e.what()));
 	}
 
 	params.ret();
@@ -1971,13 +2144,23 @@ void TypeInferenceVisitor::visit( ast::Return& nori )
 
 void TypeInferenceVisitor::visit( ast::Menu& menu )
 {
-	cout << "Menu" << endl << type_table << endl << endl;
+	//cout << "Menu" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), // type that should be returned by the element of the body
 			beta = type_table.new_variable(TypesHint(CHAR | INT)); // type of the menu expression
 
 	params.add_param(beta);
 	params.call();
-	menu.get_expression().accept(*this);
+
+	try
+	{
+		menu.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", menu.get_location().first_line(), 
+									menu.get_location().first_column(), 
+									"invalid type for the menu expression : " + string(e.what()));
+	}
 	
 	params.add_param(alpha); 
 	params.add_param(beta);
@@ -1989,7 +2172,7 @@ void TypeInferenceVisitor::visit( ast::Menu& menu )
 
 void TypeInferenceVisitor::visit( ast::MenuBody& body )
 {
-	cout << "MenuBody" << endl << type_table << endl << endl;
+	//cout << "MenuBody" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), // case body return type
 			beta = params.get_param(2); // matcher type
 
@@ -2010,7 +2193,7 @@ void TypeInferenceVisitor::visit( ast::MenuBody& body )
 
 void TypeInferenceVisitor::visit( ast::MenuDef& menudef )
 {
-	cout << "MenuDef" << endl << type_table << endl << endl;
+	//cout << "MenuDef" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // the parameter that should be returned by case scope
 
 	params.add_param(alpha);
@@ -2022,7 +2205,7 @@ void TypeInferenceVisitor::visit( ast::MenuDef& menudef )
 
 void TypeInferenceVisitor::visit( ast::MenuCase& menucase )
 {
-	cout << "MenuCase" << endl << type_table << endl << endl;
+	//cout << "MenuCase" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), // the parameter that should be returned by case scope
 			beta = params.get_param(2); // function of the case expression
 
@@ -2032,14 +2215,24 @@ void TypeInferenceVisitor::visit( ast::MenuCase& menucase )
 
 	params.add_param(beta);
 	params.call();
-	menucase.get_expression().accept(*this);
 
+	try
+	{
+		menucase.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", menucase.get_location().first_line(), 
+									menucase.get_location().first_column(), 
+									"invalid type for the case matching expression : " + string(e.what()));
+	}
+	
 	params.ret();
 }
 
 void TypeInferenceVisitor::visit( ast::Roll& roll )
 {
-	cout << "Roll" << endl << type_table << endl << endl;
+	//cout << "Roll" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1), // the parameter to pass to the roll body scope
 			beta = type_table.new_variable(); // type of the roll expression
 
@@ -2048,7 +2241,17 @@ void TypeInferenceVisitor::visit( ast::Roll& roll )
 
 	params.add_param(beta);
 	params.call();
-	roll.get_expression().accept(*this);
+
+	try
+	{
+		roll.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", roll.get_location().first_line(), 
+									roll.get_location().first_column(), 
+									"invalid type for the roll guardian : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
@@ -2059,7 +2262,7 @@ void TypeInferenceVisitor::visit( ast::Roll& roll )
 
 void TypeInferenceVisitor::visit( ast::Foreach& foreach )
 {
-	cout << "Foreach" << endl << type_table << endl << endl;
+	//cout << "Foreach" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // the parameter to pass to the roll body scope
 
 	string iter_var_type = type_table.unique_id_name(foreach.get_scope().get_scope_id(), foreach.get_identifier().id());
@@ -2067,13 +2270,23 @@ void TypeInferenceVisitor::visit( ast::Foreach& foreach )
 
 	pair<string,string> list_type = type_table.new_list(); // the list expression 
 
-	// the variable must have the same type as the array elements type
+	// the variable must have the same type as the list elements type
 	type_table.unify(list_type.second, iter_var_type);
 
 	// the expression must be a list
 	params.add_param(list_type.first);
 	params.call();
-	foreach.get_expression().accept(*this);
+	
+	try
+	{
+		foreach.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", foreach.get_expression().get_location().first_line(), 
+									foreach.get_expression().get_location().first_column(), 
+									"invalid type for the iteratable : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
@@ -2084,7 +2297,7 @@ void TypeInferenceVisitor::visit( ast::Foreach& foreach )
 
 void TypeInferenceVisitor::visit( ast::For& for_loop )
 {
-	cout << "For" << endl << type_table << endl << endl;
+	//cout << "For" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1),  // the parameter to pass to the for body scope
 	 		beta = type_table.new_variable(); // the type of the expression
 
@@ -2093,7 +2306,17 @@ void TypeInferenceVisitor::visit( ast::For& for_loop )
 
 	params.add_param(beta);
 	params.call();
-	for_loop.get_expression().accept(*this);
+
+	try
+	{
+		for_loop.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", for_loop.get_expression().get_location().first_line(), 
+									for_loop.get_expression().get_location().first_column(), 
+									"invalid type int the for loop guardian : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
@@ -2110,7 +2333,7 @@ void TypeInferenceVisitor::visit( ast::For& for_loop )
 
 void TypeInferenceVisitor::visit( ast::ForInitializer& initializer )
 {
-	cout << "ForInitializer" << endl << type_table << endl << endl;
+	//cout << "ForInitializer" << endl << type_table << endl << endl;
 	params.call();
 	initializer.get_expression().accept(*this);
 	params.ret();
@@ -2118,7 +2341,7 @@ void TypeInferenceVisitor::visit( ast::ForInitializer& initializer )
 
 void TypeInferenceVisitor::visit( ast::ForUpdate& update )
 {
-	cout << "ForUpdate" << endl << type_table << endl << endl;
+	//cout << "ForUpdate" << endl << type_table << endl << endl;
 	params.call();
 	update.get_expression().accept(*this);
 	params.ret();
@@ -2126,7 +2349,7 @@ void TypeInferenceVisitor::visit( ast::ForUpdate& update )
 
 void TypeInferenceVisitor::visit( ast::Conditional& conditional )
 {
-	cout << "Conditional" << endl << type_table << endl << endl;
+	//cout << "Conditional" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1); // to pass to the scopes
 
 	// transmit to if
@@ -2154,7 +2377,7 @@ void TypeInferenceVisitor::visit( ast::Conditional& conditional )
 
 void TypeInferenceVisitor::visit( ast::If& if_node )
 {
-	cout << "If" << endl << type_table << endl << endl;
+	//cout << "If" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1),
 			beta = type_table.new_variable();
 
@@ -2163,7 +2386,17 @@ void TypeInferenceVisitor::visit( ast::If& if_node )
 
 	params.add_param(beta);
 	params.call();
-	if_node.get_expression().accept(*this);
+
+	try
+	{
+		if_node.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", if_node.get_expression().get_location().first_line(), 
+									if_node.get_expression().get_location().first_column(), 
+									"invalid type for condition : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
@@ -2174,7 +2407,7 @@ void TypeInferenceVisitor::visit( ast::If& if_node )
 
 void TypeInferenceVisitor::visit( ast::Elseif& elseif )
 {
-	cout << "Elseif" << endl << type_table << endl << endl;
+	//cout << "Elseif" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1),
 			beta = type_table.new_variable();
 
@@ -2183,7 +2416,17 @@ void TypeInferenceVisitor::visit( ast::Elseif& elseif )
 
 	params.add_param(beta);
 	params.call();
-	elseif.get_expression().accept(*this);
+
+	try
+	{
+		elseif.get_expression().accept(*this);
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", elseif.get_expression().get_location().first_line(), 
+									elseif.get_expression().get_location().first_column(), 
+									"invalid type for condition : " + string(e.what()));
+	}
 
 	params.add_param(alpha);
 	params.call();
@@ -2194,7 +2437,7 @@ void TypeInferenceVisitor::visit( ast::Elseif& elseif )
 
 void TypeInferenceVisitor::visit( ast::Else& else_node )
 {
-	cout << "Else" << endl << type_table << endl << endl;
+	//cout << "Else" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
 	params.add_param(alpha);

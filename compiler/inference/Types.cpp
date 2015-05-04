@@ -80,15 +80,15 @@ string inference::to_string(ShallowType s_type)
 	switch(s_type)
 	{
 	case NO_TYPE : return string("NO_TYPE");
-	case BOOL : return string("BOOL"); 
-	case INT : return string("INT");
-	case FLOAT : return string("FLOAT");
-	case STRING : return string("STRING");
-	case CHAR : return string("CHAR");
-	case ARRAY : return string("ARRAY");
-	case LIST : return string("LIST");
-	case FUNCTION : return string("FUNCTION");
-	case VOID : return string("VOID");	
+	case BOOL : return string("bool"); 
+	case INT : return string("int");
+	case FLOAT : return string("float");
+	case STRING : return string("string");
+	case CHAR : return string("char");
+	case ARRAY : return string("array");
+	case LIST : return string("list");
+	case FUNCTION : return string("function");
+	case VOID : return string("void");	
 	default: return string();
 	}
 }

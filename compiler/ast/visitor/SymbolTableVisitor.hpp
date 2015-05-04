@@ -136,6 +136,7 @@ namespace visitor
 		 ***********************************/
 		 
 		virtual void visit( ast::Expression& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 		
@@ -180,9 +181,7 @@ namespace visitor
 		errors::ErrorHandler& error_handler;
 
 		std::set<size_t> allowed_scopes;
-		std::set<size_t> prev_allowed_scopes;
 
-			
 		void visit_children( ast::ASTNode& );
 	};
 }
