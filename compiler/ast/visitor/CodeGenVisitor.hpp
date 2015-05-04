@@ -182,6 +182,8 @@ namespace visitor
 		codegen::Value& get_return_value(int n);
 		void remove_return_value(int n);
 
+		std::vector<codegen::Value*> get_n_return_values(int n);
+		void pop_n_return_values(int n);
 
 		bool is_vector_empty() const;
 		int get_vector_size() const;

@@ -416,18 +416,49 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 
 void CodeGenVisitor::visit( DeclFunc& token )
 {
-	auto child = token.get_children().begin();
+	int index = 0;
+
 	// Visit 1st child : Identifier
-	
+	token.get_children().at(index)->accept(*this);
+
+	Value& id = get_return_value(0);
+	Variable& id_var = dynamic_cast<Variable&>(id);
+
 	// Create new FunctionBlock
+	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), "function_type");
+
+	pop();
 
 	// Visit 2nd child (ParameterList: visit all children and add argument for each)
+	if(token.contains_params())
+	{
+		++index;
+		token.get_children().at(index)->accept(*this);
+
+		ParamList* paramlist = dynamic_cast<ParamList*>(token.get_children().at(index));
+
+		vector<Value*> params = get_n_return_values(paramlist->nb_params());
+		for(auto param = params.rbegin() ; param != params.rend() ; ++param)
+		{
+			Variable* param_var = dynamic_cast<Variable*>(*param);
+			function.add_argument(param_var->get_type(), param_var->get_name());
+		}
+
+		pop_n_return_values(paramlist->nb_params());
+
+	}
 
 	// Change "cursor" of the visitor to the new function
+	string current_function = curr_func_name;
+	curr_func_name = function.get_name();
+	curr_module.add_function(function);
 
 	// Fullfill it through the visit of the children
+	++index;
+	token.get_children().at(index)->accept(*this);
 
 	// Get back to previous block
+	curr_func_name = current_function;
 }
 
 
@@ -483,13 +514,14 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 void CodeGenVisitor::visit( ParamList& token )
 {
-
+	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Param& token )
 {
-
+	// Only visit the first child
+	token.get_children().at(0)->accept(*this);
 }
 
 
@@ -569,13 +601,24 @@ void CodeGenVisitor::visit( Scope& token )
 
 void CodeGenVisitor::visit( Statement& token )
 {
-
+	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Return& token )
 {
+	if(token.has_child())
+	{
+		// Child is Expression
+		visit_children(token);
 
+		Value& exp = get_return_value(0);
+		curr_module.get_function(curr_func_name).set_return(exp.str_value());
+
+		pop();
+	}
+	else
+		curr_module.get_function(curr_func_name).set_return("");
 }
 
 
@@ -692,7 +735,21 @@ void CodeGenVisitor::remove_return_value(int n)
 	return_vector.erase(return_vector.begin()+return_vector.size()-1-n);
 }
 
+vector<Value*> CodeGenVisitor::get_n_return_values(int n)
+{
+	vector<Value*> values;
+	for(int i = 0 ; i < n ; ++i)
+		values.push_back(return_vector.at(return_vector.size()-1-i).get());
 
+	return values;
+}
+
+
+void CodeGenVisitor::pop_n_return_values(int n)
+{
+	for(int i = 0 ; i < n ; ++i)
+		pop();
+}
 
 
 bool CodeGenVisitor::is_vector_empty() const

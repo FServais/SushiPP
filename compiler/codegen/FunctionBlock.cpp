@@ -5,7 +5,7 @@
 using namespace codegen;
 using namespace std;
 
-FunctionBlock::FunctionBlock(VariableManager& vm) : var_manager(vm)
+FunctionBlock::FunctionBlock(VariableManager& vm) : var_manager(vm), name(""), return_type("void")
 {
     BasicBlock entry(vm, "entry");
     blocks.push_back(entry);

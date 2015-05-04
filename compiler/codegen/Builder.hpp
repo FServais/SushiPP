@@ -23,6 +23,8 @@ namespace codegen
 
         void add_module(Module&);
 
+        VariableManager& get_variable_manager();
+
     private:
         std::vector<Module> modules;
         int curr_pos;
