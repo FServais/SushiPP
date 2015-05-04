@@ -1,6 +1,8 @@
 #include <sstream>
+#include <regex>
 
 #include "FunctionBlock.hpp"
+#include "Variable.hpp"
 
 using namespace codegen;
 using namespace std;
@@ -52,7 +54,20 @@ string FunctionBlock::str_arguments() const
 
 void FunctionBlock::add_argument(string type, string name)
 {
-    arguments.push_back(make_pair(type,name));
+    pair<string,string> argument(type,name);
+
+    stringstream newname;
+    newname << name << "_arg";
+
+    BasicBlock& entry = get_last_block();
+
+    Variable arg(newname.str(), type);
+    unique_ptr<Value> up = unique_ptr<Value>(entry.create_get_pointer(arg));
+
+    Variable lhs(name, type);
+    unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign(lhs, *up));
+
+    arguments.push_back(make_pair(type,newname.str()));}
 }
 
 void FunctionBlock::set_return(string _return_value)

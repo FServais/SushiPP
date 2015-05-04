@@ -247,9 +247,6 @@ Value* BasicBlock::create_decl_var(Value& value)
     return var_ptr;
 }
 
-
-
-
 Value* BasicBlock::create_assign(Value& lhs, Value& rhs)
 {
     stringstream ss;
@@ -290,6 +287,26 @@ Value* BasicBlock::create_load(Value& ptr)
 
     return variable_ptr;
 }
+
+
+Value* BasicBlock::create_get_pointer(Value& variable)
+{
+    Variable& var = dynamic_cast<Variable&>(variable);
+
+    stringstream ptrname;
+    ptrname << var.get_name() << "_ptr";
+
+    Variable* var_ptr = new Variable(ptrname.str(), var.get_type());
+
+    stringstream ss;
+    ss << var_ptr->str_value() << " = getelementptr " << var_ptr->str_type() << "* " << var.str_value() << ", i32 0";
+
+    add_line(ss.str());
+
+    return var_ptr;
+}
+
+
 
 void BasicBlock::add_line(std::string line)
 {

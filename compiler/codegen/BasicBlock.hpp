@@ -79,6 +79,11 @@ namespace codegen
 
         Value* create_load(Value&);
 
+        // getelementptr (Variable)
+        Value* create_get_pointer(Value&);
+
+        //Value* create_get_pointer_array(Value&, Value&);
+
 
 
     private:
