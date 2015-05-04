@@ -42,7 +42,7 @@ void SppCompiler::execute()
 		scope_checking();
 		inference();
 		terminate();
-		export_llvm();
+		//export_llvm();
 	}
 }
 

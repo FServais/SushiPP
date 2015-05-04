@@ -1793,7 +1793,17 @@ void TypeInferenceVisitor::visit( ast::Expression& expression )
 
 	params.add_param(alpha);
 	params.call();
-	expression.get_child().accept(*this);
+
+	try 
+	{
+		expression.get_child().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", expression.get_location().first_line(), 
+									expression.get_location().first_column(), 
+									"invalid type in expression : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -1833,7 +1843,17 @@ void TypeInferenceVisitor::visit( ast::ModifyingExpression& expression )
 
 	params.add_param(alpha);
 	params.call();
-	expression.get_child().accept(*this);
+	
+	try 
+	{
+		expression.get_child().accept(*this);
+	} 
+	catch(except::UnificationException& e) 
+	{
+		error_handler.add_sem_error("", expression.get_location().first_line(), 
+									expression.get_location().first_column(), 
+									"invalid type in expression : " + string(e.what()));
+	}
 
 	params.ret();
 }
@@ -2023,17 +2043,7 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 		if(propagate_type_from_scope(*child))
 			params.add_param(beta);
 		params.call();
-
-		try
-		{
-			child->accept(*this);
-		}
-		catch(except::UnificationException& e)
-		{
-			error_handler.add_sem_error("", child->get_location().first_line(), 
-										child->get_location().first_column(), 
-										"invalid return type in the scope : " + string(e.what()));
-		}
+		child->accept(*this);
 	}
 
 	// if the unification succeeds, either their was empty nory or no nori at all
@@ -2061,13 +2071,22 @@ void TypeInferenceVisitor::visit( ast::Return& nori )
 	//cout << "Return" << endl << type_table << endl << endl;
 	string alpha = params.get_param(1);
 
-	if(nori.empty_nori())
-		type_table.unify_void(alpha);
-	else
+	try
 	{
-		params.add_param(alpha);
-		params.call();
-		nori.get_returned_expression().accept(*this);
+		if(nori.empty_nori())
+			type_table.unify_void(alpha);
+		else
+		{
+			params.add_param(alpha);
+			params.call();
+			nori.get_returned_expression().accept(*this);
+		}
+	}
+	catch(except::UnificationException& e)
+	{
+		error_handler.add_sem_error("", nori.get_location().first_line(), 
+										nori.get_location().first_column(), 
+										"invalid return type : " + string(e.what()));
 	}
 
 	params.ret();
@@ -2216,7 +2235,7 @@ void TypeInferenceVisitor::visit( ast::Foreach& foreach )
 	{
 		error_handler.add_sem_error("", foreach.get_expression().get_location().first_line(), 
 									foreach.get_expression().get_location().first_column(), 
-									"invalid type for the foreach list : " + string(e.what()));
+									"invalid type for the iteratable : " + string(e.what()));
 	}
 
 	params.add_param(alpha);
@@ -2314,6 +2333,7 @@ void TypeInferenceVisitor::visit( ast::If& if_node )
 
 	// the expression must be a boolean 
 	type_table.unify_bool(beta);
+
 	params.add_param(beta);
 	params.call();
 
