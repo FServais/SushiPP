@@ -1450,6 +1450,16 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 
 void CodeGenVisitor::visit( FuncCall& token )
 {
+	// Visit children :
+	// - 1st child : IDENTIFIER
+	// - 2nd child : Argument list -> get ID's
+	visit_children(token);
+
+
+	// Load values of the arguments
+	
+
+	// Create function
 
 }
 

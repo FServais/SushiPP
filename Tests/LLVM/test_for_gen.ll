@@ -1,5 +1,5 @@
 ; ModuleID = 'test_for_gen.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128" 
 target triple = "x86_64-apple-macosx10.10.0"
 
 @.str = private unnamed_addr constant [3 x i8] c"%d\00", align 1

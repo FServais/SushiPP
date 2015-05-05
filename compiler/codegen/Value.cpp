@@ -38,14 +38,29 @@ bool Value::is_constant()
     return constant;
 }
 
+bool Value::is_function()
+{
+    return function;
+}
+
+
 void Value::set_is_variable()
 {
     variable = true;
     constant = false;
+    function = false;
 }
 
 void Value::set_is_constant()
 {
     variable = false;
     constant = true;
+    function = false;
+}
+
+void Value::set_is_function()
+{
+    variable = false;
+    constant = false;
+    function = true;
 }

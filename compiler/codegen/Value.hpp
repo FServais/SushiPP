@@ -14,9 +14,11 @@ namespace codegen
 
         bool is_variable();
         bool is_constant();
+        bool is_function();
 
         void set_is_variable();
         void set_is_constant();
+        void set_is_function();
 
         // std::string -> to change
         std::shared_ptr<typegen::Type> get_type();
@@ -26,7 +28,7 @@ namespace codegen
 
     protected:
         // Type
-        bool variable, constant;
+        bool variable, constant, function;
         std::shared_ptr<typegen::Type> type;
 
         void set_type(std::shared_ptr<typegen::Type> _type);
