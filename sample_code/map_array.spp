@@ -3,11 +3,12 @@ $ Apply the function 'func' to each element of an array
 $ - array : Array to which the function is applied
 $ - size : size of the array
 $ - func : function to apply
-maki map_array array size func :
+maki map_array array<array> size func<function> :
+	maki i = 0
 	for i = 0, i < size, ++i
-		array[i] = (func array[i]) 
+		array[i] = (call func array[i]) 
 	;;
 ;;
 
-array = #[ 12, 3, 7, 42 ]#
-map_array array 4 (soy x : nori x*x)
+maki array = #[ 12, 3, 7, 42 ]#
+call map_array array 4 (soy x : nori x*x)

@@ -43,7 +43,7 @@ namespace compiler
 		symb::SymbolTable<symb::FunctionInfo> function_table;
 		symb::SymbolTable<symb::VariableInfo> variable_table;
 		errors::ErrorHandler error_handler;
-		std::shared_ptr<inference::TypeSymbolTable> type_table;
+		inference::TypeSymbolTable type_table;
 
 		/**
 		 * @brief Initialize the compiler for execution

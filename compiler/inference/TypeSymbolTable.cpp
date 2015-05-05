@@ -34,6 +34,11 @@ string TypeSymbolTable::new_variable(const string& varname)
 	return new_variable(varname, hint);
 }
 
+bool TypeSymbolTable::contains(const string& type) const
+{
+	return count(type) == 1;
+}
+
 string TypeSymbolTable::new_variable(const vector<ShallowType>& types)
 {
 	return new_variable(unique_varname(), types);

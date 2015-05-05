@@ -87,6 +87,9 @@ void SppCompiler::set_syntax_tree_root(ASTNode* root)
 
 void SppCompiler::parse()
 {
+	if(config.is_verbose())
+		cout << "Starting parsing..." << endl;
+
 	int ret = yyparse();
 
 	switch(ret)
@@ -100,8 +103,8 @@ void SppCompiler::parse()
 		if(config.is_verbose())
 			cout << "Parsing : success..." << endl;
 
-		//if(config.do_dump_ast())
-		//	print_ast();
+		if(config.do_dump_ast())
+			print_ast();
 	}
 }
 
@@ -110,6 +113,9 @@ void SppCompiler::scope_checking()
 	if(error_handler.error_occurred())
 		return;
 
+	if(config.is_verbose())
+		cout << "Starting scope checking..." << endl;
+
 	visitor::FunctionTableVisitor visitor1(function_table, variable_table, error_handler);
 
 	syntax_tree.root().accept(visitor1);
@@ -117,13 +123,11 @@ void SppCompiler::scope_checking()
 	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(visitor2);
 
-	std::cout<<"FUNCTION TABLE"<<std::endl;
-	function_table.print_table();
+	// std::cout<<"FUNCTION TABLE"<<std::endl;
+	// function_table.print_table();
 
-	std::cout<<"VARIABLE TABLE"<<std::endl;
-	variable_table.print_table();
-
-
+	// std::cout<<"VARIABLE TABLE"<<std::endl;
+	// variable_table.print_table();
 }
 
 void SppCompiler::inference()
@@ -131,10 +135,13 @@ void SppCompiler::inference()
 	//if(error_handler.error_occurred())
 	//	return;
 
-	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
+	if(config.is_verbose())
+		cout << "Starting type inference..." << endl;
+
+	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table, type_table);
 	syntax_tree.root().accept(visitor);
-	type_table = visitor.get_table();
-	cout << endl << *(visitor.get_table()) << endl << endl;
+
+	// cout << endl << type_table << endl << endl;
 }
 
 void SppCompiler::print_ast()
