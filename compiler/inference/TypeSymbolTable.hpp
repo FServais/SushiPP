@@ -94,6 +94,13 @@ namespace inference
 		std::string unique_id_name(size_t, const std::string&);
 
 		/**
+		 * @brief Checks whether the given type variable id is contained in the type symbol table
+		 * @param const std::string& type The type variable string
+		 * @retval bool True if the type variable is contained in the table, false otherwise 
+		 */
+		bool contains(const std::string&) const;
+
+		/**
 		 * @brief Unify the two types referenced by the given strings
 		 * @param const std::string& type1 The first type
 		 * @param const std::string& type2 The second type
