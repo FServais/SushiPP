@@ -29,7 +29,7 @@ namespace codegen
         bool variable, constant;
         std::shared_ptr<typegen::Type> type;
 
-        void set_type(std::string _type);
+        void set_type(std::shared_ptr<typegen::Type> _type);
 
     };
 }

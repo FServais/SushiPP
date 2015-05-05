@@ -178,6 +178,10 @@ namespace visitor
 
 		codegen::LabelManager label_manager;
 
+		symb::SymbolTable<VariableInfo>& variable_table;
+		symb::SymbolTable<FunctionInfo>& function_table;
+		inference::TypeSymbolTable& type_table;
+
 		/* Vector */
 		std::vector<std::unique_ptr<codegen::Value>> return_vector;
 
