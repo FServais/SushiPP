@@ -1,7 +1,7 @@
 maki str2list str<string> :	
 
 	maki list = {}
-
+	maki i = 0
 	for i = (call str-len str) - 1, i >= 0, --i
 		call list-append list str[i]
 	;;
@@ -12,9 +12,7 @@ maki str2list str<string> :
 
 maki perform_heavy_computation parameter :
 	
-	maki hash = 0, tmp
-
-	call str2list (a + b) c
+	maki hash = 0, tmp = 0
 
 	foreach (call str2list parameter) as char
 		tmp = char % 18
@@ -30,13 +28,15 @@ maki perform_heavy_computation parameter :
 
 
 maki main args :	
-	if (call len args) < 2
+	if (call array-len args) < 2
 		nori -1
 	;;
 
 	foreach args as arg 
 		call perform_heavy_computation arg
 	;;
+
+	nori 0
 ;;
 
 

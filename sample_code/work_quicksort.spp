@@ -1,3 +1,8 @@
+maki array-len array<array> : 
+	array = #[]#
+	nori 18
+;;
+
 $ Swap values of the array
 $ array Array of which items must be swapped
 $ item1 index of the first element to swap
@@ -8,7 +13,56 @@ maki array-swap array item1 item2 :
 	array[item2] = tmp
 ;;
 
+$ Partition a partially partitionned range of an array
+$ array 		 Array
+$ pivot 		 Index of the pivot (pivot >= item_index) pivot must be the last item of the range to partition
+$ boundary_index Index of the element following the last element smaller than the pivot (item_index >= boundary_index)
+$ item_index     Index of the current item to partition
+maki partition array pivot boundary_index item_index :
+	if item_index == pivot
+		call array-swap array boundary_index pivot
+		nori boundary_index
+	;;
 
+	$ compare item index to the pivot
+	if array[item_index] < array[pivot] 
+		call array-swap array boundary_index item_index
+		call partition array pivot (++boundary_index) (++item_index)
+	else
+		call partition array pivot boundary_index (++item_index)
+	;;
 
-array = #[ an, brand, new, array ]#
-quicksort array
+	nori boundary_index
+;;
+
+$ Sort the array range with the quicksort algorithm
+$ array   The array to sort
+$ start   Index of the first element of the range to sort
+$ end     Index of the element one past the last one of the range
+maki quicksort_aux array start end :
+	if (end - start) <= 1
+		nori
+	;;
+
+	maki pivot_index = (end - start) / 2 + start,
+		 last_index = end - 1
+
+	$partition the array around the given pivot
+	call array-swap array pivot_index last_index
+	maki pivot = (call partition array last_index start start)
+
+	call quicksort_aux array start pivot
+	call quicksort_aux array (++pivot) end 
+;;
+
+$ Array sorting with quicksort algorithm
+maki quicksort array :
+	if (call array-len array) <= 1
+		nori
+	;;
+
+	call quicksort_aux array 0 (call array-len array)
+;;
+
+maki array = #[ 1, 3, 6, 8, 9 ]#
+call quicksort array

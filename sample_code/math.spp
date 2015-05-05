@@ -1,0 +1,45 @@
+$ power of base^expo
+maki pow base expo :
+	if expo == 0 
+		nori 1.0
+	elseif expo == 1
+		nori base
+	elseif expo % 2 == 0
+		nori (call pow (base * base) (expo / 2))
+	else 
+		nori base * (call pow base (expo - 1))
+	;;
+;;
+
+maki plus a b : nori a + b;;
+maki mult a b : nori a * b;;
+maki identity a : nori a;;
+
+maki reduce-num op<function> getitem<function> start end neutral: 
+	if start == end
+		nori neutral
+	else
+		nori (call op (call getitem start)
+					  (call reduce-num op getitem (start + 1) end neutral))
+	;; 
+;;
+
+maki progression r start end op<function> neutral :
+	if start >= end
+		nori neutral
+	else
+		nori (call op r (call progression r (start + 1) end op neutral))
+	;;
+;;
+
+maki prog-arith r start end :
+	nori (call progression r start end (soy a b : nori a + b) 0)	
+;;
+
+maki prog-geom r start end :
+	nori (call progression r start end (soy a b : nori a * b) 1)	
+;;
+
+call pow 2.5 3
+call prog-geom 2 0 25
+call reduce-num plus identity 18 35 0

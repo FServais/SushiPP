@@ -1,4 +1,10 @@
-(call str-le)
-(call str-len a)
+maki func a<function> :
+	nori (call func2 a)
+;;
 
-maki func a<function> b<int> : nori (call a b);;
+maki func2 b<function> :
+	nori (call func b)
+;;
+
+
+call func (soy x : nori x)
