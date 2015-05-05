@@ -25,3 +25,6 @@ compiler/parser/sushipp.tab.h
 Tests/LLVM/test_for_gen
 Tests/LLVM/test_for_gen.bc
 Tests/LLVM/test_for_gen.s
+Reports/Final/final_report.aux
+Reports/Final/final_report.synctex.gz
+Reports/Final/final_report.toc

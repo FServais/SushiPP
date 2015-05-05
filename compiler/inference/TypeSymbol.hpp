@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "Types.hpp"
+#include "TypeGen.hpp"
 
 namespace inference
 {
@@ -41,6 +42,7 @@ namespace inference
 		 * @retval bool True if it is resolved, false otherwise
  		 */
 		virtual bool is_resolved() const = 0;
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 	};
 
 	/**
@@ -57,6 +59,7 @@ namespace inference
 		 * @retval TypeHints A reference to the TypesHint object
 		 */
 		const TypesHint& get_hints() const { return hints; }
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 
 	protected:
 		TypesHint hints; // the set of types that could be taken by this symbol
@@ -93,6 +96,8 @@ namespace inference
 		 */
 		TypesHint& get_hints() { return hints; }
 
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	private:
 		std::string varname;
 	};
@@ -106,6 +111,7 @@ namespace inference
 	public:
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return true; }
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 	};
 
 	/**
@@ -168,6 +174,8 @@ namespace inference
 		virtual bool equals(const TypeSymbol&) const;
 		virtual bool is_resolved() const;
 
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	private:
 		TypeSymbol* linked_symbol; // underlying link object, nullptr if (*this) does not point to a type link object
 		bool symbol_is_link; // true if the linked symbol points to a link, false otherwise
@@ -185,6 +193,8 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool is_resolved() const { return true; }
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
+
 	};
 
 	/**
@@ -197,6 +207,8 @@ namespace inference
 		Bool();
 		virtual std::string str() const { return "bool"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -209,6 +221,8 @@ namespace inference
 		String();
 		virtual std::string str() const { return "string"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -221,6 +235,8 @@ namespace inference
 		Int();
 		virtual std::string str() const { return "int"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -233,6 +249,8 @@ namespace inference
 		Float();
 		virtual std::string str() const { return "float"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -245,6 +263,8 @@ namespace inference
 		Void();
 		virtual std::string str() const { return "void"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -257,6 +277,8 @@ namespace inference
 		Char();
 		virtual std::string str() const { return "char"; }
 		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -268,6 +290,8 @@ namespace inference
 	public:
 		virtual bool is_flat_type() const { return false; }
 		virtual bool is_structured_type() const { return true; }
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
+
 	};
 
 	/**
@@ -292,6 +316,7 @@ namespace inference
 		/** Getters for the parameters */
 		std::vector<std::reference_wrapper<TypeLink>>& get_parameters() { return parameters; };
 		const std::vector<std::reference_wrapper<TypeLink>>& get_parameters() const { return parameters; };
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
 
 	private:
 		TypeLink& return_type;
@@ -317,6 +342,7 @@ namespace inference
 		// parameter type getters
 		TypeLink& get_param_type() { return parameter_type; };
 		const TypeLink& get_param_type() const { return parameter_type; };
+		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 
 	protected:
 		TypeLink& parameter_type;
@@ -337,6 +363,8 @@ namespace inference
 
 		virtual bool is_array() const { return true; };
 		virtual bool is_list() const { return false; };
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 
 	/**
@@ -354,6 +382,8 @@ namespace inference
 
 		virtual bool is_array() const { return false; };
 		virtual bool is_list() const { return true; };
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+
 	};
 }
 

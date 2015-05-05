@@ -276,12 +276,9 @@ namespace symb
 		{
 			try
 			{
-
 				return (child->find_scope(id)); 
-
 			}
 			catch(except::UndefinedScopeException& e) { }
-
 		}
 
 		throw except::UndefinedScopeException(id);
