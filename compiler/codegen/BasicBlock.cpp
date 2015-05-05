@@ -27,18 +27,15 @@ void BasicBlock::dump(std::ostream& out) const
 
 Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 {
-    string type = lhs.str_type();
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_add", lhs.get_type());
 
-    if(type != rhs.str_type()){
-        cout << "[ERROR] " << endl;
-        throw 0;
-    }
-
-    Variable* ret = new Variable(var_manager, "tmp_add", type);
-
+    // generate code
     stringstream ss;
-
-    ss << ret->str_value() << " = " << "add" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fadd" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -47,22 +44,68 @@ Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_minus(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_sub", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_mult(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_mul", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fmul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "mul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_div(Value& lhs, Value& rhs)
 {
 
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_div", lhs.get_type());
+
+    // generate code
+    stringstream ss;
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "sdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_mod(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_mod", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "srem" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_expon(Value& lhs, Value& rhs)
@@ -72,62 +115,130 @@ Value* BasicBlock::create_op_expon(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_unminus(Value& value)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_unmin", value.get_type());
 
+    // generate code
+    stringstream ss;
+    if(value.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fsub" << " " << value.str_type() << " " << value.str_value() << ", 1";
+    else
+        ss << ret->str_value() << " = " << "sub" << " " << value.str_type() << " " << value.str_value() << ", 1";
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_bit_or(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_orb", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_bit_and(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_andb", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_bit_xor(Value& lhs, Value& rhs)
 {
+     // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_xorb", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "xor" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_bit_not(Value& value)
 {
+     // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_not", value.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", -1";
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_log_or(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_orl", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_log_and(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_andl", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_log_not(Value& value)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_orb", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", -1";
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_cmp_lt(Value& lhs, Value& rhs)
 {
-
+    return create_op_cmp_gt(rhs, lhs);
 }
 
 Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 {
-    string type = lhs.str_type();
-
-    if(type != rhs.str_type()){
-        cout << "[ERROR] " << endl;
-        throw 0;
-    }
 
     Variable* ret = new Variable(var_manager, "tmp_gt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    ss << ret->str_value() << " = " << "icmp sgt" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = " << "icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -136,32 +247,72 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_cmp_le(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "tmp_le", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
+    stringstream ss;
+    ss << ret->str_value() << " = " << "icmp sle" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_cmp_ge(Value& lhs, Value& rhs)
 {
-
+    return create_op_cmp_le(rhs, lhs);
 }
 
 Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "tmp_eq", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
+    stringstream ss;
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fcmp oeq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "icmp eq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_cmp_neq(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "tmp_ne", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
+    stringstream ss;
+    if(lhs.get_type()->equals(typegen::Float))
+        ss << ret->str_value() << " = " << "fcmp une" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = " << "icmp ne" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_left_shift(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "tmp_sl", lhs.get_type());
 
+    stringstream ss;
+    ss << ret->str_value() << " = " << "shl" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "tmp_sr", lhs.get_type());
 
+    stringstream ss;
+    ss << ret->str_value() << " = " << "shr" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)

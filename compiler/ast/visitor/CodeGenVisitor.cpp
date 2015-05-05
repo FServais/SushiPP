@@ -19,7 +19,7 @@ void CodeGenVisitor::visit( Identifier& token )
 {
 	string name = type_table.unique_id_name(function_table.get_curr_scope_id(), token.id());
 	std::shared_ptr<typegen::Type> type = type_table.get_type(name);
-	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type->to_str(), true);
+	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type, true);
 	add_return(v);
 }
 
