@@ -148,25 +148,205 @@ void CodeGenVisitor::visit( Op_Plus& token )
 
 void CodeGenVisitor::visit( Op_Minus& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_minus(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_minus(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_minus(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_minus(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_Mult& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_mult(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_mult(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_mult(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_mult(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_Div& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_div(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_div(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_div(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_div(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_Modulo& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_mod(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_mod(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_mod(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_mod(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
@@ -178,55 +358,423 @@ void CodeGenVisitor::visit( Op_Exponentiation& token )
 
 void CodeGenVisitor::visit( Op_UnaryMinus& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(rhs.is_variable())
+    {
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_unminus( *(load_rhs)));
+    }
+	else
+		result = dynamic_cast<Variable*>(block.create_op_unminus(rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_BitwiseOr& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_or(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_or(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_or(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_bit_or(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_and(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_and(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_and(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_bit_and(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_BitwiseXor& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_xor(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_bit_xor(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_BitwiseNot& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(rhs.is_variable())
+    {
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_bit_not( *(load_rhs)));
+    }
+	else
+		result = dynamic_cast<Variable*>(block.create_op_bit_not(rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_LogicalOr& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_or(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_or(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_or(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_log_or(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_LogicalAnd& token )
 {
+visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_and(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_and(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_and(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_log_and(lhs, rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_LogicalNot& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(rhs.is_variable())
+    {
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_log_not( *(load_rhs)));
+    }
+	else
+		result = dynamic_cast<Variable*>(block.create_op_log_not(rhs));
+
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_CompLessThan& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_lt(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_lt(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_lt(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_lt(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
@@ -260,46 +808,322 @@ void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 	else
 		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(lhs, rhs));
 
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
 	pop();
 	pop();
 
-	add_return(result);
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_CompLessEqual& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_le(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_le(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_le(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_le(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_ge(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_ge(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_ge(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_ge(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_CompEqual& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_eq(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_eq(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_eq(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_eq(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_CompNotEqual& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_neq(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_neq(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_cmp_neq(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_cmp_neq(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_LeftShift& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_left_shift(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_left_shift(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_left_shift(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_left_shift(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_RightShift& token )
 {
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+    if(lhs.is_variable() && rhs.is_variable())
+    {
+        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_right_shift(*(load_lhs), *(load_rhs)));
+    }
+	else if(lhs.is_variable() && rhs.is_constant()){
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+		result = dynamic_cast<Variable*>(block.create_op_right_shift(*(load_lhs), rhs));
+	}
+	else if(lhs.is_constant() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+		result = dynamic_cast<Variable*>(block.create_op_right_shift(lhs, *(load_rhs)));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_right_shift(lhs, rhs));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);	
 }
 
 
@@ -609,7 +1433,7 @@ void CodeGenVisitor::visit( ast::ExpressionList& )
 
 void CodeGenVisitor::visit( ModifyingExpression& token )
 {
-
+	visit_children(token);
 }
 
 

@@ -196,7 +196,7 @@ void SppCompiler::export_llvm()
 	}
 	*/
 
-	CodeGenVisitor visitor(variable_table, function_table, *type_table);
+	CodeGenVisitor visitor(variable_table, function_table, type_table);
 	syntax_tree.root().accept(visitor);
 	visitor.print(cout);
 }
