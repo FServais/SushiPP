@@ -15,6 +15,7 @@ int main(int ac, char **av)
         p = k;
     }
 
+    printf("%d", p);
 }
 
 int func(int argument)

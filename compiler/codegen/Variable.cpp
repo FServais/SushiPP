@@ -8,7 +8,7 @@ using namespace std;
 using namespace typegen;
 
 
-Variable::Variable(VariableManager& _var_manager, shared_ptr<Type> _name, string _type, bool _pointer) : Value(_type), var_manager(_var_manager), pointer(_pointer)
+Variable::Variable(VariableManager& _var_manager, string _name, std::shared_ptr<typegen::Type> _type, bool _pointer) : Value(_type), var_manager(_var_manager), pointer(_pointer)
 {
     set_is_variable();
     set_name(_name);

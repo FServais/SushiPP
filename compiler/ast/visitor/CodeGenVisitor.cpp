@@ -4,8 +4,10 @@ using namespace std;
 using namespace visitor;
 using namespace ast;
 using namespace codegen;
+using namespace symb;
+using namespace inference;
 
-CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_func_name("main")
+CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table, SymbolTable<FunctionInfo>& _function_table, TypeSymbolTable& _type_table) : curr_module(builder.get_curr_module()), curr_func_name("main"), variable_table(_variable_table), function_table(_function_table), type_table(_type_table)
 {
 
 }
@@ -18,7 +20,8 @@ CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_
 void CodeGenVisitor::visit( Identifier& token )
 {
 	string name = type_table.unique_id_name(function_table.get_curr_scope_id(), token.id());
-	std::shared_ptr<typegen::Type> type = type_table.get_type(name);
+	shared_ptr<typegen::Type> type = type_table.get_type(name);
+
 	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type, true);
 	add_return(v);
 }
@@ -400,7 +403,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
  * 		Constant token    *
  **************************/
 
-void CodeGenVisitor::visit( String& token )
+void CodeGenVisitor::visit( ast::String& token )
 {
 
 }
@@ -417,12 +420,12 @@ void CodeGenVisitor::visit( Integer& token )
 	add_return(constant_int);
 }
 
-void CodeGenVisitor::visit( Float& token )
+void CodeGenVisitor::visit( ast::Float& token )
 {
 
 }
 
-void CodeGenVisitor::visit( Bool& token )
+void CodeGenVisitor::visit( ast::Bool& token )
 {
 
 }
@@ -432,13 +435,13 @@ void CodeGenVisitor::visit( Bool& token )
  * 		Datastructure non-terminal    *
  **************************************/
 
-void CodeGenVisitor::visit( Array& token )
+void CodeGenVisitor::visit( ast::Array& token )
 {
 
 }
 
 
-void CodeGenVisitor::visit( List& token )
+void CodeGenVisitor::visit( ast::List& token )
 {
 
 }
@@ -471,23 +474,27 @@ void CodeGenVisitor::visit( DeclFunc& token )
 	Variable& id_var = dynamic_cast<Variable&>(id);
 
 	// Create new FunctionBlock
-	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), "i32");
+	string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), id_var.get_name());
 
+	//typegen::Function* function_type = ;
+
+	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type()) );
 	pop();
 
 	// Visit 2nd child (ParameterList: visit all children and add argument for each)
 	if(token.contains_params())
 	{
 		++index;
+		function_table.move_to_scope(token.get_scope().get_scope_id());
 		token.get_children().at(index)->accept(*this);
-
+		function_table.move_to_parent_scope();
 		ParamList* paramlist = dynamic_cast<ParamList*>(token.get_children().at(index));
 
 		vector<Value*> params = get_n_return_values(paramlist->nb_params());
 		for(auto param = params.rbegin() ; param != params.rend() ; ++param)
 		{
 			Variable* param_var = dynamic_cast<Variable*>(*param);
-			function.add_argument(param_var->get_type(), param_var->get_name());
+			function.add_argument(shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_arg(distance(params.rbegin(), param))), param_var->get_name());
 		}
 
 		pop_n_return_values(paramlist->nb_params());
@@ -537,11 +544,6 @@ void CodeGenVisitor::visit( DeclVar& token )
 			// Get the value
 			Variable& expr_cast = dynamic_cast<Variable&>(expr);
 			unique_ptr<Value> expr_value = unique_ptr<Value>(block.create_load(expr_cast));
-			if(expr_value->is_variable())
-			{
-				Variable* var = dynamic_cast<Variable*>(expr_value.get());
-				cout << "Decl : " << var->str_value() << endl;
-			}
 
 			// Store temp variable in location of the pointer
 			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(*expr_value, *lhs));
@@ -660,8 +662,10 @@ void CodeGenVisitor::visit( Program& token )
 void CodeGenVisitor::visit( Scope& token )
 {
 	size_t id_scope = token.get_scope_id();
+
 	function_table.move_to_scope(id_scope);
 	variable_table.move_to_scope(id_scope);
+
 	visit_children(token);
 
 	if(!function_table.is_root())
@@ -669,7 +673,7 @@ void CodeGenVisitor::visit( Scope& token )
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-	
+
 
 }
 

@@ -6,9 +6,9 @@ using namespace typegen;
 
 Value::Value(shared_ptr<Type> _type) : type(_type) { }
 
-Type& Value::get_type()
+shared_ptr<Type> Value::get_type()
 {
-    return *type;
+    return type;
 }
 
 string Value::str_type()

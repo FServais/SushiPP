@@ -6,14 +6,15 @@
 
 using namespace codegen;
 using namespace std;
+using namespace typegen;
 
-FunctionBlock::FunctionBlock(VariableManager& vm) : var_manager(vm), name(""), return_type("void")
+FunctionBlock::FunctionBlock(VariableManager& vm) : var_manager(vm), name(""), return_type(nullptr)
 {
     BasicBlock entry(vm, "entry");
     blocks.push_back(entry);
 }
 
-FunctionBlock::FunctionBlock(VariableManager& vm, string _name, string _return_type) : var_manager(vm), name(_name), return_type(_return_type)
+FunctionBlock::FunctionBlock(VariableManager& vm, string _name, shared_ptr<Type> _return_type) : var_manager(vm), name(_name), return_type(_return_type)
 {
     BasicBlock entry(vm, "entry");
     blocks.push_back(entry);
@@ -21,13 +22,18 @@ FunctionBlock::FunctionBlock(VariableManager& vm, string _name, string _return_t
 
 void FunctionBlock::dump(ostream& out) const
 {
-    out << "define" << " " << return_type << " @" << name << "(" << str_arguments() << ")" << "{" << endl;
+    out << "define" << " " << return_type->to_str() << " @" << name << "(" << str_arguments() << ")" << "{" << endl;
     for(auto block = blocks.begin() ; block != blocks.end() ; ++block){
         block->dump(out);
         out << endl;
     }
-    cout << "\tret " << return_type << " " << return_value << endl;
+    cout << "\tret " << return_type->to_str() << " " << return_value << endl;
     cout << "}" << endl;
+}
+
+void FunctionBlock::dump_declaration(ostream& out) const
+{
+    out << "declare" << " " << return_type->to_str() << " @" << name << "(" << str_arguments_signature() << ")" << endl;
 }
 
 void FunctionBlock::add_block(BasicBlock& block)
@@ -51,16 +57,30 @@ string FunctionBlock::str_arguments() const
     stringstream ss;
     for(auto arg = arguments.begin() ; arg != arguments.end() ; ++arg)
     {
-        ss << arg->first << " %" << arg->second;
+        ss << arg->first->to_str() << " %" << arg->second;
         if(arg != arguments.end()-1)
             ss << ", ";
     }
     return ss.str();
 }
 
-void FunctionBlock::add_argument(string type, string name)
+
+string FunctionBlock::str_arguments_signature() const
 {
-    pair<string,string> argument(type,name);
+    stringstream ss;
+    for(auto arg = arguments.begin() ; arg != arguments.end() ; ++arg)
+    {
+        ss << arg->first->to_str();
+        if(arg != arguments.end()-1)
+            ss << ", ";
+    }
+    return ss.str();
+}
+
+
+void FunctionBlock::add_argument(shared_ptr<Type> type, string name)
+{
+    pair<shared_ptr<Type>,string> argument(type,name);
     /*
     stringstream newname;
     newname << name << "_arg";
@@ -112,4 +132,13 @@ BasicBlock& FunctionBlock::get_block(int n)
 BasicBlock& FunctionBlock::get_last_block()
 {
     return get_block(blocks.size()-1);
+}
+
+
+std::string FunctionBlock::get_signature() const
+{
+    stringstream ss;
+    ss << return_type->to_str() << " @" << name << "(" << str_arguments_signature() << ")";
+
+    return ss.str();
 }

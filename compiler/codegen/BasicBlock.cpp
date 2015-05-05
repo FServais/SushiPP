@@ -297,7 +297,7 @@ Value* BasicBlock::create_op_left_shift(Value& lhs, Value& rhs)
 
     stringstream ss;
     ss << ret->str_value() << " = " << "shl" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    
+
     lines.push_back(ss.str());
 
     return ret;
@@ -309,7 +309,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 
     stringstream ss;
     ss << ret->str_value() << " = " << "shr" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    
+
     lines.push_back(ss.str());
 
     return ret;
@@ -444,7 +444,7 @@ Value* BasicBlock::create_load(Value& ptr)
     stringstream tempname;
     tempname << "tmp_load_" << ptr_var.get_name();
 
-    Variable* variable_ptr = new Variable(var_manager, tempname.str(), ptr_var.str_type());
+    Variable* variable_ptr = new Variable(var_manager, tempname.str(), ptr_var.get_type());
 
     stringstream ss;
     ss << variable_ptr->str_value() << " = load " << variable_ptr->str_type() << "* " <<  ptr_var.str_value();

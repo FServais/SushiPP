@@ -249,14 +249,14 @@ decl-vars:
 ;
 
 decl-var:
-  IDENTIFIER
+/*  IDENTIFIER
 	{
 		$$ = (void*) (new ast::DeclVar(new ast::Identifier(*$1, location(@1)), location(@$)));
 		
 		// delete the memory allocated for the string
 		delete $1;
 	}
-| IDENTIFIER '=' expression
+| */IDENTIFIER '=' expression
 	{
 		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$3, location(@3));
 		ast::Identifier* iden = new ast::Identifier(*$1, location(@1));

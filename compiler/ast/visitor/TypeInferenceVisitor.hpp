@@ -23,7 +23,10 @@ namespace visitor
 		 * @param symb::SymbolTable<symb::FunctionInfo>& function_table The function table
 		 * @param symb::SymbolTable<symb::VariableInfo>& variable_table The variable talble
 		 */
-		TypeInferenceVisitor(errors::ErrorHandler&, symb::SymbolTable<symb::FunctionInfo>&, symb::SymbolTable<symb::VariableInfo>&);
+		TypeInferenceVisitor(errors::ErrorHandler&, 
+							 symb::SymbolTable<symb::FunctionInfo>&, 
+							 symb::SymbolTable<symb::VariableInfo>&, 
+							 inference::TypeSymbolTable&);
 
 		/****************
 		 * 		Node    *
@@ -171,8 +174,8 @@ namespace visitor
 		/**
 		 * @brief Return the type table built by the visitor
 		 */
-		std::shared_ptr<inference::TypeSymbolTable> get_table() { return type_table; }
-		const std::shared_ptr<inference::TypeSymbolTable> get_table() const { return type_table; }
+		inference::TypeSymbolTable& get_table() { return type_table; }
+		const inference::TypeSymbolTable& get_table() const { return type_table; }
 
 	private:
 		/**
@@ -182,7 +185,7 @@ namespace visitor
 		 * current_scope : the current scope id
 		 */
 		errors::ErrorHandler& error_handler;
-		std::shared_ptr<inference::TypeSymbolTable> type_table;
+		inference::TypeSymbolTable& type_table;
 		VisitorParameters<std::string> params;
 		size_t current_scope;
 
@@ -205,11 +208,12 @@ namespace visitor
 		std::pair<std::string, std::string> add_function_declaration_rule(const std::string&, size_t);
 		
 		/**
-		 * @brief Check whether, from a scope node, a type variable must be propagate
+		 * @brief Check whether, from a scope node, a type variable must be propagated to the given child node
+		 * @param ast::ASTNode& the ast ode
 		 * @retuval bool True if the variable must be propagated, false otherwise
 		 * @note A type should be propagated on statement
 		 */
-		bool propagate_type_from_scope(ast::ASTNode&);
+		bool propagate_type_from_scope(const ast::ASTNode&) const;
 	};
 }
 

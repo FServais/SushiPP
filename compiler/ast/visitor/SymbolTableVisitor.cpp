@@ -118,7 +118,7 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-	
+
 	check_unused(scp_id);
 }
 

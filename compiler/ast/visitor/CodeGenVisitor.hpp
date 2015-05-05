@@ -29,7 +29,7 @@ namespace visitor
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor(); // arg: the stream in which to output the tree
+		CodeGenVisitor(symb::SymbolTable<symb::VariableInfo>& variable_table, symb::SymbolTable<symb::FunctionInfo>& function_table, inference::TypeSymbolTable& type_table); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -185,6 +185,7 @@ namespace visitor
 		symb::SymbolTable<symb::VariableInfo>& variable_table;
 		symb::SymbolTable<symb::FunctionInfo>& function_table;
 		inference::TypeSymbolTable& type_table;
+
 
 		/* Vector */
 		std::vector<std::unique_ptr<codegen::Value>> return_vector;
