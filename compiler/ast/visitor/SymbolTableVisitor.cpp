@@ -16,7 +16,7 @@ void SymbolTableVisitor::check_unused(size_t scp_id)
 	{
 		VariableInfo v = variable_table.get_symbol(scp_id, i);
 		// If a variable is found unused, then an error is created
-		if(!v.get_line())
+		if(!v.get_used())
 			error_handler.add_sem_error(" ",v.get_line(), v.get_column(), " unused variable : "+v.name());
 	}
 }
@@ -33,7 +33,6 @@ bool SymbolTableVisitor::symbol_exists(std::string& name, symb::SymbolTable<S>& 
 	// check if a parent scope is allowed and contains the symbol
 	while( !table.is_root() )
 	{
-		std::cout << "check" << std::endl; 
 		table.move_to_parent_scope();
 		if(allowed_scopes.count(table.get_curr_scope_id()) && table.symbol_in_scope(name))
 		{
