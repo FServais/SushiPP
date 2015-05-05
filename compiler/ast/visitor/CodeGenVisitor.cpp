@@ -609,7 +609,7 @@ void CodeGenVisitor::visit( ast::ExpressionList& )
 
 void CodeGenVisitor::visit( ModifyingExpression& token )
 {
-
+	visit_children(token);
 }
 
 
