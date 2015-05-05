@@ -16,6 +16,16 @@ namespace typegen
 		virtual inference::ShallowType get_type() = 0;
 		virtual std::string to_str() = 0;
 		bool equals(Type&);
+		bool is_int(){return get_type() == inference::INT;};
+		bool is_float(){return get_type() == inference::FLOAT;};
+		bool is_char(){return get_type() == inference::CHAR;};
+		bool is_bool(){return get_type() == inference::BOOL;};
+		bool is_array(){return get_type() == inference::ARRAY;};
+		bool is_string(){return get_type() == inference::STRING;};
+		bool is_list(){return get_type() == inference::LIST;};
+		bool is_function(){return get_type() == inference::FUNCTION;};
+		bool is_void(){return get_type() == inference::VOID;};
+
 	};
 
 
