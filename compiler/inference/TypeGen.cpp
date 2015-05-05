@@ -26,52 +26,59 @@ List::List(shared_ptr<Type> type): param_type(type)
 
 }
 
-void Array::to_str()
+string Array::to_str()
 {
+	to_return = 
 	cout<<"Array : "<<endl;
 	get_param_type()->to_str();
 }
 
-void List::to_str()
+string List::to_str()
 {
 	cout<<"List : "<<endl;
 	get_param_type()->to_str();
 }
 
-void Function::to_str()
+string Function::to_str()
 {
-	get_ret_type()->to_str();
-		string str;
+	string to_return = get_ret_type()->to_str() + " (";
 	for(int i = 0; i < nb_param(); i++)
-		get_arg(i)->to_str();
+	{
+		if(i != nb_param() - 1)
+			to_return += get_arg(i)->to_str() + ", ";
+		else
+			to_return += get_arg(i)->to_str() + " )";
+	}
+		
+	return to_return;
 }
 
-void Int::to_str()
+string Int::to_str()
 {
-	cout<<"Int"<<endl;
+	return "i32";
 }
 
-void Float::to_str()
+string Float::to_str()
 {
-	cout<<"Float"<<endl;
+	return "float";
 }
 
-void Char::to_str()
+string Char::to_str()
 {
-	cout<<"Char"<<endl;
+	return "i8";
 }
 
-void String::to_str()
+string String::to_str()
 {
 	cout<<"String"<<endl;
 }
 
-void Bool::to_str()
+string Bool::to_str()
 {
-	cout<<"Bool"<<endl;
+	return "i8";
 }
 
-void Void::to_str()
+string Void::to_str()
 {
-	cout<<"Void"<<endl;
+	return "void";
 }
