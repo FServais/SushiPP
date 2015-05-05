@@ -9,6 +9,8 @@
 
 #include "TypeSymbol.hpp"
 #include "Types.hpp"
+#include "TypeGen.hpp"
+
 
 namespace inference
 {
@@ -138,6 +140,11 @@ namespace inference
 		 * @throws UnificaitonException if the given type hint is not compatible with the variable current hint
 		 */
 		void update_hints(const std::string&, const TypesHint&);
+
+		/**
+		 * @brief 
+		 */
+		std::shared_ptr<typegen::Type> get_type( const std::string& ) const; 
 		 
 	private:
 		/**

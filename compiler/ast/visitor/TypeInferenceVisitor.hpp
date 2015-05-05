@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "ASTVisitor.hpp"
 #include "VisitorParameters.hpp"
@@ -170,8 +171,8 @@ namespace visitor
 		/**
 		 * @brief Return the type table built by the visitor
 		 */
-		inference::TypeSymbolTable& get_table() { return type_table; }
-		const inference::TypeSymbolTable& get_table() const { return type_table; }
+		std::shared_ptr<inference::TypeSymbolTable> get_table() { return type_table; }
+		const std::shared_ptr<inference::TypeSymbolTable> get_table() const { return type_table; }
 
 	private:
 		/**
@@ -181,7 +182,7 @@ namespace visitor
 		 * current_scope : the current scope id
 		 */
 		errors::ErrorHandler& error_handler;
-		inference::TypeSymbolTable type_table;
+		std::shared_ptr<inference::TypeSymbolTable> type_table;
 		VisitorParameters<std::string> params;
 		size_t current_scope;
 

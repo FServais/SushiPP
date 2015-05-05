@@ -1,5 +1,7 @@
 #include "TypeSymbol.hpp"
 
+#include "InferenceExceptions.hpp"
+
 #include <sstream>
 #include <algorithm>
 #include <iterator>
@@ -18,6 +20,11 @@ bool TypeVariable::equals(const TypeSymbol& symb) const
 	
 	return t_var // symb is of class TypeVariable
 			&& !varname.compare(t_var->varname); // symb is linked to the same symbol
+}
+
+shared_ptr<typegen::Type> TypeVariable::ret_type() const 
+{
+	throw except::UnresolvableTypeException("type wasn't successfully inferred at type inference phase");
 }
 
 TypeLink::TypeLink(TypeSymbol* symb) : linked_symbol(symb), symbol_is_link(symb->is_link())
@@ -87,6 +94,11 @@ bool TypeLink::equals(const TypeSymbol& symb) const
 	return !t_link ? symb.equals(resolve()) : resolve().equals(t_link->resolve());
 }
 
+shared_ptr<typegen::Type> TypeLink::ret_type() const
+{
+	return resolve().ret_type();
+}
+
 Bool::Bool() { hints = TypesHint(BOOL); }
 
 bool Bool::equals(const TypeSymbol& symb) const
@@ -96,6 +108,11 @@ bool Bool::equals(const TypeSymbol& symb) const
 	const Bool* t_bool = dynamic_cast<const Bool*>(&symb);
 
 	return t_bool;
+}
+
+shared_ptr<typegen::Type> Bool::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::Bool());
 }
 
 Char::Char() { hints = TypesHint(CHAR); }
@@ -109,6 +126,12 @@ bool Char::equals(const TypeSymbol& symb) const
 	return t_char;
 }
 
+shared_ptr<typegen::Type> Char::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::Char());
+}
+
+
 Int::Int() { hints = TypesHint(INT); }
 
 bool Int::equals(const TypeSymbol& symb) const
@@ -119,6 +142,12 @@ bool Int::equals(const TypeSymbol& symb) const
 	
 	return t_int;
 }
+
+shared_ptr<typegen::Type> Int::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::Int());
+}
+
 
 Float::Float() { hints = TypesHint(FLOAT); }
 
@@ -131,6 +160,12 @@ bool Float::equals(const TypeSymbol& symb) const
 	return t_float;
 }
 
+shared_ptr<typegen::Type> Float::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::Float());
+}
+
+
 Void::Void() { hints = TypesHint(VOID); }
 
 bool Void::equals(const TypeSymbol& symb) const
@@ -140,6 +175,11 @@ bool Void::equals(const TypeSymbol& symb) const
 	const Void* t_void = dynamic_cast<const Void*>(&symb);
 
 	return t_void;
+}
+
+shared_ptr<typegen::Type> Void::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::Void());
 }
 
 String::String() { hints = TypesHint(STRING); }
@@ -152,6 +192,12 @@ bool String::equals(const TypeSymbol& symb) const
 
 	return t_string;
 }
+
+shared_ptr<typegen::Type> String::ret_type() const
+{
+	return shared_ptr<typegen::Type>(new typegen::String());
+}
+
 
 Function::Function(const vector<reference_wrapper<TypeLink>>& params, TypeLink& ret)
   : return_type(ret),
@@ -205,6 +251,8 @@ string Function::str() const
 	return ss.str();
 }
 
+
+
 UniparameterType::UniparameterType(TypeLink& param_type) : parameter_type(param_type) { }
 
 bool UniparameterType::is_resolved() const 
@@ -244,4 +292,29 @@ bool List::equals(const TypeSymbol& symb) const
 	const List* t_list = dynamic_cast<const List*>(&symb);
 
 	return t_list && parameter_type.equals(t_list->parameter_type);
+}
+
+shared_ptr<typegen::Type> List::ret_type() const
+{
+	shared_ptr<typegen::Type> param = get_param_type().resolve().ret_type();
+	return shared_ptr<typegen::Type>(new typegen::List(param));
+}
+
+shared_ptr<typegen::Type> Array::ret_type() const
+{
+	shared_ptr<typegen::Type> param = get_param_type().resolve().ret_type();
+	return shared_ptr<typegen::Type>(new typegen::Array(param));
+}
+
+shared_ptr<typegen::Type> Function::ret_type() const
+{
+	shared_ptr<typegen::Type> ret = get_return_type().resolve().ret_type();
+	vector<reference_wrapper<TypeLink>> ref =  get_parameters(); 
+	vector<shared_ptr<typegen::Type> > to_return;
+	for(auto r : ref)
+	{
+		to_return.push_back(r.get().resolve().ret_type());
+	}
+
+	return shared_ptr<typegen::Type>(new typegen::Function(ret, to_return ));
 }

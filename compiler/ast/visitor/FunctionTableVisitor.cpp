@@ -20,8 +20,10 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 
 	// first child is a identifier
 	std::string id = token.get_id().id();
+
+	if(variable_table.symbol_exists(id) || function_table.symbol_exists(id))
+		error_handler.add_sem_error(" ",token.get_location().first_line(), token.get_location().first_column(), " Redefined function : "+id);
 	// second child is a param list whose children are params
-	
 	std::vector<symb::VariableInfo> params;
 
 	if( token.contains_params())
@@ -43,6 +45,7 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 
 	
 	is_there_a_return_gen = false;
+	is_there_an_empty_return_gen = false;
 	ret = true;
 	counter = 0;
 
@@ -54,6 +57,10 @@ void FunctionTableVisitor::visit( ast::DeclFunc& token )
 		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Wrong termination");
 
 	}
+
+	if(is_there_a_return_gen && is_there_an_empty_return_gen)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Non uniform returns");
+			
 	counter = 0;
 	variable_table.move_to_scope(token.get_scope().get_scope_id());
 
@@ -130,7 +137,6 @@ void FunctionTableVisitor::visit( ast::Scope& token )
 
 	function_table.move_to_scope(id_scope);
 	variable_table.move_to_scope(id_scope);
-
 	token.set_scope_id(id_scope);
 	counter = 0;
 	prev_ret = ret; 
@@ -161,14 +167,17 @@ void FunctionTableVisitor::visit( ast::Return& token )
 		is_there_a_return_loc = true;
 		is_there_a_return_gen = true;
 	}
+	else 
+		is_there_an_empty_return_gen = true;
 	visit_children(token);
 } 
 
 void FunctionTableVisitor::visit( ast::Statement& token )
 {
 	if(counter > 0)
+	{
 		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
-
+	}
 	ret = true;
 	visit_children(token);
 	if(ret)

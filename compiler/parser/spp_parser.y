@@ -738,12 +738,12 @@ seq-expression:
 /* Statements */
 /**************/
 statement:
-  return           { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
-| menu             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
-| loop             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
+  return           { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1, location(@$))); }
+| menu             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1, location(@$))); }
+| loop             { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1, location(@$))); }
 | KEYWORD_CONTINUE { $$ = (void*) (new ast::Statement(new ast::K_Continue(location(@1)), location(@$))); }
 | KEYWORD_BREAK    { $$ = (void*) (new ast::Statement(new ast::K_Break(location(@1)), location(@$))); }
-| conditional      { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1)); }
+| conditional      { $$ = (void*) (new ast::Statement((ast::ASTNode*)$1, location(@$))); }
 ;
 
 /* Return */

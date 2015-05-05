@@ -27,13 +27,13 @@ namespace visitor
 		/******************************
 		 * 		Identifier token    *
 		 ******************************/
-
+		
 		virtual void visit( ast::Identifier& ) {};
 
 		/*************************
 		 * 		Keyword token    *
 		 *************************/
-
+		 
 		virtual void visit( ast::K_Continue& ) {};
 		virtual void visit( ast::K_Break& ) {};
 		virtual void visit( ast::Type_Int& ) {};
@@ -44,11 +44,11 @@ namespace visitor
 		virtual void visit( ast::Type_List& ) {};
 		virtual void visit( ast::Type_Bool& ) {};
 		virtual void visit( ast::Type_Function& ) {};
-
+		
 		/**************************
 		 * 		Operator token    *
 		 **************************/
-
+		
 		virtual void visit( ast::Op_Plus& ) {};
 		virtual void visit( ast::Op_Minus& ) {};
 		virtual void visit( ast::Op_Mult& ) {};
@@ -87,65 +87,65 @@ namespace visitor
 		virtual void visit( ast::Op_AssignOr& ) {};
 		virtual void visit( ast::Op_AssignXor& ) {};
 		virtual void visit( ast::Op_AssignConcat& ) {};
-
+		
 		/**************************
 		 * 		Constant token    *
 		 **************************/
-
+		
 		virtual void visit( ast::String& ) {};
 		virtual void visit( ast::Character& ) {};
 		virtual void visit( ast::Integer& ) {};
 		virtual void visit( ast::Float& ) {};
 		virtual void visit( ast::Bool& ) {};
-
+		
 		/**************************************
 		 * 		Datastructure non-terminal    *
 		 **************************************/
-
+		
 		virtual void visit( ast::Array& ) {};
 		virtual void visit( ast::List& ) {};
 		virtual void visit( ast::MakeSequenceList& ) {};
 		virtual void visit( ast::MakeSequenceArray& ) {};
-
+		
 		/************************************
 		 * 		Declaration non-terminal    *
 		 ************************************/
-
+		
 		virtual void visit( ast::DeclFunc& ) {};
 		virtual void visit( ast::DeclVars& ) {};
 		virtual void visit( ast::DeclVar& ) {};
 		virtual void visit( ast::ParamList& ) {};
 		virtual void visit( ast::Param& ) {};
-
+		
 		/***********************************
 		 * 		Expression non-terminal    *
 		 ***********************************/
-
+		 
 		virtual void visit( ast::Expression& ) {};
 		virtual void visit( ast::ExpressionList& ) {};
 		virtual void visit( ast::ModifyingExpression& ) {};
 		virtual void visit( ast::DatastructureAccess& ) {};
-
+		
 		/*************************************
 		 * 		FunctionCall non-terminal    *
 		 *************************************/
-
+		
 		virtual void visit( ast::FuncCall& ) {};
 		virtual void visit( ast::ArgList& ) {};
 		virtual void visit( ast::Argument& ) {};
 		virtual void visit( ast::SoyFunc& ) {};
-
+		
 		/********************************
 		 * 		Program non-terminal    *
 		 ********************************/
-
+		
 		virtual void visit( ast::Program& ) {};
 		virtual void visit( ast::Scope& ) {};
 
 		/**********************************
 		 * 		Statement non-terminal    *
 		 **********************************/
-
+		
 
 		virtual void visit( ast::Statement& ) {};
 		virtual void visit( ast::Return& ) {};
@@ -162,7 +162,7 @@ namespace visitor
 		virtual void visit( ast::Elseif& ) {};
 		virtual void visit( ast::If& ) {};
 		virtual void visit( ast::Else& ) {};
-	};
+	};	
 }
 
 #endif

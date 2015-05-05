@@ -17,6 +17,11 @@ TypeSymbolTable::TypeSymbolTable()
 
 }
 
+std::shared_ptr<typegen::Type> TypeSymbolTable::get_type(const std::string& name) const
+{
+	return at(name).ret_type();
+}
+
 string TypeSymbolTable::new_variable()
 {
 	return new_variable(unique_varname());
