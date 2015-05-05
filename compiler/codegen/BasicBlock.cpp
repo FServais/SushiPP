@@ -32,7 +32,7 @@ Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fadd" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -49,7 +49,7 @@ Value* BasicBlock::create_op_minus(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -66,7 +66,7 @@ Value* BasicBlock::create_op_mult(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fmul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "mul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -84,7 +84,7 @@ Value* BasicBlock::create_op_div(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "sdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -120,7 +120,7 @@ Value* BasicBlock::create_op_unminus(Value& value)
 
     // generate code
     stringstream ss;
-    if(value.get_type()->equals(typegen::Float))
+    if(value.get_type()->equals(*(new typegen::Float)))
         ss << ret->str_value() << " = " << "fsub" << " " << value.str_type() << " " << value.str_value() << ", 1";
     else
         ss << ret->str_value() << " = " << "sub" << " " << value.str_type() << " " << value.str_value() << ", 1";
@@ -267,7 +267,7 @@ Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_eq", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fcmp oeq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "icmp eq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -282,7 +282,7 @@ Value* BasicBlock::create_op_cmp_neq(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_ne", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    if(lhs.get_type()->equals(typegen::Float))
+    if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fcmp une" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
         ss << ret->str_value() << " = " << "icmp ne" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
@@ -317,7 +317,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 {
-
+    
 }
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
