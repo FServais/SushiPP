@@ -117,9 +117,6 @@ Value* BasicBlock::create_op_cmp_lt(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 {
-    // Create temp variables
-    string temp_name = var_manager.insert_variable("tmp_gt");
-
     string type = lhs.str_type();
 
     if(type != rhs.str_type()){
@@ -127,10 +124,9 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
         throw 0;
     }
 
-    Variable* ret = new Variable(var_manager, temp_name, "i1");
+    Variable* ret = new Variable(var_manager, "tmp_gt", "i1");
 
     stringstream ss;
-
     ss << ret->str_value() << " = " << "icmp sgt" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
