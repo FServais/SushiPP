@@ -216,7 +216,7 @@ Value* BasicBlock::create_op_log_and(Value& lhs, Value& rhs)
 Value* BasicBlock::create_op_log_not(Value& value)
 {
     // create variable to contain the return value
-    Variable* ret = new Variable(var_manager, "tmp_orb", lhs.get_type());
+    Variable* ret = new Variable(var_manager, "tmp_orb", value.get_type());
 
     // generate code
     stringstream ss;
