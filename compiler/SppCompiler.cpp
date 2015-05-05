@@ -122,12 +122,14 @@ void SppCompiler::scope_checking()
 
 	std::cout<<"VARIABLE TABLE"<<std::endl;
 	variable_table.print_table();
+
+
 }
 
 void SppCompiler::inference()
 {
-	if(error_handler.error_occurred())
-		return;
+	//if(error_handler.error_occurred())
+	//	return;
 
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
 	syntax_tree.root().accept(visitor);
@@ -187,7 +189,7 @@ void SppCompiler::export_llvm()
 	}
 	*/
 
-	CodeGenVisitor visitor;
+	CodeGenVisitor visitor(variable_table, function_table, *type_table);
 	syntax_tree.root().accept(visitor);
 	visitor.print(cout);
 }

@@ -10,7 +10,7 @@ namespace codegen
     public:
         ConstantInt(int _value) : Constant(nullptr), value(_value)
         {
-            set_type(std::shared_ptr<typegen::Type>(new typegen::Bool()));
+            set_type(std::shared_ptr<typegen::Type>(new typegen::Int()));
         }
 
         int get_value() { return value; }

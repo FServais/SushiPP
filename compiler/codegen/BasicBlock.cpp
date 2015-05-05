@@ -27,18 +27,18 @@ void BasicBlock::dump(std::ostream& out) const
 
 Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 {
-    string type = lhs.str_type();
+    // compare types of the operands
+    if(lhs.str_type() != rhs.str_type()){
+        cout << "[ERROR] " << lhs.str_type() << " + " << rhs.str_type() << endl;
 
-    if(type != rhs.str_type()){
-        cout << "[ERROR] " << endl;
         throw 0;
     }
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_add", lhs.get_type());
 
-    Variable* ret = new Variable(var_manager, "tmp_add", type);
-
+    // generate code
     stringstream ss;
-
-    ss << ret->str_value() << " = " << "add" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -293,7 +293,7 @@ Value* BasicBlock::create_load(Value& ptr)
     stringstream tempname;
     tempname << "tmp_load_" << ptr_var.get_name();
 
-    Variable* variable_ptr = new Variable(var_manager, tempname.str(), ptr_var.str_type());
+    Variable* variable_ptr = new Variable(var_manager, tempname.str(), ptr_var.get_type());
 
     stringstream ss;
     ss << variable_ptr->str_value() << " = load " << variable_ptr->str_type() << "* " <<  ptr_var.str_value();
