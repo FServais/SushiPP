@@ -9,7 +9,7 @@ namespace codegen
     class Variable : public Value
     {
     public:
-        Variable(VariableManager& _var_manager, std::string _name = "", std::string _type = "", bool _pointer = false);
+        Variable(VariableManager& _var_manager, std::string _name = "", std::shared_ptr<typegen::Type> _type = nullptr, bool _pointer = false);
 
         std::string str_value();
 

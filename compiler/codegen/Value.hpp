@@ -3,14 +3,15 @@
 
 #include <string>
 
+#include "../inference/Typegen.hpp"
+
 namespace codegen
 {
     class Value
     {
     public:
-        Value(const std::string& _type);
+        Value(std::shared_ptr<typegen::Type> _type);
 
-        // Type
         bool is_variable();
         bool is_constant();
 
@@ -18,7 +19,7 @@ namespace codegen
         void set_is_constant();
 
         // std::string -> to change
-        std::string get_type();
+        typegen::Type& get_type();
         std::string str_type();
 
         virtual std::string str_value();
@@ -26,7 +27,7 @@ namespace codegen
     protected:
         // Type
         bool variable, constant;
-        std::string type;
+        std::shared_ptr<typegen::Type> type;
 
         void set_type(std::string _type);
 

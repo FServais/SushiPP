@@ -18,7 +18,6 @@ CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_
 void CodeGenVisitor::visit( Identifier& token )
 {
 	Variable* v = new Variable(builder.get_variable_manager(), token.id(), "i32", true);
-
 	add_return(v);
 }
 

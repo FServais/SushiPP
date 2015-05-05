@@ -2,28 +2,31 @@
 
 using namespace codegen;
 using namespace std;
+using namespace typegen;
 
-Value::Value(const string& _type) : type(_type) { }
+Value::Value(shared_ptr<Type> _type) : type(_type) { }
 
-std::string Value::get_type()
+Type& Value::get_type()
 {
-    return type;
+    return *type;
 }
 
-std::string Value::str_type()
+string Value::str_type()
 {
-    return type;
+    return type->to_str();
 }
 
-void Value::set_type(std::string _type)
+void Value::set_type(shared_ptr<Type> _type)
 {
     type = _type;
 }
+
 
 string Value::str_value()
 {
     return "wut";
 }
+
 
 bool Value::is_variable()
 {
