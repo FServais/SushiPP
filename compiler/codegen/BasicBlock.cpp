@@ -27,9 +27,6 @@ void BasicBlock::dump(std::ostream& out) const
 
 Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 {
-    // Create temp variables
-//    string temp_name = var_manager.insert_variable();
-
     string type = lhs.str_type();
 
     if(type != rhs.str_type()){
