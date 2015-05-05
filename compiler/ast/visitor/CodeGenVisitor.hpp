@@ -20,12 +20,16 @@
 #include "../../codegen/ConstantInt.hpp"
 #include "../../codegen/LabelManager.hpp"
 
+#include "../../symb/SymbolTable.hpp"
+#include "../../symb/SymbolInfo.hpp"
+#include "../../inference/TypeSymbolTable.hpp"
+
 namespace visitor
 {
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor(); // arg: the stream in which to output the tree
+		CodeGenVisitor(symb::SymbolTable<symb::VariableInfo>& variable_table, symb::SymbolTable<symb::FunctionInfo>& function_table, inference::TypeSymbolTable& type_table); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -178,9 +182,10 @@ namespace visitor
 
 		codegen::LabelManager label_manager;
 
-		symb::SymbolTable<VariableInfo>& variable_table;
-		symb::SymbolTable<FunctionInfo>& function_table;
+		symb::SymbolTable<symb::VariableInfo>& variable_table;
+		symb::SymbolTable<symb::FunctionInfo>& function_table;
 		inference::TypeSymbolTable& type_table;
+
 
 		/* Vector */
 		std::vector<std::unique_ptr<codegen::Value>> return_vector;

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../inference/Typegen.hpp"
+#include "../inference/TypeGen.hpp"
 
 namespace codegen
 {
@@ -19,7 +19,7 @@ namespace codegen
         void set_is_constant();
 
         // std::string -> to change
-        typegen::Type& get_type();
+        std::shared_ptr<typegen::Type> get_type();
         std::string str_type();
 
         virtual std::string str_value();

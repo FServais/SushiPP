@@ -4,8 +4,10 @@ using namespace std;
 using namespace visitor;
 using namespace ast;
 using namespace codegen;
+using namespace symb;
+using namespace inference;
 
-CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_func_name("main")
+CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table, SymbolTable<FunctionInfo>& _function_table, TypeSymbolTable& _type_table) : curr_module(builder.get_curr_module()), curr_func_name("main"), variable_table(_variable_table), function_table(_function_table), type_table(_type_table)
 {
 
 }
