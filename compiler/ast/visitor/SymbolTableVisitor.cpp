@@ -33,7 +33,6 @@ bool SymbolTableVisitor::symbol_exists(std::string& name, symb::SymbolTable<S>& 
 	// check if a parent scope is allowed and contains the symbol
 	while( !table.is_root() )
 	{
-		std::cout << "check" << std::endl; 
 		table.move_to_parent_scope();
 		if(allowed_scopes.count(table.get_curr_scope_id()) && table.symbol_in_scope(name))
 		{
@@ -107,9 +106,6 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 {
 	size_t scp_id = token.get_scope_id();
 	allowed_scopes.insert(scp_id);
-	// std::cout<<"ENTERING  "<<scp_id<<std::endl;
-	// for(size_t scope : allowed_scopes)
-	// 	std::cout << "scope  " << scope << std::endl;
 
 	function_table.move_to_scope(scp_id);
 	variable_table.move_to_scope(scp_id);
@@ -122,10 +118,6 @@ void SymbolTableVisitor::visit( ast::Scope& token )
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-
-	// std::cout<<"LEAVING  "<<scp_id<<std::endl;
-	// for(size_t scope : allowed_scopes)
-	// 	std::cout << "scope  " << scope << std::endl;
 
 	check_unused(scp_id);
 }
@@ -507,12 +499,6 @@ void SymbolTableVisitor::visit( ast::Menu& token )
 
 void SymbolTableVisitor::visit( ast::MenuBody& token )
 {
-	visit_children(token);
-}
-
-void SymbolTableVisitor::visit( ast::MenuBody& token )
-{
-
 	visit_children(token);
 }
 

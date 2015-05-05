@@ -40,6 +40,7 @@ void SppCompiler::execute()
 		init();
 		parse();
 		scope_checking();
+		print_ast();
 		inference();
 		terminate();
 		//export_llvm();
@@ -98,8 +99,8 @@ void SppCompiler::parse()
 		if(config.is_verbose())
 			cout << "Parsing : success..." << endl;
 
-		if(config.do_dump_ast())
-			print_ast();
+		//if(config.do_dump_ast())
+		//	print_ast();
 	}
 }
 
@@ -115,11 +116,11 @@ void SppCompiler::scope_checking()
 	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(visitor2);
 
-	/*std::cout<<"FUNCTION TABLE"<<std::endl;
+	std::cout<<"FUNCTION TABLE"<<std::endl;
 	function_table.print_table();
 
 	std::cout<<"VARIABLE TABLE"<<std::endl;
-	variable_table.print_table();*/
+	variable_table.print_table();
 }
 
 void SppCompiler::inference()
@@ -129,11 +130,14 @@ void SppCompiler::inference()
 
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table);
 	syntax_tree.root().accept(visitor);
-	cout << endl << visitor.get_table() << endl << endl;
+	type_table = visitor.get_table();
+	cout << endl << *(visitor.get_table()) << endl << endl;
 }
 
 void SppCompiler::print_ast()
 {
+	if(error_handler.error_occurred())
+		return;
 	if(config.do_dump_ast_in_file())
 	{
 		ofstream file(config.get_ast_dump_file().c_str());
@@ -152,6 +156,7 @@ void SppCompiler::print_ast()
 	{
 		visitor::PrintASTVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
+
 	}
 }
 

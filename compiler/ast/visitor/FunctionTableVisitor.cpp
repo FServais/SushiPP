@@ -137,7 +137,6 @@ void FunctionTableVisitor::visit( ast::Scope& token )
 
 	function_table.move_to_scope(id_scope);
 	variable_table.move_to_scope(id_scope);
-
 	token.set_scope_id(id_scope);
 	counter = 0;
 	prev_ret = ret; 
@@ -176,8 +175,9 @@ void FunctionTableVisitor::visit( ast::Return& token )
 void FunctionTableVisitor::visit( ast::Statement& token )
 {
 	if(counter > 0)
+	{
 		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Dead code in the function");
-
+	}
 	ret = true;
 	visit_children(token);
 	if(ret)

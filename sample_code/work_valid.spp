@@ -18,7 +18,7 @@ $ decl eol after body
 maki func a b : nori (a = b - 2) ;;
 
 $ function call !!
-a (soy a b : nori 18 + a + b)
+call (soy a b : nori 18 + a + b) 3 1
 
 $ expressions
 a = a + b - (a += b)
@@ -44,7 +44,7 @@ maki func a<int> v<float> :
 
 $ datastructures
 maki a = { 2, b, 1 }
-maki b = #{ a, b, 3, 18, "aaa" }#
+maki b = { a, b, 3, 18, "aaa" }
 maki c = #[ a, b, 3, 18, "aaa" ]#
 maki ba_c = #[ 18 to 21 ]#
 maki a = 2
@@ -73,7 +73,7 @@ $ character
 maki a = 'a'
 
 $switch case inline one line
-menu (func a b)
+menu (call func a b)
 	a -> a = b + 2 ;;
 	b -> c = b + 2 ;; 
 	_ -> a = d + 2 ;;

@@ -62,17 +62,17 @@ void Program::accept(visitor::ASTVisitor& visitor)
 }
 
 /* Scope */
-Scope::Scope(ASTNode* program_elem) : NT_Program("Scope"), scope_id(cnt++)
+Scope::Scope(ASTNode* program_elem) : NT_Program("Scope")
 {
 	add_child(program_elem);
 }
 
 Scope::Scope(ASTNode* program_elem, int first_line, int last_line, int first_column, int last_column)
-	: NT_Program("Scope", first_line, last_line, first_column, last_column), scope_id(cnt++)
+	: NT_Program("Scope", first_line, last_line, first_column, last_column)
 {
 	add_child(program_elem);
 }
-Scope::Scope(ASTNode* program_elem, const NodeLocation& node_loc) : NT_Program("Scope", node_loc), scope_id(cnt++)
+Scope::Scope(ASTNode* program_elem, const NodeLocation& node_loc) : NT_Program("Scope", node_loc)
 {
 	add_child(program_elem);
 }

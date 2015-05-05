@@ -7,6 +7,8 @@
 #include "symb/SymbolTable.hpp"
 #include "symb/SymbolInfo.hpp"
 #include "errors/ErrorHandler.hpp"
+#include "inference/TypeSymbolTable.hpp"
+#include "inference/TypeGen.hpp"
 
 namespace compiler
 {
@@ -41,6 +43,7 @@ namespace compiler
 		symb::SymbolTable<symb::FunctionInfo> function_table;
 		symb::SymbolTable<symb::VariableInfo> variable_table;
 		errors::ErrorHandler error_handler;
+		std::shared_ptr<inference::TypeSymbolTable> type_table;
 
 		/**
 		 * @brief Initialize the compiler for execution
