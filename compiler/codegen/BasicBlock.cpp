@@ -30,7 +30,7 @@ Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
     string type = lhs.str_type();
 
     if(type != rhs.str_type()){
-        cout << "[ERROR] " << endl;
+        cout << "[ERRO0R] " << endl;
         throw 0;
     }
 
