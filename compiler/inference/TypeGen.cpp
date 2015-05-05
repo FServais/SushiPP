@@ -4,6 +4,14 @@
 using namespace std; 
 using namespace typegen;
 
+
+bool Type::equals(Type& a)
+{
+	if(get_type() == a.get_type())
+		return true;
+	return false;
+}
+
 Function::Function(shared_ptr<Type> ret_type, vector<shared_ptr<Type>> arg_type): return_type(ret_type), args_types(arg_type)
 {
 
@@ -52,7 +60,7 @@ string Function::to_str()
 
 string Int::to_str()
 {
-	return "i32";
+	return "i64";
 }
 
 string Float::to_str()

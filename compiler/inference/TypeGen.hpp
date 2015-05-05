@@ -15,6 +15,7 @@ namespace typegen
 	public:
 		virtual inference::ShallowType get_type() = 0;
 		virtual std::string to_str() = 0;
+		bool equals(Type&);
 	};
 
 
