@@ -317,7 +317,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 {
-
+    
 }
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
