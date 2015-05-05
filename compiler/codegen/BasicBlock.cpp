@@ -28,7 +28,7 @@ void BasicBlock::dump(std::ostream& out) const
 Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 {
     // Create temp variables
-    string temp_name = var_manager.insert_variable("tmp_add");
+//    string temp_name = var_manager.insert_variable();
 
     string type = lhs.str_type();
 
@@ -37,7 +37,7 @@ Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
         throw 0;
     }
 
-    Variable* ret = new Variable(temp_name, type);
+    Variable* ret = new Variable(var_manager, "tmp_add", type);
 
     stringstream ss;
 
@@ -130,7 +130,7 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
         throw 0;
     }
 
-    Variable* ret = new Variable(temp_name, "i1");
+    Variable* ret = new Variable(var_manager, temp_name, "i1");
 
     stringstream ss;
 
@@ -279,12 +279,16 @@ Value* BasicBlock::create_assign(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_store(Value& value, Value& variable)
 {
+    //Variable& value_cast = dynamic_cast<Variable&>(value);
+    Variable& variable_cast = dynamic_cast<Variable&>(variable);
+
     stringstream ss;
-    ss << "store " << value.str_type() << " " << value.str_value() << ", " << variable.str_type() << "* " << variable.str_value();
+    ss << "store " << value.str_type() << " " << value.str_value() << ", " << variable_cast.str_type() << "* " << variable_cast.str_value();
 
     add_line(ss.str());
 
-    Value* variable_ptr = new Value(variable);
+    //Variable& variable_cast = dynamic_cast<Variable&>(variable);
+    Variable* variable_ptr = new Variable(variable_cast);
 
     return variable_ptr;
 }
@@ -296,7 +300,7 @@ Value* BasicBlock::create_load(Value& ptr)
     stringstream tempname;
     tempname << "tmp_load_" << ptr_var.get_name();
 
-    Variable* variable_ptr = new Variable(tempname.str(), ptr_var.str_type());
+    Variable* variable_ptr = new Variable(var_manager, tempname.str(), ptr_var.str_type());
 
     stringstream ss;
     ss << variable_ptr->str_value() << " = load " << variable_ptr->str_type() << "* " <<  ptr_var.str_value();
@@ -314,7 +318,7 @@ Value* BasicBlock::create_get_pointer(Value& variable)
     stringstream ptrname;
     ptrname << var.get_name() << "_ptr";
 
-    Variable* var_ptr = new Variable(ptrname.str(), var.get_type());
+    Variable* var_ptr = new Variable(var_manager, ptrname.str(), var.get_type());
 
     stringstream ss;
     ss << var_ptr->str_value() << " = getelementptr " << var_ptr->str_type() << "* " << var.str_value() << ", i32 0";

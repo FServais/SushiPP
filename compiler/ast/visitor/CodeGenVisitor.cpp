@@ -17,7 +17,7 @@ CodeGenVisitor::CodeGenVisitor() : curr_module(builder.get_curr_module()), curr_
 
 void CodeGenVisitor::visit( Identifier& token )
 {
-	Variable* v = new Variable(token.id(), "i32");
+	Variable* v = new Variable(builder.get_variable_manager(), token.id(), "i32", true);
 
 	add_return(v);
 }
@@ -121,10 +121,24 @@ void CodeGenVisitor::visit( Op_Plus& token )
 	else
 		result = dynamic_cast<Variable*>(block.create_op_plus(lhs, rhs));
 
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(result->get_name()), result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+
+	// cout << "Res: " << result->get_name() << endl;
+	// cout << "Ptr: " << ptr->str_value() << endl;
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
 	pop();
 	pop();
 
-	add_return(result);
+	add_return(after_store_var);
 }
 
 
@@ -456,7 +470,7 @@ void CodeGenVisitor::visit( DeclFunc& token )
 	Variable& id_var = dynamic_cast<Variable&>(id);
 
 	// Create new FunctionBlock
-	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), "function_type");
+	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), "i32");
 
 	pop();
 
@@ -515,9 +529,26 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 		// Allocate in memory
 		unique_ptr<Value> lhs = unique_ptr<Value>(block.create_decl_var(id));
+		//Variable* lhs_ptr = dynamic_cast<Variable*>(lhs.get());
 
-		// Store temp variable in location of the pointer
-		unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
+		if(expr.is_variable())
+		{
+			// Get the value
+			Variable& expr_cast = dynamic_cast<Variable&>(expr);
+			unique_ptr<Value> expr_value = unique_ptr<Value>(block.create_load(expr_cast));
+			if(expr_value->is_variable())
+			{
+				Variable* var = dynamic_cast<Variable*>(expr_value.get());
+				cout << "Decl : " << var->str_value() << endl;
+			}
+
+			// Store temp variable in location of the pointer
+			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(*expr_value, *lhs));
+		}
+		else
+			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
+
+
 
 		pop();
 		pop();
@@ -644,18 +675,32 @@ void CodeGenVisitor::visit( Statement& token )
 
 void CodeGenVisitor::visit( Return& token )
 {
+	FunctionBlock& function = curr_module.get_function(curr_func_name);
+
 	if(token.has_child())
 	{
 		// Child is Expression
 		visit_children(token);
 
 		Value& exp = get_return_value(0);
-		curr_module.get_function(curr_func_name).set_return(exp.str_value());
+		if(exp.is_variable())
+		{
+			Variable& exp_var = dynamic_cast<Variable&>(exp);
+			if(exp_var.is_pointer())
+			{
+				unique_ptr<Value> return_value = unique_ptr<Value>(function.get_last_block().create_load(exp_var));
+				function.set_return(return_value->str_value());
+			}
+			else
+				function.set_return(exp.str_value());
+		}
+		else
+			function.set_return(exp.str_value());
 
 		pop();
 	}
 	else
-		curr_module.get_function(curr_func_name).set_return("");
+		function.set_return("");
 }
 
 

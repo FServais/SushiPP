@@ -61,7 +61,7 @@ string FunctionBlock::str_arguments() const
 void FunctionBlock::add_argument(string type, string name)
 {
     pair<string,string> argument(type,name);
-
+    /*
     stringstream newname;
     newname << name << "_arg";
 
@@ -74,6 +74,26 @@ void FunctionBlock::add_argument(string type, string name)
     unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign(lhs, *up));
 
     arguments.push_back(make_pair(type,newname.str()));
+    */
+
+    // Change the name of the argument -> goal is to get pointer to its value
+    stringstream newname;
+    newname << name << "_arg";
+
+    BasicBlock& entry = get_last_block();
+
+    // Allocate in memory to get a pointer
+    Variable pointer(var_manager, name, type, true);
+    unique_ptr<Value> alloc = unique_ptr<Value>(entry.create_decl_var(pointer));
+
+    // Add to the list of arguments
+    arguments.push_back(make_pair(type,newname.str()));
+
+    // Store the value given in argument where is the pointer
+    Variable value(var_manager, newname.str(), type);
+
+    unique_ptr<Value> store = unique_ptr<Value>(entry.create_store(value, pointer));
+
 }
 
 void FunctionBlock::set_return(string _return_value)

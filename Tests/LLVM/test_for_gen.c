@@ -10,7 +10,11 @@ int main(int ac, char **av)
 
     int p = k + i + j;
 
-    int ret = func(p);
+    if(i > 2)
+    {
+        p = k;
+    }
+
 }
 
 int func(int argument)
