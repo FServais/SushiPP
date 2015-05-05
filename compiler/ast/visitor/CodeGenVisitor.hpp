@@ -20,6 +20,10 @@
 #include "../../codegen/ConstantInt.hpp"
 #include "../../codegen/LabelManager.hpp"
 
+#include "../../symb/SymbolTable.hpp"
+#include "../../symb/SymbolInfo.hpp"
+#include "../../inference/TypeSymbolTable.hpp"
+
 namespace visitor
 {
 	class CodeGenVisitor : public ASTVisitor

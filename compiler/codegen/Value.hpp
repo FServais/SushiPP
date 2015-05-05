@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../inference/Typegen.hpp"
+#include "../inference/TypeGen.hpp"
 
 namespace codegen
 {

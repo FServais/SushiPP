@@ -53,6 +53,7 @@ namespace typegen
 		virtual std::string to_str();
 	};
 
+
 	class Void : public Type
 	{
 	public:

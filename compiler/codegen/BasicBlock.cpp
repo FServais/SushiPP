@@ -124,7 +124,7 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
         throw 0;
     }
 
-    Variable* ret = new Variable(var_manager, "tmp_gt", "i1");
+    Variable* ret = new Variable(var_manager, "tmp_gt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
     ss << ret->str_value() << " = " << "icmp sgt" << " " << type << " " << lhs.str_value() << ", " << rhs.str_value();
