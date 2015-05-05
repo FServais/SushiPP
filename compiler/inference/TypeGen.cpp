@@ -28,15 +28,12 @@ List::List(shared_ptr<Type> type): param_type(type)
 
 string Array::to_str()
 {
-	to_return = 
-	cout<<"Array : "<<endl;
-	get_param_type()->to_str();
+	return "i64";
 }
 
 string List::to_str()
 {
-	cout<<"List : "<<endl;
-	get_param_type()->to_str();
+	return "i64";
 }
 
 string Function::to_str()
@@ -75,7 +72,7 @@ string String::to_str()
 
 string Bool::to_str()
 {
-	return "i8";
+	return "i1";
 }
 
 string Void::to_str()

@@ -19,7 +19,9 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table, Symbo
 
 void CodeGenVisitor::visit( Identifier& token )
 {
-	Variable* v = new Variable(builder.get_variable_manager(), token.id(), "i32", true);
+	string name = type_table.unique_id_name(function_table.get_curr_scope_id(), token.id());
+	std::shared_ptr<typegen::Type> type = type_table.get_type(name);
+	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type->to_str(), true);
 	add_return(v);
 }
 
@@ -659,7 +661,18 @@ void CodeGenVisitor::visit( Program& token )
 
 void CodeGenVisitor::visit( Scope& token )
 {
+	size_t id_scope = token.get_scope_id();
+	function_table.move_to_scope(id_scope);
+	variable_table.move_to_scope(id_scope);
 	visit_children(token);
+
+	if(!function_table.is_root())
+		function_table.move_to_parent_scope();
+
+	if(!variable_table.is_root())
+		variable_table.move_to_parent_scope();
+	
+
 }
 
 
