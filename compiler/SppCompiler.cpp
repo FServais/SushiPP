@@ -29,6 +29,9 @@ using namespace std;
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
 	srand(time(NULL));
+
+	if(config.is_verbose())
+		config.print_settings();
 }
 
 void SppCompiler::execute()
@@ -40,7 +43,6 @@ void SppCompiler::execute()
 		init();
 		parse();
 		scope_checking();
-		print_ast();
 		inference();
 		terminate();
 		//export_llvm();
@@ -88,7 +90,7 @@ void SppCompiler::parse()
 {
 	if(config.is_verbose())
 		cout << "Starting parsing..." << endl;
-	
+
 	int ret = yyparse();
 
 	switch(ret)
