@@ -631,24 +631,111 @@ void CodeGenVisitor::visit( FuncCall& token )
 	// - 2nd child : Argument list -> get ID's
 	visit_children(token);
 
+	for(auto it = return_vector.begin() ; it != return_vector.end() ; ++it)
+		cout << (*it)->str_value() << endl;
 
-	// Load values of the arguments
+	int nb_args = 0;
+	if(token.contains_arglist())
+		nb_args = token.get_arg_list().nb_args();
+
+	vector<Value*> args = get_n_return_values(nb_args);
+
+	// Function name
+	Value& id = get_return_value(args.size());
+	Variable& id_var = dynamic_cast<Variable&>(id);
+	string func_name = id_var.get_name();
+
+	// Return type
+	string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), func_name);
+
+	shared_ptr<typegen::Type> ret_type = shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type());
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// Get values from arguments
+	vector<shared_ptr<Value>> args_value;
+	for(auto arg = args.rbegin() ; arg != args.rend() ; ++arg)
+	{
+		Value* arg_ptr = *arg;
+		if(arg_ptr->is_constant())
+			args_value.push_back(shared_ptr<Value>(arg_ptr));
+		else if(arg_ptr->is_variable())
+		{
+			Variable* var = dynamic_cast<Variable*>(arg_ptr);
+			args_value.push_back(shared_ptr<Value>(block.create_load(*var)));
+		}
+	}
+
+	codegen::Function function(ret_type, func_name, args_value);
+
+	unique_ptr<Value> add = unique_ptr<Value>(block.create_func_call(function));
+
+	pop_n_return_values(nb_args+1);
+
 	
 
-	// Create function
+	// vector<string> names;
+	// vector<shared_ptr<typegen::Type>> types;
+	//
+	// // Transfer the names and types of the arguments into vectors
+	// /*
+	// for(auto arg = args->rbegin() ; arg != args->rend() ; ++arg)
+	// {
+	// 	Variable* arg_var = dynamic_cast<Variable*>(arg);
+	// 	names.push_back(arg_var.get_name());
+	// 	types.push_back(arg->get_type());
+	// }*/
+	//
+	// pop_n_return_values(nb_args);
+	//
+	// Value& id = get_return_value(0);
+	// Variable& id_var = dynamic_cast<Variable&>(id);
+	// string func_name = id_var.get_name();
+	//
+	// pop();
+	//
+	// string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), func_name);
+	//
+	// shared_ptr<typegen::Type> ret_type = shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type());
+	//
+	// // Load values of the arguments
+	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// vector<unique_ptr<Value>> arg_value_ptr;
+	//
+	// for(int i = 0 ; i < nb_args ; ++i)
+	// {
+	// 	if (!args[i].is_constant())
+	// 		arg_value_ptr.push_back(unique_ptr<Value>(block.create_load(args[i])));
+	// 	else
+	// 		arg_value_ptr.push_back(args[i]);
+	//
+	// }
+	//
+	//
+	// /*
+	// vector<string> arg_names;
+	// for(int i = 0 ; i < nb_args ; ++i)
+	// 	arg_names.push_back(dynamic_cast<Variable&>(*(arg_value_ptr[i])).get_name());
+	// */
+	//
+	// // Create function
+	// //codegen::Function function(shared_ptr<typegen::Type>(new typegen::Function(ret_type, types)), func_name, arg_names);
+	// codegen::Function function(shared_ptr<typegen::Type>(new typegen::Function(ret_type, types)), func_name, args);
+
+
 
 }
 
 
 void CodeGenVisitor::visit( ArgList& token )
 {
-
+	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Argument& token )
 {
-
+	visit_children(token);
 }
 
 

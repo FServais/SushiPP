@@ -10,27 +10,34 @@ namespace codegen
     class Function : public Value
     {
     public:
-        Function(std::shared_ptr<typegen::Type>, std::string);
+        // Return type, name, arguments
+        Function(std::shared_ptr<typegen::Type>, std::string&, std::vector<std::shared_ptr<Value>>);
 
-        std::string str_value();
+        // //Function(std::shared_ptr<typegen::Type>, std::string&, std::vector<std::string>&);
+        // Function(std::shared_ptr<typegen::Type>, std::string&, std::vector<Value&>&);
+        //
+        // std::string str_value();
 
         std::string get_name() const;
         std::string str_name() const;
+        //
+        std::shared_ptr<typegen::Type> get_type_nth_argument(int n);
+        std::string str_type_nth_argument(int n);
+        //
+        std::string get_name_nth_argument(int n);
+        std::string str_name_nth_argument(int n);
+        //
+        std::shared_ptr<typegen::Type> get_return_type();
+        std::string str_return_type();
+        //
+        std::string get_signature();
 
-        std::string get_type_nth_argument(int n) const;
-        std::string get_name_nth_argument(int n) const;
-        std::string str_name_nth_argument(int n) const;
-
-        std::string get_return_type() const;
-
-        std::string get_signature() const;
+        std::string get_function_call();
+        int nb_args() const;
 
     protected:
         std::string name;
-
-        std::string return_type;
-        std::vector<std::string> type_arguments;
-
+        std::vector<std::shared_ptr<Value>> args;
     };
 }
 

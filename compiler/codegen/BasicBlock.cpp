@@ -6,6 +6,7 @@
 
 #include "BasicBlock.hpp"
 #include "Variable.hpp"
+#include "Function.hpp"
 
 using namespace std;
 using namespace codegen;
@@ -317,7 +318,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 {
-    
+
 }
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
@@ -489,6 +490,28 @@ void BasicBlock::create_cond_branch(Value& cond, std::string label_true, std::st
     ss << "br " << cond_var.str_type() << " " << cond_var.str_value() << ", label %" << label_true << ", label %" << label_false;
 
     add_line(ss.str());
+}
+
+Value* BasicBlock::create_func_call(Value& value)
+{
+    Function& function = dynamic_cast<Function&>(value);
+
+    Variable* ret;
+
+    stringstream ss;
+    if(!function.get_return_type()->is_void())
+    {
+        ret = new Variable(var_manager, "ret", function.get_return_type());
+        ss << ret->str_value() << " = ";
+    }
+    else
+        ret = nullptr;
+
+    ss << "call " << function.get_function_call();
+
+    add_line(ss.str());
+
+    return ret;
 }
 
 

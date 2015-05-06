@@ -19,6 +19,7 @@
 #include "../../codegen/Variable.hpp"
 #include "../../codegen/ConstantInt.hpp"
 #include "../../codegen/LabelManager.hpp"
+#include "../../codegen/Function.hpp"
 
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"

@@ -89,6 +89,7 @@ namespace codegen
         // Variable containing the result of the condition, label if true, label if false
         void create_cond_branch(Value&, std::string, std::string);
 
+        Value* create_func_call(Value&);
 
     private:
         std::string label;
