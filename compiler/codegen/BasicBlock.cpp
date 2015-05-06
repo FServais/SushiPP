@@ -53,7 +53,7 @@ Value* BasicBlock::create_op_minus(Value& lhs, Value& rhs)
     if(lhs.get_type()->is_float())
         ss << ret->str_value() << " = " << "fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = " << "sub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -221,7 +221,7 @@ Value* BasicBlock::create_op_log_not(Value& value)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", -1";
+    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", 1";
 
     lines.push_back(ss.str());
 
