@@ -16,34 +16,34 @@ namespace settings
 	/**
 	 * @class CompilerSettings
 	 * @brief A class for initializing and storing the compiler execution settings
-	 * 
+	 *
 	 * The settings are the following :
 	 *  - execution nmode : what the program is supposed to do (compiler or print help)
 	 *  - verbose mode : should the compiler be verbose or not
 	 *  - program source : should the compiler read the input program from the standard input or from a file
 	 *  - dump ast : should the program output de AST in a txt format
-	 * 
+	 *
 	 * Program parameters are the following :
-	 * 
+	 *
 	 *    -i filename
 	 *		 Input source : specify the file from which the input program to compile should be read
-	 *    -h 
+	 *    -h
 	 *		 Help : the compiler will only print a help message detailing program usage
 	 *    -d [ filename ]
-	 *       Dump : specify if the ast must printed out as soon as it is built. If a filename is provided, 
+	 *       Dump : specify if the ast must printed out as soon as it is built. If a filename is provided,
 	 *       	the AST is printed out in this file
-	 *    -v 
+	 *    -v
 	 *		 Verbose : the compiler emits messages detailing its execution
-	 *    -o filename  
+	 *    -o filename
 	 *		 Output program : name of the executable file
 	 * 	  -l [ filename ] " << endl;
-	 *  	 Dump LLVM : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is 
+	 *  	 Dump LLVM : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is
 	 *     	 	provided, the LLVM assembly is printed out in this file
 	 */
 	class CompilerSettings
 	{
-	public: 
-		/** 
+	public:
+		/**
 		 * Initialize the default settings :
 		 *  - ProgramSource : STDIN
 		 *  - VerboseMode : QUIET
@@ -60,7 +60,7 @@ namespace settings
 		 */
 		CompilerSettings(int argc, char** argv);
 
-		// getters and setters 
+		// getters and setters
 		void set_verbose_mode(VerboseMode verbose_mode_) { verbose_mode = verbose_mode_; };
 		void set_do_dump_ast(DumpMode dump_ast_) { dump_ast = dump_ast_; };
 		void set_program_source(ProgramSource prog_source_) { prog_source = prog_source_; };
@@ -68,14 +68,14 @@ namespace settings
 
 		VerboseMode get_verbose_mode() const { return verbose_mode; };
 		DumpMode get_do_dump_ast() const { return dump_ast; };
-		ProgramSource get_program_source() const { return prog_source; }; 
+		ProgramSource get_program_source() const { return prog_source; };
 		ExecutionMode get_execution_mode() const { return exec_mode; };
 
 		// these methods return relevant data only for some given settings
 		const std::string& get_ast_dump_file() const { return param_map.at('d'); }; // only if dump ast is DUMP_FILE
 		const std::string& get_input_file() const { return param_map.at('i'); }; // only if program source is FILE
-		const std::string& get_llvm_dump_file() const { return param_map.at('i'); }; // only if dump llvm is FILE
-		
+		const std::string& get_llvm_dump_file() const { return param_map.at('l'); }; // only if dump llvm is FILE
+
 		const std::string& get_executable_file() const { return param_map.at('o'); };
 
 		// check whether the VerboseMode setting was set to verbose

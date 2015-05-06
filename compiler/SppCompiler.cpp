@@ -45,8 +45,8 @@ void SppCompiler::execute()
 		parse();
 		scope_checking();
 		inference();
-		terminate();
 		export_llvm();
+		terminate();
 	}
 }
 
@@ -171,33 +171,32 @@ void SppCompiler::print_ast()
 
 void SppCompiler::export_llvm()
 {
-	/*
-	if(config.do_dump_ast_in_file())
+	visitor::CodeGenVisitor visitor(variable_table, function_table, type_table);
+	syntax_tree.root().accept(visitor);
+
+	if(config.do_dump_llvm_in_file())
 	{
-		ofstream file(config.get_ast_dump_file().c_str());
+		ofstream file(config.get_llvm_dump_file().c_str());
 
 		if(!file.is_open())
 		{
-			cerr << "[IO Error] Cannot open the file '" << config.get_ast_dump_file() << "'..." << endl;
+			cerr << "[IO Error] Cannot open the file '" << config.get_llvm_dump_file() << "'..." << endl;
 			return;
 		}
 
-		visitor::CodeGenVisitor visitor(file);
-		syntax_tree.root().accept(visitor);
+		visitor.print(file);
+
 		file.close();
 	}
 	else
-	{
-
-		visitor::CodeGenVisitor visitor(cout);
-		syntax_tree.root().accept(visitor);
 		visitor.print(cout);
-	}
-	*/
 
+
+/*
 	CodeGenVisitor visitor(variable_table, function_table, type_table);
 	syntax_tree.root().accept(visitor);
 	visitor.print(cout);
+*/
 }
 
 ErrorHandler& SppCompiler::get_error_handler()
