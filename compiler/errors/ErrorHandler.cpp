@@ -76,9 +76,9 @@ void ErrorHandler::add_sem_error(SemanticError& err)
  *************************************** 
  */
 
-void ErrorHandler::add_io_error(const string& context, int line, int col, const string& desc)
+void ErrorHandler::add_io_error(const string& context, const string& desc)
 {
-	errors.push_back(unique_ptr<IOError>(new IOError(context, line, col, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
+	errors.push_back(unique_ptr<IOError>(new IOError(context, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
 }
 
 void ErrorHandler::add_io_error(IOError& err)

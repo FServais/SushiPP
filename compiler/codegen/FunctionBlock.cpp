@@ -27,8 +27,8 @@ void FunctionBlock::dump(ostream& out) const
         block->dump(out);
         out << endl;
     }
-    cout << "\tret " << return_type->to_str() << " " << return_value << endl;
-    cout << "}" << endl;
+    out << "\tret " << return_type->to_str() << " " << return_value << endl;
+    out << "}" << endl;
 }
 
 void FunctionBlock::dump_declaration(ostream& out) const

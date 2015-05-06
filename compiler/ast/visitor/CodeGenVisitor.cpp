@@ -1456,8 +1456,8 @@ void CodeGenVisitor::visit( FuncCall& token )
 	// - 2nd child : Argument list -> get ID's
 	visit_children(token);
 
-	for(auto it = return_vector.begin() ; it != return_vector.end() ; ++it)
-		cout << (*it)->str_value() << endl;
+	// for(auto it = return_vector.begin() ; it != return_vector.end() ; ++it)
+	// 	cout << (*it)->str_value() << endl;
 
 	int nb_args = 0;
 	if(token.contains_arglist())

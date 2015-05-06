@@ -45,8 +45,8 @@ void SppCompiler::execute()
 		parse();
 		scope_checking();
 		inference();
-		terminate();
 		export_llvm();
+		terminate();
 	}
 }
 
@@ -64,8 +64,10 @@ void SppCompiler::init()
 
 		if(!input)
 		{
-			cerr << "[IO Error] Cannot open the file '" << config.get_input_file()  << "'..." << endl;
-			throw ios_base::failure("Cannot open the source file");
+			stringstream ss;
+			ss << "Cannot open the file '" << config.get_input_file()  << "'...";
+			error_handler.add_io_error("", ss.str());
+			return;
 		}
 
 		yyin = input;
@@ -78,6 +80,14 @@ void SppCompiler::terminate()
 {
 	if(config.read_from_file())
 		fclose(yyin);
+
+	if(config.is_verbose())
+	{
+		if(error_handler.error_occurred())
+			cerr << "Compilation terminated with errors..." << endl;
+		else
+			cout << "Compilation terminated successfully..." << endl;
+	}
 
 	error_handler.print_errors();
 }
@@ -172,33 +182,37 @@ void SppCompiler::print_ast()
 
 void SppCompiler::export_llvm()
 {
-	/*
-	if(config.do_dump_ast_in_file())
+	if(config.is_verbose())
+		cout << "Starting code generation..." << endl;
+
+	visitor::CodeGenVisitor visitor(variable_table, function_table, type_table);
+	syntax_tree.root().accept(visitor);
+
+	if(!config.do_dump_llvm())
+		return;
+
+	if(config.do_dump_llvm_in_file())
 	{
-		ofstream file(config.get_ast_dump_file().c_str());
+		ofstream file(config.get_llvm_dump_file().c_str());
 
 		if(!file.is_open())
 		{
-			cerr << "[IO Error] Cannot open the file '" << config.get_ast_dump_file() << "'..." << endl;
+			stringstream ss;
+			ss << "Cannot open the file '" << config.get_input_file()  << "'...";
+			error_handler.add_io_error("", ss.str());
 			return;
 		}
+		
+		visitor.print(file);
 
-		visitor::CodeGenVisitor visitor(file);
-		syntax_tree.root().accept(visitor);
 		file.close();
 	}
 	else
-	{
-
-		visitor::CodeGenVisitor visitor(cout);
-		syntax_tree.root().accept(visitor);
 		visitor.print(cout);
-	}
-	*/
-
+/*
 	CodeGenVisitor visitor(variable_table, function_table, type_table);
 	syntax_tree.root().accept(visitor);
-	visitor.print(cout);
+	visitor.print(cout); */
 }
 
 ErrorHandler& SppCompiler::get_error_handler()
