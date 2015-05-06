@@ -91,7 +91,7 @@ void FunctionBlock::add_argument(shared_ptr<Type> type, string name)
     unique_ptr<Value> up = unique_ptr<Value>(entry.create_get_pointer(arg));
 
     Variable lhs(name, type);
-    unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign(lhs, *up));
+    unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign_value(lhs, *up));
 
     arguments.push_back(make_pair(type,newname.str()));
     */

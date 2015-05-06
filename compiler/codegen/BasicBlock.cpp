@@ -410,7 +410,7 @@ Value* BasicBlock::create_decl_var(Value& value)
     return var_ptr;
 }
 
-Value* BasicBlock::create_assign(Value& lhs, Value& rhs)
+Value* BasicBlock::create_assign_value(Value& lhs, Value& rhs)
 {
     stringstream ss;
     ss << lhs.str_value() << " = " << rhs.str_value();
