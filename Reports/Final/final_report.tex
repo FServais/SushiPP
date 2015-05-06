@@ -271,9 +271,9 @@ As the \textit{Sushi++} language is statically typed, the types must be checked 
 As \textit{Sushi++} is free from type annotation, these checks cannot be performed directly and the types of expressions and identifiers have to be inferred. 
 \paragraph{}
 Formally, the type inference problem can be as formulated as follows : given a set of types $\mathcal{T}$ defined for the programming language, a set of expressions $\mathcal{E}$ and a set of identifiers $\mathcal{I}$ defined in a program, inferring the types consists in assigning a type $t \in \mathcal{T}$ for any identifier $i \in \mathcal{I}$ and expression $e \in \mathcal{E}$ used in the program (if the expression has no effect or if the identifier is not used in the program than knowing his type is not relevant). In the literature, a classical approach for assigning types is the Hindley-Milner (or Damas-Milner) algorithm. This algorithm assigns types to language constructs using a set of deduction rules and derivations. Unfortunately, this algorithm was designed for purely functional languages and is not directly applicable to the \textit{Sushi++} language. \\
-Alternatively, the type inference can be seen as problem of constraints \textbf{generation and unification}. The types associated with the various program elements are represented by variables. Some constraints bringing in these variables are generated from some rules encoding the language type semantic and these constrains are unified to find the actual type of the program elements. Two sub-problems have therefore to be addressed to design the algorithm : on the one hand, for each \textit{Sushi++} construct, the type semantic has to be encoded into a rule defining the constraints to be generated. On the other hand, an unification algorithm has to be defined.
+Alternatively, the type inference can be seen as problem of \textbf{constraints generation and unification}. The types associated with the various program elements are represented by variables. Some constraints bringing in these variables are generated from some rules encoding the language type semantic and these constrains are unified to find the actual type of the program elements. Two sub-problems have therefore to be addressed to design the type inference algorithm : on the one hand, an unification algorithm has to be defined. On the other hand, for each \textit{Sushi++} construct, the type semantic has to be encoded into a rule defining the constraints to be generated.
 \paragraph{Framework} The algorithm associates a type variable, symbolized by a greek letters, to every language typed construct (including function parameters, return type and data structure elements' type). A variable is either resolved, meaning that it is associated with a valid type, or unresolved. A valid type is either a flat type (integer, float, char, string, bool or void) or a structured type of which the type parameters are valid types (array, list or function). A variable is also associated a set of types that it can be assigned and such a set is called \textit{hints} (the hints of a variable $\alpha$ is noted $\mathcal{H}_\alpha$). The hint system is a way to encode operator polymorphism and function parameter hinting. An unresolved type variable $\alpha$ can be resolved if $\mathcal{H}_\alpha$ contains only one flat type. 
-\paragraph{Unification} The goal of the unification is to "\textit{find a substitution for all type variables that make the expressions identical}" (taken from document [\ref{enum:inference_unification}], slide 8). The algorithm is given in Listing \ref{lst:unification} uses the following function : 
+\paragraph{Unification} The goal of the unification is to "\textit{find a substitution for all type variables that make the expressions identical}" (taken from document [\ref{enum:inference_unification}], slide 8). The algorithm used in the compiler is given in Listing \ref{lst:unification} and uses the following function : 
 
 \begin{itemize}
 	\item \texttt{is\_unresolved($\alpha$)} : returns false if the variable is resolved, true otherwise 
@@ -284,11 +284,11 @@ Alternatively, the type inference can be seen as problem of constraints \textbf{
 	\item \texttt{is\_list($\alpha$)} : return true if the variable contains an list type, false otherwise 
 	\item \texttt{get\_datastructure\_type($\alpha$)} : given a variable containing an array or a list type, return the type variable containing the type of its elements
 \end{itemize}
-The worst-case complexity of the unification algorithm is $\Theta(n)$
+The worst-case complexity of the unification algorithm is $\Theta(n)$ where $n$ is the number of parameters which intervenes in the types contained in $\alpha$ and $\beta$. This can be an issue when $\alpha$ and $\beta$ both contains a function of which one of the parameters is a function taking itself as argument a function taking itself as argument a function, etc. Nonetheless, in the other cases, the complexity is $\mathcal{O}(1)$.
 \begin{center}
 \begin{minipage}{0.75\linewidth}
 \begin{lstlisting}[mathescape,caption={Unification algorithm},label={lst:unification}]
-
+// Unification algorithm
 unify ( $\alpha$, $\beta$ )
 {
 	if is_unresolved($\alpha$) || is_unresolved($\beta$) 
@@ -334,8 +334,49 @@ unify ( $\alpha$, $\beta$ )
 \end{lstlisting}
 \end{minipage}
 \end{center}
-\paragraph{Constraints generation} 
-\paragraph{Implementation}
+\paragraph{Constraints generation} The constraints generation can be said to be syntax-directed. A set of type variables are passed to a node of the abstract syntax tree as inherited attributes. These variables contains the information about the types expected by the parent. Then, the node performs unification on these variables to signal the types it is expecting. It can also create new variables to pass to its children as inherited attributes.
+\paragraph{Implementation} The type inference is implemented in the \texttt{ast/visitor/TypeInferenceVisitor.cpp} file and uses the classes defined in the \texttt{inference/} folder. The main idea is to store all variables and their associated type into a \textbf{type symbol table}. This table is implemented as a structure mapping a variable name to an object representing the type associated with this variable (of class \texttt{TypeSymbol}). The creation of variables consists in adding entries in this table and unification in updating it. \\ 
+A key element of the table design is that, if two variables were unified, updating the type of one of them must be automatically reflected in the other. To achieve this, the elements mapped in the type symbol table are \texttt{TypeLink} objects introducing a level of indirection between a variable name and its actual type. The only attribute of a TypeLink is simply a pointer to another TypeSymbol. The class hierarchy of type symbols is described hereafter.
+\subparagraph{Type symbols} The types symbols are objects designed to represents types. The base class \texttt{TypeSymbol} is derived into the classes \texttt{TypeLink} and \texttt{TerminalTypeSymbol} which represents respectively a link to a type symbol and an element that can be located at the end of a type link objects chain. The latter is then derived into the classes \texttt{TypeVariable} which represents a type variable (or an unresolved type) and \texttt{Type} which is the base type of any actual type class :
+\begin{itemize}
+	\item \texttt{FlatType} : base class for any flat type (\texttt{Int}, \texttt{Bool}, \texttt{Float}, \texttt{String}, \texttt{Char} and \texttt{Void}).
+	\item \texttt{UniparameterType} : base class for type having only one type parameter (\texttt{Array} and \texttt{List}). This class holds the type parameter which is represented by a type link object. 
+	\item \texttt{Function} : base class for any actual type. This class stores a vector of TypeLink objects to represent the type of the parameters and another one for the function return type.
+\end{itemize}
+The ShallowType is an enumeration representing possible types as integers. The hint sets are represented by \texttt{TypeHints} objects (class defined in \texttt{inference/Types.hpp}) which represents the set as a bitmask of \texttt{ShallowTypes} allowing efficient operations (intersection, union, removal and checking if a ShallowType belongs to it). Every \texttt{TerminalTypeSymbol} is assigned a hint set object.
+
+\begin{figure}[h]
+	\center
+	\includegraphics[scale=0.75]{type_symbols.png}
+	\caption{Type symbols class diagram}
+	\label{fig:}
+\end{figure}
+
+\subparagraph{Type symbol table} The type symbol table inherits from an instantiation of the C++ standard hashtable template class, \texttt{std::unordered\_map<std::string,TypeLink>}, and encapsulates the following operations :
+\begin{itemize}
+	\item unification between two variables
+	\item unification between a variable and a flat type
+	\item update of the hints of a type variable
+	\item creation of new variables
+	\item construction of type symbol objects for variables, functions, arrays and lists
+	\item construction of a type object for the code generation phase
+	\item generation of unique type variable names 
+\end{itemize} 
+The table stores two kind of variables : the ones bounded to the program's identifiers (so-called \textit{bounded} type variables) and the ones that are not (so-called \textit{pure} type variables). As every variable has to be uniquely identified, the generation of variable names have to be done carefully :
+\begin{itemize}
+	\item pure variable names are numbers generated with a counter and is therefore collision free as long as the counter does not overflow
+	\item as a in a valid program, two identifiers of having the same name cannot be declared in the same scope, a unique name for bounded variables can be constructed from these two elements. An additional character, '@' is added between the identifier name and the scope id for the sake of readability mostly. The name of a bounded variable is therefore generated as follows :
+	\begin{center}
+		\texttt{identifier}@\texttt{scope\_id}
+	\end{center}
+\end{itemize}
+\subparagraph{Syntax-directed type inference} Given the architecture described above, the type inference can be summarized into three kinds of actions :
+\begin{enumerate}
+	\item \textbf{Table insertion} : which variables must be created in the type symbol table and with which terminal type symbols have they to be associated?
+	\item \textbf{Unification} : which pairs of variables have to be unified ? does a variable have to be unified with a flat type?
+	\item \textbf{Hinting} : has the hints of a variable to be updated ? 
+\end{enumerate} 
+
 \subsection{Code generation}
 \subsubsection{Code generation}
 \subsubsection{Code construction}
@@ -351,4 +392,5 @@ unify ( $\alpha$, $\beta$ )
 		\item\label{enum:inference_unification} Paul N. Hilfinger, "\textit{Lecture \#22: Type Inference and Unification}", \texttt{https://goo.gl/RR8Eme}, UC Berekeley, course \textit{CS164} : Programming Languages and Compilers.
 	\end{enumerate}
 \end{enumerate}
+\section{Diagrams}
 \end{document}
