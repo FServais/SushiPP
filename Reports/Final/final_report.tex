@@ -80,7 +80,7 @@
 \begin{center}
 \textbf{Magera Floriane}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
-{\small Option : Computer systems and networkss}\\
+{\small Option : Computer systems and networks}\\
 {\small s111295} \\ 
 \textbf{Servais Fabrice}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
@@ -257,7 +257,14 @@ The \textit{Sushi++} language provides a set of operators for expressing operati
 \subsection{Lexical and syntax analysis}
 \subsection{Semantic analysis}
 \subsubsection{Scope checking}
+In order to perform scope checking, we implemented two visitors. The first one aim's is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
+\paragraph{The \texttt{FunctionTableVisitor}} is also used for termination checking, as will be explained in the next paragraph. There was a need to visit two times the tree because a function may be called before its definition. So at this level, the visitor adds informations about the functions defined in the code in the part of the symbol table corresponding to the scope containing the function's declaration. The information yielded is the name, the location and the argument's name of the function. Note that the arguments are also added in the variable symbol table in the scope corresponding to the function body.
+
+\paragraph{The \texttt{SymbolTableVisitor}} fills the variable symbol table and checks that each variable was well declared and that each function call corresponds to a function repertoried by the \texttt{FunctionTableVisitor}. We decided to forbid closures.  
 \subsubsection{Termination checking}
+The termination checking is implemented in the \texttt{FunctionTableVisitor}. We made it as simple and light as possible : we implemented it with booleans. In our language, all the instructions that may contain a return are represented by the non-terminal token Statement. Once we know this, in order to check termination, we only need to test whether a function's scope does contain a statement that terminates in any case. So the loops, the break and the continue instruction does not fulfill this criteria. The conditional statement may return in any case only if there is a default case (else), idem for the menu statement. At the scope checking step, we don't know the types of return, so the only distinction we make is void or non void function. A void function may not contain a return in any case and still may be correct, so in that case, there is nothing to check. We added one more restriction which is a function must either return nothing or must return something in every case. 
+\paragraph{}
+About the implementation : generally in a function we test the presence of a return statement (empty or not), so there are two booleans for this purpose. Then locally, in each statement, we will test if there is a local returning statement (so if there is an else if statement, we test if there is a return statement in its scope). When entering a new scope, we first suppose that the scope will return in any case, then if inside the scope there is one statement non returning in any case, then we know that the scope won't return in any case. In the same way if there is a returning statement followed by code, we know that this code will never be executed. We trigger an error for dead code.  At the end of the exploration of the sons of the function declaration, we will trigger an error if there is a non empty return in the function, and if the function does not return something in every case. 
 \subsubsection{Type checking and inference}
 As the \textit{Sushi++} language is statically typed, the types must be checked at compile-time. This consists in checking the following properties :
 \begin{itemize}

@@ -104,6 +104,7 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 	function_table.add_symbol(name, fct_info);
 	// continue visiting deeper
 	is_there_a_return_gen = false;
+	is_there_an_empty_return_gen = false;
 	ret = true;
 	counter = 0;
 	token.get_scope().accept(*this);
@@ -114,6 +115,10 @@ void FunctionTableVisitor::visit( ast::SoyFunc& token )
 		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Wrong function termination");
 
 	}
+	
+	if(is_there_a_return_gen && is_there_an_empty_return_gen)
+		error_handler.add_sem_error(" ", token.get_location().first_line(), token.get_location().first_column(), "Non uniform returns");
+
 
 	counter = 0;
 
