@@ -33,14 +33,14 @@ size_t list_size(struct list_table*, size_t);
  * @param size_t lid The list id 
  * @retval bool True if the list is empty, false otherwise
  */
-bool empty(struct list_table*, size_t);
+bool list_empty(struct list_table*, size_t);
 
 /**
  * @brief Clear the list 
  * @param struct list_table* table A valid pointer to the list table
  * @param size_t lid The list id 
  */
-void clear(struct list_table*, size_t);
+void list_clear(struct list_table*, size_t);
 
 /**
  * @brief Increment the reference count of the given list
@@ -185,6 +185,6 @@ char list_remove_element_char(struct list_table*, size_t, size_t);
 size_t list_remove_element_string(struct list_table*, size_t, size_t);
 
 
-void print_list_table(const struct list_table*);
+//void print_list_table(const struct list_table*);
 
 #endif // LIST_RUNTIME_H_DEFINED

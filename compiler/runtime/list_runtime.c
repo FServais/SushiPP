@@ -153,7 +153,7 @@ static void free_descriptor(struct list_descriptor* desc)
 	while(current)
 	{
 		struct node_t* next = current->next;
-		free(current);
+		free_node(current);
 		current = next;
 	}
 
@@ -279,7 +279,7 @@ static void* remove_list_element(struct list_descriptor* desc, size_t pos)
 {
 	if(pos >= desc->list_size)
 	{
-		fprintf(stderr, "Out of range error in `get_list_element`\n");
+		fprintf(stderr, "Out of range error in `remove_list_element`\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -327,7 +327,7 @@ static void insert_list_element(struct list_descriptor* desc, size_t pos, void* 
 {
 	if(pos > desc->list_size)
 	{
-		fprintf(stderr, "Out of range error in `get_list_element`\n");
+		fprintf(stderr, "Out of range error in `insert_list_element`\n");
 		exit(EXIT_FAILURE);
 	}
 	
@@ -430,12 +430,12 @@ size_t list_size(struct list_table* table, size_t lid)
 	return desc->list_size;
 }
 
-bool empty(struct list_table* table, size_t lid)
+bool list_empty(struct list_table* table, size_t lid)
 {
 	return list_size(table, lid) == 0;
 }
 
-void clear(struct list_table* table, size_t lid)
+void list_clear(struct list_table* table, size_t lid)
 {
 	if(!table) return;
 
@@ -1094,53 +1094,56 @@ size_t list_remove_element_string(struct list_table* table, size_t lid, size_t p
 	return casted_value;
 }
 
-void print_list_table(const struct list_table* table)
-{
-	const struct list_descriptor* current = table->head;
+// void print_list_table(const struct list_table* table)
+// {
+// 	const struct list_descriptor* current = table->head;
 
-	int cnt = 1;
-	while(current)
-	{
-		printf("\n---------------------------------------------\n");
-		printf("List number %d (lid: %zu)\n", cnt, current->list_id);
-		printf("   Type : ");
+// 	int cnt = 1;
+// 	while(current)
+// 	{
+// 		printf("\n---------------------------------------------\n");
+// 		printf("List number %d (lid: %zu)\n", cnt, current->list_id);
+// 		printf("   Type : ");
 
-		switch(current->type)
-		{
-		case BOOL: printf("bool\n"); break;
-		case INT : printf("integer\n"); break;
-		case STRING : printf("string\n"); break;
-		case CHAR: printf("char\n"); break;
-		case FLOAT: printf("float\n"); break;
-		}
+// 		switch(current->type)
+// 		{
+// 		case BOOL: printf("bool\n"); break;
+// 		case INT : printf("integer\n"); break;
+// 		case STRING : printf("string\n"); break;
+// 		case CHAR: printf("char\n"); break;
+// 		case FLOAT: printf("float\n"); break;
+// 		}
 
-		printf("   Size : %zu\n", current->list_size);
-		printf("   Reference count : %zu\n", current->ref_count);
-		printf("   Values : \n    ");
+// 		printf("   Size : %zu\n", current->list_size);
+// 		printf("   Reference count : %zu\n", current->ref_count);
+// 		printf("   Head : %p\n", current->list_head);
+// 		printf("   Tail : %p\n", current->list_tail);
+// 		printf("   Values : \n    ");
 
-		struct node_t* node = current->list_head;
-		int i = 0;
-		while(node)
-		{
-		
-			switch(current->type)
-			{
-			case BOOL: printf("%s", *((bool*) node->value) ? "true" : "false"); break;
-			case INT : printf("%d", *((int*) node->value)); break;
-			case STRING : printf("%zu", *((size_t*) node->value)); break;
-			case CHAR: printf("%c", *((char*) node->value)); break;
-			case FLOAT: printf("%f", *((float*) node->value)); break;
-			}
+// 		struct node_t* node = current->list_head;
+// 		int i = 0;
+// 		while(node)
+// 		{
+// 			switch(current->type)
+// 			{
+// 			case BOOL: printf("%s", *((bool*) node->value) ? "true" : "false"); break;
+// 			case INT : printf("%d", *((int*) node->value)); break;
+// 			case STRING : printf("%zu", *((size_t*) node->value)); break;
+// 			case CHAR: printf("%c", *((char*) node->value)); break;
+// 			case FLOAT: printf("%f", *((float*) node->value)); break;
+// 			}
+			
+// 			if((i + 1) % 10)
+// 				printf(" ");
+// 			else
+// 				printf("\n    ");
 
-			if((i + 1) % 10)
-				printf(" ");
-			else
-				printf("\n    ");
+// 			node = node->next;
+// 			i++;
+// 		}
 
-			node = node->next;
-			i++;
-		}
+// 		current = current->next;
+// 	}
 
-		current = current->next;
-	}
-}
+// 	printf("\n");
+// }
