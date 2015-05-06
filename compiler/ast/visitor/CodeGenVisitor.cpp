@@ -1118,7 +1118,7 @@ void CodeGenVisitor::visit( Op_RightShift& token )
 	pop();
 	pop();
 
-	add_return(after_store_var);	
+	add_return(after_store_var);
 }
 
 
@@ -1154,7 +1154,9 @@ void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 
 void CodeGenVisitor::visit( Op_Assignment& token )
 {
+	visit_children(token);
 
+	
 }
 
 
