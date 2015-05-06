@@ -131,11 +131,6 @@ void CodeGenVisitor::visit( Op_Plus& token )
 
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
-
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
-
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
 
@@ -667,62 +662,23 @@ void CodeGenVisitor::visit( FuncCall& token )
 	}
 
 	codegen::Function function(ret_type, func_name, args_value);
+	Variable* add = dynamic_cast<Variable*>(block.create_func_call(function));
 
-	unique_ptr<Value> add = unique_ptr<Value>(block.create_func_call(function));
 
 	pop_n_return_values(nb_args+1);
 
-	
 
-	// vector<string> names;
-	// vector<shared_ptr<typegen::Type>> types;
-	//
-	// // Transfer the names and types of the arguments into vectors
-	// /*
-	// for(auto arg = args->rbegin() ; arg != args->rend() ; ++arg)
-	// {
-	// 	Variable* arg_var = dynamic_cast<Variable*>(arg);
-	// 	names.push_back(arg_var.get_name());
-	// 	types.push_back(arg->get_type());
-	// }*/
-	//
-	// pop_n_return_values(nb_args);
-	//
-	// Value& id = get_return_value(0);
-	// Variable& id_var = dynamic_cast<Variable&>(id);
-	// string func_name = id_var.get_name();
-	//
-	// pop();
-	//
-	// string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), func_name);
-	//
-	// shared_ptr<typegen::Type> ret_type = shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type());
-	//
-	// // Load values of the arguments
-	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	// vector<unique_ptr<Value>> arg_value_ptr;
-	//
-	// for(int i = 0 ; i < nb_args ; ++i)
-	// {
-	// 	if (!args[i].is_constant())
-	// 		arg_value_ptr.push_back(unique_ptr<Value>(block.create_load(args[i])));
-	// 	else
-	// 		arg_value_ptr.push_back(args[i]);
-	//
-	// }
-	//
-	//
-	// /*
-	// vector<string> arg_names;
-	// for(int i = 0 ; i < nb_args ; ++i)
-	// 	arg_names.push_back(dynamic_cast<Variable&>(*(arg_value_ptr[i])).get_name());
-	// */
-	//
-	// // Create function
-	// //codegen::Function function(shared_ptr<typegen::Type>(new typegen::Function(ret_type, types)), func_name, arg_names);
-	// codegen::Function function(shared_ptr<typegen::Type>(new typegen::Function(ret_type, types)), func_name, args);
+	// Create the pointer that will contain the result
+	if(add == nullptr)
+		return;
 
+	unique_ptr<Variable> container = unique_ptr<Variable>(new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(add->get_name()), add->get_type(), true));
 
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+	Variable* after_store_var = dynamic_cast<Variable*>(block.create_store(*add, *ptr));
+
+	add_return(after_store_var);
 
 }
 
