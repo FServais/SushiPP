@@ -25,6 +25,7 @@ using namespace compiler;
 using namespace ast;
 using namespace errors;
 using namespace std;
+using namespace visitor;
 
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
@@ -45,7 +46,7 @@ void SppCompiler::execute()
 		scope_checking();
 		inference();
 		terminate();
-		//export_llvm();
+		export_llvm();
 	}
 }
 
@@ -132,8 +133,8 @@ void SppCompiler::scope_checking()
 
 void SppCompiler::inference()
 {
-	if(error_handler.error_occurred())
-		return;
+	//if(error_handler.error_occurred())
+	//	return;
 
 	if(config.is_verbose())
 		cout << "Starting type inference..." << endl;
@@ -188,12 +189,16 @@ void SppCompiler::export_llvm()
 	}
 	else
 	{
-	
+
 		visitor::CodeGenVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
-		visitor.print(cout);*/
-	//}
+		visitor.print(cout);
+	}
+	*/
 
+	CodeGenVisitor visitor(variable_table, function_table, type_table);
+	syntax_tree.root().accept(visitor);
+	visitor.print(cout);
 }
 
 ErrorHandler& SppCompiler::get_error_handler()
