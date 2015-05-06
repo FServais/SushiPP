@@ -17,8 +17,8 @@
 #include "ASTVisitor.hpp"
 #include "../../codegen/Builder.hpp"
 #include "../../codegen/Variable.hpp"
-#include "../../codegen/ConstantInt.hpp"
 #include "../../codegen/LabelManager.hpp"
+#include "../../codegen/Constant.hpp"
 
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
