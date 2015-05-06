@@ -1224,13 +1224,15 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 
 void CodeGenVisitor::visit( ast::String& token )
 {
-
+	ConstantString* constant_string = new ConstantString(token.value());
+	add_return(constant_string);
 }
 
 
 void CodeGenVisitor::visit( Character& token )
 {
-
+	ConstantChar* constant_char = new ConstantChar(token.value());
+	add_return(constant_char);
 }
 
 void CodeGenVisitor::visit( Integer& token )
@@ -1241,12 +1243,14 @@ void CodeGenVisitor::visit( Integer& token )
 
 void CodeGenVisitor::visit( ast::Float& token )
 {
-
+	ConstantFloat* constant_float = new ConstantFloat(token.value());
+	add_return(constant_float);
 }
 
 void CodeGenVisitor::visit( ast::Bool& token )
 {
-
+	ConstantBool* constant_bool = new ConstantBool(token.value());
+	add_return(constant_bool);
 }
 
 
