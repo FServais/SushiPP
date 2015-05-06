@@ -69,6 +69,11 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("list-clear-float", 		{ "list" }, { LIST }, VOID, FLOAT);
 	insert_function("list-clear-char", 			{ "list" }, { LIST }, VOID, CHAR);
 	insert_function("list-clear-string", 		{ "list" }, { LIST }, VOID, STRING);
+	insert_function("list-front-bool", 			{ "list" }, { LIST }, BOOL, BOOL);
+	insert_function("list-front-int", 			{ "list" }, { LIST }, INT, INT);
+	insert_function("list-front-float", 		{ "list" }, { LIST }, FLOAT, FLOAT);
+	insert_function("list-front-char", 			{ "list" }, { LIST }, CHAR, CHAR);
+	insert_function("list-front-string", 		{ "list" }, { LIST }, STRING, STRING);
 	insert_function("list-back-bool", 			{ "list" }, { LIST }, BOOL, BOOL);
 	insert_function("list-back-int", 			{ "list" }, { LIST }, INT, INT);
 	insert_function("list-back-float", 			{ "list" }, { LIST }, FLOAT, FLOAT);

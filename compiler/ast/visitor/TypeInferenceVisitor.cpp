@@ -1840,6 +1840,10 @@ void TypeInferenceVisitor::visit( ast::DeclFunc& declfunc )
 	params.add_param(func_type_names.second);
 	params.call();
 	declfunc.get_scope().accept(*this);
+
+	// if the unification succeeds, either their was empty nory or no nori at all
+	try { type_table.unify_void(func_type_names.second); }
+	catch ( except::UnificationException& e ) { }
 	
 	params.ret();
 }
@@ -2105,6 +2109,11 @@ void TypeInferenceVisitor::visit( ast::SoyFunc& soy )
 	params.add_param(func_type_names.second);
 	params.call();
 	soy.get_scope().accept(*this);
+
+		// if the unification succeeds, either their was empty nory or no nori at all
+	try { type_table.unify_void(func_type_names.second); }
+	catch ( except::UnificationException& e ) { }
+
 	
 	params.ret();
 }
@@ -2150,10 +2159,6 @@ void TypeInferenceVisitor::visit( ast::Scope& scope )
 		params.call();
 		child->accept(*this);
 	}
-
-	// if the unification succeeds, either their was empty nory or no nori at all
-	try { type_table.unify_void(beta); }
-	catch ( except::UnificationException& e ) { }
 
 	// go back to the previous scope
 	variable_table.move_to_scope(prev_scope);
