@@ -5,6 +5,7 @@
 
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
+#include "../../settings/BuiltInFunctions.hpp"
 #include "../../util.hpp"
 #include "../../errors/ErrorHandler.hpp"
 #include "ASTVisitor.hpp"
@@ -14,7 +15,7 @@ namespace visitor
 	class FunctionTableVisitor  : public visitor::ASTVisitor
 	{
 	public:
-		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& , symb::SymbolTable<symb::VariableInfo>& , errors::ErrorHandler&);
+		FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& , symb::SymbolTable<symb::VariableInfo>& , errors::ErrorHandler&, settings::BuiltInFunctions&);
 
 		virtual void visit( ast::ASTNode& );
 		virtual void visit( ast::SoyFunc&  );

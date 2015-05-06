@@ -11,20 +11,56 @@ using namespace visitor;
 using namespace inference;
 using namespace symb;
 using namespace errors;
+using namespace settings;
 
 #include <iostream>
 
 TypeInferenceVisitor::TypeInferenceVisitor(ErrorHandler& handler,
 										   SymbolTable<FunctionInfo>& function_table_, 
 										   SymbolTable<VariableInfo>& variable_table_,
-										   TypeSymbolTable& type_table_) 
+										   TypeSymbolTable& type_table_,
+										   BuiltInFunctions& built_in) 
   : error_handler(handler), 
   	type_table(type_table_),
 	function_table(function_table_), 
 	variable_table(variable_table_), 
 	current_scope(0)
 {
+	// insert the built in functions in the table
+	for(auto& function : built_in)
+	{
+		string func_name = type_table.unique_id_name(0, function.first);
 
+		// get unique variable names for parameters
+		vector<string> param_variables;
+		generate_n(back_inserter(param_variables), get<2>(function.second).size(), 
+					[this](){ return type_table.unique_varname(); });
+
+		pair<string,string> func_data = type_table.new_function(param_variables, func_name, get<2>(function.second));
+
+		// set return type
+		type_table.unify(func_data.second, get<3>(function.second));
+
+		if(get<4>(function.second) == NO_TYPE)
+			continue;
+	
+		for(size_t i = 0; i < get<2>(function.second).size(); ++i)
+		{
+			ShallowType type = get<2>(function.second)[i];
+
+			if(type & (ARRAY | LIST)) // if the type of the parameter is either array or list
+			{
+				// create a new array or list variable	
+				pair<string, string> structure = (type == ARRAY) ? type_table.new_array() : type_table.new_list();
+
+				// unify this new variable with the ith parameter variable
+				type_table.unify(structure.first, param_variables[i]);
+
+				// unify the structure type with the actual type
+ 				type_table.unify(structure.second, get<4>(function.second));
+			}
+		}
+	}
 }
 
 void TypeInferenceVisitor::visit( ast::ASTNode& node )
