@@ -30,6 +30,9 @@ using namespace visitor;
 SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
 {
 	srand(time(NULL));
+
+	if(config.is_verbose())
+		config.print_settings();
 }
 
 void SppCompiler::execute()
@@ -41,7 +44,6 @@ void SppCompiler::execute()
 		init();
 		parse();
 		scope_checking();
-		print_ast();
 		inference();
 		terminate();
 		export_llvm();
@@ -116,12 +118,11 @@ void SppCompiler::scope_checking()
 	if(config.is_verbose())
 		cout << "Starting scope checking..." << endl;
 
-	visitor::FunctionTableVisitor visitor1(function_table, variable_table, error_handler);
+	visitor::FunctionTableVisitor func_visitor(function_table, variable_table, error_handler, built_in);
+	syntax_tree.root().accept(func_visitor);
 
-	syntax_tree.root().accept(visitor1);
-
-	visitor::SymbolTableVisitor visitor2(function_table, variable_table, error_handler);
-	syntax_tree.root().accept(visitor2);
+	visitor::SymbolTableVisitor var_visitor(function_table, variable_table, error_handler);
+	syntax_tree.root().accept(var_visitor);
 
 	// std::cout<<"FUNCTION TABLE"<<std::endl;
 	// function_table.print_table();
@@ -138,9 +139,8 @@ void SppCompiler::inference()
 	if(config.is_verbose())
 		cout << "Starting type inference..." << endl;
 
-	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table, type_table);
+	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table, type_table, built_in);
 	syntax_tree.root().accept(visitor);
-
 	// cout << endl << type_table << endl << endl;
 }
 
@@ -166,7 +166,6 @@ void SppCompiler::print_ast()
 	{
 		visitor::PrintASTVisitor visitor(cout);
 		syntax_tree.root().accept(visitor);
-
 	}
 }
 

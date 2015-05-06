@@ -24,8 +24,18 @@ CompilerSettings::CompilerSettings(int argc, char** argv)
 	else
 		dump_ast = NO_DUMP;
 
+	if(param_map.count('l'))
+		dump_llvm = param_map['l'].empty() ? DUMP_STDOUT : DUMP_FILE;
+	else
+		dump_llvm = NO_DUMP;
+
 	prog_source = param_map.count('i') ? FILE : STDIN;
 	verbose_mode = param_map.count('v') ? VERBOSE : QUIET;
+
+	set_program_name(); 
+
+	if(!param_map.count('o'))
+		param_map['o'] = program_name;
 }
 
 void CompilerSettings::print_help()
@@ -40,15 +50,20 @@ void CompilerSettings::print_help()
 	cout << "     provided, the AST is printed out in this file" << endl;
 	cout << "  -v              " << endl;
 	cout << "     Verbose : the compiler emits messages detailing its execution" << endl;
+	cout << "  -o filename     " << endl;
+	cout << "     Output program : name of the executable file" << endl;
+	cout << "  -l [ filename ] " << endl;
+	cout << "     LLVM output : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is " << endl;
+	cout << "     provided, the LLVM assembly is printed out in this file" << endl;
 	cout << endl;
 }
 
 void CompilerSettings::print_settings() const
 {
 	cout << "Compiler settings : " << endl;
-	cout << "	- Verbose mode   : " << (verbose_mode == QUIET ? "off" : "on") << endl;
-	cout << "	- Program source : " << (prog_source == STDIN ? "standard input" : "from file '" + param_map.at('i') + "'") << endl;
-	cout << "	- Dump AST       : ";
+	cout << "  - Verbose mode   : " << (verbose_mode == QUIET ? "off" : "on") << endl;
+	cout << "  - Program source : " << (prog_source == STDIN ? "standard input" : "from file '" + param_map.at('i') + "'") << endl;
+	cout << "  - Dump AST       : ";
 
 	switch(dump_ast)
 	{
@@ -62,7 +77,22 @@ void CompilerSettings::print_settings() const
 		cout << "off" << endl;
 	}
 
-	cout << "	- Help display	 : " << (exec_mode == COMPILE ? "off" : "on") << endl;
+	cout << "  - Dump LLVM      : ";
+
+	switch(dump_llvm)
+	{
+	case DUMP_STDOUT:
+		cout << "on (in standard output)" << endl;
+		break;
+	case DUMP_FILE:
+		cout << "on (in file '" << param_map.at('l') << "')" << endl;
+		break;
+	default:// NO DUMP
+		cout << "off" << endl;
+	}
+
+	cout << "  - Exec. name     : " << param_map.at('o') << endl; 
+	cout << "  - Help display   : " << (exec_mode == COMPILE ? "off" : "on") << endl;
 }
 
 void CompilerSettings::build_map(int argc, char** argv)
@@ -86,24 +116,24 @@ void CompilerSettings::build_map(int argc, char** argv)
 			string param_str = current.substr(1);
 
 			if(param_str.empty())
-				throw BadInputParameterException("reading standalone hyphen, parameter of type '-[vhdi]' expected.");
+				throw BadInputParameterException("reading standalone hyphen, parameter of type '-[vhdilo]' expected.");
 
 			param = param_str[0];
 
 			if(!isalpha(param))
-				throw BadInputParameterException("reading a non-alphabetical parameter, parameter of type '-[vhdi]' expected.");
+				throw BadInputParameterException("reading a non-alphabetical parameter, parameter of type '-[vhdilo]' expected.");
 
 			if(!valid_param_id(param))
-				throw BadInputParameterException("reading a unauthorized parameter, parameter of type '-[vhdi]' expected.");
+				throw BadInputParameterException("reading a unauthorized parameter, parameter of type '-[vhdilo]' expected.");
 
 			reading_parameter = true;
 
 			if(i == argc - 1) // last parameter
 			{
-				if(param != 'i') // because i except a value
-					param_map[param] = "";
-				else
-					throw BadInputParameterException("paramater 'i' expect a argument speciying the input file");
+				if(param == 'i' || param == 'o')
+					throw BadInputParameterException("paramater '" + string(param, 1) + "' expect a argument specifying a file");
+				else // because i except a value
+					param_map[param] = "";				
 			}
 		}
 		else // reading a value
@@ -127,5 +157,21 @@ void CompilerSettings::set_default()
 
 bool CompilerSettings::valid_param_id(char c)
 {
-	return c == 'v' || c == 'h' || c == 'd' || c == 'i';
+	return c == 'v' || c == 'h' || c == 'd' || c == 'i' || c == 'l' || c == 'o';
+}
+
+void CompilerSettings::set_program_name()
+{
+	if(read_from_file())
+	{
+		size_t pos_of_slash = param_map['i'].find_last_of('/'),
+			   pos_of_dot = param_map['i'].find_last_of('.');
+
+		if(pos_of_slash == param_map['i'].length())
+			program_name = param_map['i'].substr(0, pos_of_dot);
+		else
+			program_name = param_map['i'].substr(pos_of_slash + 1, pos_of_dot - pos_of_slash - 1);
+	}
+	else
+		program_name = "spp_program";
 }

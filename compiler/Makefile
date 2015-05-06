@@ -28,7 +28,7 @@ OBJS_MAIN 	  		= $(PATH_OBJS)main.o
 OBJS_PARSER   		= $(PATH_OBJS)sushipp.tab.o
 OBJS_COMP	  		= $(PATH_OBJS)SppCompiler.o
 OBJS_SCANNER  		= $(PATH_OBJS)sushipp.yy.o
-OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o
+OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o $(PATH_OBJS)BuiltInFunctions.o
 OBJS_UTIL	  		= $(PATH_OBJS)util.o
 OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(PATH_OBJS)Types.o $(PATH_OBJS)InferenceExceptions.o $(PATH_OBJS)TypeGen.o
 OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
@@ -49,7 +49,7 @@ OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OB
 DEP_ASTNODE_DEEP 		 = $(PATH_NODES)*.hpp $(PATH_TOKENS)*.hpp $(PATH_NONTERMINAL)*.hpp
 DEP_ASTNODE_DEEP_VISITOR = $(DEP_ASTNODE_DEEP) $(PATH_VISITOR)ASTVisitor.hpp
 DEP_ASTNODE_SHALLOW 	 = $(PATH_NODES)ASTNode.hpp $(PATH_NODES)NodeLocation.hpp
-DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp $(PATH_VISITOR)FunctionTableVisitor.hpp $(PATH_VISITOR)SymbolTableVisitor.hpp $(PATH_VISITOR)CodeGenVisitor.hpp
+DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp $(PATH_VISITOR)FunctionTableVisitor.hpp $(PATH_VISITOR)SymbolTableVisitor.hpp $(PATH_VISITOR)CodeGenVisitor.hpp $(PATH_VISITOR)TypeInferenceVisitor.hpp
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
@@ -58,7 +58,7 @@ DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ER
 DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB)SymbolInfo.hpp
 DEP_COMP				 = SppCompiler.hpp
 DEP_EXCEP				 = $(PATH_EXCEP)Exceptions.hpp
-DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp
+DEP_SETTINGS			 = $(PATH_SETTINGS)CompilerSettings.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp
 DEP_INFERENCE			 = $(PATH_INFERENCE)TypeSymbolTable.hpp $(PATH_INFERENCE)TypeSymbol.hpp $(PATH_INFERENCE)Types.hpp $(PATH_INFERENCE)InferenceExceptions.hpp $(PATH_INFERENCE)TypeGen.hpp
 
 # compilation and linking flags #
@@ -167,7 +167,7 @@ $(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VI
 $(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(DEP_VISITORS) $(DEP_INFERENCE) $(DEP_SYMB) $(DEP_ERRORS)
+$(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(DEP_VISITORS) $(DEP_INFERENCE) $(DEP_SYMB) $(DEP_ERRORS)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(PATH_CODEGEN)LabelManager.hpp
@@ -178,8 +178,11 @@ $(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) 
 $(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
-# CompilerSettings #
+# Settings #
 $(PATH_OBJS)CompilerSettings.o: $(PATH_SETTINGS)CompilerSettings.cpp $(PATH_SETTINGS)CompilerSettings.hpp $(PATH_EXCEP)Exceptions.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)BuiltInFunctions.o: $(PATH_SETTINGS)BuiltInFunctions.cpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_INFERENCE)Types.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Symbols #
