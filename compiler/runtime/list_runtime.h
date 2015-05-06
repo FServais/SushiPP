@@ -185,6 +185,6 @@ char list_remove_element_char(struct list_table*, size_t, size_t);
 size_t list_remove_element_string(struct list_table*, size_t, size_t);
 
 
-//void print_list_table(const struct list_table*);
+void print_list_table(const struct list_table*);
 
 #endif // LIST_RUNTIME_H_DEFINED

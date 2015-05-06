@@ -143,8 +143,8 @@ void SppCompiler::scope_checking()
 
 void SppCompiler::inference()
 {
-	//if(error_handler.error_occurred())
-	//	return;
+	if(error_handler.error_occurred())
+		return;
 
 	if(config.is_verbose())
 		cout << "Starting type inference..." << endl;
@@ -152,7 +152,7 @@ void SppCompiler::inference()
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table, type_table, built_in);
 	syntax_tree.root().accept(visitor);
 	
-	//cout << endl << type_table << endl << endl;
+	cout << endl << type_table << endl << endl;
 }
 
 void SppCompiler::print_ast()
@@ -182,10 +182,13 @@ void SppCompiler::print_ast()
 
 void SppCompiler::export_llvm()
 {
+	if(error_handler.error_occurred())
+		return;
+	
 	if(config.is_verbose())
 		cout << "Starting code generation..." << endl;
 
-	visitor::CodeGenVisitor visitor(variable_table, function_table, type_table);
+	visitor::CodeGenVisitor visitor(variable_table, function_table, type_table, built_in);
 	syntax_tree.root().accept(visitor);
 
 	if(!config.do_dump_llvm())

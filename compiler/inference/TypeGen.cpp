@@ -12,6 +12,11 @@ bool Type::equals(Type& a)
 	return false;
 }
 
+Function::Function(std::shared_ptr<Type> ret_type) : return_type(ret_type)
+{
+
+}
+
 Function::Function(shared_ptr<Type> ret_type, vector<shared_ptr<Type>> arg_type): return_type(ret_type), args_types(arg_type)
 {
 
@@ -75,7 +80,7 @@ string Char::to_str()
 
 string String::to_str()
 {
-	cout<<"String"<<endl;
+	return "i64";
 }
 
 string Bool::to_str()

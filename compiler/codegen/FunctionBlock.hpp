@@ -13,9 +13,10 @@ namespace codegen
     class FunctionBlock
     {
     public:
-        FunctionBlock(VariableManager& vm);
-        // VariableManager, name, return_type
-        FunctionBlock(VariableManager& vm, std::string, std::shared_ptr<typegen::Type>);
+        // FunctionBlock(VariableManager& vm);
+        // VariableManager, name, function type
+        FunctionBlock(VariableManager& vm, std::string, std::shared_ptr<typegen::Function>);
+        FunctionBlock(VariableManager& vm, std::string, std::shared_ptr<typegen::Function>, const std::vector<std::string>&);
 
         /**
          * Print the LLVM code in the output stream.
@@ -31,7 +32,6 @@ namespace codegen
         std::string str_arguments_signature() const;
 
         // Type, name
-        void add_argument(std::shared_ptr<typegen::Type>, std::string);
         void set_return(std::string);
 
         BasicBlock& get_block(int n);
@@ -40,17 +40,12 @@ namespace codegen
         std::string get_signature() const;
 
     private:
-
-        std::string name;
-        std::shared_ptr<typegen::Type> return_type;
-        std::string return_value;
-
-        // <type, name>
-        std::vector<std::pair<std::shared_ptr<typegen::Type>, std::string>> arguments;
+        std::shared_ptr<typegen::Function> function_type; // type object representing the function
+        std::string name; // function name
+        std::vector<std::string> parameters_name; // paramaters name
+        std::string return_value; // value that is returned by the function block
         std::vector<BasicBlock> blocks;
-
         VariableManager& var_manager;
-
     };
 }
 

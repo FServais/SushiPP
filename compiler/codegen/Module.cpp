@@ -5,21 +5,19 @@ using namespace std;
 
 Module::Module(VariableManager& vm) : var_manager(vm)
 {
-
-    FunctionBlock function(vm, "main", shared_ptr<typegen::Type>(new typegen::Int()));
-    function.add_argument(shared_ptr<typegen::Type>(new typegen::Int()), "ac");
-    function.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "av");
+    shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
+    FunctionBlock function(vm, "main", main_func);
     function.set_return("0");
     add_function(function);
 
 
     // Add printf
-    FunctionBlock printf(vm, "printf", shared_ptr<typegen::Type>(new typegen::Int()));
-    printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
-    printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
-    add_declaration(printf);
+    // FunctionBlock printf(vm, "printf", shared_ptr<typegen::Type>(new typegen::Int()));
+    // printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
+    // printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
+    // add_declaration(printf);
 
-    add_str_constant("@.str = private unnamed_addr constant [3 x i8] c\"%d\\00\", align 1");
+    // add_str_constant("@.str = private unnamed_addr constant [3 x i8] c\"%d\\00\", align 1");
 
 }
 
