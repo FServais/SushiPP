@@ -417,20 +417,50 @@ The table stores two kind of variables : the ones bounded to the program's ident
 		\texttt{identifier}@\texttt{scope\_id}
 	\end{center}
 \end{itemize}
-\subparagraph{Syntax-directed type inference} Given the architecture described above, the type inference can be summarized into three kinds of actions :
+\subparagraph{Syntax-directed type inference} The type inference is implemented with another visitor in \texttt{TypeInferenceVisitor.cpp}. Each node corresponds to a language construct of which the type semantic must be translated in the type symbol table. Moreover, a node can receive from its parent and pass to his children a set of variable (for instance, if an expression is expected to return a value of a given type, the corresponding type variable could be passed from the parent to the expression node). Therefore, designing the type inference for a node results in answering five questions :
 \begin{enumerate}
+	\item \textbf{Inheritance} : which type variables are inherited from the parent node?
 	\item \textbf{Table insertion} : which variables must be created in the type symbol table and with which terminal type symbols have they to be associated?
-	\item \textbf{Unification} : which pairs of variables have to be unified ? does a variable have to be unified with a flat type?
+	\item \textbf{Unification} : which pairs of variables have to be unified ? Does a variable have to be unified with a flat type?
 	\item \textbf{Hinting} : has the hints of a variable to be updated ? 
+	\item \textbf{Transmission} : which variables must be given to the children nodes?
 \end{enumerate} 
+As these elements must be defined for every node, the complete list is not detailed here. Nevertheless, three examples are given : the \textit{+} operator, the \textit{if} statement and the function declaration. 
+\begin{itemize}
+	\item \textbf{Operator +} : this node has two children, the two operands 
+	\begin{itemize}
+		\item \textit{Inheritance} : $\alpha$ is the type that should be returned by the operation
+		\item \textit{Table insertion} : no type variable insertion 
+		\item \textit{Unification} : no unification 
+		\item \textit{Hinting} : as '\texttt{+}' can only take integer or float operands, we have : $\mathcal{H}_\alpha = \mathcal{H}_\alpha \cap \{\texttt{int}, \texttt{float}\}$
+		\item \textit{Transmission} : as the type returned by the addition is the same as the type of the operands $\alpha$ is passed the both of them
+	\end{itemize}
+	\item \textbf{Statement \textit{if}} : this node has two children, the condition expression and the scope
+	\begin{itemize}
+		\item \textit{Inheritance} : $\alpha$ is the type that should be returned by a \texttt{nori} statement in the \textit{if} scope
+		\item \textit{Table insertion} : $\beta$ is the type returned by the condition expression
+		\item \textit{Unification} : as the condition expression must return a boolean value, the following unification must be performed : $unify(\beta, \texttt{bool})$
+		\item \textit{Hinting} : no hinting
+		\item \textit{Transmission} : $\beta$ is passed to the condition expression node and $\alpha$ to the scope node
+	\end{itemize}
+	\item \textbf{Function declaration} : \texttt{maki func\_name p$_1$ ... p$_n$ : scope ;;} (for instance defined in the scope 1 and its scope having id 2)
+	\begin{itemize}
+		\item \textit{Inheritance} : no inheritance
+		\item \textit{Table insertion} : \textit{func\_name@1} is the type of the function, \textit{p$_i$@2} is the type of the $i^{th}$ parameter and $\alpha$ is the return type
+		\item \textit{Unification} : the function name must be unified with the function type : 
+		\[ unify(\textit{func\_name@1}, \textit{p}_1\textit{@2} \hdots \textit{p}_n\textit{@2} \rightarrow \gamma) \]
+		\item \textit{Hinting} : each hinted parameter should be hinted. If the hint is a flat type, an unification can be performed instead
+		\item \textit{Transmission} : $\gamma$ to the scope node
+	\end{itemize}
+\end{itemize}
+The \textit{almost} complete list of the nodes and their inference actions is given in the \texttt{Inference.pdf} document in the submitted archive.
 
-\subsection{Code generation}
+\section{Flaws and possible improvements}\subsection{Code generation}
 \subsubsection{Code generation}
 \subsubsection{Code construction}
 \section{Runtime}
 \subsection{Garbage collector}
 \label{ssec:garabage_collector}
-\section{Flaws and possible improvements}
 \appendix
 \section{Sources}
 \begin{enumerate}
