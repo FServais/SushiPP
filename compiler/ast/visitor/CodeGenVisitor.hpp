@@ -193,7 +193,7 @@ namespace visitor
 		settings::BuiltInFunctions& built_in;
 
 		/* Vector */
-		std::vector<std::unique_ptr<codegen::Value>> return_vector;
+		std::vector<std::shared_ptr<codegen::Value>> return_vector;
 
 		void add_return(codegen::Value*);
 		codegen::Value& top();
@@ -202,7 +202,7 @@ namespace visitor
 		codegen::Value& get_return_value(int n);
 		void remove_return_value(int n);
 
-		std::vector<codegen::Value*> get_n_return_values(int n);
+		std::vector<std::shared_ptr<codegen::Value>> get_n_return_values(int n);
 		void pop_n_return_values(int n);
 
 		bool is_vector_empty() const;

@@ -8,7 +8,7 @@ Module::Module(VariableManager& vm) : var_manager(vm)
     shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(vm, "main", main_func);
     function.set_return("0");
-    add_function(function);
+    add_function("main", function);
 
 
     // Add printf
@@ -31,26 +31,29 @@ void Module::dump(ostream& out) const
 
     out << endl;
 
-    for(auto decl = declarations.begin() ; decl != declarations.end() ; ++decl ){
-        decl->dump_declaration(out);
-        out << endl;
-    }
+    for(auto& decl : declarations)
+        decl.second.dump_declaration(out);
 
-    for(auto func = functions.begin() ; func != functions.end() ; ++func ){
-        func->dump(out);
+    for(auto& func : functions)
+    {
+        func.second.dump(out);
         out << endl;
     }
 }
 
-void Module::add_function(FunctionBlock& function)
+void Module::add_function(const std::string& function_name, FunctionBlock& function)
 {
-    functions.push_back(function);
+    if(declarations.count(function_name))
+        throw std::logic_error("Existing function");
+    functions.emplace(function_name, function);
 }
 
 
-void Module::add_declaration(FunctionBlock& decl)
+void Module::add_declaration(const std::string& function_name, FunctionBlock& decl)
 {
-    declarations.push_back(decl);
+    if(declarations.count(function_name))
+        throw std::logic_error("Existing declaration");
+    declarations.emplace(function_name, decl);
 }
 
 void Module::add_str_constant(std::string cst)
@@ -60,11 +63,5 @@ void Module::add_str_constant(std::string cst)
 
 FunctionBlock& Module::get_function(string function_name)
 {
-    for(auto func = functions.begin() ; func != functions.end() ; ++func)
-    {
-        if(func->get_name() == function_name)
-            return *func;
-    }
-
-    throw 0;
+    return functions.at(function_name);
 }

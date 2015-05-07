@@ -75,7 +75,7 @@ string FunctionBlock::str_arguments() const
               back_inserter(str_args),
               [](const string& param, shared_ptr<typegen::Type> type)
               { 
-                return type->to_str() + " " + param;
+                return type->to_str() + " %" + param;
               });
 
     return accumulate(next(str_args.begin()), str_args.end(), str_args[0],

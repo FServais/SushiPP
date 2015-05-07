@@ -27,7 +27,7 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 				func_type_name = type_table.unique_id_name(0, function.first);
 		shared_ptr<typegen::Function> func_type = dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_type_name));
 		FunctionBlock curr_func(builder.get_variable_manager(), llvm_func_name, func_type);
-	    curr_module.add_declaration(curr_func);
+	    curr_module.add_declaration(function.first, curr_func);
 	}
 }
 
@@ -1380,9 +1380,9 @@ void CodeGenVisitor::visit( DeclFunc& token )
 	Variable& id_var = dynamic_cast<Variable&>(id);
 
 	// Create new FunctionBlock
-	string curr_function = id_var.get_name(),
-			func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), curr_function),
-			llvm_func_name = get_llvm_function_name(curr_function, built_in.count(curr_function));
+	string declared_function_name = id_var.get_name(),
+			func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), declared_function_name),
+			llvm_func_name = get_llvm_function_name(declared_function_name, built_in.count(declared_function_name));
 
 	//typegen::Function* function_type = ;
 	vector<string> params;
@@ -1418,8 +1418,8 @@ void CodeGenVisitor::visit( DeclFunc& token )
 
 	// Change "cursor" of the visitor to the new function
 	string current_function = curr_func_name;
-	curr_func_name = current_function;
-	curr_module.add_function(function);
+	curr_func_name = declared_function_name;
+	curr_module.add_function(declared_function_name, function);
 
 	// Fullfill it through the visit of the children
 	token.get_scope().accept(*this);
@@ -1560,7 +1560,7 @@ void CodeGenVisitor::visit( FuncCall& token )
 	if(token.contains_arglist())
 		nb_args = token.get_arg_list().nb_args();
 
-	vector<Value*> args = get_n_return_values(nb_args);
+	vector<shared_ptr<Value>> args = get_n_return_values(nb_args);
 
 	// Function name
 	Value& id = get_return_value(args.size());
@@ -1578,12 +1578,12 @@ void CodeGenVisitor::visit( FuncCall& token )
 	vector<shared_ptr<Value>> args_value;
 	for(auto arg = args.rbegin() ; arg != args.rend() ; ++arg)
 	{
-		Value* arg_ptr = *arg;
+		shared_ptr<Value> arg_ptr = *arg;
 		if(arg_ptr->is_constant())
-			args_value.push_back(shared_ptr<Value>(arg_ptr));
+			args_value.push_back(arg_ptr);
 		else if(arg_ptr->is_variable())
 		{
-			Variable* var = dynamic_cast<Variable*>(arg_ptr);
+			shared_ptr<Variable> var = dynamic_pointer_cast<Variable>(arg_ptr);
 			args_value.push_back(shared_ptr<Value>(block.create_load(*var)));
 		}
 	}
@@ -1601,8 +1601,8 @@ void CodeGenVisitor::visit( FuncCall& token )
 								 builder.get_variable_manager().insert_variable(add->get_name()), 
 								 add->get_type(), true);
 
-	shared_ptr<Variable> container = shared_ptr<Variable>(var);
-	shared_ptr<Value> ptr = shared_ptr<Value>(block.create_decl_var(*container));
+	unique_ptr<Variable> container = unique_ptr<Variable>(var);
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 	Variable* after_store_var = dynamic_cast<Variable*>(block.create_store(*add, *ptr));
 
@@ -1678,8 +1678,9 @@ void CodeGenVisitor::visit( Statement& token )
 void CodeGenVisitor::visit( Return& token )
 {
 	cout << "Return" << endl;
+	cout << "func : " << curr_func_name << endl;
 	FunctionBlock& function = curr_module.get_function(curr_func_name);
-
+	cerr << "ff" << endl;
 	if(token.has_child())
 	{
 		// Child is Expression
@@ -1691,7 +1692,7 @@ void CodeGenVisitor::visit( Return& token )
 			Variable& exp_var = dynamic_cast<Variable&>(exp);
 			if(exp_var.is_pointer())
 			{
-				unique_ptr<Value> return_value = unique_ptr<Value>(function.get_last_block().create_load(exp_var));
+				shared_ptr<Value> return_value(function.get_last_block().create_load(exp_var));
 				function.set_return(return_value->str_value());
 			}
 			else
@@ -1907,12 +1908,10 @@ void CodeGenVisitor::remove_return_value(int n)
 	return_vector.erase(return_vector.begin()+return_vector.size()-1-n);
 }
 
-vector<Value*> CodeGenVisitor::get_n_return_values(int n)
+vector<shared_ptr<Value>> CodeGenVisitor::get_n_return_values(int n)
 {
-	vector<Value*> values;
-	for(int i = 0 ; i < n ; ++i)
-		values.push_back(return_vector.at(return_vector.size()-1-i).get());
-
+	vector<shared_ptr<Value>> values;
+	copy(next(return_vector.begin(), return_vector.size() - n), return_vector.end(), back_inserter(values));
 	return values;
 }
 
