@@ -46,6 +46,9 @@ namespace codegen
         std::string return_value; // value that is returned by the function block
         std::vector<BasicBlock> blocks;
         VariableManager& var_manager;
+
+
+        void generate_argument_type_conv();
     };
 }
 

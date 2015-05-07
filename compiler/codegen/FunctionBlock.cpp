@@ -19,6 +19,7 @@ FunctionBlock::FunctionBlock(VariableManager& vm, std::string _name, std::shared
 {
     BasicBlock entry(vm, "entry");
     blocks.push_back(entry); 
+    generate_argument_type_conv();
 }
 
 FunctionBlock::FunctionBlock(VariableManager& vm, 
@@ -29,6 +30,7 @@ FunctionBlock::FunctionBlock(VariableManager& vm,
 {
     BasicBlock entry(vm, "entry");
     blocks.push_back(entry); 
+    generate_argument_type_conv();
 }
 
 void FunctionBlock::dump(ostream& out) const
@@ -99,23 +101,32 @@ string FunctionBlock::str_arguments_signature() const
     return ss.str();
 }
 
+void FunctionBlock::generate_argument_type_conv()
+{
+  BasicBlock& entry = get_last_block();
+
+  for(size_t i = 0; i < parameters_name.size(); ++i)
+  {
+    // Change the name of the argument -> goal is to get pointer to its value
+    stringstream newname;
+    newname << parameters_name[i] << "_arg";
+
+    // Allocate in memory to get a pointer
+    Variable pointer(var_manager, parameters_name[i], function_type->get_arg(i), true);
+    unique_ptr<Value> alloc(entry.create_decl_var(pointer));
+
+    // Add to the list of arguments
+    parameters_name[i] = newname.str();
+
+    // Store the value given in argument where is the pointer
+    Variable value(var_manager, newname.str(), function_type->get_arg(i));
+
+    unique_ptr<Value> store(entry.create_store(value, pointer));
+  }
+}
 // void FunctionBlock::add_argument(shared_ptr<Type> type, string name)
 // {
 //     pair<shared_ptr<Type>,string> argument(type,name);
-//     /*
-//     stringstream newname;
-//     newname << name << "_arg";
-
-//     BasicBlock& entry = get_last_block();
-
-//     Variable arg(newname.str(), type);
-//     unique_ptr<Value> up = unique_ptr<Value>(entry.create_get_pointer(arg));
-
-//     Variable lhs(name, type);
-//     unique_ptr<Value> assign = unique_ptr<Value>(entry.create_assign_value(lhs, *up));
-
-//     arguments.push_back(make_pair(type,newname.str()));
-//     */
 
 //     // Change the name of the argument -> goal is to get pointer to its value
 //     stringstream newname;
