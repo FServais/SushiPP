@@ -39,29 +39,31 @@ string Function::str_type_nth_argument(int n)
 
 string Function::get_name_nth_argument(int n)
 {
+    /*
     if(args[n]->is_variable())
     {
         Variable& arg = dynamic_cast<Variable&>(*(args[n]));
-        return arg.get_name();
+        return arg.str_value();
     }
     else if(args[n]->is_constant())
     {
         Constant& arg = dynamic_cast<Constant&>(*(args[n]));
         return arg.str_value();
     }
-
+    */
     return args[n]->str_value();
 }
 
 string Function::str_name_nth_argument(int n)
 {
+    /*
     if(args[n]->is_variable())
     {
         stringstream ss;
         ss << "%" << get_name_nth_argument(n);
         return ss.str();
     }
-
+    */
     return get_name_nth_argument(n);
 }
 
