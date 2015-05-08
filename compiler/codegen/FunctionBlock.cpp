@@ -1,5 +1,6 @@
 #include <sstream>
 #include <regex>
+#include <numeric>
 
 #include "FunctionBlock.hpp"
 #include "Variable.hpp"
@@ -18,18 +19,18 @@ FunctionBlock::FunctionBlock(VariableManager& vm, std::string _name, std::shared
   : var_manager(vm), name(_name), function_type(_func_type), parameters_name(_func_type->nb_param())
 {
     BasicBlock entry(vm, "entry");
-    blocks.push_back(entry); 
+    blocks.push_back(entry);
     generate_argument_type_conv();
 }
 
-FunctionBlock::FunctionBlock(VariableManager& vm, 
-                             std::string _name, 
-                             std::shared_ptr<typegen::Function> _func_type, 
+FunctionBlock::FunctionBlock(VariableManager& vm,
+                             std::string _name,
+                             std::shared_ptr<typegen::Function> _func_type,
                              const std::vector<std::string>& _param_names)
-  : var_manager(vm), name(_name), function_type(_func_type), parameters_name(_param_names)  
+  : var_manager(vm), name(_name), function_type(_func_type), parameters_name(_param_names)
 {
     BasicBlock entry(vm, "entry");
-    blocks.push_back(entry); 
+    blocks.push_back(entry);
     generate_argument_type_conv();
 }
 
@@ -71,12 +72,12 @@ string FunctionBlock::str_arguments() const
         return "";
 
     vector<string> str_args;
-    transform(parameters_name.begin(), 
-              parameters_name.end(), 
+    transform(parameters_name.begin(),
+              parameters_name.end(),
               function_type->get_params().begin(),
               back_inserter(str_args),
               [](const string& param, shared_ptr<typegen::Type> type)
-              { 
+              {
                 return type->to_str() + " %" + param;
               });
 
@@ -97,7 +98,7 @@ string FunctionBlock::str_arguments_signature() const
             ss << ", ";
         ss << function_type->get_arg(i)->to_str();
     }
-    
+
     return ss.str();
 }
 
