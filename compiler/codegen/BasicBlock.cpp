@@ -7,6 +7,7 @@
 #include "BasicBlock.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
+#include "Constant.hpp"
 
 using namespace std;
 using namespace codegen;
@@ -323,15 +324,16 @@ Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
 {
-    Variable* ret = new Variable(var_manager, "tmp_pref_incr", value.get_type());
-
-    stringstream ss;
     if(value.get_type()->is_float())
-        ss << ret->str_value() << " = fadd " << value.str_type() << " " << value.str_value() << ", 1.0 ";
+    {
+        ConstantFloat one(1.0);
+        return create_op_plus(value, one);
+    }
     else
-        ss << ret->str_value() << " = add " << value.str_type() << " " << value.str_value() << ", 1 ";
-    lines.push_back(ss.str());
-    return ret;
+    {
+        ConstantInt one(1);
+        return create_op_plus(value, one);
+    }
 }
 
 Value* BasicBlock::create_op_pref_decr(Value& value)
@@ -341,7 +343,7 @@ Value* BasicBlock::create_op_pref_decr(Value& value)
 
 Value* BasicBlock::create_op_post_incr(Value& value)
 {
-
+    return create_op_pref_incr(value);
 }
 
 Value* BasicBlock::create_op_post_decr(Value& value)

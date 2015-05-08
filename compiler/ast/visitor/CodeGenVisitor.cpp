@@ -1152,8 +1152,6 @@ void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 		result = dynamic_cast<Variable*>(block.create_op_pref_incr(operand));
 
 	Value* after_store = block.create_store(*result, operand);
-	//Variable* after_store_var = dynamic_cast<Variable*>(after_store);
-
 	pop();
 
 	add_return(after_store);
