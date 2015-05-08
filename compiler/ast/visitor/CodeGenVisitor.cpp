@@ -1155,8 +1155,14 @@ void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 void CodeGenVisitor::visit( Op_Assignment& token )
 {
 	visit_children(token);
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
 
-	
+    unique_ptr<Variable> tmp = unique_ptr<Variable>(dynamic_cast<Variable*>(curr_module.get_function(curr_func_name).get_last_block().create_load(rhs)));
+     
+    add_return(curr_module.get_function(curr_func_name).get_last_block().create_store(*tmp, lhs));
+    pop();
+    pop();
 }
 
 

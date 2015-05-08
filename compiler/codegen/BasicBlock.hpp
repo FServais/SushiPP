@@ -74,6 +74,9 @@ namespace codegen
         // lhs and rhs : create an assignment : 'lhs = rhs'
         Value* create_assign_value(Value&, Value&);
 
+        // lhs and rhs : create an assignment : 'lhs = rhs'
+        Value* create_assign(Value&, Value&);
+
         // store Value* in variable
         Value* create_store(Value&, Value&);
 
