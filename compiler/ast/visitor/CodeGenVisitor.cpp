@@ -1249,8 +1249,8 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 	// Value* after_store = block.create_store(*result, operand);
 
 	// // return the non incremented value
-	// Variable* container = new Variable(builder.get_variable_manager(), 
-	// 									builder.get_variable_manager().insert_variable(operand->get_name()), 
+	// Variable* container = new Variable(builder.get_variable_manager(),
+	// 									builder.get_variable_manager().insert_variable(operand->get_name()),
 	// 									result->get_type(), true);
 
 	// unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
@@ -1260,6 +1260,38 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 	// pop();
 
 	// add_return(after_store);
+
+	visit_children(token);
+
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
+
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
+
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
+
+	unique_ptr<Variable> result;
+
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(operand)));
+
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
+
+	add_return(copy_ptr);
+
 
 }
 
@@ -1289,6 +1321,37 @@ void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 	// pop();
 
 	// add_return(after_store);
+
+	visit_children(token);
+
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
+
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
+
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
+
+	unique_ptr<Variable> result;
+
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(operand)));
+
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
+
+	add_return(copy_ptr);
 }
 
 
@@ -1304,7 +1367,7 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1315,7 +1378,7 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 		result = dynamic_cast<Variable*>(block.create_op_assign(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1335,7 +1398,7 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1346,7 +1409,7 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 		result = dynamic_cast<Variable*>(block.create_op_plus(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1366,7 +1429,7 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1377,7 +1440,7 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 		result = dynamic_cast<Variable*>(block.create_op_minus(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1397,7 +1460,7 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1408,7 +1471,7 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 		result = dynamic_cast<Variable*>(block.create_op_mult(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1428,7 +1491,7 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1439,7 +1502,7 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 		result = dynamic_cast<Variable*>(block.create_op_div(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1459,7 +1522,7 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1470,7 +1533,7 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 		result = dynamic_cast<Variable*>(block.create_op_expon(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1490,7 +1553,7 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1501,7 +1564,7 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 		result = dynamic_cast<Variable*>(block.create_op_mod(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1521,7 +1584,7 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1532,7 +1595,7 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_and(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1552,7 +1615,7 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1563,7 +1626,7 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_or(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1583,7 +1646,7 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1594,7 +1657,7 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1614,7 +1677,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1625,7 +1688,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 		result = dynamic_cast<Variable*>(block.create_op_str_conc(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
