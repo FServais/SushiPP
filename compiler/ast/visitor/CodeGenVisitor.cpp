@@ -1,6 +1,7 @@
 #include "CodeGenVisitor.hpp"
 
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 using namespace visitor;
@@ -39,15 +40,23 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 void CodeGenVisitor::visit( Identifier& token )
 {
 	cout << "Identifier" << endl;
+	stringstream ss;
 	string name;
 	if(function_table.symbol_exists(token.id()))
+	{
 		name = type_table.unique_id_name(function_table.get_symbol_scope_id(token.id()), token.id());
+		ss << token.id();
+	}
 	else
+	{
 		name = type_table.unique_id_name(variable_table.get_symbol_scope_id(token.id()), token.id());
+		ss << token.id() << "." << variable_table.get_symbol_scope_id(token.id());
+	}
 
 	shared_ptr<typegen::Type> type = type_table.get_type(name);
 
-	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type, true);
+
+	Variable* v = new Variable(builder.get_variable_manager(), ss.str(), type, true);
 	add_return(v);
 }
 
@@ -1707,12 +1716,15 @@ void CodeGenVisitor::visit( ForUpdate& token )
 void CodeGenVisitor::visit( Conditional& token )
 {
 	cout << "Conditional" << endl;
+
+	// If
 	token.get_if().accept(*this);
 
-
+	// Else if
 	for(int i = 0 ; i < token.count_elseif() ; ++i)
 		token.get_nth_elseif(i).accept(*this);
 
+	// Else
 	if(token.contains_else())
 		token.get_else().accept(*this);
 
@@ -1732,9 +1744,10 @@ void CodeGenVisitor::visit( Elseif& token )
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	BasicBlock& block = curr_function.get_last_block();
 
+	unique_ptr<Value> loaded_result = unique_ptr<Value>(block.create_load(result_comp));
 	string label_true = label_manager.insert_label("elseif_true");
 	string label_false = label_manager.insert_label("elseif_false");
-	block.create_cond_branch(result_comp, label_true, label_false);
+	block.create_cond_branch(*loaded_result, label_true, label_false);
 
 	pop();
 
@@ -1742,9 +1755,7 @@ void CodeGenVisitor::visit( Elseif& token )
 	curr_function.add_block(label_true);
 
 	// Add body of the block "true"
-	cout << "test" << endl;
 	token.get_scope().accept(*this);
-	cout << "test2" << endl;
 
 	// Go to end_if
 	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
