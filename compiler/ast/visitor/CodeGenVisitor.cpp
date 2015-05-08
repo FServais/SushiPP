@@ -1716,6 +1716,8 @@ void CodeGenVisitor::visit( Conditional& token )
 	if(token.contains_else())
 		token.get_else().accept(*this);
 
+	curr_module.get_function(curr_func_name).get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
+
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	curr_function.add_block(label_manager.get_last_occurence("end_if"));
 }
@@ -1740,7 +1742,9 @@ void CodeGenVisitor::visit( Elseif& token )
 	curr_function.add_block(label_true);
 
 	// Add body of the block "true"
+	cout << "test" << endl;
 	token.get_scope().accept(*this);
+	cout << "test2" << endl;
 
 	// Go to end_if
 	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
@@ -1761,10 +1765,10 @@ void CodeGenVisitor::visit( ast::If& token )
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	BasicBlock& block = curr_function.get_last_block();
 
-
+	unique_ptr<Value> loaded_result = unique_ptr<Value>(block.create_load(result_comp));
 	string label_true = label_manager.insert_label("if_true");
 	string label_false = label_manager.insert_label("if_false");
-	block.create_cond_branch(result_comp, label_true, label_false);
+	block.create_cond_branch(*loaded_result, label_true, label_false);
 
 	pop();
 
@@ -1785,8 +1789,6 @@ void CodeGenVisitor::visit( ast::Else& token )
 {
 	cout << "Else" << endl;
 	token.get_scope().accept(*this);
-
-	curr_module.get_function(curr_func_name).get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
 }
 
 
