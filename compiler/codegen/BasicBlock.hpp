@@ -52,16 +52,6 @@ namespace codegen
         Value* create_op_post_incr(Value&);
         Value* create_op_post_decr(Value&);
         Value* create_op_assign(Value&, Value&);
-        Value* create_op_assign_plus(Value&, Value&);
-        Value* create_op_assign_minus(Value&, Value&);
-        Value* create_op_assign_mult(Value&, Value&);
-        Value* create_op_assign_div(Value&, Value&);
-        Value* create_op_assign_expo(Value&, Value&);
-        Value* create_op_assign_mod(Value&, Value&);
-        Value* create_op_assign_and(Value&, Value&);
-        Value* create_op_assign_or(Value&, Value&);
-        Value* create_op_assign_xor(Value&, Value&);
-        Value* create_op_assign_concat(Value&, Value&);
 
 
         /************************************
@@ -99,6 +89,19 @@ namespace codegen
 
         void add_line(std::string);
 
+
+        /**
+         * @brief Builds a binary operator
+         * @param const std::string& func The LLVM operator as a string
+         * @param const std::string& op1  The first operand
+         * @param const std::string& op2  The second operand
+         * @param const std::string& ret  The variable in which must be returnd the result (optionnal, default: not taken into account)
+         * @retval std:string The binary operation : 
+         *   1) op op1, op2
+         *   2) ret = op op1, op2
+         */
+        std::string make_binop(const std::string&, const std::string&, const std::string&);
+        std::string make_binop(const std::string&, const std::string&, const std::string&, const std::string&);
     };
 }
 
