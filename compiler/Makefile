@@ -160,7 +160,6 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-# Visitor #
 $(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(DEP_EXCEP) $(DEP_ERRORS)
 	$(CC) $< -o $@ $(CCFLAGS)
 
@@ -170,7 +169,7 @@ $(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DE
 $(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(DEP_VISITORS) $(DEP_INFERENCE) $(DEP_SYMB) $(DEP_ERRORS)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(PATH_CODEGEN)LabelManager.hpp
+$(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(PATH_CODEGEN)LabelManager.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 

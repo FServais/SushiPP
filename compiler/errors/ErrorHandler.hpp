@@ -70,11 +70,9 @@ namespace errors
 		/**
 		 * Add a IO error.
 		 * @param   const std::string&  Line where the error occur.
-		 * @param   int					Line number.
-		 * @param   int					Column number.
 		 * @param   const std::string&  Description of the error.
 		 */
-		void add_io_error(const std::string&, int, int, const std::string& desc = "IO error");
+		void add_io_error(const std::string&, const std::string& desc = "IO error");
 		void add_io_error(IOError&);
 		
 		/**
