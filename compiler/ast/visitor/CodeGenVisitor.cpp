@@ -1203,20 +1203,13 @@ void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 	else
 		result = dynamic_cast<Variable*>(block.create_op_pref_incr(operand));
 
-	// Create the pointer that will contain the result
-	Variable* container = new Variable(builder.get_variable_manager(), 
-									   builder.get_variable_manager().insert_variable(result->get_name()), 
-									   result->get_type(), true);
 
-	unique_ptr<Value> ptr(block.create_decl_var(*container));
-
-
-	Value* after_store = block.create_store(*result, *ptr);
-	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+	Value* after_store = block.create_store(*result, operand);
+	//Variable* after_store_var = dynamic_cast<Variable*>(after_store);
 
 	pop();
 
-	add_return(after_store_var);
+	add_return(after_store);
 }
 
 
