@@ -24,22 +24,14 @@ void BasicBlock::dump(std::ostream& out) const
         out << "\t" << *line << endl;
 }
 
-
-
-
 Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
 {
     // create variable to contain the return value
     Variable* ret = new Variable(var_manager, "tmp_add", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fadd" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function(lhs.get_type()->is_float() ? "fadd " : "add ");
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -50,13 +42,8 @@ Value* BasicBlock::create_op_minus(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_sub", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = sub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function(lhs.get_type()->is_float() ? "fsub " : "sub ");
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -67,13 +54,8 @@ Value* BasicBlock::create_op_mult(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_mul", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fmul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = mul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function(lhs.get_type()->is_float() ? "fmul " : "mul ");
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -85,13 +67,8 @@ Value* BasicBlock::create_op_div(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_div", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = sdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function(lhs.get_type()->is_float() ? "fdiv " : "div ");
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -112,7 +89,21 @@ Value* BasicBlock::create_op_mod(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_expon(Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_expo", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    if(lhs.get_type()->is_float())
+        ss << ret->str_value() << " = call float (float, i64)* @pow_float (";
+    else
+        ss << ret->str_value() << " = call i64 (i64, i64)* @pow_int (";
+
+    ss  << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_type() << " " << rhs.str_value() << ")";
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_unminus(Value& value)
@@ -122,7 +113,7 @@ Value* BasicBlock::create_op_unminus(Value& value)
 
     // generate code
     stringstream ss;
-    if(value.get_type()->equals(*(new typegen::Float)))
+    if(value.get_type()->is_float())
         ss << ret->str_value() << " = fsub" << " " << value.str_type() << " " << value.str_value() << ", 1";
     else
         ss << ret->str_value() << " = sub" << " " << value.str_type() << " " << value.str_value() << ", 1";
@@ -137,10 +128,7 @@ Value* BasicBlock::create_op_bit_or(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_orb", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    ss << ret->str_value() << " = or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    lines.push_back(make_binop("or i64", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -151,10 +139,7 @@ Value* BasicBlock::create_op_bit_and(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_andb", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    ss << ret->str_value() << " = and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+       lines.push_back(make_binop("and i64", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -165,10 +150,7 @@ Value* BasicBlock::create_op_bit_xor(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_xorb", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    ss << ret->str_value() << " = xor" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+       lines.push_back(make_binop("xor i64", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -193,10 +175,7 @@ Value* BasicBlock::create_op_log_or(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_orl", lhs.get_type());
 
     // generate code
-    stringstream ss;
-    ss << ret->str_value() << " = or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    lines.push_back(make_binop("or i1", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -231,30 +210,25 @@ Value* BasicBlock::create_op_log_not(Value& value)
 
 Value* BasicBlock::create_op_cmp_lt(Value& lhs, Value& rhs)
 {
-    return create_op_cmp_gt(rhs, lhs);
-}
+    Variable* ret = new Variable(var_manager, "tmp_lt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
-Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
-{
-
-    Variable* ret = new Variable(var_manager, "tmp_gt", shared_ptr<typegen::Bool>(new typegen::Bool()));
-
-    stringstream ss;
-    ss << ret->str_value() << " = icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function = lhs.get_type()->is_float() ? "fcmp olt " : "icmp slt ";
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
 
+Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
+{
+    return create_op_cmp_lt(rhs, lhs);
+}
+
 Value* BasicBlock::create_op_cmp_le(Value& lhs, Value& rhs)
 {
-    Variable* ret = new Variable(var_manager, "tmp_le", shared_ptr<typegen::Bool>(new typegen::Bool()));
+    Variable* ret = new Variable(var_manager, "tmp_lt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
-    stringstream ss;
-    ss << ret->str_value() << " = icmp sle" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function = lhs.get_type()->is_float() ? "fcmp ole " : "icmp sle ";
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -268,13 +242,8 @@ Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
 {
     Variable* ret = new Variable(var_manager, "tmp_eq", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fcmp oeq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = icmp eq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    string function = lhs.get_type()->is_float() ? "fcmp oeq " : "icmp eq ";
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -283,12 +252,8 @@ Value* BasicBlock::create_op_cmp_neq(Value& lhs, Value& rhs)
 {
     Variable* ret = new Variable(var_manager, "tmp_ne", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
-    stringstream ss;
-    if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = fcmp une" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    else
-        ss << ret->str_value() << " = icmp ne" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-    lines.push_back(ss.str());
+    string function = lhs.get_type()->is_float() ? "fcmp une " : "icmp ne ";
+    lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -297,10 +262,7 @@ Value* BasicBlock::create_op_left_shift(Value& lhs, Value& rhs)
 {
     Variable* ret = new Variable(var_manager, "tmp_sl", lhs.get_type());
 
-    stringstream ss;
-    ss << ret->str_value() << " = shl" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    lines.push_back(make_binop("shl i64", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -309,10 +271,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
 {
     Variable* ret = new Variable(var_manager, "tmp_sr", lhs.get_type());
 
-    stringstream ss;
-    ss << ret->str_value() << " = shr" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
+    lines.push_back(make_binop("shr i64", lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
 }
@@ -338,74 +297,47 @@ Value* BasicBlock::create_op_pref_incr(Value& value)
 
 Value* BasicBlock::create_op_pref_decr(Value& value)
 {
+    Variable* ret = new Variable(var_manager, "tmp_pref_decr", value.get_type());
 
+    string function = value.get_type()->is_float() ? "fsub " : "sub ",
+           op2 = value.get_type()->is_float() ? "1.0" : "1";
+    lines.push_back(make_binop(function + value.str_type(), value.str_value(), op2, ret->str_value()));
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_post_incr(Value& value)
 {
-    return create_op_pref_incr(value);
+    Variable* ret = new Variable(var_manager, "tmp_post_incr", value.get_type());
+
+    string function = value.get_type()->is_float() ? "fadd " : "add ",
+           op2 = value.get_type()->is_float() ? "1.0" : "1";
+    lines.push_back(make_binop(function + value.str_type(), value.str_value(), op2, ret->str_value()));
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_post_decr(Value& value)
 {
+    Variable* ret = new Variable(var_manager, "tmp_post_decr", value.get_type());
 
+    string function = value.get_type()->is_float() ? "fsub " : "sub ",
+           op2 = value.get_type()->is_float() ? "1.0" : "1";
+    lines.push_back(make_binop(function + value.str_type(), value.str_value(), op2, ret->str_value()));
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_assign(Value& lhs, Value& rhs)
 {
+    Variable* ret = new Variable(var_manager, "assign_tmp", rhs.get_type());
 
+    string function = rhs.get_type()->is_float() ? "fadd " : "add ",
+           op2 = rhs.get_type()->is_float() ? "0.0" : "0";
+    lines.push_back(make_binop(function + rhs.str_type(), rhs.str_value(), op2, ret->str_value()));
+
+    return ret;
 }
-
-Value* BasicBlock::create_op_assign_plus(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_minus(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_mult(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_div(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_expo(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_mod(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_and(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_or(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_xor(Value& lhs, Value& rhs)
-{
-
-}
-
-Value* BasicBlock::create_op_assign_concat(Value& lhs, Value& rhs)
-{
-
-}
-
 
 Value* BasicBlock::create_decl_var(Value& value)
 {
@@ -528,6 +460,20 @@ Value* BasicBlock::create_func_call(Value& value)
 void BasicBlock::add_line(std::string line)
 {
     lines.push_back(line);
+}
+
+std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2)
+{
+    stringstream ss;
+    ss << func << " " << op1 << ", " << op2;
+    return ss.str();
+}
+
+std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2, const std::string& ret)
+{
+    stringstream ss;
+    ss << ret << " = " << make_binop(func, op1, op2);
+    return ss.str();
 }
 
 

@@ -127,6 +127,10 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("string-reverse", 	{ "str" }, { STRING }, STRING, NO_TYPE);
 	insert_function("string-tolower", 	{ "str" }, { STRING }, STRING, NO_TYPE);
 	insert_function("string-toupper", 	{ "str" }, { STRING }, STRING, NO_TYPE);
+
+	/** Math functions */
+	insert_function("pow-int", { "base", "exp" }, { INT, INT }, INT, NO_TYPE);
+	insert_function("pow-float", { "base", "exp" }, { FLOAT, INT }, FLOAT, NO_TYPE);
 }
 
 void BuiltInFunctions::insert_function(const string& name, 
