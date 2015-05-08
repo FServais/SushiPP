@@ -326,7 +326,10 @@ Value* BasicBlock::create_op_pref_incr(Value& value)
     Variable* ret = new Variable(var_manager, "tmp_pref_incr", value.get_type());
 
     stringstream ss;
-    ss << ret->str_value() << " = add " << value.str_type() << " " << value.str_value() << ", 1 ";
+    if(value.get_type()->is_float())
+        ss << ret->str_value() << " = fadd " << value.str_type() << " " << value.str_value() << ", 1.0 ";
+    else
+        ss << ret->str_value() << " = add " << value.str_type() << " " << value.str_value() << ", 1 ";
     lines.push_back(ss.str());
     return ret;
 }
