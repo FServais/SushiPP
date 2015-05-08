@@ -1187,7 +1187,36 @@ void CodeGenVisitor::visit( Op_StringConcat& token )
 void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 {
 	cout << "Op_PrefixIncrement" << endl;
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = dynamic_cast<Variable*>(block.create_op_pref_incr(*load_operand));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_pref_incr(operand));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), 
+									   builder.get_variable_manager().insert_variable(result->get_name()), 
+									   result->get_type(), true);
+
+	unique_ptr<Value> ptr(block.create_decl_var(*container));
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+
+	add_return(after_store_var);
 }
 
 
@@ -1396,25 +1425,6 @@ void CodeGenVisitor::visit( DeclFunc& token )
 						   params);
 
 	pop();
-
-	// Visit 2nd child (ParameterList: visit all children and add argument for each)
-	// if(token.contains_params())
-	// {
-	// 	++index;
-	// 	function_table.move_to_scope(token.get_scope().get_scope_id());
-	// 	variable_table.move_to_scope(token.get_scope().get_scope_id());
-	// 	token.get_children().at(index)->accept(*this);
-	// 	variable_table.move_to_parent_scope();
-	// 	function_table.move_to_parent_scope();
-	// 	ParamList* paramlist = dynamic_cast<ParamList*>(token.get_children().at(index));
-	// 	vector<Value*> params = get_n_return_values(paramlist->nb_params());
-	// 	for(auto param = params.rbegin() ; param != params.rend() ; ++param)
-	// 	{
-	// 		Variable* param_var = dynamic_cast<Variable*>(*param);
-	// 		function.add_argument(shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_arg(distance(params.rbegin(), param))), param_var->get_name());
-	// 	}
-	// 	pop_n_return_values(paramlist->nb_params());
-	// }
 
 	// Change "cursor" of the visitor to the new function
 	string current_function = curr_func_name;

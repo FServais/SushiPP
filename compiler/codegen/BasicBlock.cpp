@@ -34,9 +34,9 @@ Value* BasicBlock::create_op_plus(Value& lhs, Value& rhs)
     // generate code
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fadd" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fadd" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = add" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -51,9 +51,9 @@ Value* BasicBlock::create_op_minus(Value& lhs, Value& rhs)
     // generate code
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fsub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "sub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = sub" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -68,9 +68,9 @@ Value* BasicBlock::create_op_mult(Value& lhs, Value& rhs)
     // generate code
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fmul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fmul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "mul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = mul" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -86,9 +86,9 @@ Value* BasicBlock::create_op_div(Value& lhs, Value& rhs)
     // generate code
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "sdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = sdiv" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -102,7 +102,7 @@ Value* BasicBlock::create_op_mod(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "srem" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = srem" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -122,9 +122,9 @@ Value* BasicBlock::create_op_unminus(Value& value)
     // generate code
     stringstream ss;
     if(value.get_type()->equals(*(new typegen::Float)))
-        ss << ret->str_value() << " = " << "fsub" << " " << value.str_type() << " " << value.str_value() << ", 1";
+        ss << ret->str_value() << " = fsub" << " " << value.str_type() << " " << value.str_value() << ", 1";
     else
-        ss << ret->str_value() << " = " << "sub" << " " << value.str_type() << " " << value.str_value() << ", 1";
+        ss << ret->str_value() << " = sub" << " " << value.str_type() << " " << value.str_value() << ", 1";
     lines.push_back(ss.str());
 
     return ret;
@@ -137,7 +137,7 @@ Value* BasicBlock::create_op_bit_or(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -151,7 +151,7 @@ Value* BasicBlock::create_op_bit_and(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -165,7 +165,7 @@ Value* BasicBlock::create_op_bit_xor(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "xor" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = xor" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -179,7 +179,7 @@ Value* BasicBlock::create_op_bit_not(Value& value)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", -1";
+    ss << ret->str_value() << " = xor" << " " << value.str_type() << " " << value.str_value() << ", -1";
 
     lines.push_back(ss.str());
 
@@ -193,7 +193,7 @@ Value* BasicBlock::create_op_log_or(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = or" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -207,7 +207,7 @@ Value* BasicBlock::create_op_log_and(Value& lhs, Value& rhs)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = and" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -221,7 +221,7 @@ Value* BasicBlock::create_op_log_not(Value& value)
 
     // generate code
     stringstream ss;
-    ss << ret->str_value() << " = " << "xor" << " " << value.str_type() << " " << value.str_value() << ", 1";
+    ss << ret->str_value() << " = xor" << " " << value.str_type() << " " << value.str_value() << ", 1";
 
     lines.push_back(ss.str());
 
@@ -239,7 +239,7 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_gt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    ss << ret->str_value() << " = " << "icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -251,7 +251,7 @@ Value* BasicBlock::create_op_cmp_le(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_le", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    ss << ret->str_value() << " = " << "icmp sle" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = icmp sle" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -269,9 +269,9 @@ Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
 
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fcmp oeq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fcmp oeq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "icmp eq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = icmp eq" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -284,9 +284,9 @@ Value* BasicBlock::create_op_cmp_neq(Value& lhs, Value& rhs)
 
     stringstream ss;
     if(lhs.get_type()->is_float())
-        ss << ret->str_value() << " = " << "fcmp une" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = fcmp une" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     else
-        ss << ret->str_value() << " = " << "icmp ne" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+        ss << ret->str_value() << " = icmp ne" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
     lines.push_back(ss.str());
 
     return ret;
@@ -297,7 +297,7 @@ Value* BasicBlock::create_op_left_shift(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_sl", lhs.get_type());
 
     stringstream ss;
-    ss << ret->str_value() << " = " << "shl" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = shl" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -309,7 +309,7 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_sr", lhs.get_type());
 
     stringstream ss;
-    ss << ret->str_value() << " = " << "shr" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    ss << ret->str_value() << " = shr" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -323,7 +323,12 @@ Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
 {
+    Variable* ret = new Variable(var_manager, "tmp_pref_incr", value.get_type());
 
+    stringstream ss;
+    ss << ret->str_value() << " = add " << value.str_type() << " " << value.str_value() << ", 1 ";
+    lines.push_back(ss.str());
+    return ret;
 }
 
 Value* BasicBlock::create_op_pref_decr(Value& value)
@@ -401,7 +406,7 @@ Value* BasicBlock::create_decl_var(Value& value)
 {
     Variable& var = dynamic_cast<Variable&>(value);
     stringstream ss;
-    ss << var.str_value() << " = " << "alloca " << var.str_type();
+    ss << var.str_value() << " = alloca " << var.str_type();
 
     add_line(ss.str());
 
