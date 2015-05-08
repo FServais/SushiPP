@@ -230,16 +230,28 @@ Value* BasicBlock::create_op_log_not(Value& value)
 
 Value* BasicBlock::create_op_cmp_lt(Value& lhs, Value& rhs)
 {
-    return create_op_cmp_gt(rhs, lhs);
+    Variable* ret = new Variable(var_manager, "tmp_lt", shared_ptr<typegen::Bool>(new typegen::Bool()));
+
+    stringstream ss;
+    if(lhs.get_type()->is_float())
+        ss << ret->str_value() << " = fcmp olt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = icmp slt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+
+    lines.push_back(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 {
-
     Variable* ret = new Variable(var_manager, "tmp_gt", shared_ptr<typegen::Bool>(new typegen::Bool()));
 
     stringstream ss;
-    ss << ret->str_value() << " = icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    if(lhs.get_type()->is_float())
+        ss << ret->str_value() << " = fcmp ogt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
+    else
+        ss << ret->str_value() << " = icmp sgt" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
 
     lines.push_back(ss.str());
 
@@ -248,19 +260,12 @@ Value* BasicBlock::create_op_cmp_gt(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_cmp_le(Value& lhs, Value& rhs)
 {
-    Variable* ret = new Variable(var_manager, "tmp_le", shared_ptr<typegen::Bool>(new typegen::Bool()));
-
-    stringstream ss;
-    ss << ret->str_value() << " = icmp sle" << " " << lhs.str_type() << " " << lhs.str_value() << ", " << rhs.str_value();
-
-    lines.push_back(ss.str());
-
-    return ret;
+    return create_op_cmp_lt(rhs, lhs);
 }
 
 Value* BasicBlock::create_op_cmp_ge(Value& lhs, Value& rhs)
 {
-    return create_op_cmp_le(rhs, lhs);
+    return create_op_cmp_gt(rhs, lhs);
 }
 
 Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
