@@ -34,8 +34,8 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	// add global types and variables
 	curr_module.add_global_type(array_type, "type opaque");
 	curr_module.add_global_type(list_type, "type opaque");
-	curr_module.add_global_variable("array_table", "internal global %struct.array_table* null, align 8");
-	curr_module.add_global_variable("list_table", "internal global %struct.list_table* null, align 8");
+	curr_module.add_global_variable("..array_table", "internal global %struct.array_table* null, align 8");
+	curr_module.add_global_variable("..list_table", "internal global %struct.list_table* null, align 8");
 
 	// add declaration of runtime tables creation functions
 	curr_module.add_declaration("create_array_table", Module::make_declare("create_array_table", "%struct.array_table*", {}));
@@ -1337,14 +1337,23 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 	// Get 2 arguments
 	Value& rhs = get_return_value(0);
 	Value& lhs = get_return_value(1);
+
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	unique_ptr<Value> loaded_rhs(block.create_load(rhs));
-	unique_ptr<Value> stored_lhs(block.create_store(*loaded_rhs, rhs));
-	
+
+	Value* result;
+
+	if(rhs.is_variable())
+	{
+		unique_ptr<Value> loaded_rhs(block.create_load(rhs));
+		result = block.create_store(*loaded_rhs, lhs);
+	}
+	else
+		result = block.create_store(rhs, lhs);
+
 	pop();
 	pop();
 
-	add_return(loaded_rhs.release());
+	add_return(result);
 }
 
 
