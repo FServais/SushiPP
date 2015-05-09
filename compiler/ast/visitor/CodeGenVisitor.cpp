@@ -52,7 +52,7 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("list_allocate_char", Module::make_declare("list_allocate_char", "i64", { "%struct.list_table*" }));
 	curr_module.add_declaration("list_allocate_string", Module::make_declare("list_allocate_string", "i64", { "%struct.list_table*" }));
 
-	// add main function 
+	// add main function
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);
     function.set_return("0");
@@ -1354,12 +1354,32 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	Value* result;
+	Value* result = nullptr;
 
 	if(rhs.is_variable())
 	{
 		unique_ptr<Value> loaded_rhs(block.create_load(rhs));
-		result = block.create_store(*loaded_rhs, lhs);
+
+		// If it is an array, we have to update the reference counter
+		if(lhs.get_type()->is_array() || lhs.get_type()->is_list())
+		{
+			string type = (lhs.get_type()->is_array()) ? "array" : "list";
+			string struct_type_name = "%struct." + type + "_table";
+			string table_name = "@.." + type + "_table";
+
+			string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+			string func_name = type + "_add_reference";
+
+			stringstream line;
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << loaded_rhs->str_value() << ")";
+			block.add_expression(line.str());
+
+			rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+
+			result = new Variable(dynamic_cast<Variable&>(lhs));
+		}
+		else
+			result = block.create_store(*loaded_rhs, lhs);
 	}
 	else
 		result = block.create_store(rhs, lhs);
@@ -1913,13 +1933,20 @@ void CodeGenVisitor::visit( DeclVar& token )
 		unique_ptr<Value> expr_value = unique_ptr<Value>(block.create_load(expr_cast));
 
 		// If it is an array, we have to update the reference counter
-		if(expr_cast.get_type()->is_array())
+		if(expr_cast.get_type()->is_array() || expr_cast.get_type()->is_list())
 		{
-			block.add_expression("%raw_load_tmp = load %struct.list_table** @..array_table");
+			string type = (expr_cast.get_type()->is_array()) ? "array" : "list";
+			string struct_type_name = "%struct." + type + "_table";
+			string table_name = "@.." + type + "_table";
+
+			string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+			string func_name = type + "_add_reference";
 
 			stringstream line;
-			line << "call void (%struct.array_table*, i64)* @array_add_reference";
-			block.add_expression("call void (%struct.list_table*, i64, i64)* @array_add_reference(%struct.list_table* %raw_load_tmp, i64 %id, i64 1)");
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << expr_value->str_value() << ")";
+			block.add_expression(line.str());
+
+			rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
 		}
 		else
 		{
@@ -2139,6 +2166,13 @@ void CodeGenVisitor::visit( Scope& token )
 	variable_table.move_to_scope(id_scope);
 
 	visit_children(token);
+
+	// Add free of array/list
+	vector<string> vars_to_free = rm_ref_flags.pop_vars_at_scope(id_scope);
+	for(auto var : vars_to_free)
+	{
+		
+	}
 
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
