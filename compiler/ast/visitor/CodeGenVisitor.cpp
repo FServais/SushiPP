@@ -1376,7 +1376,7 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 			string struct_type_name = "%struct." + type + "_table";
 			string table_name = "@.." + type + "_table";
 
-			string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+			string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
 			string func_name = type + "_add_reference";
 
 			stringstream line;
@@ -1384,9 +1384,9 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 			block.add_expression(line.str());
 
 			if(lhs.get_type()->is_array())
-				array_rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+				array_rm_ref_flags.add_flag(loaded_rhs->str_value(), function_table.curr_scope_id());
 			else
-				list_rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+				list_rm_ref_flags.add_flag(loaded_rhs->str_value(), function_table.curr_scope_id());
 
 			result = new Variable(dynamic_cast<Variable&>(lhs));
 		}
@@ -2031,7 +2031,7 @@ void CodeGenVisitor::visit( DeclVar& token )
 			string struct_type_name = "%struct." + type + "_table";
 			string table_name = "@.." + type + "_table";
 
-			string table = block.create_load_raw(struct_type_name + "** " + table_name);
+			string table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
 			string func_name = type + "_add_reference";
 
 			stringstream line;
@@ -2039,9 +2039,9 @@ void CodeGenVisitor::visit( DeclVar& token )
 			block.add_expression(line.str());
 
 			if(expr_cast.get_type()->is_array())
-				array_rm_ref_flags.add_flag(table, function_table.curr_scope_id());
+				array_rm_ref_flags.add_flag(expr_value->str_value(), function_table.curr_scope_id());
 			else
-				list_rm_ref_flags.add_flag(table, function_table.curr_scope_id());
+				list_rm_ref_flags.add_flag(expr_value->str_value(), function_table.curr_scope_id());
 		}
 		else
 		{
@@ -2271,7 +2271,7 @@ void CodeGenVisitor::visit( Scope& token )
 	string struct_type_name = "%struct." + type + "_table";
 	string table_name = "@.." + type + "_table";
 
-	string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+	string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
 	string func_name = type + "_rm_reference";
 
 	for(auto var : array_vars_to_free)
