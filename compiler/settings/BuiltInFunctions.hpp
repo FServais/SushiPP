@@ -10,7 +10,6 @@
 
 namespace settings
 {
-
 	/**
 	 * @brief Different runtime librairies
 	 */
@@ -20,9 +19,10 @@ namespace settings
 	 * Type representing the information of a built in function
 	 * 1st element : name of the function 
 	 * 2nd element : names of the parameters
-	 * 2nd element : types of the parameters
-	 * 3rd element : return type
-	 * 4th element : type of the datastructure (set to NO_TYPE if not relevant)
+	 * 3nd element : types of the parameters
+	 * 4rd element : return type
+	 * 5th element : type of the datastructure (set to NO_TYPE if not relevant)
+	 * 6th element : runtime in which is located the function
 	 */
 	typedef std::tuple<std::string, 
 					   std::vector<std::string>, 
