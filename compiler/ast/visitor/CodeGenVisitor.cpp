@@ -2413,8 +2413,10 @@ void CodeGenVisitor::visit( ForUpdate& token )
 void CodeGenVisitor::visit( Conditional& token )
 {
 	cout << "Conditional" << endl;
-	token.get_if().accept(*this);
 
+	string end_if_label = label_manager.insert_label("end_if");
+
+	token.get_if().accept(*this);
 
 	for(int i = 0 ; i < token.count_elseif() ; ++i)
 		token.get_nth_elseif(i).accept(*this);
@@ -2423,7 +2425,7 @@ void CodeGenVisitor::visit( Conditional& token )
 		token.get_else().accept(*this);
 
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
-	curr_function.add_block(label_manager.get_last_occurence("end_if"));
+	curr_function.add_block(end_if_label);
 }
 
 void CodeGenVisitor::visit( Elseif& token )
@@ -2442,6 +2444,8 @@ void CodeGenVisitor::visit( Elseif& token )
 
 	pop();
 
+	string end_if_label = label_manager.get_last_occurence("end_if");
+
 	// Create block "true"
 	curr_function.add_block(label_true);
 
@@ -2449,7 +2453,7 @@ void CodeGenVisitor::visit( Elseif& token )
 	token.get_scope().accept(*this);
 
 	// Go to end_if
-	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
+	curr_function.get_last_block().create_branch(end_if_label);
 
 	// Create elseif_false
 	curr_function.add_block(label_false);
@@ -2474,6 +2478,8 @@ void CodeGenVisitor::visit( ast::If& token )
 
 	pop();
 
+	string end_if_label = label_manager.get_last_occurence("end_if");
+
 	// Create block "true"
 	curr_function.add_block(label_true);
 
@@ -2481,7 +2487,7 @@ void CodeGenVisitor::visit( ast::If& token )
 	token.get_scope().accept(*this);
 
 	// Go to end_if
-	curr_function.get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
+	curr_function.get_last_block().create_branch(end_if_label);
 
 	// Create if_false
 	curr_function.add_block(label_false);
