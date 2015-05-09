@@ -1,6 +1,7 @@
 #include "CodeGenVisitor.hpp"
 
 #include <algorithm>
+#include <stdexcept>
 
 using namespace std;
 using namespace visitor;
@@ -92,8 +93,10 @@ void CodeGenVisitor::visit( Identifier& token )
 	string name;
 	if(function_table.symbol_exists(token.id()))
 		name = type_table.unique_id_name(function_table.get_symbol_scope_id(token.id()), token.id());
-	else
+	else if(variable_table.symbol_exists(token.id()))
 		name = type_table.unique_id_name(variable_table.get_symbol_scope_id(token.id()), token.id());
+	else
+		throw std::logic_error("Symbol " + token.id() + " not found (scope : " + to_string(function_table.curr_scope_id()) + ")");
 
 	shared_ptr<typegen::Type> type = type_table.get_type(name);
 
@@ -2040,7 +2043,12 @@ void CodeGenVisitor::visit( FuncCall& token )
 
 	string llvm_func_name = Module::get_llvm_function_name(func_name, built_in.count(func_name));
 	codegen::Function function(func_type->get_ret_type(), llvm_func_name, args_value);
-	Variable* add = dynamic_cast<Variable*>(block.create_func_call(function));
+	Variable* add = nullptr;
+
+	if(built_in.count(func_name))
+		add = dynamic_cast<Variable*>(block.create_func_call(function, get<5>(built_in.at(func_name))));
+	else 
+		add = dynamic_cast<Variable*>(block.create_func_call(function));
 
 	pop_n_return_values(nb_args+1);
 
@@ -2162,9 +2170,8 @@ void CodeGenVisitor::visit( Statement& token )
 void CodeGenVisitor::visit( Return& token )
 {
 	cout << "Return" << endl;
-	cout << "func : " << curr_func_name << endl;
 	FunctionBlock& function = curr_module.get_function(curr_func_name);
-	cerr << "ff" << endl;
+
 	if(token.has_child())
 	{
 		// Child is Expression

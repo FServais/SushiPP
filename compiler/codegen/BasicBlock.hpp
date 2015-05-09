@@ -7,6 +7,8 @@
 #include "Value.hpp"
 #include "VariableManager.hpp"
 #include "Variable.hpp"
+#include "../settings/BuiltInFunctions.hpp"
+
 
 namespace codegen
 {
@@ -87,6 +89,13 @@ namespace codegen
         // Variable containing the result of the condition, label if true, label if false
         void create_cond_branch(Value&, std::string, std::string);
 
+        /**
+         * @brief Create a function call
+         * @param Value& function The function object
+         * @param settings::Runtime runtime Indicate the runtime lib. in which the function is (optionnal, default: considered as a user function)
+         * @retval Value* The variable containing the result of the function call, nullptr if the return type is void
+         */
+        Value* create_func_call(Value&, settings::Runtime);
         Value* create_func_call(Value&);
 
         /**
@@ -129,6 +138,17 @@ namespace codegen
          */
         std::string make_binop(const std::string&, const std::string&, const std::string&);
         std::string make_binop(const std::string&, const std::string&, const std::string&, const std::string&);
+
+        /**
+         * @brief Create a llvm function call
+         * @param const std::string& sig The signature of the function (pointer)
+         * @param const std::string& name The name of the function
+         * @param const std::vector<std::string>& vec The arguments' signatures
+         * @param const std::string& ret The variable in which must be returnd the result (optionnal, default: not taken into account)
+         * ret = call sig @name(arg_sig)
+         */
+        std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&);
+        std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&, const std::string&);
     };
 }
 

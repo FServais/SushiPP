@@ -5,6 +5,7 @@
 #include "Variable.hpp"
 #include "Function.hpp"
 #include "Constant.hpp"
+#include "../util.hpp"
 
 using namespace std;
 using namespace codegen;
@@ -396,11 +397,10 @@ Value* BasicBlock::create_load(Value& ptr)
 
 string BasicBlock::create_load_raw(const string& load_data)
 {
-    std::string ret_var(var_manager.insert_variable("raw_load_tmp"));
+    string ret_var(var_manager.insert_variable("raw_load_tmp"));
     add_line("%" + ret_var + " = load " + load_data);
     return ret_var;
 }
-
 
 Value* BasicBlock::create_get_pointer(Value& variable)
 {
@@ -438,24 +438,57 @@ void BasicBlock::create_cond_branch(Value& cond, string label_true, string label
     add_line(ss.str());
 }
 
-Value* BasicBlock::create_func_call(Value& value)
+Value* BasicBlock::create_func_call(Value& value, settings::Runtime runtime)
 {
+    if(runtime == settings::SUPPORT) // no additional parameters in this case
+        return create_func_call(value);
+
     Function& function = dynamic_cast<Function&>(value);
 
-    Variable* ret;
+    // get function paramters
+    vector<string> params(function.str_arguments());
+
+    switch(runtime) // add parameter to call the appropriate runtime function
+    {
+    case settings::ARRAY_RUNTIME:
+        params.insert(params.begin(), "%struct.array_table* %" + create_load_raw("%struct.array_table** @..array_table"));
+        break;
+    case settings::LIST_RUNTIME:
+        params.insert(params.begin(), "%struct.list_table* %" + create_load_raw("%struct.list_table** @..list_table"));
+        break;
+    default: break;
+    }
+
+    // construct the call
+    Variable* ret = nullptr;
 
     stringstream ss;
     if(!function.get_return_type()->is_void())
     {
         ret = new Variable(var_manager, "ret", function.get_return_type());
-        ss << ret->str_value() << " = ";
+        add_line(make_call(function.get_signature(), function.get_name(), params, ret->str_value()));
     }
     else
-        ret = nullptr;
+        add_line(make_call(function.get_signature(), function.get_name(), params));
 
-    ss << "call " << function.get_function_call();
+    return ret;
+}
 
-    add_line(ss.str());
+Value* BasicBlock::create_func_call(Value& value)
+{
+    Function& function = dynamic_cast<Function&>(value);
+
+    // construct the call
+    Variable* ret = nullptr;
+
+    stringstream ss;
+    if(!function.get_return_type()->is_void())
+    {
+        ret = new Variable(var_manager, "ret", function.get_return_type());
+        add_line(make_call(function.get_signature(), function.get_name(), function.str_arguments(), ret->str_value()));
+    }
+    else
+        add_line(make_call(function.get_signature(), function.get_name(), function.str_arguments()));
 
     return ret;
 }
@@ -496,4 +529,14 @@ Variable* BasicBlock::add_expression(const string& expr)
 void BasicBlock::add_assign_global(const string& expr, const string& glob_name)
 {
     add_line("@" + glob_name + " = " + expr);
+}
+
+string BasicBlock::make_call(const string& sig, const string& name, const vector<string>& args)
+{
+    return "call " + sig + " @" + name + "(" + util::implode(args.begin(), args.end(), ", ") + ")";
+}
+
+string BasicBlock::make_call(const string& sig, const string& name, const vector<string>& args, const string& ret)
+{
+    return ret + " = " + make_call(sig, name, args);
 }
