@@ -14,7 +14,7 @@ BasicBlock::BasicBlock(VariableManager& vm, string _label) : var_manager(vm), la
 
 }
 
-void BasicBlock::dump(std::ostream& out) const
+void BasicBlock::dump(ostream& out) const
 {
     out << label << ':' << endl;
     for(auto line = lines.begin() ; line != lines.end() ; ++line )
@@ -421,7 +421,7 @@ void BasicBlock::create_branch(string label)
     add_line(ss.str());
 }
 
-void BasicBlock::create_cond_branch(Value& cond, std::string label_true, std::string label_false)
+void BasicBlock::create_cond_branch(Value& cond, string label_true, string label_false)
 {
     Variable& cond_var = dynamic_cast<Variable&>(cond);
 
@@ -454,36 +454,36 @@ Value* BasicBlock::create_func_call(Value& value)
 }
 
 
-void BasicBlock::add_line(std::string line)
+void BasicBlock::add_line(string line)
 {
     lines.push_back(line);
 }
 
-std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2)
+string BasicBlock::make_binop(const string& func, const string& op1, const string& op2)
 {
     stringstream ss;
     ss << func << " " << op1 << ", " << op2;
     return ss.str();
 }
 
-std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2, const std::string& ret)
+string BasicBlock::make_binop(const string& func, const string& op1, const string& op2, const string& ret)
 {
     stringstream ss;
     ss << ret << " = " << make_binop(func, op1, op2);
     return ss.str();
 }
 
-std::string BasicBlock::add_expression(const std::string& expr, const std::string& ret)
+Variable* BasicBlock::add_expression(const string& expr, const string& ret, shared_ptr<typegen::Type> type)
 {   
-    string variable(var_manager.insert_variable(ret));
-    lines.push_back("%" + variable + " = " + expr);
+    Variable* ret_var = new Variable(var_manager, ret, type);
+    lines.push_back(ret_var->str_value() + " = " + expr);
     return variable;
 }
 
-std::string BasicBlock::add_expression(const std::string& expr)
+Variable* BasicBlock::add_expression(const string& expr)
 {
     lines.push_back(expr);
-    return "";
+    return nullptr;
 }
 
 

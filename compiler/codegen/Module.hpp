@@ -79,7 +79,13 @@ namespace codegen
         const std::string& get_list_table_type() const { return list_table_type; }
         const std::string& get_array_table_type() const { return array_table_type; }
 
-        static std::string make_declare(const std::string&, const std::string&, const std::vector<std::string>& param_types);
+        /**
+         * @brief Create a declation string
+         * @param const std::string& name function name
+         * @param const std::string& ret_type The return type of the function
+         * @param const std::vector<std::string>& param_types The parameters types
+         */
+        static std::string make_declare(const std::string&, const std::string&, const std::vector<std::string>&);
 
         /**
          * @brief Return the name of the function so that it can be used in a llvm script

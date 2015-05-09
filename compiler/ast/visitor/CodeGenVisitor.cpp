@@ -43,6 +43,13 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.function_is_used("create_array_table");
 	curr_module.function_is_used("create_list_table");
 
+	// add declaration of list allocation function
+	curr_module.add_declaration("list_allocate_int", Module::make_declare("list_allocate_int", "i64", { "%struct.list_table*" }));
+	curr_module.add_declaration("list_allocate_float", Module::make_declare("list_allocate_float", "i64", { "%struct.list_table*" }));
+	curr_module.add_declaration("list_allocate_bool", Module::make_declare("list_allocate_bool", "i64", { "%struct.list_table*" }));
+	curr_module.add_declaration("list_allocate_char", Module::make_declare("list_allocate_char", "i64", { "%struct.list_table*" }));
+	curr_module.add_declaration("list_allocate_string", Module::make_declare("list_allocate_string", "i64", { "%struct.list_table*" }));
+
 	// add main function 
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);
@@ -1722,7 +1729,86 @@ void CodeGenVisitor::visit( ast::Array& token )
 void CodeGenVisitor::visit( ast::List& token )
 {
 	cout << "List" << endl;
+	
+	// store all the elements into memory
+	visit_children(token);
 
+	BasicBlock& block = curr_module.get_functionget_last_block();
+
+	if(!token.empty_items()) // empty array
+	/*{
+		
+	}
+	else*/
+	{
+		ExpressionList& expr_list = dynamic_cast<ExpressionList>(token.get_items());
+		// get the Value containint the elements to store in the list
+		vector<shared_ptr<Value>> list_elements = get_n_return_values(expr_list.nb_expressions());
+
+		std::string ctype, llvmtype; // the c type and llvm of the array elements
+		shared_ptr<typegen::Type> list_subtype(list_elements[0]->get_type()),
+								  list_type(new typegen::List(list_subtype));
+
+		switch(list_subtype->get_type())
+		{
+		case inference::FLOAT: 
+			ctype = "float";
+			llvmtype = "float"; 
+			break;
+		case inference::CHAR: 
+			ctype = "char";
+			llvmtype = "i8"; 
+			break;
+		case inference::BOOL: 
+			ctype = "bool";
+			llvmtype = "i1"; 
+			break;
+		case inference::INT: 
+			ctype = "int";
+			llvmtype = "i64"; 
+			break;
+		default: 
+			ctype = "string";
+			llvmtype = "i64"; 
+			break;
+		}
+
+		std::string alloc_func = "allocate_list_" + ctype,
+					push_func = "list_push_back_" + ctype,
+					alloc_call = "call i64 (%struct.list_table*)* @" + alloc_func + "(%struct.list_table* @..list_table)";
+
+		// notify the module that the allocate function is used
+		curr_module.function_is_used(alloc_func);
+		curr_module.function_is_used(push_func);
+		
+		// create the list
+		unique_ptr<Variable> list_id(block.add_expression(alloc_call, "id", list_type));
+
+		// add the elements in the array
+		for(auto current_value : list_elements)
+		{
+			share_ptr<Value> element_value; // the value to pass to the push function call
+
+			if(curr_value->is_variable())
+				element_value = shared_ptr<Value>(block.create_load(*curr_value));
+			else 
+				element_value = current_value;
+
+			string push_call = "call void (%struct.list_table*, i64, " + llvmtype + ")* @" + push_func +
+							    "(%struct.list_table* @..list_table, i64 " + list_id->str_value() + 
+							    ", " + llvmtype + " " + current_element->str_value() + ")";
+ 			
+ 			block.add_expression("push_call");
+		}
+
+		pop_n_return_values(expr_list.nb_expressions());
+
+		// store the list id into memory
+		unique_ptr<Variable> tmp_id_addr_var = new Variable("tmp_id_addr", list_type);
+		unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr));
+		shared_ptr<Value> id_addr(block.create_store(*list_id, *tmp_id_addr)); 
+		add_return(id_addr);
+	}
 }
 
 
@@ -1879,7 +1965,8 @@ void CodeGenVisitor::visit( Expression& token )
 
 void CodeGenVisitor::visit( ast::ExpressionList& )
 {
-
+	cout << "ExpressionList" << endl;
+	visit_children(token);
 }
 
 
