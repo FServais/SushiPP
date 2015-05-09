@@ -1730,6 +1730,11 @@ void CodeGenVisitor::visit( ast::Array& token )
 	{
 		visit_children(token);
 		nb_el = token.get_items().nb_expressions();
+
+		vector<shared_ptr<Value>> array_elements = get_n_return_values(nb_el);
+		std::string ctype, llvmtype; // the c type and llvm of the array elements
+		shared_ptr<typegen::Type> array_subtype(array_elements[0]->get_type()),
+								  list_type(new typegen::List(array_subtype));
 	}
 
 
