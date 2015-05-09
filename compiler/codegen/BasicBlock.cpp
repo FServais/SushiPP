@@ -1,6 +1,3 @@
-#ifndef BASIC_BLOCK_TREE_HPP_DEFINED
-#define BASIC_BLOCK_TREE_HPP_DEFINED
-
 #include <iostream>
 #include <sstream>
 
@@ -472,5 +469,17 @@ std::string BasicBlock::make_binop(const std::string& func, const std::string& o
     return ss.str();
 }
 
+std::string BasicBlock::add_expression(const std::string& expr, const std::string& ret)
+{   
+    string variable(var_manager.insert_variable(ret));
+    lines.push_back("%" + variable + " = " + expr);
+    return variable;
+}
 
-#endif
+std::string BasicBlock::add_expression(const std::string& expr)
+{
+    lines.push_back(expr);
+    return "";
+}
+
+

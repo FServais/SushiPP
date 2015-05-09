@@ -180,6 +180,7 @@ namespace visitor
 
 		void print(std::ostream&);
 
+
 	private:
 		codegen::Builder builder;
 		codegen::Module& curr_module;
@@ -207,18 +208,6 @@ namespace visitor
 
 		bool is_vector_empty() const;
 		int get_vector_size() const;
-
-		/**
-		 * @brief Return the name of the function so that it can be used in a llvm script
-		 * @param const std::string& spp_name The sushi ++ name of the function
-		 * @param bool built_in True if the function is a built_in function, false otherwise (optional, default: false)
-		 * @retval std::string The name of the function to be used in the llvm code
-		 * @note The conversion is the following :
-		 *  - built-in functions : the hyphens are transformed to lowercase
-		 *  - spp functions : a dot is prepend to the function name
-		 */
-		std::string get_llvm_function_name(const std::string&, bool);
-
 		/*
 		llvm::Module *the_module;
 		llvm::IRBuilder<> builder;

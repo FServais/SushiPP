@@ -31,6 +31,12 @@ namespace codegen
         std::string str_arguments() const;
         std::string str_arguments_signature() const;
 
+        /** @brief Return the number of parameters of the function */
+        size_t nb_arguments() const { return function_type->nb_param(); }
+        /** Return the string signature of the arguments in a vector */
+        std::vector<std::string> arguments_signature();
+        std::string str_return_signature();
+
         // Type, name
         void set_return(std::string);
 
