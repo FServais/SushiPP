@@ -1374,7 +1374,10 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << loaded_rhs->str_value() << ")";
 			block.add_expression(line.str());
 
-			rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+			if(lhs.get_type()->is_array())
+				array_rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+			else
+				list_rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
 
 			result = new Variable(dynamic_cast<Variable&>(lhs));
 		}
@@ -1939,14 +1942,17 @@ void CodeGenVisitor::visit( DeclVar& token )
 			string struct_type_name = "%struct." + type + "_table";
 			string table_name = "@.." + type + "_table";
 
-			string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+			string table = block.create_load_raw(struct_type_name + "** " + table_name);
 			string func_name = type + "_add_reference";
 
 			stringstream line;
-			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << expr_value->str_value() << ")";
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << table << ", i64 " << expr_value->str_value() << ")";
 			block.add_expression(line.str());
 
-			rm_ref_flags.add_flag(array_table, function_table.curr_scope_id());
+			if(expr_cast.get_type()->is_array())
+				array_rm_ref_flags.add_flag(table, function_table.curr_scope_id());
+			else
+				list_rm_ref_flags.add_flag(table, function_table.curr_scope_id());
 		}
 		else
 		{
@@ -2168,10 +2174,39 @@ void CodeGenVisitor::visit( Scope& token )
 	visit_children(token);
 
 	// Add free of array/list
-	vector<string> vars_to_free = rm_ref_flags.pop_vars_at_scope(id_scope);
-	for(auto var : vars_to_free)
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+	// -> Array
+	string type = "array";
+	string struct_type_name = "%struct." + type + "_table";
+	string table_name = "@.." + type + "_table";
+
+	string array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+	string func_name = type + "_rm_reference";
+
+	for(auto var : array_vars_to_free)
 	{
-		
+		stringstream line;
+		line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+		block.add_expression(line.str());
+	}
+
+	vector<string> list_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+	// -> List
+	type = "list";
+	struct_type_name = "%struct." + type + "_table";
+	table_name = "@.." + type + "_table";
+
+	array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+	func_name = type + "_rm_reference";
+
+	for(auto var : list_vars_to_free)
+	{
+		stringstream line;
+		line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+		block.add_expression(line.str());
 	}
 
 	if(!function_table.is_root())

@@ -187,7 +187,7 @@ namespace visitor
 		codegen::Module& curr_module;
 		std::string curr_func_name;
 
-		codegen::RemoveReferenceFlags rm_ref_flags;
+		codegen::RemoveReferenceFlags array_rm_ref_flags, list_rm_ref_flags;
 
 		codegen::LabelManager label_manager;
 
