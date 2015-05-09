@@ -1,4 +1,5 @@
 #include "Module.hpp"
+#include "BasicBlock.hpp"
 #include "../util.hpp"
 
 #include <algorithm> // replace_if
@@ -85,7 +86,7 @@ void Module::add_declaration(const string& function_name, FunctionBlock& f_block
     }
 
     string declare = make_declare(function_name, 
-                                  f_block.str_return_signature(), 
+                                  f_block.str_return_signature(),
                                   arg_sigs);
     declarations[function_name] = make_tuple(declare, false);
 }

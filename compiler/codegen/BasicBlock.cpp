@@ -447,15 +447,18 @@ Value* BasicBlock::create_func_call(Value& value, settings::Runtime runtime)
     Function& function = dynamic_cast<Function&>(value);
 
     // get function paramters
-    vector<string> params(function.str_arguments());
+    vector<string> params(function.str_arguments()),
+                   params_sig(function.str_arguments_sig());
 
     switch(runtime) // add parameter to call the appropriate runtime function
     {
     case settings::ARRAY_RUNTIME:
         params.insert(params.begin(), "%struct.array_table* %" + create_load_raw("%struct.array_table** @..array_table"));
+        params_sig.insert(params_sig.begin(), string("%struct.array_table*"));
         break;
     case settings::LIST_RUNTIME:
         params.insert(params.begin(), "%struct.list_table* %" + create_load_raw("%struct.list_table** @..list_table"));
+        params_sig.insert(params_sig.begin(), string("%struct.list_table*"));
         break;
     default: break;
     }
@@ -463,14 +466,14 @@ Value* BasicBlock::create_func_call(Value& value, settings::Runtime runtime)
     // construct the call
     Variable* ret = nullptr;
 
-    stringstream ss;
+    string ret_type = function.str_return_type();
     if(!function.get_return_type()->is_void())
     {
         ret = new Variable(var_manager, "ret", function.get_return_type());
-        add_line(make_call(function.get_signature(), function.get_name(), params, ret->str_value()));
+        add_line(make_call(make_signature(ret_type, params_sig) + "*", function.get_name(), params, ret->str_value()));
     }
     else
-        add_line(make_call(function.get_signature(), function.get_name(), params));
+        add_line(make_call(make_signature(ret_type, params_sig) + "*", function.get_name(), params));
 
     return ret;
 }
@@ -482,7 +485,6 @@ Value* BasicBlock::create_func_call(Value& value)
     // construct the call
     Variable* ret = nullptr;
 
-    stringstream ss;
     if(!function.get_return_type()->is_void())
     {
         ret = new Variable(var_manager, "ret", function.get_return_type());
@@ -540,4 +542,10 @@ string BasicBlock::make_call(const string& sig, const string& name, const vector
 string BasicBlock::make_call(const string& sig, const string& name, const vector<string>& args, const string& ret)
 {
     return ret + " = " + make_call(sig, name, args);
+}
+
+std::string BasicBlock::make_signature(const std::string& ret, const std::vector<std::string>& args)
+{
+    string params = args.size() ? util::implode(args.begin(), args.end(), ", ") : "...";
+    return ret + " (" + params + ")";
 }
