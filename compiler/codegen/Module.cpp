@@ -1,25 +1,12 @@
 #include "Module.hpp"
+#include "../util.hpp"
+
+#include <algorithm> // replace_if
 
 using namespace codegen;
 using namespace std;
 
-Module::Module(VariableManager& vm) : var_manager(vm)
-{
-    shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
-    FunctionBlock function(vm, "main", main_func);
-    function.set_return("0");
-    add_function("main", function);
-
-
-    // Add printf
-    // FunctionBlock printf(vm, "printf", shared_ptr<typegen::Type>(new typegen::Int()));
-    // printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
-    // printf.add_argument(shared_ptr<typegen::Type>(new typegen::Bool()), "");
-    // add_declaration(printf);
-
-    // add_str_constant("@.str = private unnamed_addr constant [3 x i8] c\"%d\\00\", align 1");
-
-}
+Module::Module(VariableManager& vm) : var_manager(vm) { }
 
 void Module::dump(ostream& out) const
 {
@@ -32,7 +19,10 @@ void Module::dump(ostream& out) const
     out << endl;
 
     for(auto& decl : declarations)
-        decl.second.dump_declaration(out);
+        if(get<1>(decl.second))
+            out << get<0>(decl.second) << endl;
+
+    out << endl;
 
     for(auto& func : functions)
     {
@@ -41,22 +31,24 @@ void Module::dump(ostream& out) const
     }
 }
 
-void Module::add_function(const std::string& function_name, FunctionBlock& function)
+void Module::add_function(const string& function_name, FunctionBlock& function)
 {
-    if(declarations.count(function_name))
-        throw std::logic_error("Existing function");
+    if(functions.count(function_name))
+        throw logic_error("Existing function");
     functions.emplace(function_name, function);
 }
 
-
-void Module::add_declaration(const std::string& function_name, FunctionBlock& decl)
+void Module::add_global_type(const string& name, const string& expression)
 {
-    if(declarations.count(function_name))
-        throw std::logic_error("Existing declaration");
-    declarations.emplace(function_name, decl);
+    global_vars.push_back("%" + name + " = " + expression);
 }
 
-void Module::add_str_constant(std::string cst)
+void Module::add_global_variable(const string& name, const string& expression)
+{
+    global_vars.push_back("@" + name + " = " + expression);
+}
+
+void Module::add_str_constant(string cst)
 {
     str_constants.push_back(cst);
 }
@@ -64,4 +56,70 @@ void Module::add_str_constant(std::string cst)
 FunctionBlock& Module::get_function(string function_name)
 {
     return functions.at(function_name);
+}
+
+void Module::add_declaration(const string& function_name, FunctionBlock& f_block)
+{
+    if(function_declared(function_name))
+        throw logic_error("Existing declaration");
+    string declare = make_declare(function_name, 
+                                  f_block.str_return_signature(), 
+                                  f_block.arguments_signature());
+    declarations[function_name] = make_tuple(declare, false);
+}
+
+void Module::add_declaration(const string& function_name, FunctionBlock& f_block, settings::Runtime runtime)
+{
+    if(function_declared(function_name))
+        throw logic_error("Existing declaration");
+    vector<string> arg_sigs(f_block.arguments_signature());
+
+    // insert the array or list table 
+    switch(runtime)
+    {
+    case settings::LIST_RUNTIME:
+        arg_sigs.insert(arg_sigs.begin(), list_table_type); break;
+    case settings::ARRAY_RUNTIME:
+        arg_sigs.insert(arg_sigs.begin(), array_table_type); break;
+    default: break;
+    }
+
+    string declare = make_declare(function_name, 
+                                  f_block.str_return_signature(), 
+                                  f_block.arguments_signature());
+    declarations[function_name] = make_tuple(declare, false);
+}
+
+void Module::add_declaration(const string& function_name, const string& raw_declaration)
+{
+    if(function_declared(function_name))
+        throw logic_error("Existing declaration");
+    declarations[function_name] = make_tuple(raw_declaration, false);
+}
+
+bool Module::function_declared(const string& name) const
+{
+    return declarations.count(name);
+}
+
+void Module::function_is_used(const string& name)
+{
+    if(function_declared(name))
+        get<1>(declarations[name]) = true;
+}
+
+string Module::make_declare(const string& name, const string& return_type, const vector<string>& param_types)
+{
+    string params(param_types.size() == 0 ? "..." : util::implode(param_types.begin(), param_types.end(), ", "));
+    return "declare " + return_type + " @" + get_llvm_function_name(name, true) + "(" + params + ")"; // declared is always a built in function
+}
+
+string Module::get_llvm_function_name(const string& spp_name, bool built_in = false)
+{
+    if(!built_in)
+        return "." + spp_name;
+
+    string new_name(spp_name);
+    replace_if(new_name.begin(), new_name.end(), [](char c) { return c == '-'; }, '_');
+    return new_name;
 }

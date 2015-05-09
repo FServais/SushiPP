@@ -10,6 +10,12 @@
 
 namespace settings
 {
+
+	/**
+	 * @brief Different runtime librairies
+	 */
+	enum Runtime { LIST_RUNTIME, ARRAY_RUNTIME, STRING_RUNTIME, SUPPORT };
+
 	/**
 	 * Type representing the information of a built in function
 	 * 1st element : name of the function 
@@ -22,7 +28,8 @@ namespace settings
 					   std::vector<std::string>, 
 					   std::vector<inference::ShallowType>, 
 					   inference::ShallowType, 
-					   inference::ShallowType> 
+					   inference::ShallowType,
+					   Runtime> 
 			BuiltInFunctionInfo;
 	  
 	/**
@@ -45,12 +52,14 @@ namespace settings
 		 * @param const std::vector<inference::ShallowType>& param_types The types of the parameters
 		 * @param inference::ShallowType ret_type The return type
 		 * @param inference::ShallowType ds_type Subtype of the datastructure (optional, default: NO_TYPE)
+		 * @param Runtime runtime The runtime in which lies the function
 		 */
 		void insert_function(const std::string&, 
 							 const std::vector<std::string>&, 
 							 const std::vector<inference::ShallowType>&, 
 							 inference::ShallowType, 
-							 inference::ShallowType);
+							 inference::ShallowType,
+							 Runtime);
 	};
 
 }

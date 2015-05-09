@@ -15,7 +15,7 @@ using namespace typegen;
 //     blocks.push_back(entry);
 // }
 
-FunctionBlock::FunctionBlock(VariableManager& vm, std::string _name, std::shared_ptr<typegen::Function> _func_type)
+FunctionBlock::FunctionBlock(VariableManager& vm, string _name, shared_ptr<typegen::Function> _func_type)
   : var_manager(vm), name(_name), function_type(_func_type), parameters_name(_func_type->nb_param())
 {
     BasicBlock entry(vm, "entry");
@@ -24,9 +24,9 @@ FunctionBlock::FunctionBlock(VariableManager& vm, std::string _name, std::shared
 }
 
 FunctionBlock::FunctionBlock(VariableManager& vm,
-                             std::string _name,
-                             std::shared_ptr<typegen::Function> _func_type,
-                             const std::vector<std::string>& _param_names)
+                             string _name,
+                             shared_ptr<typegen::Function> _func_type,
+                             const vector<string>& _param_names)
   : var_manager(vm), name(_name), function_type(_func_type), parameters_name(_param_names)
 {
     BasicBlock entry(vm, "entry");
@@ -61,7 +61,7 @@ void FunctionBlock::add_block(string block_label)
     blocks.push_back(block);
 }
 
-std::string FunctionBlock::get_name() const
+string FunctionBlock::get_name() const
 {
     return name;
 }
@@ -90,16 +90,31 @@ string FunctionBlock::str_arguments() const
 
 string FunctionBlock::str_arguments_signature() const
 {
-    stringstream ss;
+  stringstream ss;
 
-    for(size_t i = 0; i < function_type->nb_param(); ++i)
-    {
-        if(i > 0)
-            ss << ", ";
-        ss << function_type->get_arg(i)->to_str();
-    }
+  for(size_t i = 0; i < function_type->nb_param(); ++i)
+  {
+    if(i > 0)
+      ss << ", ";
+    ss << function_type->get_arg(i)->to_str();
+  }
 
-    return ss.str();
+  return ss.str();
+}
+
+vector<string> FunctionBlock::arguments_signature()
+{
+  vector<string> sigs;
+
+  for(size_t i = 0; i < function_type->nb_param(); ++i)
+    sigs.push_back(function_type->get_arg(i)->to_str());
+    
+  return sigs;
+}
+
+string FunctionBlock::str_return_signature()
+{
+  return function_type->get_ret_type()->to_str();
 }
 
 void FunctionBlock::generate_argument_type_conv()
@@ -125,36 +140,11 @@ void FunctionBlock::generate_argument_type_conv()
     unique_ptr<Value> store(entry.create_store(value, pointer));
   }
 }
-// void FunctionBlock::add_argument(shared_ptr<Type> type, string name)
-// {
-//     pair<shared_ptr<Type>,string> argument(type,name);
-
-//     // Change the name of the argument -> goal is to get pointer to its value
-//     stringstream newname;
-//     newname << name << "_arg";
-
-//     BasicBlock& entry = get_last_block();
-
-//     // Allocate in memory to get a pointer
-//     Variable pointer(var_manager, name, type, true);
-//     unique_ptr<Value> alloc = unique_ptr<Value>(entry.create_decl_var(pointer));
-
-//     // Add to the list of arguments
-//     arguments.push_back(make_pair(type,newname.str()));
-
-//     // Store the value given in argument where is the pointer
-//     Variable value(var_manager, newname.str(), type);
-
-//     unique_ptr<Value> store = unique_ptr<Value>(entry.create_store(value, pointer));
-
-// }
 
 void FunctionBlock::set_return(string _return_value)
 {
     return_value = _return_value;
 }
-
-
 
 
 BasicBlock& FunctionBlock::get_block(int n)
@@ -168,7 +158,7 @@ BasicBlock& FunctionBlock::get_last_block()
 }
 
 
-std::string FunctionBlock::get_signature() const
+string FunctionBlock::get_signature() const
 {
     stringstream ss;
     ss << function_type->get_ret_type()->to_str() << " @" << name << "(" << str_arguments_signature() << ")";
