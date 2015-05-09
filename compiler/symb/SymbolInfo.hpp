@@ -17,6 +17,7 @@ namespace symb
 		 * @param const std::string& name The variable name
 		 * @note The type is left undefined
 		 */
+		VariableInfo(const std::string&);
 		VariableInfo(const std::string&, ast::NodeLocation);
 
 		// getters 
@@ -49,15 +50,16 @@ namespace symb
 		 * @param std::vector<VariableInfo>& params The functions VariableInfos info
 		 * @param Type return_type The return type of the function
 		 */
-		FunctionInfo(const std::string&, std::vector<VariableInfo>&, ast::NodeLocation);
-
+		FunctionInfo(const std::string&, const std::vector<VariableInfo>&, ast::NodeLocation);
+		FunctionInfo(const std::string&, const std::vector<VariableInfo>&);
 		/**
 		 * @brief Construct an object containing the information of an ANONYMOUS (soy) function
 		 * @param std::vector<VariableInfo>& params The functions VariableInfos info
 		 * @param Type return_type The return type of the function
 		 * @note A random name is generated. It can be obtained after construction with the 'name()' function
 		 */
-		FunctionInfo(std::vector<VariableInfo>&, ast::NodeLocation);
+		FunctionInfo(const std::vector<VariableInfo>&, ast::NodeLocation);
+		FunctionInfo(const std::vector<VariableInfo>&);
 
 		// getters
 		const std::string& name() const { return name_; };
@@ -70,13 +72,9 @@ namespace symb
 		size_t get_line(){return location.first_line();};
 		size_t get_column(){return location.last_line();};
 
-
-		// setters
-
-		
 	private:
 		std::string name_;
-		std::vector<VariableInfo>& params_;
+		std::vector<VariableInfo> params_;
 		bool anonymous_;
 		bool used;
 		ast::NodeLocation location;

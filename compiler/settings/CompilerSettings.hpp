@@ -10,7 +10,7 @@ namespace settings
 {
 	enum ExecutionMode { PRINT_HELP, COMPILE };
 	enum VerboseMode { QUIET, VERBOSE };
-	enum DumpAST { DUMP_FILE, DUMP_STDOUT, NO_DUMP };
+	enum DumpMode { DUMP_FILE, DUMP_STDOUT, NO_DUMP };
 	enum ProgramSource { STDIN, FILE };
 
 	/**
@@ -34,6 +34,11 @@ namespace settings
 	 *       	the AST is printed out in this file
 	 *    -v 
 	 *		 Verbose : the compiler emits messages detailing its execution
+	 *    -o filename  
+	 *		 Output program : name of the executable file
+	 * 	  -l [ filename ] " << endl;
+	 *  	 Dump LLVM : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is 
+	 *     	 	provided, the LLVM assembly is printed out in this file
 	 */
 	class CompilerSettings
 	{
@@ -43,7 +48,9 @@ namespace settings
 		 *  - ProgramSource : STDIN
 		 *  - VerboseMode : QUIET
 		 *  - ExcutionMode : COMPILE
-		 *  - DumpAST : NO_DUMP
+		 *  - Dump AST : NO_DUMP
+		 *  - Dump LLVM : NO_DUMP
+		 *  - Output executable : `spp_program`
 		 */
 		CompilerSettings();
 
@@ -55,24 +62,30 @@ namespace settings
 
 		// getters and setters 
 		void set_verbose_mode(VerboseMode verbose_mode_) { verbose_mode = verbose_mode_; };
-		void set_do_dump_ast(DumpAST dump_ast_) { dump_ast = dump_ast_; };
+		void set_do_dump_ast(DumpMode dump_ast_) { dump_ast = dump_ast_; };
 		void set_program_source(ProgramSource prog_source_) { prog_source = prog_source_; };
 		void set_execution_mode(ExecutionMode exec_mode_) { exec_mode = exec_mode_; };
 
 		VerboseMode get_verbose_mode() const { return verbose_mode; };
-		DumpAST get_do_dump_ast() const { return dump_ast; };
+		DumpMode get_do_dump_ast() const { return dump_ast; };
 		ProgramSource get_program_source() const { return prog_source; }; 
 		ExecutionMode get_execution_mode() const { return exec_mode; };
 
 		// these methods return relevant data only for some given settings
 		const std::string& get_ast_dump_file() const { return param_map.at('d'); }; // only if dump ast is DUMP_FILE
 		const std::string& get_input_file() const { return param_map.at('i'); }; // only if program source is FILE
+		const std::string& get_llvm_dump_file() const { return param_map.at('l'); }; // only if dump llvm is FILE
+		
+		const std::string& get_executable_file() const { return param_map.at('o'); };
 
 		// check whether the VerboseMode setting was set to verbose
 		bool is_verbose() const { return verbose_mode == VERBOSE; };
 		bool do_dump_ast() const { return dump_ast != NO_DUMP; };
 		bool do_dump_ast_in_file() const { return dump_ast == DUMP_FILE; };
 		bool do_dump_ast_in_stdout() const { return dump_ast == DUMP_STDOUT; };
+		bool do_dump_llvm() const { return dump_llvm != NO_DUMP; };
+		bool do_dump_llvm_in_file() const { return dump_llvm == DUMP_FILE; };
+		bool do_dump_llvm_in_stdout() const { return dump_llvm == DUMP_STDOUT; };
 		bool read_from_file() const { return prog_source == FILE; };
 		bool do_dump_help() const { return exec_mode == PRINT_HELP; };
 
@@ -84,12 +97,14 @@ namespace settings
 	private:
 		/** settings */
 		VerboseMode verbose_mode;
-		DumpAST dump_ast;
+		DumpMode dump_ast;
 		ProgramSource prog_source;
 		ExecutionMode exec_mode;
+		DumpMode dump_llvm;
 
 		// parameter map mapping input paremeters and their values
 		std::map<char, std::string> param_map;
+		std::string program_name;
 
 		/**
 		 * @brief Build the parameter map from the program input
@@ -109,6 +124,13 @@ namespace settings
 		 * @retval bool True if the parameter id is valid
 		 */
 		bool valid_param_id(char c);
+
+		/**
+		 * @brief Set the program name based on the program paramaters
+		 * If -i is specified the file name is taken (without extension)
+		 * Otherwise name is set to `spp_program`
+		 */
+		void set_program_name();
 	};
 }
 

@@ -19,8 +19,8 @@ namespace codegen
          */
         void dump(std::ostream&) const;
 
-        void add_function(FunctionBlock&);
-        void add_declaration(FunctionBlock&);
+        void add_function(const std::string&, FunctionBlock&);
+        void add_declaration(const std::string&, FunctionBlock&);
 
         void add_str_constant(std::string);
 
@@ -30,14 +30,10 @@ namespace codegen
     private:
         VariableManager& var_manager;
 
-        std::vector<FunctionBlock> functions;
+        std::map<std::string, FunctionBlock> functions; // map function name with function block of function definition
+        std::map<std::string, FunctionBlock> declarations; // map function name with function block of function declaration
         std::vector<std::string> global_vars;
         std::vector<std::string> str_constants;
-        std::vector<FunctionBlock> declarations;
-
-        // Out of the functions (global variables,...)
-
-
     };
 }
 

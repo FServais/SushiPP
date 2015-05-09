@@ -10,6 +10,7 @@
 #include "../../inference/TypeSymbolTable.hpp"
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
+#include "../../settings/BuiltInFunctions.hpp"
 #include "../../errors/ErrorHandler.hpp"
 
 namespace visitor
@@ -22,11 +23,13 @@ namespace visitor
 		 * @param errors::ErrorHandler& The error handler
 		 * @param symb::SymbolTable<symb::FunctionInfo>& function_table The function table
 		 * @param symb::SymbolTable<symb::VariableInfo>& variable_table The variable talble
+		 * @param settings::BuiltInFunctions& The datastructure containing the built function info
 		 */
 		TypeInferenceVisitor(errors::ErrorHandler&, 
 							 symb::SymbolTable<symb::FunctionInfo>&, 
 							 symb::SymbolTable<symb::VariableInfo>&, 
-							 inference::TypeSymbolTable&);
+							 inference::TypeSymbolTable&,
+							 settings::BuiltInFunctions&);
 
 		/****************
 		 * 		Node    *

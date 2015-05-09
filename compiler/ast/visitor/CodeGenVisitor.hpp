@@ -23,6 +23,7 @@
 
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
+#include "../../settings/BuiltInFunctions.hpp"
 #include "../../inference/TypeSymbolTable.hpp"
 
 namespace visitor
@@ -30,7 +31,10 @@ namespace visitor
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor(symb::SymbolTable<symb::VariableInfo>& variable_table, symb::SymbolTable<symb::FunctionInfo>& function_table, inference::TypeSymbolTable& type_table); // arg: the stream in which to output the tree
+		CodeGenVisitor(symb::SymbolTable<symb::VariableInfo>&,
+					   symb::SymbolTable<symb::FunctionInfo>&,
+					   inference::TypeSymbolTable&,
+					   settings::BuiltInFunctions&); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -186,10 +190,10 @@ namespace visitor
 		symb::SymbolTable<symb::VariableInfo>& variable_table;
 		symb::SymbolTable<symb::FunctionInfo>& function_table;
 		inference::TypeSymbolTable& type_table;
-
+		settings::BuiltInFunctions& built_in;
 
 		/* Vector */
-		std::vector<std::unique_ptr<codegen::Value>> return_vector;
+		std::vector<std::shared_ptr<codegen::Value>> return_vector;
 
 		void add_return(codegen::Value*);
 		codegen::Value& top();
@@ -198,12 +202,22 @@ namespace visitor
 		codegen::Value& get_return_value(int n);
 		void remove_return_value(int n);
 
-		std::vector<codegen::Value*> get_n_return_values(int n);
+		std::vector<std::shared_ptr<codegen::Value>> get_n_return_values(int n);
 		void pop_n_return_values(int n);
 
 		bool is_vector_empty() const;
 		int get_vector_size() const;
 
+		/**
+		 * @brief Return the name of the function so that it can be used in a llvm script
+		 * @param const std::string& spp_name The sushi ++ name of the function
+		 * @param bool built_in True if the function is a built_in function, false otherwise (optional, default: false)
+		 * @retval std::string The name of the function to be used in the llvm code
+		 * @note The conversion is the following :
+		 *  - built-in functions : the hyphens are transformed to lowercase
+		 *  - spp functions : a dot is prepend to the function name
+		 */
+		std::string get_llvm_function_name(const std::string&, bool);
 
 		/*
 		llvm::Module *the_module;

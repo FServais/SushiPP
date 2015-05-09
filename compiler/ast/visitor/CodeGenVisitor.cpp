@@ -1,5 +1,7 @@
 #include "CodeGenVisitor.hpp"
 
+#include <algorithm>
+
 using namespace std;
 using namespace visitor;
 using namespace ast;
@@ -7,9 +9,26 @@ using namespace codegen;
 using namespace symb;
 using namespace inference;
 
-CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table, SymbolTable<FunctionInfo>& _function_table, TypeSymbolTable& _type_table) : curr_module(builder.get_curr_module()), curr_func_name("main"), variable_table(_variable_table), function_table(_function_table), type_table(_type_table)
+CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
+							   SymbolTable<FunctionInfo>& _function_table,
+							   TypeSymbolTable& _type_table,
+							   settings::BuiltInFunctions& _built_in)
+  : curr_module(builder.get_curr_module()),
+  	curr_func_name("main"),
+  	variable_table(_variable_table),
+  	function_table(_function_table),
+  	type_table(_type_table),
+  	built_in(_built_in)
 {
-
+	// add the built-in functions
+	for(auto& function : built_in)
+	{
+		string llvm_func_name = get_llvm_function_name(function.first, true),
+				func_type_name = type_table.unique_id_name(0, function.first);
+		shared_ptr<typegen::Function> func_type = dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_type_name));
+		FunctionBlock curr_func(builder.get_variable_manager(), llvm_func_name, func_type);
+	    curr_module.add_declaration(function.first, curr_func);
+	}
 }
 
 
@@ -19,7 +38,13 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table, Symbo
 
 void CodeGenVisitor::visit( Identifier& token )
 {
-	string name = type_table.unique_id_name(function_table.get_curr_scope_id(), token.id());
+	cout << "Identifier" << endl;
+	string name;
+	if(function_table.symbol_exists(token.id()))
+		name = type_table.unique_id_name(function_table.get_symbol_scope_id(token.id()), token.id());
+	else
+		name = type_table.unique_id_name(variable_table.get_symbol_scope_id(token.id()), token.id());
+
 	shared_ptr<typegen::Type> type = type_table.get_type(name);
 
 	Variable* v = new Variable(builder.get_variable_manager(), token.id(), type, true);
@@ -32,54 +57,63 @@ void CodeGenVisitor::visit( Identifier& token )
  *************************/
 void CodeGenVisitor::visit( K_Break& token )
 {
+	cout << "K_Break" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( K_Continue& token )
 {
+	cout << "K_Continue" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Int& token )
 {
+	cout << "Type_Int" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Float& token )
 {
+	cout << "Type_Float" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Char& token )
 {
+	cout << "Type_Char" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_String& token )
 {
+	cout << "Type_String" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Array& token )
 {
+	cout << "Type_Array" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_List& token )
 {
+	cout << "Type_List" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Bool& token )
 {
+	cout << "Type_Bool" << endl;
 
 }
 
@@ -87,6 +121,7 @@ void CodeGenVisitor::visit( Type_Bool& token )
 
 void CodeGenVisitor::visit( Type_Function& token )
 {
+	cout << "Type_Function" << endl;
 
 }
 
@@ -97,6 +132,7 @@ void CodeGenVisitor::visit( Type_Function& token )
 
 void CodeGenVisitor::visit( Op_Plus& token )
 {
+	cout << "Op_Plus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -143,6 +179,7 @@ void CodeGenVisitor::visit( Op_Plus& token )
 
 void CodeGenVisitor::visit( Op_Minus& token )
 {
+	cout << "Op_Minus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -177,11 +214,6 @@ void CodeGenVisitor::visit( Op_Minus& token )
 
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
-
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
-
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
 
@@ -194,6 +226,7 @@ void CodeGenVisitor::visit( Op_Minus& token )
 
 void CodeGenVisitor::visit( Op_Mult& token )
 {
+	cout << "Op_Mult" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -229,9 +262,6 @@ void CodeGenVisitor::visit( Op_Mult& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -245,6 +275,7 @@ void CodeGenVisitor::visit( Op_Mult& token )
 
 void CodeGenVisitor::visit( Op_Div& token )
 {
+	cout << "Op_Div" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -280,9 +311,6 @@ void CodeGenVisitor::visit( Op_Div& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -296,6 +324,7 @@ void CodeGenVisitor::visit( Op_Div& token )
 
 void CodeGenVisitor::visit( Op_Modulo& token )
 {
+	cout << "Op_Modulo" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -331,9 +360,6 @@ void CodeGenVisitor::visit( Op_Modulo& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -347,12 +373,14 @@ void CodeGenVisitor::visit( Op_Modulo& token )
 
 void CodeGenVisitor::visit( Op_Exponentiation& token )
 {
+	cout << "Op_Exponentiation" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_UnaryMinus& token )
 {
+	cout << "Op_UnaryMinus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -376,9 +404,6 @@ void CodeGenVisitor::visit( Op_UnaryMinus& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -392,6 +417,7 @@ void CodeGenVisitor::visit( Op_UnaryMinus& token )
 
 void CodeGenVisitor::visit( Op_BitwiseOr& token )
 {
+	cout << "Op_BitwiseOr" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -427,9 +453,6 @@ void CodeGenVisitor::visit( Op_BitwiseOr& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -443,6 +466,7 @@ void CodeGenVisitor::visit( Op_BitwiseOr& token )
 
 void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 {
+	cout << "Op_BitwiseAnd" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -478,9 +502,6 @@ void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -494,6 +515,7 @@ void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 
 void CodeGenVisitor::visit( Op_BitwiseXor& token )
 {
+	cout << "Op_BitwiseXor" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -529,9 +551,6 @@ void CodeGenVisitor::visit( Op_BitwiseXor& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -545,6 +564,7 @@ void CodeGenVisitor::visit( Op_BitwiseXor& token )
 
 void CodeGenVisitor::visit( Op_BitwiseNot& token )
 {
+	cout << "Op_BitwiseNot" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -568,9 +588,6 @@ void CodeGenVisitor::visit( Op_BitwiseNot& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -584,6 +601,7 @@ void CodeGenVisitor::visit( Op_BitwiseNot& token )
 
 void CodeGenVisitor::visit( Op_LogicalOr& token )
 {
+	cout << "Op_LogicalOr" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -619,9 +637,6 @@ void CodeGenVisitor::visit( Op_LogicalOr& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -635,6 +650,7 @@ void CodeGenVisitor::visit( Op_LogicalOr& token )
 
 void CodeGenVisitor::visit( Op_LogicalAnd& token )
 {
+	cout << "Op_LogicalAnd" << endl;
 visit_children(token);
 
 	// Get 2 arguments
@@ -670,9 +686,6 @@ visit_children(token);
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -686,6 +699,7 @@ visit_children(token);
 
 void CodeGenVisitor::visit( Op_LogicalNot& token )
 {
+	cout << "Op_LogicalNot" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -709,9 +723,6 @@ void CodeGenVisitor::visit( Op_LogicalNot& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -725,6 +736,7 @@ void CodeGenVisitor::visit( Op_LogicalNot& token )
 
 void CodeGenVisitor::visit( Op_CompLessThan& token )
 {
+	cout << "Op_CompLessThan" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -759,9 +771,6 @@ void CodeGenVisitor::visit( Op_CompLessThan& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -775,6 +784,7 @@ void CodeGenVisitor::visit( Op_CompLessThan& token )
 
 void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 {
+	cout << "Op_CompGreaterThan" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -809,9 +819,6 @@ void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -825,6 +832,7 @@ void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 
 void CodeGenVisitor::visit( Op_CompLessEqual& token )
 {
+	cout << "Op_CompLessEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -859,9 +867,6 @@ void CodeGenVisitor::visit( Op_CompLessEqual& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -875,6 +880,7 @@ void CodeGenVisitor::visit( Op_CompLessEqual& token )
 
 void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 {
+	cout << "Op_CompGreaterEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -909,9 +915,6 @@ void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -925,6 +928,7 @@ void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 
 void CodeGenVisitor::visit( Op_CompEqual& token )
 {
+	cout << "Op_CompEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -959,9 +963,6 @@ void CodeGenVisitor::visit( Op_CompEqual& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -975,6 +976,7 @@ void CodeGenVisitor::visit( Op_CompEqual& token )
 
 void CodeGenVisitor::visit( Op_CompNotEqual& token )
 {
+	cout << "Op_CompNotEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1009,9 +1011,6 @@ void CodeGenVisitor::visit( Op_CompNotEqual& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -1025,6 +1024,7 @@ void CodeGenVisitor::visit( Op_CompNotEqual& token )
 
 void CodeGenVisitor::visit( Op_LeftShift& token )
 {
+	cout << "Op_LeftShift" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1059,9 +1059,6 @@ void CodeGenVisitor::visit( Op_LeftShift& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
 
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
@@ -1075,6 +1072,7 @@ void CodeGenVisitor::visit( Op_LeftShift& token )
 
 void CodeGenVisitor::visit( Op_RightShift& token )
 {
+	cout << "Op_RightShift" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1108,10 +1106,6 @@ void CodeGenVisitor::visit( Op_RightShift& token )
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 
-	// cout << "Res: " << result->get_name() << endl;
-	// cout << "Ptr: " << ptr->str_value() << endl;
-
-
 	Value* after_store = block.create_store(*result, *ptr);
 	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
 
@@ -1124,36 +1118,71 @@ void CodeGenVisitor::visit( Op_RightShift& token )
 
 void CodeGenVisitor::visit( Op_StringConcat& token )
 {
+	cout << "Op_StringConcat" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 {
+	cout << "Op_PrefixIncrement" << endl;
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	Variable* result;
+
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = dynamic_cast<Variable*>(block.create_op_pref_incr(*load_operand));
+	}
+	else
+		result = dynamic_cast<Variable*>(block.create_op_pref_incr(operand));
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(),
+									   builder.get_variable_manager().insert_variable(result->get_name()),
+									   result->get_type(), true);
+
+	unique_ptr<Value> ptr(block.create_decl_var(*container));
+
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_PrefixDecrement& token )
 {
+	cout << "Op_PrefixDecrement" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 {
+	cout << "Op_PostfixIncrement" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 {
+	cout << "Op_PostfixDecrement" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_Assignment& token )
 {
+	cout << "Op_Assignment" << endl;
 	visit_children(token);
 	Value& rhs = get_return_value(0);
 	Value& lhs = get_return_value(1);
@@ -1163,65 +1192,76 @@ void CodeGenVisitor::visit( Op_Assignment& token )
     add_return(curr_module.get_function(curr_func_name).get_last_block().create_store(*tmp, lhs));
     pop();
     pop();
+
 }
 
 
 void CodeGenVisitor::visit( Op_AssignPlus& token )
 {
+	cout << "Op_AssignPlus" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignMinus& token )
 {
+	cout << "Op_AssignMinus" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignMult& token )
 {
+	cout << "Op_AssignMult" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignDiv& token )
 {
+	cout << "Op_AssignDiv" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignExpo& token )
 {
+	cout << "Op_AssignExpo" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignMod& token )
 {
+	cout << "Op_AssignMod" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignAnd& token )
 {
+	cout << "Op_AssignAnd" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignOr& token )
 {
+	cout << "Op_AssignOr" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignXor& token )
 {
+	cout << "Op_AssignXor" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Op_AssignConcat& token )
 {
+	cout << "Op_AssignConcat" << endl;
 
 }
 
@@ -1232,6 +1272,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 
 void CodeGenVisitor::visit( ast::String& token )
 {
+	cout << "String" << endl;
 	ConstantString* constant_string = new ConstantString(token.value());
 	add_return(constant_string);
 }
@@ -1239,24 +1280,28 @@ void CodeGenVisitor::visit( ast::String& token )
 
 void CodeGenVisitor::visit( Character& token )
 {
+	cout << "Character" << endl;
 	ConstantChar* constant_char = new ConstantChar(token.value());
 	add_return(constant_char);
 }
 
 void CodeGenVisitor::visit( Integer& token )
 {
+	cout << "Integer" << endl;
 	ConstantInt* constant_int = new ConstantInt(token.value());
 	add_return(constant_int);
 }
 
 void CodeGenVisitor::visit( ast::Float& token )
 {
+	cout << "Float" << endl;
 	ConstantFloat* constant_float = new ConstantFloat(token.value());
 	add_return(constant_float);
 }
 
 void CodeGenVisitor::visit( ast::Bool& token )
 {
+	cout << "Bool" << endl;
 	ConstantBool* constant_bool = new ConstantBool(token.value());
 	add_return(constant_bool);
 }
@@ -1268,24 +1313,37 @@ void CodeGenVisitor::visit( ast::Bool& token )
 
 void CodeGenVisitor::visit( ast::Array& token )
 {
+	cout << "Array" << endl;
+	int nb_el = 0;
+
+	if(!token.empty_items())
+	{
+		visit_children(token);
+		nb_el = token.get_items().nb_expressions();
+	}
+
 
 }
 
 
 void CodeGenVisitor::visit( ast::List& token )
 {
+	cout << "List" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( MakeSequenceList& token )
 {
+	cout << "MakeSequenceList" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( MakeSequenceArray& token )
 {
+	cout << "MakeSequenceArray" << endl;
+
 
 }
 
@@ -1296,6 +1354,7 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 
 void CodeGenVisitor::visit( DeclFunc& token )
 {
+	cout << "DeclFunc" << endl;
 	int index = 0;
 
 	// Visit 1st child : Identifier
@@ -1305,41 +1364,30 @@ void CodeGenVisitor::visit( DeclFunc& token )
 	Variable& id_var = dynamic_cast<Variable&>(id);
 
 	// Create new FunctionBlock
-	string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), id_var.get_name());
+	string declared_function_name = id_var.get_name(),
+			func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), declared_function_name),
+			llvm_func_name = get_llvm_function_name(declared_function_name, built_in.count(declared_function_name));
 
 	//typegen::Function* function_type = ;
+	vector<string> params;
 
-	FunctionBlock function(builder.get_variable_manager(), id_var.get_name(), shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type()) );
-	pop();
-
-	// Visit 2nd child (ParameterList: visit all children and add argument for each)
 	if(token.contains_params())
-	{
-		++index;
-		function_table.move_to_scope(token.get_scope().get_scope_id());
-		token.get_children().at(index)->accept(*this);
-		function_table.move_to_parent_scope();
-		ParamList* paramlist = dynamic_cast<ParamList*>(token.get_children().at(index));
+		token.get_param_list().get_parameters_name(params);
 
-		vector<Value*> params = get_n_return_values(paramlist->nb_params());
-		for(auto param = params.rbegin() ; param != params.rend() ; ++param)
-		{
-			Variable* param_var = dynamic_cast<Variable*>(*param);
-			function.add_argument(shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_arg(distance(params.rbegin(), param))), param_var->get_name());
-		}
+	FunctionBlock function(builder.get_variable_manager(),
+						   llvm_func_name,
+						   dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_name_table)),
+						   params);
 
-		pop_n_return_values(paramlist->nb_params());
-
-	}
+	pop();
 
 	// Change "cursor" of the visitor to the new function
 	string current_function = curr_func_name;
-	curr_func_name = function.get_name();
-	curr_module.add_function(function);
+	curr_func_name = declared_function_name;
+	curr_module.add_function(declared_function_name, function);
 
 	// Fullfill it through the visit of the children
-	++index;
-	token.get_children().at(index)->accept(*this);
+	token.get_scope().accept(*this);
 
 	// Get back to previous block
 	curr_func_name = current_function;
@@ -1348,12 +1396,14 @@ void CodeGenVisitor::visit( DeclFunc& token )
 
 void CodeGenVisitor::visit( DeclVars& token )
 {
+	cout << "DeclVars" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( DeclVar& token )
 {
+	cout << "DeclVar" << endl;
 	visit_children(token);
 
 	if(token.contains_expr())
@@ -1410,12 +1460,14 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 void CodeGenVisitor::visit( ParamList& token )
 {
+	cout << "ParamList" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Param& token )
 {
+	cout << "Param" << endl;
 	// Only visit the first child
 	token.get_children().at(0)->accept(*this);
 }
@@ -1428,6 +1480,7 @@ void CodeGenVisitor::visit( Param& token )
 
 void CodeGenVisitor::visit( Expression& token )
 {
+	cout << "Expression" << endl;
 	visit_children(token);
 }
 
@@ -1440,12 +1493,14 @@ void CodeGenVisitor::visit( ast::ExpressionList& )
 
 void CodeGenVisitor::visit( ModifyingExpression& token )
 {
+	cout << "ModifyingExpression" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( DatastructureAccess& token )
 {
+	cout << "DatastructureAccess" << endl;
 
 }
 
@@ -1457,19 +1512,17 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 
 void CodeGenVisitor::visit( FuncCall& token )
 {
+	cout << "FuncCall" << endl;
 	// Visit children :
 	// - 1st child : IDENTIFIER
 	// - 2nd child : Argument list -> get ID's
 	visit_children(token);
 
-	for(auto it = return_vector.begin() ; it != return_vector.end() ; ++it)
-		cout << (*it)->str_value() << endl;
-
 	int nb_args = 0;
 	if(token.contains_arglist())
 		nb_args = token.get_arg_list().nb_args();
 
-	vector<Value*> args = get_n_return_values(nb_args);
+	vector<shared_ptr<Value>> args = get_n_return_values(nb_args);
 
 	// Function name
 	Value& id = get_return_value(args.size());
@@ -1477,9 +1530,9 @@ void CodeGenVisitor::visit( FuncCall& token )
 	string func_name = id_var.get_name();
 
 	// Return type
-	string func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), func_name);
+	string func_name_table = type_table.unique_id_name(function_table.get_symbol_scope_id(func_name), func_name);
 
-	shared_ptr<typegen::Type> ret_type = shared_ptr<typegen::Type>(dynamic_cast<typegen::Function*>(type_table.get_type(func_name_table).get())->get_ret_type());
+	shared_ptr<typegen::Function> func_type = dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_name_table));
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
@@ -1487,52 +1540,55 @@ void CodeGenVisitor::visit( FuncCall& token )
 	vector<shared_ptr<Value>> args_value;
 	for(auto arg = args.rbegin() ; arg != args.rend() ; ++arg)
 	{
-		Value* arg_ptr = *arg;
+		shared_ptr<Value> arg_ptr = *arg;
 		if(arg_ptr->is_constant())
-			args_value.push_back(shared_ptr<Value>(arg_ptr));
+			args_value.push_back(arg_ptr);
 		else if(arg_ptr->is_variable())
 		{
-			Variable* var = dynamic_cast<Variable*>(arg_ptr);
+			shared_ptr<Variable> var = dynamic_pointer_cast<Variable>(arg_ptr);
 			args_value.push_back(shared_ptr<Value>(block.create_load(*var)));
 		}
 	}
 
-	codegen::Function function(ret_type, func_name, args_value);
+	string llvm_func_name = get_llvm_function_name(func_name, built_in.count(func_name));
+	codegen::Function function(func_type->get_ret_type(), llvm_func_name, args_value);
 	Variable* add = dynamic_cast<Variable*>(block.create_func_call(function));
 
-
 	pop_n_return_values(nb_args+1);
-
 
 	// Create the pointer that will contain the result
 	if(add == nullptr)
 		return;
+	Variable* var = new Variable(builder.get_variable_manager(),
+								 builder.get_variable_manager().insert_variable(add->get_name()),
+								 add->get_type(), true);
 
-	unique_ptr<Variable> container = unique_ptr<Variable>(new Variable(builder.get_variable_manager(), builder.get_variable_manager().insert_variable(add->get_name()), add->get_type(), true));
-
+	unique_ptr<Variable> container = unique_ptr<Variable>(var);
 	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
 
 	Variable* after_store_var = dynamic_cast<Variable*>(block.create_store(*add, *ptr));
 
 	add_return(after_store_var);
-
 }
 
 
 void CodeGenVisitor::visit( ArgList& token )
 {
+	cout << "ArgList" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Argument& token )
 {
+	cout << "Argument" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( SoyFunc& token )
 {
+	cout << "SoyFunc" << endl;
 
 }
 
@@ -1544,12 +1600,14 @@ void CodeGenVisitor::visit( SoyFunc& token )
 
 void CodeGenVisitor::visit( Program& token )
 {
+	cout << "Program" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Scope& token )
 {
+	cout << "Scope" << endl;
 	size_t id_scope = token.get_scope_id();
 
 	function_table.move_to_scope(id_scope);
@@ -1574,14 +1632,17 @@ void CodeGenVisitor::visit( Scope& token )
 
 void CodeGenVisitor::visit( Statement& token )
 {
+	cout << "Statement" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Return& token )
 {
+	cout << "Return" << endl;
+	cout << "func : " << curr_func_name << endl;
 	FunctionBlock& function = curr_module.get_function(curr_func_name);
-
+	cerr << "ff" << endl;
 	if(token.has_child())
 	{
 		// Child is Expression
@@ -1593,7 +1654,7 @@ void CodeGenVisitor::visit( Return& token )
 			Variable& exp_var = dynamic_cast<Variable&>(exp);
 			if(exp_var.is_pointer())
 			{
-				unique_ptr<Value> return_value = unique_ptr<Value>(function.get_last_block().create_load(exp_var));
+				shared_ptr<Value> return_value(function.get_last_block().create_load(exp_var));
 				function.set_return(return_value->str_value());
 			}
 			else
@@ -1611,6 +1672,7 @@ void CodeGenVisitor::visit( Return& token )
 
 void CodeGenVisitor::visit( Menu& token )
 {
+	cout << "Menu" << endl;
 
 }
 
@@ -1621,46 +1683,54 @@ void CodeGenVisitor::visit( ast::MenuBody& )
 
 void CodeGenVisitor::visit( MenuDef& token )
 {
+	cout << "MenuDef" << endl;
 
 }
 
 void CodeGenVisitor::visit( MenuCase& token )
 {
+	cout << "MenuCase" << endl;
 
 }
 
 void CodeGenVisitor::visit( Roll& token )
 {
+	cout << "Roll" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Foreach& token )
 {
+	cout << "Foreach" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( For& token )
 {
+	cout << "For" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( ForInitializer& token )
 {
+	cout << "ForInitializer" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( ForUpdate& token )
 {
+	cout << "ForUpdate" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Conditional& token )
 {
+	cout << "Conditional" << endl;
 	token.get_if().accept(*this);
 
 
@@ -1676,6 +1746,7 @@ void CodeGenVisitor::visit( Conditional& token )
 
 void CodeGenVisitor::visit( Elseif& token )
 {
+	cout << "Elseif" << endl;
 	// In current block, add operations to compute the condition and the branch
 	token.get_expression().accept(*this);
 	Value& result_comp = top(); // Return the variable where the result is stored
@@ -1704,6 +1775,7 @@ void CodeGenVisitor::visit( Elseif& token )
 
 void CodeGenVisitor::visit( ast::If& token )
 {
+	cout << "If" << endl;
 	// In current block, add operations to compute the condition and the branch
 	token.get_expression().accept(*this);
 	Value& result_comp = top(); // Return the variable where the result is stored
@@ -1735,6 +1807,7 @@ void CodeGenVisitor::visit( ast::If& token )
 
 void CodeGenVisitor::visit( ast::Else& token )
 {
+	cout << "Else" << endl;
 	token.get_scope().accept(*this);
 
 	curr_module.get_function(curr_func_name).get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
@@ -1797,12 +1870,10 @@ void CodeGenVisitor::remove_return_value(int n)
 	return_vector.erase(return_vector.begin()+return_vector.size()-1-n);
 }
 
-vector<Value*> CodeGenVisitor::get_n_return_values(int n)
+vector<shared_ptr<Value>> CodeGenVisitor::get_n_return_values(int n)
 {
-	vector<Value*> values;
-	for(int i = 0 ; i < n ; ++i)
-		values.push_back(return_vector.at(return_vector.size()-1-i).get());
-
+	vector<shared_ptr<Value>> values;
+	copy(next(return_vector.begin(), return_vector.size() - n), return_vector.end(), back_inserter(values));
 	return values;
 }
 
@@ -1822,4 +1893,14 @@ bool CodeGenVisitor::is_vector_empty() const
 int CodeGenVisitor::get_vector_size() const
 {
 	return return_vector.size();
+}
+
+string CodeGenVisitor::get_llvm_function_name(const string& spp_name, bool built_in = false)
+{
+	if(!built_in)
+		return "." + spp_name;
+
+	string new_name(spp_name);
+	replace_if(new_name.begin(), new_name.end(), [](char c) { return c == '-'; }, '_');
+	return new_name;
 }

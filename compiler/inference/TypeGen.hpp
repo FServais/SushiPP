@@ -100,11 +100,13 @@ namespace typegen
 	class Function : public Type
 	{
 	public:
+		Function(std::shared_ptr<Type> ret_type);
 		Function(std::shared_ptr<Type> ret_type, std::vector<std::shared_ptr<Type>> arg_type);
 		virtual inference::ShallowType get_type(){return inference::FUNCTION;};
 		int nb_param(){return args_types.size();};
 		std::shared_ptr<Type> get_ret_type(){return return_type;};
-		std::shared_ptr<Type> get_arg(size_t );
+		std::shared_ptr<Type> get_arg(size_t);
+		const std::vector<std::shared_ptr<Type>> get_params() const { return args_types; }
 		virtual std::string to_str();
 
 	private:
