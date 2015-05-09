@@ -1094,6 +1094,25 @@ size_t list_remove_element_string(struct list_table* table, size_t lid, size_t p
 	return casted_value;
 }
 
+
+bool list_empty_int(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_bool(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_float(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_string(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_char(struct list_table* table, size_t id) { return list_empty(table, id); }
+
+void list_clear_int(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_bool(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_float(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_string(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_char(struct list_table* table, size_t id) { list_clear(table, id); }
+
+size_t list_size_int(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_bool(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_float(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_string(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_char(struct list_table* table, size_t id) { return list_size(table, id); }
+
 // void print_list_table(const struct list_table* table)
 // {
 // 	const struct list_descriptor* current = table->head;

@@ -120,7 +120,7 @@ static struct array_descriptor* new_array_descriptor(size_t id, size_t size, siz
 	// allocate the array
 	desc->array_ptr = size == 0 ? NULL : malloc(size * num_bytes(type));
 
-	if(!desc->array_ptr)
+	if(size != 0 && !desc->array_ptr)
 	{
 		fprintf(stderr, "Memory allocation failure in `new_array_descriptor`\n");
 		exit(EXIT_FAILURE);
@@ -720,6 +720,30 @@ void delete_array_table(struct array_table* table)
 {
 	free(table);
 }
+
+bool array_empty(const struct array_table* table, size_t id)
+{
+	return array_size(table, id) == 0;
+}
+
+bool array_empty_int(const struct array_table* table, size_t id) { return array_empty(table, id); }
+bool array_empty_float(const struct array_table* table, size_t id) { return array_empty(table, id); }
+bool array_empty_double(const struct array_table* table, size_t id) { return array_empty(table, id); }
+bool array_empty_char(const struct array_table* table, size_t id) { return array_empty(table, id); }
+bool array_empty_string(const struct array_table* table, size_t id) { return array_empty(table, id); }
+
+size_t array_size_int(const struct array_table* table, size_t id) { return array_size(table, id); }
+size_t array_size_float(const struct array_table* table, size_t id) { return array_size(table, id); }
+size_t array_size_double(const struct array_table* table, size_t id) { return array_size(table, id); }
+size_t array_size_char(const struct array_table* table, size_t id) { return array_size(table, id); }
+size_t array_size_string(const struct array_table* table, size_t id) { return array_size(table, id); }
+
+void array_clear_int(const struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_float(const struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_double(const struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_char(const struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_string(const struct array_table* table, size_t id) { array_clear(table, id); }
+
 
 // void print_array_table(const struct array_table* table)
 // {

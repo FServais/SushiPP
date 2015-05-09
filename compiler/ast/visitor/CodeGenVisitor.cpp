@@ -52,11 +52,11 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("list_allocate_string", Module::make_declare("list_allocate_string", "i64", { "%struct.list_table*" }));
 
 // add declaration of array allocation function
-	curr_module.add_declaration("array_allocate_int", Module::make_declare("array_allocate_int", "i64", { "%struct.array_table*" }));
-	curr_module.add_declaration("array_allocate_float", Module::make_declare("array_allocate_float", "i64", { "%struct.array_table*" }));
-	curr_module.add_declaration("array_allocate_bool", Module::make_declare("array_allocate_bool", "i64", { "%struct.array_table*" }));
-	curr_module.add_declaration("array_allocate_char", Module::make_declare("array_allocate_char", "i64", { "%struct.array_table*" }));
-	curr_module.add_declaration("array_allocate_string", Module::make_declare("array_allocate_string", "i64", { "%struct.array_table*" }));
+	curr_module.add_declaration("array_allocate_int", Module::make_declare("array_allocate_int", "i64", { "%struct.array_table*, i64, i64*" }));
+	curr_module.add_declaration("array_allocate_float", Module::make_declare("array_allocate_float", "i64", { "%struct.array_table*, i64, float*" }));
+	curr_module.add_declaration("array_allocate_bool", Module::make_declare("array_allocate_bool", "i64", { "%struct.array_table*, i64, i1*" }));
+	curr_module.add_declaration("array_allocate_char", Module::make_declare("array_allocate_char", "i64", { "%struct.array_table*, i64, i8*" }));
+	curr_module.add_declaration("array_allocate_string", Module::make_declare("array_allocate_string", "i64", { "%struct.array_table*, i64, i64*" }));
 
 	// add main function 
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));

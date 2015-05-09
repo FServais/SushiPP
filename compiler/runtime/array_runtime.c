@@ -120,7 +120,7 @@ static struct array_descriptor* new_array_descriptor(size_t id, size_t size, siz
 	// allocate the array
 	desc->array_ptr = size == 0 ? NULL : malloc(size * num_bytes(type));
 
-	if(!desc->array_ptr)
+	if(size != 0 && !desc->array_ptr)
 	{
 		fprintf(stderr, "Memory allocation failure in `new_array_descriptor`\n");
 		exit(EXIT_FAILURE);
