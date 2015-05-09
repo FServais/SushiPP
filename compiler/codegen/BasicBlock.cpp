@@ -4,6 +4,7 @@
 #include "BasicBlock.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
+#include "Constant.hpp"
 
 using namespace std;
 using namespace codegen;
@@ -13,7 +14,7 @@ BasicBlock::BasicBlock(VariableManager& vm, string _label) : var_manager(vm), la
 
 }
 
-void BasicBlock::dump(std::ostream& out) const
+void BasicBlock::dump(ostream& out) const
 {
     out << label << ':' << endl;
     for(auto line = lines.begin() ; line != lines.end() ; ++line )
@@ -247,7 +248,7 @@ Value* BasicBlock::create_op_cmp_eq(Value& lhs, Value& rhs)
 Value* BasicBlock::create_op_cmp_neq(Value& lhs, Value& rhs)
 {
     Variable* ret = new Variable(var_manager, "tmp_ne", shared_ptr<typegen::Bool>(new typegen::Bool()));
-  
+
     string function = lhs.get_type()->is_float() ? "fcmp une " : "icmp ne ";
     lines.push_back(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
@@ -279,13 +280,16 @@ Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
 {
-    Variable* ret = new Variable(var_manager, "tmp_pref_incr", value.get_type());
-
-    string function = value.get_type()->is_float() ? "fadd " : "add ",
-           op2 = value.get_type()->is_float() ? "1.0" : "1";
-    lines.push_back(make_binop(function + value.str_type(), value.str_value(), op2, ret->str_value()));
-
-    return ret;
+    if(value.get_type()->is_float())
+    {
+        ConstantFloat one(1.0);
+        return create_op_plus(value, one);
+    }
+    else
+    {
+        ConstantInt one(1);
+        return create_op_plus(value, one);
+    }
 }
 
 Value* BasicBlock::create_op_pref_decr(Value& value)
@@ -418,7 +422,7 @@ void BasicBlock::create_branch(string label)
     add_line(ss.str());
 }
 
-void BasicBlock::create_cond_branch(Value& cond, std::string label_true, std::string label_false)
+void BasicBlock::create_cond_branch(Value& cond, string label_true, string label_false)
 {
     Variable& cond_var = dynamic_cast<Variable&>(cond);
 
@@ -451,36 +455,36 @@ Value* BasicBlock::create_func_call(Value& value)
 }
 
 
-void BasicBlock::add_line(std::string line)
+void BasicBlock::add_line(string line)
 {
     lines.push_back(line);
 }
 
-std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2)
+string BasicBlock::make_binop(const string& func, const string& op1, const string& op2)
 {
     stringstream ss;
     ss << func << " " << op1 << ", " << op2;
     return ss.str();
 }
 
-std::string BasicBlock::make_binop(const std::string& func, const std::string& op1, const std::string& op2, const std::string& ret)
+string BasicBlock::make_binop(const string& func, const string& op1, const string& op2, const string& ret)
 {
     stringstream ss;
     ss << ret << " = " << make_binop(func, op1, op2);
     return ss.str();
 }
 
-std::string BasicBlock::add_expression(const std::string& expr, const std::string& ret)
+Variable* BasicBlock::add_expression(const string& expr, const string& ret, shared_ptr<typegen::Type> type)
 {   
-    string variable(var_manager.insert_variable(ret));
-    lines.push_back("%" + variable + " = " + expr);
+    Variable* ret_var = new Variable(var_manager, ret, type);
+    lines.push_back(ret_var->str_value() + " = " + expr);
     return variable;
 }
 
-std::string BasicBlock::add_expression(const std::string& expr)
+Variable* BasicBlock::add_expression(const string& expr)
 {
     lines.push_back(expr);
-    return "";
+    return nullptr;
 }
 
 
