@@ -105,6 +105,17 @@ vector<string> Function::str_arguments() const
     return str_args;
 }
 
+vector<string> Function::str_arguments_sig() const
+{
+    vector<string> str_args;
+    transform(args.begin(), args.end(), back_inserter(str_args),
+              [](shared_ptr<Value> arg)
+              {
+                return arg->str_type();
+              });
+    return str_args;
+}
+
 string Function::get_function_call()
 {
     stringstream ss;
