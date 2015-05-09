@@ -78,15 +78,15 @@ void Module::add_declaration(const string& function_name, FunctionBlock& f_block
     switch(runtime)
     {
     case settings::LIST_RUNTIME:
-        arg_sigs.insert(arg_sigs.begin(), list_table_type); break;
+        arg_sigs.insert(arg_sigs.begin(), "%" + list_table_type + "*"); break;
     case settings::ARRAY_RUNTIME:
-        arg_sigs.insert(arg_sigs.begin(), array_table_type); break;
+        arg_sigs.insert(arg_sigs.begin(), "%" + array_table_type + "*"); break;
     default: break;
     }
 
     string declare = make_declare(function_name, 
                                   f_block.str_return_signature(), 
-                                  f_block.arguments_signature());
+                                  arg_sigs);
     declarations[function_name] = make_tuple(declare, false);
 }
 

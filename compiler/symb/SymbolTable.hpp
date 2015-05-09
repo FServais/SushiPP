@@ -113,6 +113,11 @@ namespace symb
 		 */
 		S& get_symbol(size_t scope_id, size_t index);
 
+		/**
+		 * @brief Return the scope id of the current table
+		 */
+		size_t curr_scope_id() const;
+
 	private:
 		/** 
 		 * root_scope : the root scope object
@@ -297,6 +302,12 @@ namespace symb
 	void SymbolTable<S>::move_to_root_scope()
 	{
 		current_scope = &root_scope;
+	}
+
+	template <class S>
+	size_t SymbolTable<S>::curr_scope_id() const
+	{
+		return current_scope->get_id();
 	}
 }
 
