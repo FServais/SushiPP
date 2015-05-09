@@ -1,6 +1,7 @@
 #include "CodeGenVisitor.hpp"
 
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 using namespace visitor;
@@ -43,7 +44,7 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.function_is_used("create_array_table");
 	curr_module.function_is_used("create_list_table");
 
-	// add main function 
+	// add main function
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);
     function.set_return("0");
@@ -455,7 +456,7 @@ void CodeGenVisitor::visit( Op_Exponentiation& token )
 
 	add_return(after_store_var);
 
-	// signal that the exponential function is used 
+	// signal that the exponential function is used
 	curr_module.function_is_used("pow-int");
 	curr_module.function_is_used("pow-float");
 }
@@ -1286,8 +1287,8 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 	// Value* after_store = block.create_store(*result, operand);
 
 	// // return the non incremented value
-	// Variable* container = new Variable(builder.get_variable_manager(), 
-	// 									builder.get_variable_manager().insert_variable(operand->get_name()), 
+	// Variable* container = new Variable(builder.get_variable_manager(),
+	// 									builder.get_variable_manager().insert_variable(operand->get_name()),
 	// 									result->get_type(), true);
 
 	// unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
@@ -1369,7 +1370,7 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1380,7 +1381,7 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 		result = dynamic_cast<Variable*>(block.create_op_plus(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1400,7 +1401,7 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1411,7 +1412,7 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 		result = dynamic_cast<Variable*>(block.create_op_minus(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1431,7 +1432,7 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1442,7 +1443,7 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 		result = dynamic_cast<Variable*>(block.create_op_mult(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1462,7 +1463,7 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1473,7 +1474,7 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 		result = dynamic_cast<Variable*>(block.create_op_div(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1493,7 +1494,7 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1504,7 +1505,7 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 		result = dynamic_cast<Variable*>(block.create_op_expon(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1524,7 +1525,7 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1535,7 +1536,7 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 		result = dynamic_cast<Variable*>(block.create_op_mod(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1555,7 +1556,7 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1566,7 +1567,7 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_and(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1586,7 +1587,7 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1597,7 +1598,7 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_or(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1617,7 +1618,7 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1628,7 +1629,7 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1648,7 +1649,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 
 	// the left hand side is a variable
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
-	
+
 	Variable* result;
     if(rhs.is_variable())
     {
@@ -1659,7 +1660,7 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 		result = dynamic_cast<Variable*>(block.create_op_str_conc(*load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
-	
+
 	pop();
 	pop();
 
@@ -1798,54 +1799,48 @@ void CodeGenVisitor::visit( DeclVar& token )
 	cout << "DeclVar" << endl;
 	visit_children(token);
 
-	if(token.contains_expr())
+	// Expression
+	Value& expr = get_return_value(0);
+
+	// IDENTIFIER
+	Value& id = get_return_value(1);
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// Allocate in memory
+	unique_ptr<Value> lhs = unique_ptr<Value>(block.create_decl_var(id));
+	//Variable* lhs_ptr = dynamic_cast<Variable*>(lhs.get());
+
+	if(expr.is_variable())
 	{
-		// Expression
-		Value& expr = get_return_value(0);
+		// Get the value
+		Variable& expr_cast = dynamic_cast<Variable&>(expr);
+		unique_ptr<Value> expr_value = unique_ptr<Value>(block.create_load(expr_cast));
 
-		// IDENTIFIER
-		Value& id = get_return_value(1);
-
-		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-
-		// Allocate in memory
-		unique_ptr<Value> lhs = unique_ptr<Value>(block.create_decl_var(id));
-		//Variable* lhs_ptr = dynamic_cast<Variable*>(lhs.get());
-
-		if(expr.is_variable())
+		// If it is an array, we have to update the reference counter
+		if(expr_cast.get_type()->is_array())
 		{
-			// Get the value
-			Variable& expr_cast = dynamic_cast<Variable&>(expr);
-			unique_ptr<Value> expr_value = unique_ptr<Value>(block.create_load(expr_cast));
+			block.add_expression("%raw_load_tmp = load %struct.list_table** @..array_table");
 
+			stringstream line;
+			line << "call void (%struct.array_table*, i64)* @array_add_reference";
+			block.add_expression("call void (%struct.list_table*, i64, i64)* @array_add_reference(%struct.list_table* %raw_load_tmp, i64 %id, i64 1)");
+		}
+		else
+		{
 			// Store temp variable in location of the pointer
 			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(*expr_value, *lhs));
 		}
-		else
-			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
-
-
-
-		pop();
-		pop();
-
-		//add_return(store);
 	}
 	else
-	{
-		// Contains only an IDENTIFIER -> Receive a 'Variable'
-		Value& id = top();
+		unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
 
-		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-		block.create_decl_var(id);
 
-		Variable& var = dynamic_cast<Variable&>(id);
-		//Variable* id_ptr = new Variable(var);
 
-		pop();
+	pop();
+	pop();
 
-		//add_return(id_ptr);
-	}
+	//add_return(store);
 
 }
 
@@ -1921,7 +1916,7 @@ void CodeGenVisitor::visit( FuncCall& token )
 	Variable& id_var = dynamic_cast<Variable&>(id);
 	string func_name = id_var.get_name();
 
-	// the fonction needs to be declared 
+	// the fonction needs to be declared
 	curr_module.function_is_used(func_name);
 
 	// Return type
