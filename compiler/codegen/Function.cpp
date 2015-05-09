@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include "Function.hpp"
 #include "Constant.hpp"
@@ -93,6 +94,17 @@ string Function::get_signature()
     return ss.str();
 }
 
+vector<string> Function::str_arguments() const
+{
+    vector<string> str_args;
+    transform(args.begin(), args.end(), back_inserter(str_args),
+              [](shared_ptr<Value> arg)
+              {
+                return arg->str_type() + " " + arg->str_value();
+              });
+    return str_args;
+}
+
 string Function::get_function_call()
 {
     stringstream ss;
@@ -113,3 +125,4 @@ int Function::nb_args() const
 {
     return args.size();
 }
+

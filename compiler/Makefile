@@ -233,7 +233,7 @@ $(PATH_OBJS)TypeGen.o: $(PATH_INFERENCE)TypeGen.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Code Generation #
-$(PATH_OBJS)BasicBlock.o: $(PATH_CODEGEN)BasicBlock.cpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)Value.hpp
+$(PATH_OBJS)BasicBlock.o: $(PATH_CODEGEN)BasicBlock.cpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)Value.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)Builder.o: $(PATH_CODEGEN)Builder.cpp $(PATH_CODEGEN)Builder.hpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)VariableManager.hpp
