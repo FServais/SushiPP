@@ -6,6 +6,7 @@
 
 #include "Value.hpp"
 #include "VariableManager.hpp"
+#include "Variable.hpp"
 
 namespace codegen
 {
@@ -67,7 +68,14 @@ namespace codegen
         // store Value* in variable
         Value* create_store(Value&, Value&);
 
+        // load the value
         Value* create_load(Value&);
+        /**
+         * @param var : type and variable name
+         * @retval ret
+         * ret = load var
+         */
+        std::string create_load_raw(const std::string&);
 
         // getelementptr (Variable)
         Value* create_get_pointer(Value&);
@@ -94,6 +102,12 @@ namespace codegen
          */
         Variable* add_expression(const std::string&, const std::string&, std::shared_ptr<typegen::Type>);
         Variable* add_expression(const std::string&);
+        /**
+         * @brief Assign a llvm expression 
+         * @param const std::string& expr The LLVM expression
+         * @param const std::string& glob_var The global variable name
+         */
+        void add_assign_global(const std::string& , const std::string&);
 
     private:
         std::string label;
