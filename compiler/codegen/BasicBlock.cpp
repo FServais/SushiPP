@@ -362,6 +362,7 @@ Value* BasicBlock::create_assign_value(Value& lhs, Value& rhs)
     return val_ptr;
 }
 
+
 Value* BasicBlock::create_store(Value& value, Value& variable)
 {
     //Variable& value_cast = dynamic_cast<Variable&>(value);

@@ -26,6 +26,11 @@ void delete_list_table(struct list_table*);
  * @retval size_t The size of the list
  */
 size_t list_size(struct list_table*, size_t);
+size_t list_size_int(struct list_table*, size_t); // alias for list_size
+size_t list_size_bool(struct list_table*, size_t); // alias for list_size
+size_t list_size_float(struct list_table*, size_t); // alias for list_size
+size_t list_size_string(struct list_table*, size_t); // alias for list_size
+size_t list_size_char(struct list_table*, size_t); // alias for list_size
 
 /**
  * @brief Check wether the given list is empty
@@ -34,6 +39,11 @@ size_t list_size(struct list_table*, size_t);
  * @retval bool True if the list is empty, false otherwise
  */
 bool list_empty(struct list_table*, size_t);
+bool list_empty_int(struct list_table*, size_t); // alias
+bool list_empty_bool(struct list_table*, size_t); // alias
+bool list_empty_float(struct list_table*, size_t); // alias
+bool list_empty_string(struct list_table*, size_t); // alias
+bool list_empty_char(struct list_table*, size_t); // alias
 
 /**
  * @brief Clear the list 
@@ -41,6 +51,11 @@ bool list_empty(struct list_table*, size_t);
  * @param size_t lid The list id 
  */
 void list_clear(struct list_table*, size_t);
+void list_clear_int(struct list_table*, size_t); // alias
+void list_clear_bool(struct list_table*, size_t); // alias
+void list_clear_float(struct list_table*, size_t); // alias
+void list_clear_string(struct list_table*, size_t); // alias
+void list_clear_char(struct list_table*, size_t); // alias
 
 /**
  * @brief Increment the reference count of the given list
@@ -185,6 +200,6 @@ char list_remove_element_char(struct list_table*, size_t, size_t);
 size_t list_remove_element_string(struct list_table*, size_t, size_t);
 
 
-void print_list_table(const struct list_table*);
+//void print_list_table(const struct list_table*);
 
 #endif // LIST_RUNTIME_H_DEFINED

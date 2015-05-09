@@ -1,5 +1,5 @@
 #ifndef BUILT_IN_FUNCTIONS_HPP_DEFINED
-#define BUILT_IN_FUNCTIONS_HPP_DEFINED
+#define BUILT_IN_FUNCTIONS_HPP_DEFINED 
 
 #include <tuple>
 #include <unordered_map>
@@ -10,7 +10,6 @@
 
 namespace settings
 {
-
 	/**
 	 * @brief Different runtime librairies
 	 */
@@ -18,28 +17,28 @@ namespace settings
 
 	/**
 	 * Type representing the information of a built in function
-	 * 1st element : name of the function
+	 * 1st element : name of the function 
 	 * 2nd element : names of the parameters
-	 * 2nd element : types of the parameters
-	 * 3rd element : return type
-	 * 4th element : type of the datastructure (set to NO_TYPE if not relevant)
-	 * 5th element : Runtime
+	 * 3nd element : types of the parameters
+	 * 4rd element : return type
+	 * 5th element : type of the datastructure (set to NO_TYPE if not relevant)
+	 * 6th element : runtime in which is located the function
 	 */
-	typedef std::tuple<std::string,
-					   std::vector<std::string>,
-					   std::vector<inference::ShallowType>,
+	typedef std::tuple<std::string, 
+					   std::vector<std::string>, 
+					   std::vector<inference::ShallowType>, 
+					   inference::ShallowType, 
 					   inference::ShallowType,
-					   inference::ShallowType,
-					   Runtime>
+					   Runtime> 
 			BuiltInFunctionInfo;
-
+	  
 	/**
 	 * @class BuiltInFunctions
 	 * @brief Map datastructure containing the information about the S++ built in functions
 	 */
 	class BuiltInFunctions : public std::unordered_map<std::string, BuiltInFunctionInfo>
 	{
-	public:
+	public: 
 		/**
 		 * @brief Construct BuiltInFunctions object and fill it with the Spp built in functions information
 		 */
@@ -55,10 +54,10 @@ namespace settings
 		 * @param inference::ShallowType ds_type Subtype of the datastructure (optional, default: NO_TYPE)
 		 * @param Runtime runtime The runtime in which lies the function
 		 */
-		void insert_function(const std::string&,
-							 const std::vector<std::string>&,
-							 const std::vector<inference::ShallowType>&,
-							 inference::ShallowType,
+		void insert_function(const std::string&, 
+							 const std::vector<std::string>&, 
+							 const std::vector<inference::ShallowType>&, 
+							 inference::ShallowType, 
 							 inference::ShallowType,
 							 Runtime);
 	};
