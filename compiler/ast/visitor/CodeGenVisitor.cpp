@@ -51,6 +51,13 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("list_allocate_char", Module::make_declare("list_allocate_char", "i64", { "%struct.list_table*" }));
 	curr_module.add_declaration("list_allocate_string", Module::make_declare("list_allocate_string", "i64", { "%struct.list_table*" }));
 
+// add declaration of array allocation function
+	curr_module.add_declaration("array_allocate_int", Module::make_declare("array_allocate_int", "i64", { "%struct.array_table*" }));
+	curr_module.add_declaration("array_allocate_float", Module::make_declare("array_allocate_float", "i64", { "%struct.array_table*" }));
+	curr_module.add_declaration("array_allocate_bool", Module::make_declare("array_allocate_bool", "i64", { "%struct.array_table*" }));
+	curr_module.add_declaration("array_allocate_char", Module::make_declare("array_allocate_char", "i64", { "%struct.array_table*" }));
+	curr_module.add_declaration("array_allocate_string", Module::make_declare("array_allocate_string", "i64", { "%struct.array_table*" }));
+
 	// add main function 
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);
@@ -1346,8 +1353,7 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 {
 	cout << "Op_Assignment" << endl;
 	visit_children(token);
-	Value& rhs = get_return_value(0);
-	Value& lhs = get_return_value(1);
+
 
 	// Get 2 arguments
 	Value& rhs = get_return_value(0);
@@ -1731,16 +1737,82 @@ void CodeGenVisitor::visit( ast::Array& token )
 {
 	cout << "Array" << endl;
 	int nb_el = 0;
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 	if(!token.empty_items())
 	{
 		visit_children(token);
-		nb_el = token.get_items().nb_expressions();
+		ExpressionList& expr_array = dynamic_cast<ExpressionList&>(token.get_items());
+		nb_el = expr_array.nb_expressions();	
+
 
 		vector<shared_ptr<Value>> array_elements = get_n_return_values(nb_el);
 		std::string ctype, llvmtype; // the c type and llvm of the array elements
 		shared_ptr<typegen::Type> array_subtype(array_elements[0]->get_type()),
-								  list_type(new typegen::List(array_subtype));
+								  array_type(new typegen::Array(array_subtype));
+
+		switch(array_subtype->get_type())
+		{
+		case inference::FLOAT: 
+			ctype = "float";
+			llvmtype = "float"; 
+			break;
+		case inference::CHAR: 
+			ctype = "char";
+			llvmtype = "i8"; 
+			break;
+		case inference::BOOL: 
+			ctype = "bool";
+			llvmtype = "i1"; 
+			break;
+		case inference::INT: 
+			ctype = "int";
+			llvmtype = "i64"; 
+			break;
+		default: 
+			ctype = "string";
+			llvmtype = "i64"; 
+			break;
+		}
+
+		// load the address of the array table
+		string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
+				alloc_func = "array_allocate_" + ctype,
+				spp_push_func = "array-push-" + ctype,
+				push_func = Module::get_llvm_function_name(spp_push_func, true),
+				alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, i64* null)";
+
+		// notify the module that the allocate function is used
+		curr_module.function_is_used(alloc_func);
+		curr_module.function_is_used(spp_push_func);
+		
+		// create the array
+		unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_type));
+
+		// add the elements in the array
+		for(auto current_value : array_elements)
+		{
+			shared_ptr<Value> element_value; // the value to pass to the push function call
+
+			if(current_value->is_variable())
+				element_value = shared_ptr<Value>(block.create_load(*current_value));
+			else 
+				element_value = current_value;
+
+			string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
+							    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() + 
+							    ", " + llvmtype + " " + element_value->str_value() + ")";
+ 			
+ 			block.add_expression(push_call);
+		}
+
+		pop_n_return_values(expr_array.nb_expressions());
+
+		// store the array id into memory
+		unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
+		unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+		Value* id_addr = block.create_store(*array_id, *tmp_id_addr); 
+		add_return(id_addr);
 	}
 
 
