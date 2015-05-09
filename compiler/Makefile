@@ -242,7 +242,7 @@ $(PATH_OBJS)Builder.o: $(PATH_CODEGEN)Builder.cpp $(PATH_CODEGEN)Builder.hpp $(P
 $(PATH_OBJS)FunctionBlock.o: $(PATH_CODEGEN)FunctionBlock.cpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)BasicBlock.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)Module.o: $(PATH_CODEGEN)Module.cpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_UTIL)util.hpp
+$(PATH_OBJS)Module.o: $(PATH_CODEGEN)Module.cpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)Value.o: $(PATH_CODEGEN)Value.cpp $(PATH_CODEGEN)Value.hpp

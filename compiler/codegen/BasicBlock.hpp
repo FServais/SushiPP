@@ -118,14 +118,6 @@ namespace codegen
          */
         void add_assign_global(const std::string& , const std::string&);
 
-    private:
-        std::string label;
-        std::vector<std::string> lines;
-
-        VariableManager& var_manager;
-
-        void add_line(std::string);
-
         /**
          * @brief Builds a binary operator
          * @param const std::string& func The LLVM operator as a string
@@ -136,19 +128,31 @@ namespace codegen
          *   1) op op1, op2
          *   2) ret = op op1, op2
          */
-        std::string make_binop(const std::string&, const std::string&, const std::string&);
-        std::string make_binop(const std::string&, const std::string&, const std::string&, const std::string&);
+        static std::string make_binop(const std::string&, const std::string&, const std::string&);
+        static std::string make_binop(const std::string&, const std::string&, const std::string&, const std::string&);
 
         /**
          * @brief Create a llvm function call
-         * @param const std::string& sig The signature of the function (pointer)
+         * @param const std::string& sig The signature of the function 
          * @param const std::string& name The name of the function
          * @param const std::vector<std::string>& vec The arguments' signatures
          * @param const std::string& ret The variable in which must be returnd the result (optionnal, default: not taken into account)
          * ret = call sig @name(arg_sig)
          */
-        std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&);
-        std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&, const std::string&);
+        static std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&);
+        static std::string make_call(const std::string&, const std::string&, const std::vector<std::string>&, const std::string&);
+
+        static std::string make_signature(const std::string&, const std::vector<std::string>&);
+
+    private:
+        std::string label;
+        std::vector<std::string> lines;
+
+        VariableManager& var_manager;
+
+        void add_line(std::string);
+
+ 
     };
 }
 
