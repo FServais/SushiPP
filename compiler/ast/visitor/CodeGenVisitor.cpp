@@ -59,6 +59,13 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("array_allocate_char", Module::make_declare("array_allocate_char", "i64", { "%struct.array_table*, i64, i8*" }));
 	curr_module.add_declaration("array_allocate_string", Module::make_declare("array_allocate_string", "i64", { "%struct.array_table*, i64, i64*" }));
 
+	// add datastructureaccess
+	curr_module.add_declaration("array_get_int", Module::make_declare("array_get_int" , "i64", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_float", Module::make_declare("array_get_float" , "float", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_bool", Module::make_declare("array_get_bool" , "i1", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_char", Module::make_declare("array_get_char" , "i8", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_string", Module::make_declare("array_get_string" , "i64", {"%struct.array_table*, i64, i64"}));
+
 	// add make sequence
 	curr_module.add_declaration("list_make_sequence", Module::make_declare("list_make_sequence", "i64", { "%struct.list_table*", "i64", "i64"}));
 	curr_module.add_declaration("array_make_sequence", Module::make_declare("array_make_sequence", "i64", { "%struct.array_table*", "i64", "i64"}));
@@ -2193,6 +2200,74 @@ void CodeGenVisitor::visit( ModifyingExpression& token )
 void CodeGenVisitor::visit( DatastructureAccess& token )
 {
 	cout << "DatastructureAccess" << endl;
+	visit_children(token);
+	//is a constant
+	Value& index = get_return_value(0);
+	Value& tab = get_return_value(1);
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	
+
+	Variable* tab_id = dynamic_cast<Variable*>(block.create_load(tab));
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table");
+	shared_ptr<typegen::Type> type = dynamic_cast<typegen::Array*>(tab_id->get_type().get())->get_param_type();
+
+	string ctype, llvmtype;
+	switch(type->get_type())
+	{
+		case inference::FLOAT:
+			ctype = "float";
+			llvmtype = "float";
+			break;
+		case inference::CHAR:
+			ctype = "char";
+			llvmtype = "i8";
+			break;
+		case inference::BOOL:
+			ctype = "bool";
+			llvmtype = "i1";
+			break;
+		case inference::INT:
+			ctype = "int";
+			llvmtype = "i64";
+			break;
+		default:
+			ctype = "string";
+			llvmtype = "i64";
+			break;
+	}
+	string get_val;
+	if(index.is_variable())
+	{
+		Variable* ind = dynamic_cast<Variable*>(block.create_load(index));
+		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
+			array_table + ", i64 " + tab_id->str_value() + ", i64 " + ind->str_value() + " )";
+	}
+	else 
+		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
+			array_table + ", i64 " + tab_id->str_value() + ", i64 " + index.str_value() + " )";
+	
+
+	curr_module.function_is_used("array_get_"+ctype);
+
+	Variable* ret = block.add_expression(get_val, "ret", type);
+	// store the ret value into memory
+	unique_ptr<Variable> tmp_ret_addr_var(new Variable(builder.get_variable_manager(), "tmp_ret_addr", type));
+	unique_ptr<Value> tmp_ret_addr(block.create_decl_var(*tmp_ret_addr_var));
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
+
+	add_return(id_addr);
+	pop();
+	pop();
+
+
+
+
+
+
+
+
+
 
 }
 
