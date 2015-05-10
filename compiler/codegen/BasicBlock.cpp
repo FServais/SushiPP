@@ -65,7 +65,7 @@ Value* BasicBlock::create_op_div(Value& lhs, Value& rhs)
     Variable* ret = new Variable(var_manager, "tmp_div", lhs.get_type());
 
     // generate code
-    string function(lhs.get_type()->is_float() ? "fdiv " : "div ");
+    string function(lhs.get_type()->is_float() ? "fdiv " : "sdiv ");
     add_line(make_binop(function + lhs.str_type(), lhs.str_value(), rhs.str_value(), ret->str_value()));
 
     return ret;
