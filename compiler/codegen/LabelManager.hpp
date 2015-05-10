@@ -16,6 +16,8 @@ namespace codegen
         int get_last_occurence_number(std::string);
         std::string get_last_occurence(std::string);
 
+        void decrease_occurence(std::string);
+
         bool exists(std::string);
 
     private:

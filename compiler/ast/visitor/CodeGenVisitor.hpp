@@ -20,6 +20,7 @@
 #include "../../codegen/LabelManager.hpp"
 #include "../../codegen/Function.hpp"
 #include "../../codegen/Constant.hpp"
+#include "../../codegen/RemoveReferenceFlags.hpp"
 
 #include "../../symb/SymbolTable.hpp"
 #include "../../symb/SymbolInfo.hpp"
@@ -185,6 +186,8 @@ namespace visitor
 		codegen::Builder builder;
 		codegen::Module& curr_module;
 		std::string curr_func_name;
+
+		codegen::RemoveReferenceFlags array_rm_ref_flags, list_rm_ref_flags;
 
 		codegen::LabelManager label_manager;
 

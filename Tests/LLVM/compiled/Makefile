@@ -4,13 +4,13 @@ EXECUTABLE = main
 CC = clang
 CFLAGS = -c -S -emit-llvm
 LD = gcc
-LDFLAGS = 
+LDFLAGS =
 LLVM_ASSEMBLER = llvm-as
 LLVM_COMPILER  = llc
 
 all: $(ASSEMBLY)
 	gcc -o $(EXECUTABLE) $(ASSEMBLY)
-	
+
 main.s: main.ll
 	$(LLVM_ASSEMBLER) main.ll -o main.bc
 	$(LLVM_COMPILER) main.bc -o $@

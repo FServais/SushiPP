@@ -754,6 +754,7 @@ void array_clear_char(struct array_table* table, size_t id) { array_clear(table,
 void array_clear_string(struct array_table* table, size_t id) { array_clear(table, id); }
 
 
+
 // void print_array_table(const struct array_table* table)
 // {
 // 	const struct array_descriptor* current = table->head;

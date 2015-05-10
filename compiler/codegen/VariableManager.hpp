@@ -6,6 +6,12 @@
 
 namespace codegen
 {
+    /**
+      * @class VariableManager
+      * @brief Class that takes care of keeping track of the names that are used in the code generation.
+                To avoid using multiple times the same name, the VariableManager can output another name
+                with the same prefix.
+      */
     class VariableManager
     {
     public:
