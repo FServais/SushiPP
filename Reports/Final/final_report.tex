@@ -113,10 +113,10 @@ In the context of the course INFO0085, we had to develop a compiler for a handma
 The \textit{Sushi++} language is a strongly and statically typed language. Nevertheless, to alleviate the programmer's work, the type system is made as unobtrusive as possible and types are inferred during compilation. The only presence of types in the language is the \textit{function parameters hinting} mechanism : the parameter type can be specified next to the parameter name in the a function declaration (see Section \ref{sssec:decl_func}). The available types are :
 
 \begin{itemize}
-	\item \texttt{bool} : \textit{true} or \textit{false} (default: \textit{true})
-	\item \texttt{char} : a character (default: \textit{\\0})
-	\item \texttt{int} : an integer $\in [-2147483648, 2147483647]$ (default: \textit{0})
-	\item \texttt{float} : a single-precision floating point value $\in [-3.403 \times 10^{38},  3.403 \times 10^{38}] $ (default: \textit{0.0})
+	\item \texttt{bool} : \textit{true} or \textit{false}
+	\item \texttt{char} : a character
+	\item \texttt{int} : an integer $\in [-2147483648, 2147483647]$
+	\item \texttt{float} : a single-precision floating point value $\in [-3.403 \times 10^{38},  3.403 \times 10^{38}] $
 	\item \texttt{array} : an array of elements (see Section \ref{sssec:arrays})
 	\item \texttt{list} : a list of elements (see Section \ref{sssec:lists})
 	\item \texttt{string} : a string
@@ -177,8 +177,7 @@ Lists \textit{cannot} be accessed with the array-access operator. Nevertheless, 
 
 \subsection{Declarations}
 
-The \textit{Sushi++} language provides declaration syntax for both functions and variables. The declaration keyword \texttt{maki} is common to both declaration.
-
+The \textit{Sushi++} language provides declaration syntax for both functions and variables. The declaration keyword \texttt{maki} is common to both declaration. The declared structured can be used using an identifier. The \textit{Sushi++} identifiers must match the following regular expression "\texttt{{[a-zA-Z]}({[-0-9A-Za-z\_]}*{[0-9A-Za-z\_]})*}".
 \subsubsection{Functions}
 \label{sssec:decl_func}
 \paragraph{Idea} The function declared with the \texttt{maki} keyword are called \textbf{named function} in opposition to anonymous function (or \textit{soy functions}, see Section \ref{sssec:soy_func}). As soon as it is declared, a function can be either called (see Section \ref{sssec:func_call}) or used as expression (passed as parameter). A declared named function is accessible in the scope in which it is declared and its nested scopes (including the function own scope).
@@ -301,7 +300,37 @@ The \textit{Sushi++} language provides three kinds of loop.
 \section{Compiler}
 \label{sec:compiler}
 \subsection{General information}
+The \textit{Sushi++} compiler is implemented in standard C++ (version c++11). It is organized around the \texttt{SppCompiler} class which coordinates the various phases. The execution of the compiler can be tuned with various parameters (verbosity, optimization, input file path, output file path,...). The parameters parsing and analysis is encapsulated into the \texttt{CompilerSettings} object which provides a set of functions for knowing the values of the parameters. \\
+The compiler follows the classical architecture :
+\begin{itemize}
+	\item Lexical and syntax analysis
+	\item Semantic analysis
+	\item Intermediate code generation
+	\item Optimization and executable generation
+\end{itemize}
+The first phase uses \texttt{flex} and \texttt{bison} to generate an abstract syntax tree as an \texttt{ast::AbstractSyntaxTree} object. The tree nodes  classes are defined in the folder \texttt{ast/nodes} and are all subclasses of the \texttt{ast::ASTNode} class. While the base class implements a generic tree structure by storing pointers to parent and children nodes, the derived classes contains accessors to children defining the actual abstract syntax tree structure. To perform operations on the tree during the second and third phases, the visitor pattern was implemented. The visitors base class is \texttt{visitor::ASTVisitor} in the folder \texttt{ast/visitor} and every pass on the tree is implemented in its own visitor class :
+\begin{enumerate}
+	\item Function table populating and termination checking (\texttt{visitor::FunctionTableVisitor})
+	\item Variable table populating (\texttt{visitor::VariableTableVisitor})
+	\item Type inference (\texttt{visitor::TypeInferenceVisitor})
+	\item Code generation (\texttt{visitor::CodeGenVisitor})
+\end{enumerate}
+As the initial visitor class (\texttt{visitor::PrintASTVisitor}) was designed parameter-free and that refactoring it would have taken too much time. Passing parameters is handled with the \texttt{visitor::VisitorParameters} class.  \\ 
+The errors formatting and storing is encapsulated by the class \texttt{ErrorHandler} to which are passed the various errors generated during a phase.
 \subsection{Lexical and syntax analysis}
+\label{ssec:lex_synt}
+At the beginning of the project, the choice was made to use \texttt{bison} and \texttt{flex} (versions \texttt{3.0.2} and \texttt{2.5.35} respectively) for the syntax and lexical analysis phases. This was motivated by the fact that many projects (including the integrated project) were ongoing during the development of this part of the compiler. So we decided to use existing tools to reduce the workload so that we could deliver a function syntax and lexical analysis for the first deadline. Among the existing tools, we have decided to use \texttt{bison} and \texttt{flex} because our compiler is developed in C++ and that integration would be easier.
+\\ \\
+The parser is implemented in the bison file \texttt{parser/spp\_parser.y} and the lexer in \texttt{scanner/spp\_scanner.lex}. Here are the elements that are worth to be mentioned :
+\begin{itemize}
+	\item the tree is built bottom up (as bison implements a bottom-up parser). Every time a rule is matched, the corresponding node is allocated and constructed. At construction, both its children and some location information (as \texttt{ast::NodeLocation} objects) are given to the node through the constructor.
+	\item at the starting rule of the grammar, the abstract syntax tree object is allocated, his root is set with the node at the top of the built tree and is given to the \texttt{SppCompiler} object.
+	\item adding errors to the error handler is done in the \texttt{yyerror} error function so that the built-in error reporting of bison can be used
+	\item the operator precedence and associativity are handled with the dedicated bison constructs (see Table \ref{tab:operators})
+	\item the semantic type of the nodes is unfortunately \texttt{void*} (see Section \ref{ssec:flaws_syntax})
+	\item as the grammar is accepted by bison without conflicts \textbf{it is} LALR(1) and therefore \textbf{LR(1)}
+	\item in the lexer file, a catch-all rule was added to generate the lexical errors when an unknown sequence is found
+\end{itemize}
 \subsection{Semantic analysis}
 \subsubsection{Scope checking}
 In order to perform scope checking, we implemented two visitors. The first one aim's is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
@@ -338,7 +367,7 @@ Alternatively, the type inference can be seen as problem of \textbf{constraints 
 	\item \texttt{is\_list($\alpha$)} : return true if the variable contains an list type, false otherwise 
 	\item \texttt{get\_datastructure\_type($\alpha$)} : given a variable containing an array or a list type, return the type variable containing the type of its elements
 \end{itemize}
-The worst-case complexity of the unification algorithm is $\Theta(n)$ where $n$ is the number of parameters which intervenes in the types contained in $\alpha$ and $\beta$. This can be an issue when $\alpha$ and $\beta$ both contains a function of which one of the parameters is a function taking itself as argument a function taking itself as argument a function, etc. Nonetheless, in the other cases, the complexity is $\mathcal{O}(1)$.
+The worst-case complexity of the unification algorithm is $\Theta(n)$ where $n$ is the number of parameters which intervenes in the types contained in $\alpha$ and $\beta$. This can be an issue when $\alpha$ and $\beta$ both contains a function of which one of the parameters is a function taking itself as argument a function taking itself as argument a function, etc. Nonetheless, in the other cases, $n$ often equals to 1 or 2.
 \begin{center}
 \begin{minipage}{0.75\linewidth}
 \begin{lstlisting}[mathescape,caption={Unification algorithm},label={lst:unification}]
@@ -388,16 +417,17 @@ unify ( $\alpha$, $\beta$ )
 \end{lstlisting}
 \end{minipage}
 \end{center}
-\paragraph{Constraints generation} The constraints generation can be said to be syntax-directed. A set of type variables are passed to a node of the abstract syntax tree as inherited attributes. These variables contains the information about the types expected by the parent. Then, the node performs unification on these variables to signal the types it is expecting. It can also create new variables to pass to its children as inherited attributes.
+\paragraph{Constraints generation} The constraints generation can be said to be syntax-directed. A set of type variables are passed to a node of the abstract syntax tree as inherited attributes and some others are created by the node itself. The first set contains the information about the types expected by the parent while the second contains locale type information. Then, the node performs unification on these variables to signal the types it is expecting. It can also create new variables to pass to its children as inherited attributes. If the unification fails, then a type error must be signaled by the compiler. If the whole abstract syntax tree is traversed without type error, the program can still be invalid in terms of typing. Indeed, a program is only valid if every \textit{useful} typed construct is assigned a type, yet some variables could still be unresolved. In this case, the compiler should signal a lack of expressiveness in the input program. \\
+As the visitor performs only one pass on every node, running through the tree is linear with its size. Therefore, a large upper bound on the type inference algorithm time complexity is $\Theta(N * n)$ where $N$ is the number of nodes of the tree and $n$ is the number of sub-parameters of the largest function type to be handled during the parsing. This complexity corresponds to the case when each node has to unify the largest function type. Yet, as it is impossible that every node requires to perform this unification and that the unification will often involve "\textit{small}" types, the type inference algorithm is almost linear on average.
 \paragraph{Implementation} The type inference is implemented in the \texttt{ast/visitor/TypeInferenceVisitor.cpp} file and uses the classes defined in the \texttt{inference/} folder. The main idea is to store all variables and their associated type into a \textbf{type symbol table}. This table is implemented as a structure mapping a variable name to an object representing the type associated with this variable (of class \texttt{TypeSymbol}). The creation of variables consists in adding entries in this table and unification in updating it. \\ 
 A key element of the table design is that, if two variables were unified, updating the type of one of them must be automatically reflected in the other. To achieve this, the elements mapped in the type symbol table are \texttt{TypeLink} objects introducing a level of indirection between a variable name and its actual type. The only attribute of a TypeLink is simply a pointer to another TypeSymbol. The class hierarchy of type symbols is described hereafter.
 \subparagraph{Type symbols} The types symbols are objects designed to represents types. The base class \texttt{TypeSymbol} is derived into the classes \texttt{TypeLink} and \texttt{TerminalTypeSymbol} which represents respectively a link to a type symbol and an element that can be located at the end of a type link objects chain. The latter is then derived into the classes \texttt{TypeVariable} which represents a type variable (or an unresolved type) and \texttt{Type} which is the base type of any actual type class :
 \begin{itemize}
 	\item \texttt{FlatType} : base class for any flat type (\texttt{Int}, \texttt{Bool}, \texttt{Float}, \texttt{String}, \texttt{Char} and \texttt{Void}).
 	\item \texttt{UniparameterType} : base class for type having only one type parameter (\texttt{Array} and \texttt{List}). This class holds the type parameter which is represented by a type link object. 
-	\item \texttt{Function} : base class for any actual type. This class stores a vector of TypeLink objects to represent the type of the parameters and another one for the function return type.
+	\item \texttt{Function} : class for function types. This class stores a vector of \texttt{TypeLink} objects to represent the type of the parameters and another one for the function return type.
 \end{itemize}
-The ShallowType is an enumeration representing possible types as integers. The hint sets are represented by \texttt{TypeHints} objects (class defined in \texttt{inference/Types.hpp}) which represents the set as a bitmask of \texttt{ShallowTypes} allowing efficient operations (intersection, union, removal and checking if a ShallowType belongs to it). Every \texttt{TerminalTypeSymbol} is assigned a hint set object.
+The \texttt{ShallowType} enumeration represents the possible types as integers. The hint sets are represented by \texttt{TypeHints} objects (class defined in \texttt{inference/Types.hpp}) which represents the set as a bitmask of \texttt{ShallowTypes} allowing efficient operations (intersection, union, removal and checking if a ShallowType belongs to it). Every \texttt{TerminalTypeSymbol} is assigned a hint set object.
 
 \begin{figure}[h]
 	\center
@@ -419,12 +449,12 @@ The ShallowType is an enumeration representing possible types as integers. The h
 The table stores two kind of variables : the ones bounded to the program's identifiers (so-called \textit{bounded} type variables) and the ones that are not (so-called \textit{pure} type variables). As every variable has to be uniquely identified, the generation of variable names have to be done carefully :
 \begin{itemize}
 	\item pure variable names are numbers generated with a counter and is therefore collision free as long as the counter does not overflow
-	\item as a in a valid program, two identifiers of having the same name cannot be declared in the same scope, a unique name for bounded variables can be constructed from these two elements. An additional character, '@' is added between the identifier name and the scope id for the sake of readability mostly. The name of a bounded variable is therefore generated as follows :
+	\item as a in a valid program, two identifiers having the same name cannot be declared in the same scope, a unique name for bounded variables can be constructed from these two elements. An additional character, '@' is added between the identifier name and the scope id for the sake of readability. The name of a bounded variable is therefore generated as follows :
 	\begin{center}
 		\texttt{identifier}@\texttt{scope\_id}
 	\end{center}
 \end{itemize}
-\subparagraph{Syntax-directed type inference} The type inference is implemented with another visitor in \texttt{TypeInferenceVisitor.cpp}. Each node corresponds to a language construct of which the type semantic must be translated in the type symbol table. Moreover, a node can receive from its parent and pass to his children a set of variable (for instance, if an expression is expected to return a value of a given type, the corresponding type variable could be passed from the parent to the expression node). Therefore, designing the type inference for a node results in answering five questions :
+\subparagraph{Syntax-directed type inference} As every other semantic analysis pass, the type inference is implemented with another visitor in \texttt{TypeInferenceVisitor.cpp}. Each node corresponds to a language construct of which the type semantic must be translated in the type symbol table. Moreover, a node can receive from its parent and pass to his children a set of variable (for instance, if an expression is expected to return a value of a given type, the corresponding type variable could be passed from the parent to the expression node). Therefore, designing the type inference for a node results in answering five questions :
 \begin{enumerate}
 	\item \textbf{Inheritance} : which type variables are inherited from the parent node?
 	\item \textbf{Table insertion} : which variables must be created in the type symbol table and with which terminal type symbols have they to be associated?
@@ -460,21 +490,94 @@ As these elements must be defined for every node, the complete list is not detai
 		\item \textit{Transmission} : $\gamma$ to the scope node
 	\end{itemize}
 \end{itemize}
-The \textit{almost} complete list of the nodes and their inference actions is given in the \texttt{Inference.pdf} document in the submitted archive.
-
-\section{Flaws and possible improvements}\subsection{Code generation}
-\subsubsection{Code generation}
+The \textit{almost} complete list of the nodes and their inference actions is given in the \texttt{Inference.pdf} document attached to the submitted archive.
+\subparagraph{Error handling} When an error occurs, the unification errors are added to the error handler with a message indicating the type causing the error, and the one that was expected. If an error occurred during type inference, the next stages are bypassed. As said above, a program passing the type inference without error might not be a valid program, nevertheless an explicit check of this possible problem wasn't implemented but will trigger an exception in the intermediate code generation phase.
+\subsection{Intermediate code generation}
 \subsubsection{Code construction}
+\subsection{Optimization and machine code generation}
+The last compile phase is implemented using the C standard \texttt{system} function which "\textit{invokes the command processor to execute a command}" (taken from [\ref{enum:system_cmd_proc}]). Through this function, calls to LLVM utilities are done to optimize the intermediate representation and to generate the executable.
+\subsubsection{Optimization}
+The LLVM optimizer \texttt{opt} command is used. The optimization performed are the following :
+\begin{itemize}
+	\item \texttt{mem2reg} : try to use registers instead of memory (as our generation puts everything into memory, this pass is very useful)
+	\item \texttt{tailcallelim} : try to perform tail call elimination (transform tail call recursive functions into iterative functions)
+	\item \texttt{inline} : try to inline functions from callee to caller (bottom-up)
+	\item \texttt{constprop} : try to propagates and merges constants intervening in the program
+	\item \texttt{dce} : detect and try to get rid of the dead code blocks (sometimes generated by the compiler, or by the optimizer)
+\end{itemize}
+By default, the compiler doesn't optimize the generated code. The flag \texttt{-t} must be given to enable these optimizations.
+\subsubsection{Machine code generation}
+The compiler chains the following commands :
+\begin{itemize}
+	\item \texttt{clang} : to generate, from source, the LLVM code of the runtime libraries (\texttt{.c} $\rightarrow$ \texttt{.ll})
+	\item \texttt{llvm-as} : to compile human readable LLVM to bitcode assembler (\texttt{.ll} $\rightarrow$ \texttt{.bc})
+	\item \texttt{llc} : to compile bitcode assembler to machine assembler (\texttt{.bc} $\rightarrow$ \texttt{.s})
+	\item \texttt{gcc} : to generate the executable from the \texttt{.s} files
+\end{itemize}
+The commands \texttt{clang}, \texttt{llvm-as} and \texttt{llc} are extracted from the LLVM \texttt{3.5} bundle and the version of \texttt{gcc} is \texttt{4.8.2}. Yet, nothing fuzzy is done with these commands and using a more recent version should also work (even with older versions for the LLVM commands).
+To clean remove the useless generated files, the unix commands \texttt{mv} and \texttt{rm} are also used.
 \section{Runtime}
-\subsection{Garbage collector}
-\label{ssec:garabage_collector}
+\label{sec:runtime}
+Initially, the runtime was supposed to provide support for :
+\begin{itemize}
+	\item \textbf{memory management} for arrays and lists (i.e. a garbage collector)
+	\item \textbf{closures} : to be able to capture variables in functions, a runtime data structure is required to keep a mapping between variables and their addresses
+	\item \textbf{basic functionalities} : IO operations and data structure handling
+\end{itemize}
+The \textit{closures} functionality was dropped due to a lack of time but the others were successfully implemented. Three runtime libraries were implemented :
+\begin{itemize}
+	\item \texttt{array\_runtime.h} : interface to the array management runtime  
+	\item \texttt{list\_runtime.h} : interface to the list management runtime
+	\item \texttt{support.h} : interface providing basic operations such as IO (print)
+\end{itemize}
+The list and array runtimes are implemented using the same principle. A object of type \texttt{struct array\_table} (reps. \texttt{struct list\_table}) contains all the allocated arrays (resp. lists) which are identified by a unique number. A set of operations are then provided by the interfaces to interact with an array (resp. a list) given the table object and the array id (resp. list id). Some of these operations are exposed to the \textit{Sushi++} programmer while others (such as reference counting, allocation,...) aren't.
+\\
+The memory is therefore handled by reference counting through the functions \texttt{array\_add\_reference} and \texttt{array\_rm\_reference} (resp. \texttt{list\_add\_reference} and \texttt{list\_rm\_reference}) that must be called in the LLVM generated program to signal that a data structure is referenced by a new variable or it is not referenced anymore. When the counter drops to 0, the object is automatically freed.
+\\
+The underlying implementation of the \texttt{struct array\_table} (resp. \texttt{struct list\_table}), stores the arrays (resp. lists) in a linked list which is not optimal but discussed in the Section \
+\section{Limitations and possible improvements}
+\subsection{Lexical and syntax analysis}
+\label{ssec:flaws_syntax}
+As mentioned in the Section \ref{ssec:lex_synt}, the semantic type of the node is \texttt{void*}. This choice was done juste before the first deadline because using pointers to actual node objects was triggering weird compile-errors and we weren't able to solve them in another way than using the type \texttt{void*}. This is unfortunate because it makes the code longer and less readable due to type conversion. When we (re)tried, later on, to use actual nodes objects, it seemed to work but we decided not to do it because it would take too much time. An improvement in terms of readability would be to use proper types then.
+\\
+As the error reporting of \texttt{bison} is used, we rely on the underlying implementation. Therefore, even though we tried to display as much errors as possible, the error reporting is quite erratic. Sometimes, one error will be displayed even if the program contains more, sometimes it will display all of them. Moreover, we discovered a segmentation fault in the \textit{bison} implementation for some erroneous program (which we didn't have time to debug). Adding some \texttt{error} rules in the parser would allow a more fine-grained error reporting. \\
+Another problem is the column counting which is buggy. While the line count is accurate, the lexer fails at counting the starting and ending column of a token. Therefore, all the error reports throughout the execution of the program fails at given the correct column of an error. This is why we have disable a interesting feature of the error handler which consisted in displaying the program line triggering an error.
+\subsection{Scope and termination checking}
+\subsection{Type Inference}
+The type inference is quite satisfying even if it can sometimes fail for programs that aren't expressive enough. Few improvements can still be performed :
+\begin{itemize}
+	\item adding information in the \textbf{type error messages} : for the moment, the messages only report the location where the type checking fails, it would be interesting to know where was generated the constraint that led to the error
+	\item adding a \textbf{check for unresolved types} : then the user could be noticed about the lack of expressiveness of its program with precise information
+\end{itemize} 
+\subsection{Optimization and machine code generation}
+As the optimization is performed by another application, improving it is impossible. Nevertheless, some others optimizations passes could be applied (as the \texttt{opt} command provides a lot more than 5 optimization passes). \\
+As far as the machine code generation is concern, two problems arise :
+\begin{itemize}
+	\item \textbf{system dependence} : as the compiler uses unix commands, it could only be used on unix-based operating systems which is configured so that \texttt{gcc} and LLVM commands can be used. Removing these dependencies would allow to port the application on other platform.
+	\item \textbf{file dependence and generation} : on the one hand, the compiler needs the implementation files of the runtime to be able to execute machine code generation and therefore couldn't be used as a standalone executable. On the other hand, the compiler generates a lot of files without checking their names. Therefore, finding a way to embed the runtime files into the executable would allow an easier use of the compiler and a system that checks existing file names would prevent troubles caused by collisions.
+\end{itemize}
+\subsection{Runtime}
+\label{ssec:flaws_runtime}
+As said in the Section \ref{sec:runtime}, the internal data structure (called \textit{table}) used to store arrays and lists is itself a list. Therefore, accessing an element (list or array) has the a complexity $\mathcal{O}(n)$ where $n$ is the number of objects in the table. Moreover, every function of the interface has to access a particular object in the table before performing operations, this resulting in a search at every function call. This is of course extremely inefficient. The reason why the list implementation was chosen is mainly lack of time. As a simply linked list is easy to implement, we could focus on the code generation instead. A major improvement would then be the reimplementation of the tables with an adequate data structure such as an ordered vector (ordered on the array/list id), a tree or a hashtable. Nevertheless, as implementation details don't leak through the interface, this can be done without changing the code generation.
+\\
+Also, initially, we wanted to implement closures but we dropped this feature due to lack of time. A improvement in the usability of the language would be the implementation of such a mechanisms. This would include the implementation of another runtime module for handling it (and some parts of the compiler would also have to be modified).
 \appendix
 \section{Sources}
 \begin{enumerate}
-	\item \textbf{Type inference} :
+	\item \textbf{Lexical and syntax analysis} : 
+	\begin{enumerate}
+		\item\label{enum:flex_ref} Flex documentation, "\textit{Lexical Analysis With Flex}", \texttt{http://goo.gl/wIJglV}
+		\item\label{enum:bison_ref} Charles Donnely, Richard Stallman, "\textit{Bison, Using the Yacc-compatible Parser Generator}", \texttt{http://goo.gl/rp2kpM} 
+	\end{enumerate}
+	\item \textbf{Type inference} : 
 	\begin{enumerate}
 		\item\label{enum:inference_unification} Paul N. Hilfinger, "\textit{Lecture \#22: Type Inference and Unification}", \texttt{https://goo.gl/RR8Eme}, UC Berekeley, course \textit{CS164} : Programming Languages and Compilers.
+		\item\label{enum:inference_photon} Cyril Soldani, "\textit{Monomorphic type inference}", \texttt{http://goo.gl/Kveyvf}
+	\end{enumerate}
+	\item \textbf{Optimization and machine code generation}
+	\begin{enumerate}
+		\item\label{enum:system_cmd_proc} CPlusPlus.com, "\textit{\texttt{system} - C++ reference}", \texttt{http://goo.gl/XkM9rr}
+		\item\label{enum:opt_passes} LLVM documentation, "\textit{LLVM’s Analysis and Transform Passes}", \texttt{http://goo.gl/P8kyxX}
 	\end{enumerate}
 \end{enumerate}
-\section{Diagrams}
 \end{document}
