@@ -178,7 +178,7 @@
 %type <vnode> expression incr-expression assignment modifying-expression assignable-expression datastructure-access expression-list
 %type <vnode> constant
 %type <vnode> datastructure array list make-sequence make-sequence-list make-sequence-array seq-expression
-%type <vnode> statement return menu menu-body menu-case menu-def loop roll foreach for for-initializer for-update conditional elseif else
+%type <vnode> statement return menu menu-body menu-case menu-def loop roll /*foreach*/ for for-initializer for-update conditional elseif else
 
 %start program
 
@@ -828,7 +828,7 @@ roll :
 /* The foreach loop iterates over a list/array expression (so the expression part should be
  * interpretable as a list/array)
  */
-foreach: 
+/*foreach: 
   KEYWORD_FOREACH expression KEYWORD_AS IDENTIFIER DELIM_EOL scope DELIM_EOS
 	{
 		ast::Expression* expr = new ast::Expression((ast::ASTNode*)$2, location(@2));
@@ -840,7 +840,7 @@ foreach:
 		delete $4;
 	}
 ;
-
+*/
 
 /* The for loop iterates until a condition becomes false
  * The initializer part can be empty or contain an assignment (if the variable does not exist
