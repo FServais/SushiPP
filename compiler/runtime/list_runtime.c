@@ -909,7 +909,7 @@ void list_push_back_string(struct list_table* table, size_t lid, size_t value)
 	insert_list_element(desc, desc->list_size, &value);
 }
 
-int list_get_element_int(struct list_table* table, size_t lid, size_t pos)
+int list_get_int(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -921,7 +921,7 @@ int list_get_element_int(struct list_table* table, size_t lid, size_t pos)
 	return *((int*)value);
 }
 
-float list_get_element_float(struct list_table* table, size_t lid, size_t pos)
+float list_get_float(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -933,7 +933,7 @@ float list_get_element_float(struct list_table* table, size_t lid, size_t pos)
 	return *((float*)value);
 }
 
-bool list_get_element_bool(struct list_table* table, size_t lid, size_t pos)
+bool list_get_bool(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -945,7 +945,7 @@ bool list_get_element_bool(struct list_table* table, size_t lid, size_t pos)
 	return *((bool*)value);
 }
 
-char list_get_element_char(struct list_table* table, size_t lid, size_t pos)
+char list_get_char(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return '\0';
 
@@ -957,7 +957,7 @@ char list_get_element_char(struct list_table* table, size_t lid, size_t pos)
 	return *((char*)value);
 }
 
-size_t list_get_element_string(struct list_table* table, size_t lid, size_t pos)
+size_t list_get_string(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -969,7 +969,7 @@ size_t list_get_element_string(struct list_table* table, size_t lid, size_t pos)
 	return *((size_t*)value);
 }
 
-void list_insert_element_int(struct list_table* table, size_t lid, size_t pos, int value)
+void list_insert_int(struct list_table* table, size_t lid, size_t pos, int value)
 {
 	if(!table) return;
 
@@ -980,7 +980,7 @@ void list_insert_element_int(struct list_table* table, size_t lid, size_t pos, i
 	insert_list_element(desc, pos, &value);
 }
 
-void list_insert_element_float(struct list_table* table, size_t lid, size_t pos, float value)
+void list_insert_float(struct list_table* table, size_t lid, size_t pos, float value)
 {
 	if(!table) return;
 
@@ -991,7 +991,7 @@ void list_insert_element_float(struct list_table* table, size_t lid, size_t pos,
 	insert_list_element(desc, pos, &value);
 }
 
-void list_insert_element_bool(struct list_table* table, size_t lid, size_t pos, bool value)
+void list_insert_bool(struct list_table* table, size_t lid, size_t pos, bool value)
 {
 	if(!table) return;
 
@@ -1002,7 +1002,7 @@ void list_insert_element_bool(struct list_table* table, size_t lid, size_t pos, 
 	insert_list_element(desc, pos, &value);
 }
 
-void list_insert_element_char(struct list_table* table, size_t lid, size_t pos, char value)
+void list_insert_char(struct list_table* table, size_t lid, size_t pos, char value)
 {
 	if(!table) return;
 
@@ -1013,7 +1013,7 @@ void list_insert_element_char(struct list_table* table, size_t lid, size_t pos, 
 	insert_list_element(desc, pos, &value);
 }
 
-void list_insert_element_string(struct list_table* table, size_t lid, size_t pos, size_t value)
+void list_insert_string(struct list_table* table, size_t lid, size_t pos, size_t value)
 {
 	if(!table) return;
 
@@ -1024,7 +1024,7 @@ void list_insert_element_string(struct list_table* table, size_t lid, size_t pos
 	insert_list_element(desc, pos, &value);
 }
 
-int list_remove_element_int(struct list_table* table, size_t lid, size_t pos)
+int list_remove_int(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -1038,7 +1038,7 @@ int list_remove_element_int(struct list_table* table, size_t lid, size_t pos)
 	return casted_value;
 }
 
-float list_remove_element_float(struct list_table* table, size_t lid, size_t pos)
+float list_remove_float(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -1052,7 +1052,7 @@ float list_remove_element_float(struct list_table* table, size_t lid, size_t pos
 	return casted_value;
 }
 
-bool list_remove_element_bool(struct list_table* table, size_t lid, size_t pos)
+bool list_remove_bool(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -1066,7 +1066,7 @@ bool list_remove_element_bool(struct list_table* table, size_t lid, size_t pos)
 	return casted_value;
 }
 
-char list_remove_element_char(struct list_table* table, size_t lid, size_t pos)
+char list_remove_char(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 
@@ -1080,7 +1080,7 @@ char list_remove_element_char(struct list_table* table, size_t lid, size_t pos)
 	return casted_value;
 }
 
-size_t list_remove_element_string(struct list_table* table, size_t lid, size_t pos)
+size_t list_remove_string(struct list_table* table, size_t lid, size_t pos)
 {
 	if(!table) return 0;
 

@@ -168,11 +168,11 @@ void list_push_back_string(struct list_table*, size_t, size_t);
  * @param size_t pos The position of the element to insert (in [0, list_size[) starting from the front of the list
  * @retval T The element taken from the list
  */
-int list_get_element_int(struct list_table*, size_t, size_t);
-float list_get_element_float(struct list_table*, size_t, size_t);
-bool list_get_element_bool(struct list_table*, size_t, size_t);
-char list_get_element_char(struct list_table*, size_t, size_t);
-size_t list_get_element_string(struct list_table*, size_t, size_t);
+int list_get_int(struct list_table*, size_t, size_t);
+float list_get_float(struct list_table*, size_t, size_t);
+bool list_get_bool(struct list_table*, size_t, size_t);
+char list_get_char(struct list_table*, size_t, size_t);
+size_t list_get_string(struct list_table*, size_t, size_t);
 
 /**
  * @brief Insert the element at the given position of the list (if the position is invalid, the program is exited)
@@ -180,11 +180,11 @@ size_t list_get_element_string(struct list_table*, size_t, size_t);
  * @param size_t lid The list id 
  * @param size_t pos The position of the element to insert (in [0, list_size[) starting from the front of the list
  */
-void list_insert_element_int(struct list_table*, size_t, size_t, int);
-void list_insert_element_float(struct list_table*, size_t, size_t, float);
-void list_insert_element_bool(struct list_table*, size_t, size_t, bool);
-void list_insert_element_char(struct list_table*, size_t, size_t, char);
-void list_insert_element_string(struct list_table*, size_t, size_t, size_t);
+void list_insert_int(struct list_table*, size_t, size_t, int);
+void list_insert_float(struct list_table*, size_t, size_t, float);
+void list_insert_bool(struct list_table*, size_t, size_t, bool);
+void list_insert_char(struct list_table*, size_t, size_t, char);
+void list_insert_string(struct list_table*, size_t, size_t, size_t);
 
 /**
  * @brief Return the element at the given position of the list and remove it from the list (if the element does not exist the program is exited)
@@ -193,11 +193,11 @@ void list_insert_element_string(struct list_table*, size_t, size_t, size_t);
  * @param size_t pos The position of the element to insert (in [0, list_size[) starting from the front of the list
  * @retval T The element taken from the list
  */
-int list_remove_element_int(struct list_table*, size_t, size_t);
-float list_remove_element_float(struct list_table*, size_t, size_t);
-bool list_remove_element_bool(struct list_table*, size_t, size_t);
-char list_remove_element_char(struct list_table*, size_t, size_t);
-size_t list_remove_element_string(struct list_table*, size_t, size_t);
+int list_remove_int(struct list_table*, size_t, size_t);
+float list_remove_float(struct list_table*, size_t, size_t);
+bool list_remove_bool(struct list_table*, size_t, size_t);
+char list_remove_char(struct list_table*, size_t, size_t);
+size_t list_remove_string(struct list_table*, size_t, size_t);
 
 /**
  * @brief Create a list of integers ranging from a to b 
