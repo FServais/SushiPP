@@ -29,7 +29,10 @@ using namespace errors;
 using namespace std;
 using namespace visitor;
 
-SppCompiler::SppCompiler(int argc, char** argv) : config(argc, argv), error_handler(config)
+SppCompiler::SppCompiler(int argc, char** argv) 
+  : config(argc, argv), 
+  	error_handler(config), 
+  	optimization_flags("-mem2reg -tailcallelim -inline -constprop -dce")
 {
 	srand(time(NULL));
 
@@ -224,7 +227,7 @@ void SppCompiler::executable_generation()
 	
 	// name of the .ll file to assemble, compile and link
 	vector<string> to_assemble({ "runtime/list_runtime", "runtime/array_runtime", "runtime/support" }),
-					genarated_files;
+					generated_files;
 
 	// add generated file
 	string prog_file;
@@ -239,60 +242,83 @@ void SppCompiler::executable_generation()
 			error_handler.add_gen_error("Cannot generate llvm temporary file...");
 			return;
 		}
+		generated_files.push_back("main__.ll");
 	}
 
 	// add it in file to remove
 	to_assemble.push_back(prog_file);
 
-	for(string& filename : to_assemble) 
+	// perform optimization 
+	string optimize_cmd("opt \"" + prog_file + ".ll\" " + optimization_flags + " -S >> \"" + prog_file + "_opt.ll\"");
+	if(config.do_optimize() && execute_cmd(optimize_cmd))
 	{
-		string assembly_cmd("llvm-as " + filename + ".ll -o " + filename + ".bc"),
-			   compile_cmd("llc " + filename + ".bc -o " + filename + ".s");
-		
-	    // convert to bitcode
-		if(execute_cmd(assembly_cmd))
+		error_handler.add_gen_error("", "cannot optimize intermediate representation");
+		return;
+	} 
+	else if(config.do_optimize()) // put back optimize code into the prog_file
+	{
+		string move_cmd("mv \"" + prog_file + "_opt.ll\" \"" + prog_file + ".ll\"");
+
+		if(execute_cmd(move_cmd))
 		{
-			error_handler.add_gen_error("", "Cannot assemble file " + filename + ".ll...");
+			error_handler.add_gen_error("", "post-optimization cleaning failed");
 			return;
 		}
-		else genarated_files.push_back(filename + ".bc");
+	}
+
+	for(string& filename : to_assemble) 
+	{
+		string convert2ll_cmd("clang \"" + filename + ".c\" --std=c99 -emit-llvm -S -O3 -o \"" + filename + ".ll\""),
+			   assembly_cmd("llvm-as \"" + filename + ".ll\" -o \"" + filename + ".bc\""),
+			   compile_cmd("llc \"" + filename + ".bc\" -o \"" + filename + ".s\"");
+		
+		if(filename != prog_file && execute_cmd(convert2ll_cmd))
+		{
+			error_handler.add_gen_error("", "cannot convert runtime sources to llvm assembly...");
+			return;
+		} 
+		else if(filename != prog_file)
+			generated_files.push_back(filename + ".ll");
+		
+		// convert to bitcode
+		if(execute_cmd(assembly_cmd))
+		{
+			error_handler.add_gen_error("", "cannot assemble file " + filename + ".ll...");
+			return;
+		}
+		else generated_files.push_back(filename + ".bc");
 
 		if(execute_cmd(compile_cmd))
 		{
-			error_handler.add_gen_error("", "Cannot compile file " + filename + ".bc...");
+			error_handler.add_gen_error("", "cannot compile file " + filename + ".bc...");
 			return;
 		}
-		else genarated_files.push_back(filename + ".s");
+		else generated_files.push_back(filename + ".s");
 	}
 
 	// link the generated files
 	vector<string> assembly_files, bitcode_files;
 	transform(to_assemble.begin(), to_assemble.end(), back_inserter(assembly_files),
-			  [](const std::string& file){ return file + ".s"; });
+			  [](const std::string& file){ return "\"" + file + ".s\""; });
 	transform(to_assemble.begin(), to_assemble.end(), back_inserter(bitcode_files),
-			  [](const std::string& file){ return file + ".bc"; });
+			  [](const std::string& file){ return "\"" + file + ".bc\""; });
 
 	string assembly_files_str = util::implode(assembly_files.begin(), assembly_files.end(), " "),
 		   bitcode_files_str = util::implode(bitcode_files.begin(), bitcode_files.end(), " "),
+		   files_to_rm = "\"" + util::implode(generated_files.begin(), generated_files.end(), "\" \"") + "\"",
 		   link_cmd("gcc -o " + config.get_executable_file() + " " + assembly_files_str);
 
     if(execute_cmd(link_cmd))
     {
-		error_handler.add_gen_error("", "Cannot generate the executable...");
+		error_handler.add_gen_error("", "cannot generate the executable...");
 		return;
     }
 
     // delete generated files
-    if(execute_cmd("rm " + assembly_files_str + " " + bitcode_files_str))
+    if(execute_cmd("rm " + files_to_rm))
     {
-    	error_handler.add_gen_error("", "Cannot delete tempory files...");
+    	error_handler.add_gen_error("", "cannot delete tempory files...");
 		return;
-    }
-
-    if(!config.do_dump_llvm_in_file() && execute_cmd("rm " + prog_file + ".ll"))
-    {
-    	error_handler.add_gen_error("", "Cannot delete temporary llvm file...");
-    	return;
     }
 }
 

@@ -1693,6 +1693,8 @@ void TypeInferenceVisitor::visit( ast::Array& array )
 	pair<string, string> array_type_vars = type_table.new_array();
 	string beta = array_type_vars.second;
 
+	array.set_type_id(beta);
+
 	// alpha is of type array(beta)
 	type_table.unify(alpha, array_type_vars.first);
 
@@ -1716,6 +1718,8 @@ void TypeInferenceVisitor::visit( ast::List& list )
 	pair<string, string> list_type_vars = type_table.new_list();
 	string beta = list_type_vars.second;
 
+	list.set_type_id(beta);
+
 	// alpha is of type list(beta)
 	type_table.unify(alpha, list_type_vars.first);
 
@@ -1726,7 +1730,6 @@ void TypeInferenceVisitor::visit( ast::List& list )
 		params.call();
 		list.get_items().accept(*this);
 	}
-
 
 	params.ret();
 }

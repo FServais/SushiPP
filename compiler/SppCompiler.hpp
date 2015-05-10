@@ -64,6 +64,7 @@ namespace compiler
 		errors::ErrorHandler error_handler;
 		inference::TypeSymbolTable type_table;
 		std::string generated_llvm;
+		std::string optimization_flags;// contains the 'opt' optimization passes flags 
 
 		/**
 		 * @brief Initialize the compiler for execution
