@@ -2255,18 +2255,10 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	unique_ptr<Variable> tmp_ret_addr_var(new Variable(builder.get_variable_manager(), "tmp_ret_addr", type));
 	unique_ptr<Value> tmp_ret_addr(block.create_decl_var(*tmp_ret_addr_var));
 	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
-
+	pop();
+	pop();
 	add_return(id_addr);
-	pop();
-	pop();
-
-
-
-
-
-
-
-
+	
 
 
 }
