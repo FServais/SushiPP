@@ -42,3 +42,5 @@ Reports/Final/final_report.log
 compiler/quicksort
 compiler/test
 compiler/work_quicksort
+compiler/lonelyinteger
+Tests/LLVM/lonelyinteger.ll
