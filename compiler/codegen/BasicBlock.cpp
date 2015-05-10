@@ -274,9 +274,21 @@ Value* BasicBlock::create_op_right_shift(Value& lhs, Value& rhs)
     return ret;
 }
 
-Value* BasicBlock::create_op_str_conc(Value& lhs, Value& rhs)
+Value* BasicBlock::create_op_str_conc(const std::string& array_table, Value& lhs, Value& rhs)
 {
+    // create variable to contain the return value
+    Variable* ret = new Variable(var_manager, "tmp_expo", lhs.get_type());
 
+    // generate code
+    stringstream ss;
+    ss << ret->str_value() << " = call i64 (%struct.array_table*, i64, i64)* @string_concat"
+        << "(%struct.array_table* %" << array_table << ", "
+        << lhs.str_type() << " " << lhs.str_value() << ", " 
+        << rhs.str_type() << " " << rhs.str_value() << ")";
+
+    add_line(ss.str());
+
+    return ret;
 }
 
 Value* BasicBlock::create_op_pref_incr(Value& value)
@@ -378,18 +390,19 @@ Value* BasicBlock::create_store(Value& value, Value& variable)
     return variable_ptr;
 }
 
-Value* BasicBlock::create_func_store(Value& value, Value& variable)
-{
-    Variable& variable_cast = dynamic_cast<Variable&>(variable);
+// Value* BasicBlock::create_func_store(Value& value, Value& variable)
+// {
+//     Variable& variable_cast = dynamic_cast<Variable&>(variable);
 
-    stringstream ss;
-    ss << "store " << value.str_type() << "* " << value.str_value() << ", " << variable_cast.str_type() << "** " << variable_cast.str_value();
+//     stringstream ss;
+//     ss << "store " << value.str_type() << "* " << value.str_value() << ", " << variable_cast.str_type() << "** " << variable_cast.str_value();
 
-    add_line(ss.str());
+//     add_line(ss.str());
 
-    //Variable& variable_cast = dynamic_cast<Variable&>(variable);
-    Variable* variable_ptr = new Variable(variable_cast);
-}
+//     //Variable& variable_cast = dynamic_cast<Variable&>(variable);
+//     Variable* variable_ptr = new Variable(variable_cast);
+//     return var_ptr;
+// }
 
 Value* BasicBlock::create_load(Value& ptr)
 {

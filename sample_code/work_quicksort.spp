@@ -50,12 +50,10 @@ maki partition array pivot boundary_index item_index :
 	$ compare item index to the pivot
 	if array[item_index] < array[pivot]
 		call array-swap array boundary_index item_index
-		call partition array pivot (++boundary_index) (++item_index)
+		nori (call partition array pivot (++boundary_index) (++item_index))
 	else
-		call partition array pivot boundary_index (++item_index)
+		nori (call partition array pivot boundary_index (++item_index))
 	;;
-
-	nori boundary_index
 ;;
 
 $ Sort the array range with the quicksort algorithm

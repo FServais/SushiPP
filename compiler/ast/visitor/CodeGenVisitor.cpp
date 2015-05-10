@@ -82,20 +82,20 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 
 	// add main function
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
-    FunctionBlock function(builder.get_variable_manager(), "main", main_func);
-    function.set_return("0");
-    curr_module.add_function("main", function);
+	FunctionBlock function(builder.get_variable_manager(), "main", main_func);
+	function.set_return("0");
+	curr_module.add_function("main", function);
 
-    // add initialization code to the main
-    BasicBlock& main_block = curr_module.get_function("main").get_last_block();
+	// add initialization code to the main
+	BasicBlock& main_block = curr_module.get_function("main").get_last_block();
 
-    // fake type for matching function prototype
-    shared_ptr<typegen::Type> fake_type(new typegen::Int);
-    unique_ptr<Variable> atable_addr, ltable_addr;
-    atable_addr = unique_ptr<Variable>(main_block.add_expression("call %struct.array_table* (...)* @create_array_table()", "added_array_table", fake_type));
-    ltable_addr = unique_ptr<Variable>(main_block.add_expression("call %struct.list_table* (...)* @create_list_table()", "added_list_table", fake_type));
-    main_block.add_expression("store %struct.array_table* " + atable_addr->str_value() + ", %struct.array_table** @..array_table, align 8");
-    main_block.add_expression("store %struct.list_table* " + ltable_addr->str_value() + ", %struct.list_table** @..list_table, align 8");
+	// fake type for matching function prototype
+	shared_ptr<typegen::Type> fake_type(new typegen::Int);
+	unique_ptr<Variable> atable_addr, ltable_addr;
+	atable_addr = unique_ptr<Variable>(main_block.add_expression("call %struct.array_table* (...)* @create_array_table()", "added_array_table", fake_type));
+	ltable_addr = unique_ptr<Variable>(main_block.add_expression("call %struct.list_table* (...)* @create_list_table()", "added_list_table", fake_type));
+	main_block.add_expression("store %struct.array_table* " + atable_addr->str_value() + ", %struct.array_table** @..array_table, align 8");
+	main_block.add_expression("store %struct.list_table* " + ltable_addr->str_value() + ", %struct.list_table** @..list_table, align 8");
 
 	// set the current function so that the visitor starts writing in it
 	curr_func_name = "main";
@@ -113,12 +113,12 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 
 
 /*****************************
- * 		Identifier token    *
+ * 		Identifier token	*
  *****************************/
 
 void CodeGenVisitor::visit( Identifier& token )
 {
-	cout << "Identifier" << endl;
+	//cout << "Identifier" << endl;
 	string name;
 	if(function_table.symbol_exists(token.id()))
 		name = type_table.unique_id_name(function_table.get_symbol_scope_id(token.id()), token.id());
@@ -135,11 +135,11 @@ void CodeGenVisitor::visit( Identifier& token )
 
 
 /*************************
- * 		Keyword token    *
+ * 		Keyword token	*
  *************************/
 void CodeGenVisitor::visit( K_Break& token )
 {
-	cout << "K_Break" << endl;
+	//cout << "K_Break" << endl;
 	int size = loops_manager.size();
 	string end_loop = loops_manager[size-1].second;
 
@@ -153,7 +153,7 @@ void CodeGenVisitor::visit( K_Break& token )
 
 void CodeGenVisitor::visit( K_Continue& token )
 {
-	cout << "K_Continue" << endl;
+	//cout << "K_Continue" << endl;
 	int size = loops_manager.size();
 	string beg_loop = loops_manager[size-1].first;
 
@@ -166,49 +166,49 @@ void CodeGenVisitor::visit( K_Continue& token )
 
 void CodeGenVisitor::visit( Type_Int& token )
 {
-	cout << "Type_Int" << endl;
+	//cout << "Type_Int" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Float& token )
 {
-	cout << "Type_Float" << endl;
+	//cout << "Type_Float" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Char& token )
 {
-	cout << "Type_Char" << endl;
+	//cout << "Type_Char" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_String& token )
 {
-	cout << "Type_String" << endl;
+	//cout << "Type_String" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Array& token )
 {
-	cout << "Type_Array" << endl;
+	//cout << "Type_Array" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_List& token )
 {
-	cout << "Type_List" << endl;
+	//cout << "Type_List" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( Type_Bool& token )
 {
-	cout << "Type_Bool" << endl;
+	//cout << "Type_Bool" << endl;
 
 }
 
@@ -216,18 +216,18 @@ void CodeGenVisitor::visit( Type_Bool& token )
 
 void CodeGenVisitor::visit( Type_Function& token )
 {
-	cout << "Type_Function" << endl;
+	//cout << "Type_Function" << endl;
 
 }
 
 
 /****************************
- * 		Operator token      *
+ * 		Operator token	  *
  ****************************/
 
 void CodeGenVisitor::visit( Op_Plus& token )
 {
-	cout << "Op_Plus" << endl;
+	//cout << "Op_Plus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -237,12 +237,12 @@ void CodeGenVisitor::visit( Op_Plus& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_plus(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -274,7 +274,7 @@ void CodeGenVisitor::visit( Op_Plus& token )
 
 void CodeGenVisitor::visit( Op_Minus& token )
 {
-	cout << "Op_Minus" << endl;
+	//cout << "Op_Minus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -284,12 +284,12 @@ void CodeGenVisitor::visit( Op_Minus& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_minus(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -321,7 +321,7 @@ void CodeGenVisitor::visit( Op_Minus& token )
 
 void CodeGenVisitor::visit( Op_Mult& token )
 {
-	cout << "Op_Mult" << endl;
+	//cout << "Op_Mult" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -331,12 +331,12 @@ void CodeGenVisitor::visit( Op_Mult& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_mult(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -370,7 +370,7 @@ void CodeGenVisitor::visit( Op_Mult& token )
 
 void CodeGenVisitor::visit( Op_Div& token )
 {
-	cout << "Op_Div" << endl;
+	//cout << "Op_Div" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -380,12 +380,12 @@ void CodeGenVisitor::visit( Op_Div& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_div(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -419,7 +419,7 @@ void CodeGenVisitor::visit( Op_Div& token )
 
 void CodeGenVisitor::visit( Op_Modulo& token )
 {
-	cout << "Op_Modulo" << endl;
+	//cout << "Op_Modulo" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -429,12 +429,12 @@ void CodeGenVisitor::visit( Op_Modulo& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_mod(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -468,7 +468,7 @@ void CodeGenVisitor::visit( Op_Modulo& token )
 
 void CodeGenVisitor::visit( Op_Exponentiation& token )
 {
-	cout << "Op_Exponentiation" << endl;
+	//cout << "Op_Exponentiation" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -478,12 +478,12 @@ void CodeGenVisitor::visit( Op_Exponentiation& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
+	if(lhs.is_variable() && rhs.is_variable())
+	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_expon(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -518,7 +518,7 @@ void CodeGenVisitor::visit( Op_Exponentiation& token )
 
 void CodeGenVisitor::visit( Op_UnaryMinus& token )
 {
-	cout << "Op_UnaryMinus" << endl;
+	//cout << "Op_UnaryMinus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -527,11 +527,11 @@ void CodeGenVisitor::visit( Op_UnaryMinus& token )
 
 	Variable* result;
 
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_unminus( *(load_rhs)));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_unminus(rhs));
 
@@ -555,7 +555,7 @@ void CodeGenVisitor::visit( Op_UnaryMinus& token )
 
 void CodeGenVisitor::visit( Op_BitwiseOr& token )
 {
-	cout << "Op_BitwiseOr" << endl;
+	//cout << "Op_BitwiseOr" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -565,12 +565,12 @@ void CodeGenVisitor::visit( Op_BitwiseOr& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_or(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -604,7 +604,7 @@ void CodeGenVisitor::visit( Op_BitwiseOr& token )
 
 void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 {
-	cout << "Op_BitwiseAnd" << endl;
+	//cout << "Op_BitwiseAnd" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -614,12 +614,12 @@ void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_and(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -653,7 +653,7 @@ void CodeGenVisitor::visit( Op_BitwiseAnd& token )
 
 void CodeGenVisitor::visit( Op_BitwiseXor& token )
 {
-	cout << "Op_BitwiseXor" << endl;
+	//cout << "Op_BitwiseXor" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -663,12 +663,12 @@ void CodeGenVisitor::visit( Op_BitwiseXor& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -702,7 +702,7 @@ void CodeGenVisitor::visit( Op_BitwiseXor& token )
 
 void CodeGenVisitor::visit( Op_BitwiseNot& token )
 {
-	cout << "Op_BitwiseNot" << endl;
+	//cout << "Op_BitwiseNot" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -711,11 +711,11 @@ void CodeGenVisitor::visit( Op_BitwiseNot& token )
 
 	Variable* result;
 
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_not( *(load_rhs)));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_bit_not(rhs));
 
@@ -739,7 +739,7 @@ void CodeGenVisitor::visit( Op_BitwiseNot& token )
 
 void CodeGenVisitor::visit( Op_LogicalOr& token )
 {
-	cout << "Op_LogicalOr" << endl;
+	//cout << "Op_LogicalOr" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -749,12 +749,12 @@ void CodeGenVisitor::visit( Op_LogicalOr& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_log_or(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -788,7 +788,7 @@ void CodeGenVisitor::visit( Op_LogicalOr& token )
 
 void CodeGenVisitor::visit( Op_LogicalAnd& token )
 {
-	cout << "Op_LogicalAnd" << endl;
+	//cout << "Op_LogicalAnd" << endl;
 visit_children(token);
 
 	// Get 2 arguments
@@ -798,12 +798,12 @@ visit_children(token);
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_log_and(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -837,7 +837,7 @@ visit_children(token);
 
 void CodeGenVisitor::visit( Op_LogicalNot& token )
 {
-	cout << "Op_LogicalNot" << endl;
+	//cout << "Op_LogicalNot" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -846,11 +846,11 @@ void CodeGenVisitor::visit( Op_LogicalNot& token )
 
 	Variable* result;
 
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_log_not( *(load_rhs)));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_log_not(rhs));
 
@@ -874,7 +874,7 @@ void CodeGenVisitor::visit( Op_LogicalNot& token )
 
 void CodeGenVisitor::visit( Op_CompLessThan& token )
 {
-	cout << "Op_CompLessThan" << endl;
+	//cout << "Op_CompLessThan" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -884,12 +884,12 @@ void CodeGenVisitor::visit( Op_CompLessThan& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_lt(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -922,7 +922,7 @@ void CodeGenVisitor::visit( Op_CompLessThan& token )
 
 void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 {
-	cout << "Op_CompGreaterThan" << endl;
+	//cout << "Op_CompGreaterThan" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -932,12 +932,12 @@ void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_gt(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -970,7 +970,7 @@ void CodeGenVisitor::visit( Op_CompGreaterThan& token )
 
 void CodeGenVisitor::visit( Op_CompLessEqual& token )
 {
-	cout << "Op_CompLessEqual" << endl;
+	//cout << "Op_CompLessEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -980,12 +980,12 @@ void CodeGenVisitor::visit( Op_CompLessEqual& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_le(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -1018,7 +1018,7 @@ void CodeGenVisitor::visit( Op_CompLessEqual& token )
 
 void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 {
-	cout << "Op_CompGreaterEqual" << endl;
+	//cout << "Op_CompGreaterEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1028,12 +1028,12 @@ void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_ge(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -1066,7 +1066,7 @@ void CodeGenVisitor::visit( Op_CompGreaterEqual& token )
 
 void CodeGenVisitor::visit( Op_CompEqual& token )
 {
-	cout << "Op_CompEqual" << endl;
+	//cout << "Op_CompEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1076,12 +1076,12 @@ void CodeGenVisitor::visit( Op_CompEqual& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_eq(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -1114,7 +1114,7 @@ void CodeGenVisitor::visit( Op_CompEqual& token )
 
 void CodeGenVisitor::visit( Op_CompNotEqual& token )
 {
-	cout << "Op_CompNotEqual" << endl;
+	//cout << "Op_CompNotEqual" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1124,12 +1124,12 @@ void CodeGenVisitor::visit( Op_CompNotEqual& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_cmp_neq(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -1162,7 +1162,7 @@ void CodeGenVisitor::visit( Op_CompNotEqual& token )
 
 void CodeGenVisitor::visit( Op_LeftShift& token )
 {
-	cout << "Op_LeftShift" << endl;
+	//cout << "Op_LeftShift" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1172,12 +1172,12 @@ void CodeGenVisitor::visit( Op_LeftShift& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_left_shift(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant())
 	{
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
@@ -1210,7 +1210,7 @@ void CodeGenVisitor::visit( Op_LeftShift& token )
 
 void CodeGenVisitor::visit( Op_RightShift& token )
 {
-	cout << "Op_RightShift" << endl;
+	//cout << "Op_RightShift" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1220,12 +1220,12 @@ void CodeGenVisitor::visit( Op_RightShift& token )
 
 	Variable* result;
 
-    if(lhs.is_variable() && rhs.is_variable())
-    {
-        unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	if(lhs.is_variable() && rhs.is_variable())
+	{
+		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_right_shift(*(load_lhs), *(load_rhs)));
-    }
+	}
 	else if(lhs.is_variable() && rhs.is_constant()){
 		unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 		result = dynamic_cast<Variable*>(block.create_op_right_shift(*(load_lhs), rhs));
@@ -1256,14 +1256,42 @@ void CodeGenVisitor::visit( Op_RightShift& token )
 
 void CodeGenVisitor::visit( Op_StringConcat& token )
 {
-	cout << "Op_StringConcat" << endl;
+	//cout << "Op_StringConcat" << endl;
+	visit_children(token);
 
+	// Get 2 arguments
+	Value& rhs = get_return_value(0);
+	Value& lhs = get_return_value(1);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// there is no constant
+	string load_arr_table = block.create_load_raw("%struct.array_table** @..array_table");
+	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
+	unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
+	Variable* result = dynamic_cast<Variable*>(block.create_op_str_conc(load_arr_table, *(load_lhs), *(load_rhs)));
+
+	curr_module.function_is_used("string-concat");
+
+	// Create the pointer that will contain the result
+	Variable* container = new Variable(builder.get_variable_manager(), 
+									   builder.get_variable_manager().insert_variable(result->get_name()), 
+									   result->get_type(), true);
+
+	unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
+
+	Value* after_store = block.create_store(*result, *ptr);
+	Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+
+	pop();
+	pop();
+
+	add_return(after_store_var);
 }
 
 
 void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 {
-	cout << "Op_PrefixIncrement" << endl;
+	//cout << "Op_PrefixIncrement" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1291,7 +1319,7 @@ void CodeGenVisitor::visit( Op_PrefixIncrement& token )
 
 void CodeGenVisitor::visit( Op_PrefixDecrement& token )
 {
-	cout << "Op_PrefixDecrement" << endl;
+	//cout << "Op_PrefixDecrement" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1320,7 +1348,7 @@ void CodeGenVisitor::visit( Op_PrefixDecrement& token )
 
 void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 {
-	cout << "Op_PostfixIncrement" << endl;
+	//cout << "Op_PostfixIncrement" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1358,7 +1386,7 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 
 void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 {
-	cout << "Op_PostfixDecrement" << endl;
+	//cout << "Op_PostfixDecrement" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1394,7 +1422,7 @@ void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 
 void CodeGenVisitor::visit( Op_Assignment& token )
 {
-	cout << "Op_Assignment" << endl;
+	//cout << "Op_Assignment" << endl;
 	visit_children(token);
 
 
@@ -1450,7 +1478,7 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 
 void CodeGenVisitor::visit( Op_AssignPlus& token )
 {
-	cout << "Op_AssignPlus" << endl;
+	//cout << "Op_AssignPlus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1462,11 +1490,11 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_plus(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_plus(*load_lhs, rhs));
 
@@ -1481,7 +1509,7 @@ void CodeGenVisitor::visit( Op_AssignPlus& token )
 
 void CodeGenVisitor::visit( Op_AssignMinus& token )
 {
-	cout << "Op_AssignMinus" << endl;
+	//cout << "Op_AssignMinus" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1493,11 +1521,11 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_minus(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_minus(*load_lhs, rhs));
 
@@ -1512,7 +1540,7 @@ void CodeGenVisitor::visit( Op_AssignMinus& token )
 
 void CodeGenVisitor::visit( Op_AssignMult& token )
 {
-	cout << "Op_AssignMult" << endl;
+	//cout << "Op_AssignMult" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1524,11 +1552,11 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_mult(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_mult(*load_lhs, rhs));
 
@@ -1543,7 +1571,7 @@ void CodeGenVisitor::visit( Op_AssignMult& token )
 
 void CodeGenVisitor::visit( Op_AssignDiv& token )
 {
-	cout << "Op_AssignDiv" << endl;
+	//cout << "Op_AssignDiv" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1555,11 +1583,11 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_div(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_div(*load_lhs, rhs));
 
@@ -1574,7 +1602,7 @@ void CodeGenVisitor::visit( Op_AssignDiv& token )
 
 void CodeGenVisitor::visit( Op_AssignExpo& token )
 {
-	cout << "Op_AssignExpo" << endl;
+	//cout << "Op_AssignExpo" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1586,11 +1614,11 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_expon(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_expon(*load_lhs, rhs));
 
@@ -1605,7 +1633,7 @@ void CodeGenVisitor::visit( Op_AssignExpo& token )
 
 void CodeGenVisitor::visit( Op_AssignMod& token )
 {
-	cout << "Op_AssignMod" << endl;
+	//cout << "Op_AssignMod" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1617,11 +1645,11 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_mod(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_mod(*load_lhs, rhs));
 
@@ -1636,7 +1664,7 @@ void CodeGenVisitor::visit( Op_AssignMod& token )
 
 void CodeGenVisitor::visit( Op_AssignAnd& token )
 {
-	cout << "Op_AssignAnd" << endl;
+	//cout << "Op_AssignAnd" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1648,11 +1676,11 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_and(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_bit_and(*load_lhs, rhs));
 
@@ -1667,7 +1695,7 @@ void CodeGenVisitor::visit( Op_AssignAnd& token )
 
 void CodeGenVisitor::visit( Op_AssignOr& token )
 {
-	cout << "Op_AssignOr" << endl;
+	//cout << "Op_AssignOr" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1679,11 +1707,11 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_or(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_bit_or(*load_lhs, rhs));
 
@@ -1698,7 +1726,7 @@ void CodeGenVisitor::visit( Op_AssignOr& token )
 
 void CodeGenVisitor::visit( Op_AssignXor& token )
 {
-	cout << "Op_AssignXor" << endl;
+	//cout << "Op_AssignXor" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1710,11 +1738,11 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
 		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*load_lhs, *load_rhs));
-    }
+	}
 	else
 		result = dynamic_cast<Variable*>(block.create_op_bit_xor(*load_lhs, rhs));
 
@@ -1729,7 +1757,7 @@ void CodeGenVisitor::visit( Op_AssignXor& token )
 
 void CodeGenVisitor::visit( Op_AssignConcat& token )
 {
-	cout << "Op_AssignConcat" << endl;
+	//cout << "Op_AssignConcat" << endl;
 	visit_children(token);
 
 	// Get 2 arguments
@@ -1741,13 +1769,14 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 	unique_ptr<Value> load_lhs = unique_ptr<Value>(block.create_load(lhs));
 
 	Variable* result;
-    if(rhs.is_variable())
-    {
+	string load_arr_table = block.create_load_raw("%struct.array_table** @..array_table");
+	if(rhs.is_variable())
+	{
 		unique_ptr<Value> load_rhs = unique_ptr<Value>(block.create_load(rhs));
-		result = dynamic_cast<Variable*>(block.create_op_str_conc(*load_lhs, *load_rhs));
-    }
+		result = dynamic_cast<Variable*>(block.create_op_str_conc(load_arr_table, *load_lhs, *load_rhs));
+	}
 	else
-		result = dynamic_cast<Variable*>(block.create_op_str_conc(*load_lhs, rhs));
+		result = dynamic_cast<Variable*>(block.create_op_str_conc(load_arr_table, *load_lhs, rhs));
 
 	Value* after_store = block.create_store(*result, lhs);
 
@@ -1759,12 +1788,12 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 
 
 /**************************
- * 		Constant token    *
+ * 		Constant token	*
  **************************/
 
 void CodeGenVisitor::visit( ast::String& token )
 {
-	cout << "String" << endl;
+	//cout << "String" << endl;
 	string val = token.value();
 
 	int nb_el = 0;
@@ -1795,8 +1824,8 @@ void CodeGenVisitor::visit( ast::String& token )
 	{
 
 		string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
-						    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
-						    ", " + llvmtype + " " + to_string((int)val[i]) + ")";
+							"(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
+							", " + llvmtype + " " + to_string((int)val[i]) + ")";
 
 		block.add_expression(push_call);
 	}
@@ -1812,40 +1841,40 @@ void CodeGenVisitor::visit( ast::String& token )
 
 void CodeGenVisitor::visit( Character& token )
 {
-	cout << "Character" << endl;
+	//cout << "Character" << endl;
 	ConstantChar* constant_char = new ConstantChar(token.value());
 	add_return(constant_char);
 }
 
 void CodeGenVisitor::visit( Integer& token )
 {
-	cout << "Integer" << endl;
+	//cout << "Integer" << endl;
 	ConstantInt* constant_int = new ConstantInt(token.value());
 	add_return(constant_int);
 }
 
 void CodeGenVisitor::visit( ast::Float& token )
 {
-	cout << "Float" << endl;
+	//cout << "Float" << endl;
 	ConstantFloat* constant_float = new ConstantFloat(token.value());
 	add_return(constant_float);
 }
 
 void CodeGenVisitor::visit( ast::Bool& token )
 {
-	cout << "Bool" << endl;
+	//cout << "Bool" << endl;
 	ConstantBool* constant_bool = new ConstantBool(token.value());
 	add_return(constant_bool);
 }
 
 
 /**************************************
- * 		Datastructure non-terminal    *
+ * 		Datastructure non-terminal	*
  **************************************/
 
 void CodeGenVisitor::visit( ast::Array& token )
 {
-	cout << "Array" << endl;
+	//cout << "Array" << endl;
 
 	// store all the elements into memory
 	visit_children(token);
@@ -1915,8 +1944,8 @@ void CodeGenVisitor::visit( ast::Array& token )
 			element_value = current_value;
 
 		string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
-						    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
-						    ", " + llvmtype + " " + element_value->str_value() + ")";
+							"(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
+							", " + llvmtype + " " + element_value->str_value() + ")";
 
 			block.add_expression(push_call);
 	}
@@ -1933,7 +1962,7 @@ void CodeGenVisitor::visit( ast::Array& token )
 
 void CodeGenVisitor::visit( ast::List& token )
 {
-	cout << "List" << endl;
+	//cout << "List" << endl;
 
 	// store all the elements into memory
 	visit_children(token);
@@ -2003,8 +2032,8 @@ void CodeGenVisitor::visit( ast::List& token )
 			element_value = current_value;
 
 		string push_call = "call void (%struct.list_table*, i64, " + llvmtype + ")* @" + push_func +
-						    "(%struct.list_table* %" + list_table + ", i64 " + list_id->str_value() +
-						    ", " + llvmtype + " " + element_value->str_value() + ")";
+							"(%struct.list_table* %" + list_table + ", i64 " + list_id->str_value() +
+							", " + llvmtype + " " + element_value->str_value() + ")";
 
 			block.add_expression(push_call);
 	}
@@ -2021,7 +2050,7 @@ void CodeGenVisitor::visit( ast::List& token )
 
 void CodeGenVisitor::visit( MakeSequenceList& token )
 {
-	cout << "MakeSequenceList" << endl;
+	//cout << "MakeSequenceList" << endl;
 	visit_children(token);
 
 	// normally two symbol were pushed
@@ -2062,7 +2091,7 @@ void CodeGenVisitor::visit( MakeSequenceList& token )
 
 void CodeGenVisitor::visit( MakeSequenceArray& token )
 {
-	cout << "MakeSequenceArray" << endl;
+	//cout << "MakeSequenceArray" << endl;
 	visit_children(token);
 
 	// normally two symbol were pushed
@@ -2102,12 +2131,12 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 
 
 /************************************
- * 		Declaration non-terminal    *
+ * 		Declaration non-terminal	*
  ************************************/
 
 void CodeGenVisitor::visit( DeclFunc& token )
 {
-	cout << "DeclFunc" << endl;
+	//cout << "DeclFunc" << endl;
 	int index = 0;
 
 	// Visit 1st child : Identifier
@@ -2149,14 +2178,14 @@ void CodeGenVisitor::visit( DeclFunc& token )
 
 void CodeGenVisitor::visit( DeclVars& token )
 {
-	cout << "DeclVars" << endl;
+	//cout << "DeclVars" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( DeclVar& token )
 {
-	cout << "DeclVar" << endl;
+	//cout << "DeclVar" << endl;
 	visit_children(token);
 
 	// Expression
@@ -2217,14 +2246,14 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 void CodeGenVisitor::visit( ParamList& token )
 {
-	cout << "ParamList" << endl;
+	//cout << "ParamList" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Param& token )
 {
-	cout << "Param" << endl;
+	//cout << "Param" << endl;
 	// Only visit the first child
 	token.get_children().at(0)->accept(*this);
 }
@@ -2232,33 +2261,33 @@ void CodeGenVisitor::visit( Param& token )
 
 
 /***********************************
- * 		Expression non-terminal    *
+ * 		Expression non-terminal	*
  ***********************************/
 
 void CodeGenVisitor::visit( Expression& token )
 {
-	cout << "Expression" << endl;
+	//cout << "Expression" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( ast::ExpressionList& token )
 {
-	cout << "ExpressionList" << endl;
+	//cout << "ExpressionList" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( ModifyingExpression& token )
 {
-	cout << "ModifyingExpression" << endl;
+	//cout << "ModifyingExpression" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( DatastructureAccess& token )
 {
-	cout << "DatastructureAccess" << endl;
+	//cout << "DatastructureAccess" << endl;
 	visit_children(token);
 	//is a constant
 	Value& index = get_return_value(0);
@@ -2323,12 +2352,12 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 
 
 /*************************************
- * 		FunctionCall non-terminal    *
+ * 		FunctionCall non-terminal	*
  *************************************/
 
 void CodeGenVisitor::visit( FuncCall& token )
 {
-	cout << "FuncCall" << endl;
+	//cout << "FuncCall" << endl;
 	// Visit children :
 	// - 1st child : IDENTIFIER
 	// - 2nd child : Argument list -> get ID's
@@ -2398,21 +2427,21 @@ void CodeGenVisitor::visit( FuncCall& token )
 
 void CodeGenVisitor::visit( ArgList& token )
 {
-	cout << "ArgList" << endl;
+	//cout << "ArgList" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Argument& token )
 {
-	cout << "Argument" << endl;
+	//cout << "Argument" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( SoyFunc& token )
 {
-	cout << "SoyFunc" << endl;
+	//cout << "SoyFunc" << endl;
 	visit_children(token);
 	// // Create new FunctionBlock
 	// string function_name = token.get_name(),
@@ -2452,19 +2481,19 @@ void CodeGenVisitor::visit( SoyFunc& token )
 }
 
 /********************************
- * 		Program non-terminal    *
+ * 		Program non-terminal	*
  ********************************/
 
 void CodeGenVisitor::visit( Program& token )
 {
-	cout << "Program" << endl;
+	//cout << "Program" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Scope& token )
 {
-	cout << "Scope" << endl;
+	//cout << "Scope" << endl;
 	size_t id_scope = token.get_scope_id();
 
 	function_table.move_to_scope(id_scope);
@@ -2527,19 +2556,19 @@ void CodeGenVisitor::visit( Scope& token )
 
 
 /**********************************
- * 		Statement non-terminal    *
+ * 		Statement non-terminal	*
  **********************************/
 
 void CodeGenVisitor::visit( Statement& token )
 {
-	cout << "Statement" << endl;
+	//cout << "Statement" << endl;
 	visit_children(token);
 }
 
 
 void CodeGenVisitor::visit( Return& token )
 {
-	cout << "Return" << endl;
+	//cout << "Return" << endl;
 	//FunctionBlock& function = curr_module.get_function(curr_func_name);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	size_t id_scope = function_table.curr_scope_id();
@@ -2676,7 +2705,7 @@ void CodeGenVisitor::visit( Return& token )
 
 void CodeGenVisitor::visit( Menu& token )
 {
-	cout << "Menu" << endl;
+	//cout << "Menu" << endl;
 
 	token.get_expression().accept(*this);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
@@ -2759,20 +2788,20 @@ void CodeGenVisitor::visit( ast::MenuBody& )
 
 void CodeGenVisitor::visit( MenuDef& token )
 {
-	cout << "MenuDef" << endl;
+	//cout << "MenuDef" << endl;
 	visit_children(token);
 
 }
 
 void CodeGenVisitor::visit( MenuCase& token )
 {
-	cout << "MenuCase" << endl;
+	//cout << "MenuCase" << endl;
 
 }
 
 void CodeGenVisitor::visit( Roll& token )
 {
-	cout << "Roll" << endl;
+	//cout << "Roll" << endl;
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
@@ -2817,14 +2846,14 @@ void CodeGenVisitor::visit( Roll& token )
 
 void CodeGenVisitor::visit( Foreach& token )
 {
-	cout << "Foreach" << endl;
+	//cout << "Foreach" << endl;
 
 }
 
 
 void CodeGenVisitor::visit( For& token )
 {
-	cout << "For" << endl;
+	//cout << "For" << endl;
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
@@ -2879,7 +2908,7 @@ void CodeGenVisitor::visit( For& token )
 
 void CodeGenVisitor::visit( ForInitializer& token )
 {
-	cout << "ForInitializer" << endl;
+	//cout << "ForInitializer" << endl;
 	visit_children(token);
 
 }
@@ -2887,7 +2916,7 @@ void CodeGenVisitor::visit( ForInitializer& token )
 
 void CodeGenVisitor::visit( ForUpdate& token )
 {
-	cout << "ForUpdate" << endl;
+	//cout << "ForUpdate" << endl;
 	visit_children(token);
 
 }
@@ -2895,7 +2924,7 @@ void CodeGenVisitor::visit( ForUpdate& token )
 
 void CodeGenVisitor::visit( Conditional& token )
 {
-	cout << "Conditional" << endl;
+	//cout << "Conditional" << endl;
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	string end_if_label = label_manager.insert_label("end_if");
 
@@ -2915,7 +2944,7 @@ void CodeGenVisitor::visit( Conditional& token )
 
 void CodeGenVisitor::visit( Elseif& token )
 {
-	cout << "Elseif" << endl;
+	//cout << "Elseif" << endl;
 	// In current block, add operations to compute the condition and the branch
 	token.get_expression().accept(*this);
 	Value& result_comp = top(); // Return the variable where the result is stored
@@ -2946,7 +2975,7 @@ void CodeGenVisitor::visit( Elseif& token )
 
 void CodeGenVisitor::visit( ast::If& token )
 {
-	cout << "If" << endl;
+	//cout << "If" << endl;
 	// In current block, add operations to compute the condition and the branch
 	token.get_expression().accept(*this);
 	Value& result_comp = top(); // Return the variable where the result is stored
@@ -2982,7 +3011,7 @@ void CodeGenVisitor::visit( ast::If& token )
 
 void CodeGenVisitor::visit( ast::Else& token )
 {
-	cout << "Else" << endl;
+	//cout << "Else" << endl;
 	token.get_scope().accept(*this);
 
 	curr_module.get_function(curr_func_name).get_last_block().create_branch(label_manager.get_last_occurence("end_if"));
@@ -2991,7 +3020,7 @@ void CodeGenVisitor::visit( ast::Else& token )
 
 
 /************************
- * 		Default case    *
+ * 		Default case	*
  ************************/
 void CodeGenVisitor::visit( ASTNode& token )
 {
@@ -3015,7 +3044,7 @@ void CodeGenVisitor::print(ostream& out)
 
 
 /************************
- * 		   Vector       *
+ * 		   Vector	   *
  ************************/
 
 void CodeGenVisitor::add_return(Value* value)

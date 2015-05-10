@@ -140,11 +140,11 @@ void SppCompiler::scope_checking()
 	visitor::SymbolTableVisitor var_visitor(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(var_visitor);
 
-	std::cout<<"FUNCTION TABLE"<<std::endl;
-	function_table.print_table();
+	// std::cout<<"FUNCTION TABLE"<<std::endl;
+	// function_table.print_table();
 
-	std::cout<<"VARIABLE TABLE"<<std::endl;
-	variable_table.print_table();
+	// std::cout<<"VARIABLE TABLE"<<std::endl;
+	// variable_table.print_table();
 }
 
 void SppCompiler::inference()

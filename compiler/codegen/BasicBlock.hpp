@@ -49,7 +49,7 @@ namespace codegen
         Value* create_op_cmp_neq(Value&, Value&);
         Value* create_op_left_shift(Value&, Value&);
         Value* create_op_right_shift(Value&, Value&);
-        Value* create_op_str_conc(Value&, Value&);
+        Value* create_op_str_conc(const std::string&, Value&, Value&);
         Value* create_op_pref_incr(Value&);
         Value* create_op_pref_decr(Value&);
         Value* create_op_post_incr(Value&);
@@ -69,7 +69,7 @@ namespace codegen
 
         // store Value* in variable
         Value* create_store(Value&, Value&);
-        Value* create_func_store(Value&, Value&);
+        //Value* create_func_store(Value&, Value&);
         // load the value
         Value* create_load(Value&);
         /**

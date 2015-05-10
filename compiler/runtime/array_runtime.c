@@ -930,7 +930,7 @@ size_t string_concat(struct array_table* table, size_t arrid1, size_t arrid2)
 	struct array_descriptor* new_desc = find_array_descriptor(table, new_array);
 
 	for(size_t i = 0; i < desc2->array_size; ++i)
-		array_insert_value(new_desc, new_desc->array_size, ((char*)new_desc->array_ptr) + i);
+		array_insert_value(new_desc, new_desc->array_size, ((char*)desc2->array_ptr) + i);
 
 	return new_array;
 }

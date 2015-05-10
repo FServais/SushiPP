@@ -55,7 +55,8 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("print-string",			{ "to_print" }, { STRING }, VOID, NO_TYPE, ARRAY_RUNTIME);
 	insert_function("println-string",		{ "to_print" }, { STRING }, VOID, NO_TYPE, ARRAY_RUNTIME);
 	insert_function("string-concat",		{ "to_print" }, { STRING, STRING }, STRING, NO_TYPE, ARRAY_RUNTIME);
-	insert_function("string-len", 			{ "str" }, { STRING }, INT, NO_TYPE, STRING_RUNTIME);
+	insert_function("string-len", 			{ "str" }, { STRING }, INT, NO_TYPE, ARRAY_RUNTIME);
+	insert_function("string-get-char", 		{ "str" }, { STRING }, CHAR, NO_TYPE, ARRAY_RUNTIME);
 
 	/** List functions */
 	insert_function("list-size-bool", 			{ "list" }, { LIST }, INT, BOOL, LIST_RUNTIME);
@@ -124,12 +125,10 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("print-int", 	{ "to_print" }, { INT }, VOID, NO_TYPE, SUPPORT);
 	insert_function("print-float", 	{ "to_print" }, { FLOAT }, VOID, NO_TYPE, SUPPORT);
 	insert_function("print-char", 	{ "to_print" }, { CHAR }, VOID, NO_TYPE, SUPPORT);
-	insert_function("print-string", { "to_print" }, { STRING }, VOID, NO_TYPE, SUPPORT);
 	insert_function("println-bool", 	{ "to_print" }, { BOOL }, VOID, NO_TYPE, SUPPORT);
-	insert_function("println-int", 	{ "to_print" }, { INT }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-int", 		{ "to_print" }, { INT }, VOID, NO_TYPE, SUPPORT);
 	insert_function("println-float", 	{ "to_print" }, { FLOAT }, VOID, NO_TYPE, SUPPORT);
 	insert_function("println-char", 	{ "to_print" }, { CHAR }, VOID, NO_TYPE, SUPPORT);
-	insert_function("println-string", { "to_print" }, { STRING }, VOID, NO_TYPE, SUPPORT);
 
 	/** String functions */
 
