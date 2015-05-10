@@ -1,3 +1,4 @@
+#include <iostream>
 #include "RemoveReferenceFlags.hpp"
 
 using namespace std;
@@ -36,4 +37,12 @@ vector<string> RemoveReferenceFlags::pop_vars_at_scope(const int scope_id)
     entries.erase(entries.begin() + entries.size() - num_to_pop, entries.end());
 
     return list;
+}
+
+void RemoveReferenceFlags::print() const
+{
+    cout << "-------REF-------" << endl;
+    for(auto& pair : entries)
+        cout << "<" << pair.first << " ; " << pair.second << ">" << endl;
+    cout << "-------END-------" << endl;
 }

@@ -2349,6 +2349,14 @@ void CodeGenVisitor::visit( Scope& token )
 
 	visit_children(token);
 
+	cout << ">>> Array <<<" << endl;
+	array_rm_ref_flags.print();
+	cout << endl;
+
+	cout << ">>> List <<<" << endl;
+	list_rm_ref_flags.print();
+	cout << endl;
+
 	// Add free of array/list
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
