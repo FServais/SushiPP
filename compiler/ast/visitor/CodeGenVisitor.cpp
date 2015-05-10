@@ -1793,86 +1793,88 @@ void CodeGenVisitor::visit( ast::Bool& token )
 void CodeGenVisitor::visit( ast::Array& token )
 {
 	cout << "Array" << endl;
-	int nb_el = 0;
+
+	// store all the elements into memory
+	visit_children(token);
+
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	if(!token.empty_items())
+	size_t array_size;
+	
+	if(!token.empty_items()) // empty array
+		array_size = dynamic_cast<ExpressionList&>(token.get_items()).nb_expressions();
+	else
+		array_size = 0;
+
+	// get the Value containint the elements to store in the array
+	vector<shared_ptr<Value>> array_elements = get_n_return_values(array_size);
+
+	string ctype, llvmtype; // the c type and llvm of the array elements
+	shared_ptr<typegen::Type> array_subtype(type_table.get_type(token.get_type_id())),
+							  array_type(new typegen::List(array_subtype));
+
+	switch(array_subtype->get_type())
 	{
-		visit_children(token);
-		ExpressionList& expr_array = dynamic_cast<ExpressionList&>(token.get_items());
-		nb_el = expr_array.nb_expressions();
-
-
-		vector<shared_ptr<Value>> array_elements = get_n_return_values(nb_el);
-		std::string ctype, llvmtype; // the c type and llvm of the array elements
-		shared_ptr<typegen::Type> array_subtype(array_elements[0]->get_type()),
-								  array_type(new typegen::Array(array_subtype));
-
-		switch(array_subtype->get_type())
-		{
-		case inference::FLOAT:
-			ctype = "float";
-			llvmtype = "float";
-			break;
-		case inference::CHAR:
-			ctype = "char";
-			llvmtype = "i8";
-			break;
-		case inference::BOOL:
-			ctype = "bool";
-			llvmtype = "i1";
-			break;
-		case inference::INT:
-			ctype = "int";
-			llvmtype = "i64";
-			break;
-		default:
-			ctype = "string";
-			llvmtype = "i64";
-			break;
-		}
-
-		// load the address of the array table
-		string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
-				alloc_func = "array_allocate_" + ctype,
-				spp_push_func = "array-push-" + ctype,
-				push_func = Module::get_llvm_function_name(spp_push_func, true),
-				alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, i64* null)";
-
-		// notify the module that the allocate function is used
-		curr_module.function_is_used(alloc_func);
-		curr_module.function_is_used(spp_push_func);
-
-		// create the array
-		unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_type));
-
-		// add the elements in the array
-		for(auto current_value : array_elements)
-		{
-			shared_ptr<Value> element_value; // the value to pass to the push function call
-
-			if(current_value->is_variable())
-				element_value = shared_ptr<Value>(block.create_load(*current_value));
-			else
-				element_value = current_value;
-
-			string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
-							    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
-							    ", " + llvmtype + " " + element_value->str_value() + ")";
-
- 			block.add_expression(push_call);
-		}
-
-		pop_n_return_values(expr_array.nb_expressions());
-
-		// store the array id into memory
-		unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
-		unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
-		Value* id_addr = block.create_store(*array_id, *tmp_id_addr);
-		add_return(id_addr);
+	case inference::FLOAT:
+		ctype = "float";
+		llvmtype = "float";
+		break;
+	case inference::CHAR:
+		ctype = "char";
+		llvmtype = "i8";
+		break;
+	case inference::BOOL:
+		ctype = "bool";
+		llvmtype = "i1";
+		break;
+	case inference::INT:
+		ctype = "int";
+		llvmtype = "i64";
+		break;
+	default:
+		ctype = "string";
+		llvmtype = "i64";
+		break;
 	}
 
+	// load the address of the array table
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
+			alloc_func = "array_allocate_" + ctype,
+			spp_push_func = "array-push-" + ctype,
+			push_func = Module::get_llvm_function_name(spp_push_func, true),
+			alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, i64* null)";
 
+	// notify the module that the allocate function is used
+	curr_module.function_is_used(alloc_func);
+	curr_module.function_is_used(spp_push_func);
+
+	// create the array
+	unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_type));
+
+	// add the elements in the array
+	for(auto current_value : array_elements)
+	{
+		shared_ptr<Value> element_value; // the value to pass to the push function call
+
+		if(current_value->is_variable())
+			element_value = shared_ptr<Value>(block.create_load(*current_value));
+		else
+			element_value = current_value;
+
+		string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
+						    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
+						    ", " + llvmtype + " " + element_value->str_value() + ")";
+
+			block.add_expression(push_call);
+	}
+
+	pop_n_return_values(array_size);
+
+	// store the array id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Value* id_addr = block.create_store(*array_id, *tmp_id_addr);
+	add_return(id_addr);
 }
 
 
@@ -2266,8 +2268,6 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	pop();
 	add_return(id_addr);
 	
-
-
 }
 
 
@@ -2307,7 +2307,7 @@ void CodeGenVisitor::visit( FuncCall& token )
 
 	// Get values from arguments
 	vector<shared_ptr<Value>> args_value;
-	for(auto arg = args.rbegin() ; arg != args.rend() ; ++arg)
+	for(auto arg = args.begin() ; arg != args.end() ; ++arg)
 	{
 		shared_ptr<Value> arg_ptr = *arg;
 		if(arg_ptr->is_constant())

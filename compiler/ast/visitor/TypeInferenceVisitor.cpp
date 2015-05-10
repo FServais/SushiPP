@@ -1731,7 +1731,6 @@ void TypeInferenceVisitor::visit( ast::List& list )
 		list.get_items().accept(*this);
 	}
 
-
 	params.ret();
 }
 
