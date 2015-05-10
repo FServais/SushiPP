@@ -145,7 +145,7 @@ void CodeGenVisitor::visit( K_Break& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	block.add_expression("br label "+end_loop);
+	block.add_expression("br label %"+end_loop);
 
 
 }
@@ -159,7 +159,7 @@ void CodeGenVisitor::visit( K_Continue& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	block.add_expression("br label "+beg_loop);
+	block.add_expression("br label %"+beg_loop);
 
 }
 
