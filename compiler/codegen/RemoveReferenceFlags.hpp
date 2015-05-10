@@ -37,6 +37,8 @@ namespace codegen
          */
         std::vector<std::string> pop_vars_at_scope(const int);
 
+        void print() const;
+
     private:
         std::vector<std::pair<std::string, int>> entries;
 

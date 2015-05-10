@@ -28,6 +28,11 @@ string Function::str_name() const
     return ss.str();
 }
 
+std::string Function::str_value()
+{
+    return get_signature();
+}
+
 shared_ptr<typegen::Type> Function::get_type_nth_argument(int n)
 {
     return args[n]->get_type();
@@ -136,4 +141,3 @@ int Function::nb_args() const
 {
     return args.size();
 }
-
