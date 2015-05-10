@@ -296,7 +296,29 @@ The \textit{Sushi++} language provides three kinds of loop.
 	\end{minipage}
 \end{center}
 \subsubsection{Conditionals}
+The language provides conditions statements similarly to other languages like C. A conditional begins with an if control statement, optionally followed by elseif or else statements. 
+\begin{center}
+	\begin{minipage}{0.35\linewidth}
+		\texttt{if} \textit{expression} \\
+				\text{ }\text{ }\text{ }\text{ }\textit{scope}\\
+		\texttt{elseif} \textit{expression} \\
+				\text{ }\text{ }\text{ }\text{ }\textit{scope}\\
+		\texttt{else} \textit{expression} \\
+				\text{ }\text{ }\text{ }\text{ }\textit{scope}\\
+		\texttt{;;}\\
+	\end{minipage}
+\end{center}
 \subsubsection{Switch}
+The Sushi++ language provides a switch like statement, menu. A certain expression is evaluated : each case denotes an expression and some instructions to perform if the expression of the case matches the value which is evaluated. The default case is denoted by an underscore.
+\begin{center}
+	\begin{minipage}{0.35\linewidth}
+		\texttt{menu} \textit{expression} \\
+		\text{ }\text{ }\text{ }\text{ } \textit{expression} \texttt{->} \textit{scope} \texttt{;;} \\
+		\text{ }\text{ }\text{ }\text{ } \textit{expression} \texttt{->} \textit{scope} \texttt{;;} \\
+		\text{ }\text{ }\text{ }\text{ } \texttt{\_} \texttt{->} \textit{scope} \texttt{;;} \\	
+		\texttt{;;}\\
+	\end{minipage}
+\end{center}
 \section{Compiler}
 \label{sec:compiler}
 \subsection{General information}
@@ -579,6 +601,7 @@ The values we are manipulating are all stored in memory, we are thus managing po
 \begin{itemize}
 	\item Return : The reasoning is the same as before, where it simply loads the needed values and call the corresponding method in the block to create a return.
 	\item Conditional/If/Elesif/Else : It first appends the condition of the if to the current block and creates a conditional branch depending on the value of the condition, if the result is true, branch on the block with hte prefix "if\_true", and on "if\_false" otherwise. The block "if\_true" is first created, fulfilled, add a branch to the "end\_if" block and then the "if\_false" block is inserted. If there is any Elseif or Else condition, they are inserted in the same way. Finally, the "end\_if" block is inserted.
+	\item Loop : The initialization is first done. Afterwards, the condition is checked and two blocks are created : "label\_true" (which contains the body) and "label\_false" (which is the way out of the loop). 
 \end{itemize}
 
 
