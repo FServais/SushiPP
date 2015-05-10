@@ -41,11 +41,11 @@ void FunctionBlock::dump(ostream& out) const
         block->dump(out);
         out << endl;
     }
-    
+
     if(function_type->get_ret_type()->is_void())
         out << "\tret void" << endl;
-    else if(name == "main")
-        out << "\tret i64 0" << endl;
+    else
+        out << "\tret " << function_type->get_ret_type()->to_str() << " 0" << endl;
     //out << "\tret " << function_type->get_ret_type()->to_str() << " " << return_value << endl;
     out << "}" << endl;
 }

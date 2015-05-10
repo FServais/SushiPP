@@ -2777,7 +2777,7 @@ void CodeGenVisitor::visit( For& token )
 	if(! token.empty_initializer())
 		token.get_initializer().accept(*this);
 	// jump to loop
-	string jump0 = "br label %begin_loop";
+	string jump0 = "br label %" + begin_loop;
 	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
 	block0.add_expression(jump0);
 
