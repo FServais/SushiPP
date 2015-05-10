@@ -99,6 +99,12 @@ namespace codegen
         Value* create_func_call(Value&);
 
         /**
+         * @brief Create a return line
+         * @param Value& value The value to return
+         */
+        void create_return(Value&);
+
+        /**
          * @Brief Add a new line at the end of the block
          * @param const std::string& expr The LLVM expression
          * @param const std::string& ret The name of the variable in which the result of the expression must be stored (optionnal)

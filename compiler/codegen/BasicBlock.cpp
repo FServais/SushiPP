@@ -509,6 +509,15 @@ Value* BasicBlock::create_func_call(Value& value)
 }
 
 
+void BasicBlock::create_return(Value& value)
+{
+    stringstream ss;
+    ss << "ret " << value.str_type() << " "<< value.str_value();
+
+    add_line(ss.str());
+}
+
+
 void BasicBlock::add_line(string line)
 {
     lines.push_back(line);
