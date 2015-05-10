@@ -289,7 +289,7 @@ void SppCompiler::executable_generation()
 		return;
     }
 
-    if(!config.do_dump_llvm_in_file() && execute_cmd("rm + " + prog_file + ".ll"))
+    if(!config.do_dump_llvm_in_file() && execute_cmd("rm " + prog_file + ".ll"))
     {
     	error_handler.add_gen_error("", "Cannot delete temporary llvm file...");
     	return;

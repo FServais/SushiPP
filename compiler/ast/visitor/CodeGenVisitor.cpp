@@ -63,6 +63,16 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("list_make_sequence", Module::make_declare("list_make_sequence", "i64", { "%struct.list_table*", "i64", "i64"}));
 	curr_module.add_declaration("array_make_sequence", Module::make_declare("array_make_sequence", "i64", { "%struct.array_table*", "i64", "i64"}));
 
+	// add reference counting function
+	curr_module.add_declaration("list_add_reference", Module::make_declare("list_add_reference", "void", { "%struct.list_table*", "i64"}));
+	curr_module.add_declaration("list_rm_reference", Module::make_declare("list_rm_reference", "void", { "%struct.list_table*", "i64"}));
+	curr_module.add_declaration("array_add_reference", Module::make_declare("array_add_reference", "void", { "%struct.array_table*", "i64"}));
+	curr_module.add_declaration("array_rm_reference", Module::make_declare("array_rm_reference", "void", { "%struct.array_table*", "i64"}));
+	curr_module.function_is_used("list_add_reference");
+	curr_module.function_is_used("list_rm_reference");
+	curr_module.function_is_used("array_add_reference");
+	curr_module.function_is_used("array_rm_reference");
+
 	// add main function
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);

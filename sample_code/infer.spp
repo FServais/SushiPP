@@ -27,5 +27,7 @@ $call print-bool (incr2 == 0)
 $call print-bool (c == 0)
 $call print-int (a)
 $call print-int (b)
-maki k = #[ 1 to 3 ]#
+maki k = #[ 1 to 3 ]#, b = k
+
 call print-int (call array-size-int k)
+call print-int (call array-size-int b)
