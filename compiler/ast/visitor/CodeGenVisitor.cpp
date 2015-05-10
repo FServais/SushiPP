@@ -2250,7 +2250,13 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 
 	curr_module.function_is_used("array_get_"+ctype);
 
-	add_return(block.add_expression(get_val, "ret", type));
+	Variable* ret = block.add_expression(get_val, "ret", type);
+	// store the ret value into memory
+	unique_ptr<Variable> tmp_ret_addr_var(new Variable(builder.get_variable_manager(), "tmp_ret_addr", type));
+	unique_ptr<Value> tmp_ret_addr(block.create_decl_var(*tmp_ret_addr_var));
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
+
+	add_return(id_addr);
 	pop();
 	pop();
 
