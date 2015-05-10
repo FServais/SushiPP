@@ -36,26 +36,20 @@ $ pivot 		 Index of the pivot (pivot >= item_index) pivot must be the last item 
 $ boundary_index Index of the element following the last element smaller than the pivot (item_index >= boundary_index)
 $ item_index     Index of the current item to partition
 maki partition array pivot boundary_index item_index :
-	if item_index >= pivot
+	if item_index == pivot
 		call array-swap array boundary_index pivot
+		call println-int boundary_index
 		nori boundary_index
 	;;
-
-	call println-int pivot
-	call println-int item_index
-	call println-int boundary_index
-	call print-array array
-	call println-char '\n'
 
 	$ compare item index to the pivot
 	if array[item_index] < array[pivot]
 		call array-swap array boundary_index item_index
-		call partition array pivot (++boundary_index) (++item_index)
+		nori (call partition array pivot (++boundary_index) (++item_index))
 	else
-		call partition array pivot boundary_index (++item_index)
+		nori (call partition array pivot boundary_index (++item_index))
 	;;
 
-	nori boundary_index
 ;;
 
 $ Sort the array range with the quicksort algorithm
@@ -88,6 +82,4 @@ maki quicksort array :
 
 maki array = #[ 18, 33, 25, 45, 76, 89, 18, 19 ]#
 
-call print-array array
 call quicksort array
-call print-array array
