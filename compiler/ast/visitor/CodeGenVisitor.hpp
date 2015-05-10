@@ -196,6 +196,8 @@ namespace visitor
 		inference::TypeSymbolTable& type_table;
 		settings::BuiltInFunctions& built_in;
 
+		std::vector<std::pair<std::string, std::string> > loops_manager;
+
 		/* Vector */
 		std::vector<std::shared_ptr<codegen::Value>> return_vector;
 

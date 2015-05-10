@@ -140,6 +140,13 @@ void CodeGenVisitor::visit( Identifier& token )
 void CodeGenVisitor::visit( K_Break& token )
 {
 	cout << "K_Break" << endl;
+	int size = loops_manager.size();
+	string end_loop = loops_manager[size-1].second;
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	block.add_expression("br label "+end_loop);
+
 
 }
 
@@ -147,6 +154,12 @@ void CodeGenVisitor::visit( K_Break& token )
 void CodeGenVisitor::visit( K_Continue& token )
 {
 	cout << "K_Continue" << endl;
+	int size = loops_manager.size();
+	string beg_loop = loops_manager[size-1].first;
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	block.add_expression("br label "+beg_loop);
 
 }
 
@@ -2657,6 +2670,8 @@ void CodeGenVisitor::visit( Roll& token )
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
+	loops_manager.push_back(make_pair(begin_loop, label_false));
+	int index = loops_manager.size()-1;
 	string jump0 = "br label %"+begin_loop;
 	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
 	block0.add_expression(jump0);
@@ -2687,6 +2702,7 @@ void CodeGenVisitor::visit( Roll& token )
 	block2.add_expression(jump);
 
 	curr_function.add_block(label_false);
+	loops_manager.pop_back();
 	pop();
 
 
@@ -2706,6 +2722,8 @@ void CodeGenVisitor::visit( For& token )
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
+	loops_manager.push_back(make_pair(begin_loop, label_false));
+	int index = loops_manager.size()-1;
 	// init
 	if(! token.empty_initializer())
 		token.get_initializer().accept(*this);
@@ -2747,6 +2765,8 @@ void CodeGenVisitor::visit( For& token )
 	block2.add_expression(jump);
 
 	curr_function.add_block(label_false);
+	loops_manager.pop_back();
+
 
 	pop();
 
