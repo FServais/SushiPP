@@ -67,12 +67,12 @@ namespace ast
 		 * @param Scope* scope The scope to execute when the case is matched
 		 * @þaram Expression* expr The matching expression
 		 */
-		MenuCase(Scope*,ASTNode*);
-		MenuCase(Scope*,ASTNode*,int,int,int,int);
-		MenuCase(Scope*,ASTNode*,const NodeLocation&);
+		MenuCase(Scope*,Expression*);
+		MenuCase(Scope*,Expression*,int,int,int,int);
+		MenuCase(Scope*,Expression*,const NodeLocation&);
 
 		Scope& get_scope();
-		ASTNode& get_expression();
+		Expression& get_expression();
 
 		virtual void accept(visitor::ASTVisitor&);
 	};
