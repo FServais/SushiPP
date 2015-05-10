@@ -42,9 +42,9 @@ maki merge list1<list> list2<list> :
 ;;
 
 maki merge-sort list<list> :
-	
+
 	if (call size list) <= 1
-		nori list 
+		nori list
 	;;
 
 	maki right = list, left = {}
@@ -61,9 +61,10 @@ maki merge-sort list<list> :
 ;;
 
 maki print-list list<list> :
-	foreach list as element
-		call print-int element
-		call print-string " "
+	maki i = 0
+	for , i < (call list-size-int list), ++i
+		call print-int (call list-get-int list i)
+		call print-char ' '
 	;;
 ;;
 

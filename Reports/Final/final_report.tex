@@ -81,7 +81,7 @@
 \textbf{Magera Floriane}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
 {\small Option : Computer systems and networks}\\
-{\small s111295} \\ 
+{\small s111295} \\
 \textbf{Servais Fabrice}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
 {\small Option : Computer systems and networks}\\
@@ -104,7 +104,7 @@ Academic year 2014-2015\\
 \newpage
 \setcounter{page}{1}
 \section{Introduction}
-In the context of the course INFO0085, we had to develop a compiler for a handmade programming language called \textbf{Sushi++}. This language is garbage-collected and halfway between a functional and an imperative language of which the keywords are inspired from the \textit{sushi food} lexical field. The first part of the report describes both syntax and semantic of the language (section \ref{sec:language}) and the second details the compiler organization and algorithms (section \ref{sec:compiler}). The Section \ref{sec:runtime} presents the organization of the small runtime library handling the garbage collector. Finally, in the Section \ref{sec:limit}, the improvements that could be made are discussed.
+In the context of the course INFO0085, we had to develop a compiler for a handmade programming language called \textbf{Sushi++}. This language is garbage-collected and halfway between a functional and an imperative language of which the keywords are inspired from the \textit{sushi food} lexical field. The first part of the report describes both syntax and semantic of the language (section \ref{sec:language}) and the second details the compiler organization and algorithms (section \ref{sec:compiler}). The Section \ref{sec:runtime} presents the organization of the small runtime library handling the garbage collector. Finally, in the Section \ref{sec:improv}, the improvements that could be made are discussed.
 \section{Language}
 \label{sec:language}
 \subsection{General information}
@@ -126,7 +126,7 @@ The \textit{Sushi++} language is a strongly and statically typed language. Never
 \subsubsection{Arrays}
 \label{sssec:arrays}
 \paragraph{Idea}
-The \texttt{array} type represents a sequence of elements having a given type \textit{T} and that are stored sequentially in the memory. This structure has the same behaviour as a vector data structure in terms of complexity. The \textit{Sushi++} arrays cannot store any type of data, \textit{T} can only be one among : \texttt{int}, \texttt{float}, \texttt{char}, \texttt{string}, \texttt{bool}. The index of an array is an integer in the interval $[0, \text{array size}[$. Arrays are passed to function and returned by reference (they are never copied).
+The \texttt{array} type represents a sequence of elements having a given type \textit{T} and that are stored sequentially in the memory. This structure has the same behaviour as a vector data structure in terms of complexity. The \textit{Sushi++} arrays cannot stored any type of data, \textit{T} can only be one among : \texttt{int}, \texttt{float}, \texttt{char}, \texttt{string}, \texttt{bool}. The index of an array is an integer in the interval $[0, \text{array size}]$. Arrays are passed to function and returned by reference (they are never copied).
 \paragraph{Syntax}
 To construct an array, its elements must be listed between the array delimiters \texttt{\#[} and \texttt{]\#} and separated by commas  :
 \begin{itemize}
@@ -148,7 +148,7 @@ A set of built-in functions are provided to the programmer to handle arrays. The
 	\item \texttt{void array\_set\_T(array A, int i, T element)} : replace the element at the position \texttt{i} by \texttt{element}
 	\item \texttt{void array\_insert\_T(array A, int i, T element)} : insert \texttt{element} at the position \texttt{i}
 \end{itemize}
-\paragraph{Memory} Arrays are \textbf{heap-allocated} and their memory is managed at runtime with a garbage collector (see Section \ref{sec:runtime}).
+\paragraph{Memory} Arrays are \textbf{heap-allocated} and their memory is managed at runtime with a garbage collector (see Section \ref{ssec:garabage_collector}).
 
 \subsubsection{Lists}
 \label{sssec:lists}
@@ -173,7 +173,7 @@ Lists \textit{cannot} be accessed with the array-access operator. Nevertheless, 
 	\item \texttt{void list\_insert\_T(List l, int pos, T elem)} : insert an element at the given position of the list
 	\item \texttt{T list\_remove\_T(List l, int pos)} : remover the element at the given position of the list
 \end{itemize}
-\paragraph{Memory} Lists are \textbf{heap-allocated} and their memory is managed at runtime with a garbage collector (see Section \ref{sec:runtime}).
+\paragraph{Memory} Lists are \textbf{heap-allocated} and their memory is managed at runtime with a garbage collector (see Section \ref{ssec:garabage_collector}).
 
 \subsection{Declarations}
 
@@ -194,7 +194,7 @@ The \textit{type} element must be one of the types listed in the Section \ref{ss
 \end{center}
 \subsection{Expressions}
 \subsubsection{Soy functions}
-\paragraph{Idea} (Code generation not implemented) Soy functions or anonymous functions are functions that are not bound to an identifier. They can either be used as value (passed as parameters), be called (see Section \ref{sssec:func_call}) or stored into a variable.
+\paragraph{Idea} Soy functions or anonymous functions are functions that are not bound to an identifier. They can either be used as value (passed as parameters), be called (see Section \ref{sssec:func_call}) or stored into a variable.
 \paragraph{Syntax} A soy function is declared by using the \texttt{soy} keyword :
 \begin{center}
 	\texttt{(soy} \{\textit{parameter}[\texttt{<}\textit{type}\texttt{>}]\} \texttt{:} \textit{function\_body} \texttt{)}
@@ -287,7 +287,7 @@ The \textit{Sushi++} language provides three kinds of loop.
 		\texttt{;;}\\
 	\end{minipage}
 \end{center}
-\paragraph{Collection-controlled loop} (Code generation not implemented) This loop is called \texttt{foreach} and is made for iterating over lists. At the first iteration, the element at the front of the list is stored in the iteration variable. Then, at each iteration, the same goes for next value till the list was completely covered. The syntax is the following :
+\paragraph{Collection-controlled loop} This loop is called \texttt{foreach} and is made for iterating over lists. At the first iteration, the element at the front of the list is stored in the iteration variable. Then, at each iteration, the same goes for next value till the list was completely covered. The syntax is the following :
 \begin{center}
 	\begin{minipage}{0.35\linewidth}
 		\texttt{foreach} \textit{list expression} \texttt{as} \textit{variable} \\
@@ -337,11 +337,11 @@ The first phase uses \texttt{flex} and \texttt{bison} to generate an abstract sy
 	\item Type inference (\texttt{visitor::TypeInferenceVisitor})
 	\item Code generation (\texttt{visitor::CodeGenVisitor})
 \end{enumerate}
-As the initial visitor class (\texttt{visitor::PrintASTVisitor}) was designed parameter-free and that refactoring it would have taken too much time. Passing parameters is handled with the \texttt{visitor::VisitorParameters} class.  \\ 
+As the initial visitor class (\texttt{visitor::PrintASTVisitor}) was designed parameter-free and that refactoring it would have taken too much time. Passing parameters is handled with the \texttt{visitor::VisitorParameters} class.  \\
 The errors formatting and storing is encapsulated by the class \texttt{ErrorHandler} to which are passed the various errors generated during a phase.
 \subsection{Lexical and syntax analysis}
 \label{ssec:lex_synt}
-At the beginning of the project, the choice was made to use \texttt{bison} and \texttt{flex} (versions \texttt{3.0.2} and \texttt{2.5.35} respectively) for the syntax and lexical analysis phases. This was motivated by the fact that many projects (including the integrated project) were ongoing during the development of this part of the compiler. So we decided to use existing tools to reduce the workload so that we could deliver a functional syntax and lexical analysis for the first deadline. Among the existing tools, we have decided to use \texttt{bison} and \texttt{flex} because our compiler is developed in C++ and that integration would be easier.
+At the beginning of the project, the choice was made to use \texttt{bison} and \texttt{flex} (versions \texttt{3.0.2} and \texttt{2.5.35} respectively) for the syntax and lexical analysis phases. This was motivated by the fact that many projects (including the integrated project) were ongoing during the development of this part of the compiler. So we decided to use existing tools to reduce the workload so that we could deliver a function syntax and lexical analysis for the first deadline. Among the existing tools, we have decided to use \texttt{bison} and \texttt{flex} because our compiler is developed in C++ and that integration would be easier.
 \\ \\
 The parser is implemented in the bison file \texttt{parser/spp\_parser.y} and the lexer in \texttt{scanner/spp\_scanner.lex}. Here are the elements that are worth to be mentioned :
 \begin{itemize}
@@ -355,14 +355,14 @@ The parser is implemented in the bison file \texttt{parser/spp\_parser.y} and th
 \end{itemize}
 \subsection{Semantic analysis}
 \subsubsection{Scope checking}
-In order to perform scope checking, we implemented two visitors. The first one's aim is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
+In order to perform scope checking, we implemented two visitors. The first one aim's is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
 \paragraph{The \texttt{FunctionTableVisitor}} is also used for termination checking, as will be explained in the next paragraph. There was a need to visit two times the tree because a function may be called before its definition. So at this level, the visitor adds informations about the functions defined in the code in the part of the symbol table corresponding to the scope containing the function's declaration. The information yielded is the name, the location and the argument's name of the function. Note that the arguments are also added in the variable symbol table in the scope corresponding to the function body.
 
-\paragraph{The \texttt{SymbolTableVisitor}} fills the variable symbol table and checks that each variable was well declared and that each function call corresponds to a function repertoried by the \texttt{FunctionTableVisitor}. We decided to forbid closures.  
+\paragraph{The \texttt{SymbolTableVisitor}} fills the variable symbol table and checks that each variable was well declared and that each function call corresponds to a function repertoried by the \texttt{FunctionTableVisitor}. We decided to forbid closures.
 \subsubsection{Termination checking}
-The termination checking is implemented in the \texttt{FunctionTableVisitor}. We made it as simple and light as possible : we implemented it with booleans. In our language, all the instructions that may contain a return are represented by the non-terminal token Statement. Once we know this, in order to check termination, we only need to test whether a function's scope does contain a statement that terminates in any case. So the loops, the break and the continue instruction does not fulfill this criteria. The conditional statement may return in any case only if there is a default case (else), idem for the menu statement. At the scope checking step, we don't know the types of return, so the only distinction we make is void or non void function. A void function may not contain a return in any case and still may be correct, so in that case, there is nothing to check. We added one more restriction which is a function must either return nothing or must return something in every case. 
+The termination checking is implemented in the \texttt{FunctionTableVisitor}. We made it as simple and light as possible : we implemented it with booleans. In our language, all the instructions that may contain a return are represented by the non-terminal token Statement. Once we know this, in order to check termination, we only need to test whether a function's scope does contain a statement that terminates in any case. So the loops, the break and the continue instruction does not fulfill this criteria. The conditional statement may return in any case only if there is a default case (else), idem for the menu statement. At the scope checking step, we don't know the types of return, so the only distinction we make is void or non void function. A void function may not contain a return in any case and still may be correct, so in that case, there is nothing to check. We added one more restriction which is a function must either return nothing or must return something in every case.
 \paragraph{}
-About the implementation : generally in a function we test the presence of a return statement (empty or not), so there are two booleans for this purpose. Then locally, in each statement, we will test if there is a local returning statement (so if there is an else if statement, we test if there is a return statement in its scope). When entering a new scope, we first suppose that the scope will return in any case, then if inside the scope there is one statement non returning in any case, then we know that the scope won't return in any case. In the same way if there is a returning statement followed by code, we know that this code will never be executed. We trigger an error for dead code.  At the end of the exploration of the sons of the function declaration, we will trigger an error if there is a non empty return in the function, and if the function does not return something in every case. 
+About the implementation : generally in a function we test the presence of a return statement (empty or not), so there are two booleans for this purpose. Then locally, in each statement, we will test if there is a local returning statement (so if there is an else if statement, we test if there is a return statement in its scope). When entering a new scope, we first suppose that the scope will return in any case, then if inside the scope there is one statement non returning in any case, then we know that the scope won't return in any case. In the same way if there is a returning statement followed by code, we know that this code will never be executed. We trigger an error for dead code.  At the end of the exploration of the sons of the function declaration, we will trigger an error if there is a non empty return in the function, and if the function does not return something in every case.
 \subsubsection{Type checking and inference}
 As the \textit{Sushi++} language is statically typed, the types must be checked at compile-time. This consists in checking the following properties :
 \begin{itemize}
@@ -442,12 +442,12 @@ unify ( $\alpha$, $\beta$ )
 \end{center}
 \paragraph{Constraints generation} The constraints generation can be said to be syntax-directed. A set of type variables are passed to a node of the abstract syntax tree as inherited attributes and some others are created by the node itself. The first set contains the information about the types expected by the parent while the second contains locale type information. Then, the node performs unification on these variables to signal the types it is expecting. It can also create new variables to pass to its children as inherited attributes. If the unification fails, then a type error must be signaled by the compiler. If the whole abstract syntax tree is traversed without type error, the program can still be invalid in terms of typing. Indeed, a program is only valid if every \textit{useful} typed construct is assigned a type, yet some variables could still be unresolved. In this case, the compiler should signal a lack of expressiveness in the input program. \\
 As the visitor performs only one pass on every node, running through the tree is linear with its size. Therefore, a large upper bound on the type inference algorithm time complexity is $\Theta(N * n)$ where $N$ is the number of nodes of the tree and $n$ is the number of sub-parameters of the largest function type to be handled during the parsing. This complexity corresponds to the case when each node has to unify the largest function type. Yet, as it is impossible that every node requires to perform this unification and that the unification will often involve "\textit{small}" types, the type inference algorithm is almost linear on average.
-\paragraph{Implementation} The type inference is implemented in the \texttt{ast/visitor/TypeInferenceVisitor.cpp} file and uses the classes defined in the \texttt{inference/} folder. The main idea is to store all variables and their associated type into a \textbf{type symbol table}. This table is implemented as a structure mapping a variable name to an object representing the type associated with this variable (of class \texttt{TypeSymbol}). The creation of variables consists in adding entries in this table and unification in updating it. \\ 
+\paragraph{Implementation} The type inference is implemented in the \texttt{ast/visitor/TypeInferenceVisitor.cpp} file and uses the classes defined in the \texttt{inference/} folder. The main idea is to store all variables and their associated type into a \textbf{type symbol table}. This table is implemented as a structure mapping a variable name to an object representing the type associated with this variable (of class \texttt{TypeSymbol}). The creation of variables consists in adding entries in this table and unification in updating it. \\
 A key element of the table design is that, if two variables were unified, updating the type of one of them must be automatically reflected in the other. To achieve this, the elements mapped in the type symbol table are \texttt{TypeLink} objects introducing a level of indirection between a variable name and its actual type. The only attribute of a TypeLink is simply a pointer to another TypeSymbol. The class hierarchy of type symbols is described hereafter.
 \subparagraph{Type symbols} The types symbols are objects designed to represents types. The base class \texttt{TypeSymbol} is derived into the classes \texttt{TypeLink} and \texttt{TerminalTypeSymbol} which represents respectively a link to a type symbol and an element that can be located at the end of a type link objects chain. The latter is then derived into the classes \texttt{TypeVariable} which represents a type variable (or an unresolved type) and \texttt{Type} which is the base type of any actual type class :
 \begin{itemize}
 	\item \texttt{FlatType} : base class for any flat type (\texttt{Int}, \texttt{Bool}, \texttt{Float}, \texttt{String}, \texttt{Char} and \texttt{Void}).
-	\item \texttt{UniparameterType} : base class for type having only one type parameter (\texttt{Array} and \texttt{List}). This class holds the type parameter which is represented by a type link object. 
+	\item \texttt{UniparameterType} : base class for type having only one type parameter (\texttt{Array} and \texttt{List}). This class holds the type parameter which is represented by a type link object.
 	\item \texttt{Function} : class for function types. This class stores a vector of \texttt{TypeLink} objects to represent the type of the parameters and another one for the function return type.
 \end{itemize}
 The \texttt{ShallowType} enumeration represents the possible types as integers. The hint sets are represented by \texttt{TypeHints} objects (class defined in \texttt{inference/Types.hpp}) which represents the set as a bitmask of \texttt{ShallowTypes} allowing efficient operations (intersection, union, removal and checking if a ShallowType belongs to it). Every \texttt{TerminalTypeSymbol} is assigned a hint set object.
@@ -518,11 +518,11 @@ The \textit{almost} complete list of the nodes and their inference actions is gi
 \subparagraph{Error handling} When an error occurs, the unification errors are added to the error handler with a message indicating the type causing the error, and the one that was expected. If an error occurred during type inference, the next stages are bypassed. As said above, a program passing the type inference without error might not be a valid program, nevertheless an explicit check of this possible problem wasn't implemented but will trigger an exception in the intermediate code generation phase.
 \subsection{Code generation}
 
-The code generation part is done manually, we do not use the LLVM library due to the lack of documentation and its difficulty. Nevertheless, it was really interesting to handle this part. 
+The code generation part is done manually, we do not use the LLVM library due to the lack of documentation and its difficulty. Nevertheless, it was really interesting to handle this part.
 
 \paragraph{}
 
-It is divided into two main modules : 
+It is divided into two main modules :
 \begin{itemize}
 	\item A visitor going through the nodes of the AST,
 	\item A builder aggregating the lines of LLVM code.
@@ -530,7 +530,7 @@ It is divided into two main modules :
 
 	\subsubsection{Code construction}
 
-An LLVM code for a program is structured that way : a file is represented as a \texttt{Module}, which contains functions, global variables and external declarations. Functions are represented as \texttt{FunctionBlock}, having a name, a return type and arguments. In a function, one also have blocks beginning with a label, these are \texttt{BasicBlock}. This class contains all the methods to generate a specific line or operation in the code. 
+An LLVM code for a program is structured that way : a file is represented as a \texttt{Module}, which contains functions, global variables and external declarations. Functions are represented as \texttt{FunctionBlock}, having a name, a return type and arguments. In a function, one also have blocks beginning with a label, these are \texttt{BasicBlock}. This class contains all the methods to generate a specific line or operation in the code.
 
 \paragraph{}
 
@@ -566,7 +566,7 @@ After having handled how to write lines of LLVM, we can go to the part where we 
 
 \paragraph{}
 
-The generation is done through a visitor on the AST : \texttt{CodeGenVisitor}. It contains an instance of the \texttt{Builder}, as well as some kind of cursor to where it should add lines next, so which function of which module. It also contains a reference to the symbol tables and the type table, in addition to information for the built-in fonctions. To handle the passing of \texttt{Value}'s though the nodes (when it is visited bottom-up), one uses a common stack where the returned values are pushed. 
+The generation is done through a visitor on the AST : \texttt{CodeGenVisitor}. It contains an instance of the \texttt{Builder}, as well as some kind of cursor to where it should add lines next, so which function of which module. It also contains a reference to the symbol tables and the type table, in addition to information for the built-in fonctions. To handle the passing of \texttt{Value}'s though the nodes (when it is visited bottom-up), one uses a common stack where the returned values are pushed.
 
 \paragraph{}
 
@@ -584,7 +584,7 @@ The values we are manipulating are all stored in memory, we are thus managing po
 
 \paragraph{Datastructure non-terminal :} In this case, one has to use the functions of the runtime. These are hardcoded in the block.
 
-\paragraph{Declaration non-terminal :} 
+\paragraph{Declaration non-terminal :}
 \begin{itemize}
 	\item Function : A new \texttt{FunctionBlock} is created, containing the name, the return value and the arguments of the function, optained by visitig the sons of the node. One also has to set the current function block of the visitor to it, hence, the following lines to be written will be in that function.
 	\item Variable : First visit the expression and the identifier. It will then create a pointer where the value of the expression is stored. In the case of an array or a list, the reference counter is also updated.
@@ -596,7 +596,7 @@ The values we are manipulating are all stored in memory, we are thus managing po
 
 \paragraph{Program non-terminal :} The main node is Scope, it has to handle the change of scope id. Also, at the end of the scope, the arrays and the lists allocated has to be freed. One has thus to go through the \texttt{RemoveReferenceFlags} to see which datastructure has to be freed, and generate the associated lines.
 
-\paragraph{Statement non-terminal :} 
+\paragraph{Statement non-terminal :}
 
 \begin{itemize}
 	\item Return : The reasoning is the same as before, where it simply loads the needed values and call the corresponding method in the block to create a return.
@@ -640,7 +640,7 @@ Initially, the runtime was supposed to provide support for :
 \end{itemize}
 The \textit{closures} functionality was dropped due to a lack of time but the others were successfully implemented. Three runtime libraries were implemented :
 \begin{itemize}
-	\item \texttt{array\_runtime.h} : interface to the array management runtime  
+	\item \texttt{array\_runtime.h} : interface to the array management runtime
 	\item \texttt{list\_runtime.h} : interface to the list management runtime
 	\item \texttt{support.h} : interface providing basic operations such as IO (print)
 \end{itemize}
@@ -650,33 +650,18 @@ The memory is therefore handled by reference counting through the functions \tex
 \\
 The underlying implementation of the \texttt{struct array\_table} (resp. \texttt{struct list\_table}), stores the arrays (resp. lists) in a linked list which is not optimal but discussed in the Section \
 \section{Limitations and possible improvements}
-\label{sec:limit}
 \subsection{Lexical and syntax analysis}
 \label{ssec:flaws_syntax}
 As mentioned in the Section \ref{ssec:lex_synt}, the semantic type of the node is \texttt{void*}. This choice was done juste before the first deadline because using pointers to actual node objects was triggering weird compile-errors and we weren't able to solve them in another way than using the type \texttt{void*}. This is unfortunate because it makes the code longer and less readable due to type conversion. When we (re)tried, later on, to use actual nodes objects, it seemed to work but we decided not to do it because it would take too much time. An improvement in terms of readability would be to use proper types then.
 \\
 As the error reporting of \texttt{bison} is used, we rely on the underlying implementation. Therefore, even though we tried to display as much errors as possible, the error reporting is quite erratic. Sometimes, one error will be displayed even if the program contains more, sometimes it will display all of them. Moreover, we discovered a segmentation fault in the \textit{bison} implementation for some erroneous program (which we didn't have time to debug). Adding some \texttt{error} rules in the parser would allow a more fine-grained error reporting. \\
 Another problem is the column counting which is buggy. While the line count is accurate, the lexer fails at counting the starting and ending column of a token. Therefore, all the error reports throughout the execution of the program fails at given the correct column of an error. This is why we have disable a interesting feature of the error handler which consisted in displaying the program line triggering an error.
-\subsection{Termination checking}
-The termination checking was kept very simple. Therefore there might be some complicated cases in which the compiler accepts a language which is not valid. An improvement would be to generate the control-flow graph of the functions and to use this graph to  make sure that all execution path end on a return.
+\subsection{Scope and termination checking}
 \subsection{Type Inference}
 The type inference is quite satisfying even if it can sometimes fail for programs that aren't expressive enough. Few improvements can still be performed :
 \begin{itemize}
 	\item adding information in the \textbf{type error messages} : for the moment, the messages only report the location where the type checking fails, it would be interesting to know where was generated the constraint that led to the error
 	\item adding a \textbf{check for unresolved types} : then the user could be noticed about the lack of expressiveness of its program with precise information
-\end{itemize} 
-\subsection{Intermediate code generation}
-We wish we had more time to complete this phase. Indeed, there is a lot of improvements to be done :
-\begin{itemize}
-	\item language feature implementation : due to a lack of time, some features weren't implemented :
-	\begin{itemize}
-		\item string garbage collection
-		\item assigning value to an element of an array with the array-access operator 
-		\item the foreach loop
-		\item the soy functions
-	\end{itemize}
-	\item while all the phases are clean, the code generation phase contains memory leaks. We didn't have time to to fix them.
-	\item in the last rush, some bug fixes were implemented in a dirty way (some things were hardcoded). A clean recoding would be suitable
 \end{itemize}
 \subsection{Optimization and machine code generation}
 As the optimization is performed by another application, improving it is impossible. Nevertheless, some others optimizations passes could be applied (as the \texttt{opt} command provides a lot more than 5 optimization passes). \\
@@ -685,6 +670,15 @@ As far as the machine code generation is concern, two problems arise :
 	\item \textbf{system dependence} : as the compiler uses unix commands, it could only be used on unix-based operating systems which is configured so that \texttt{gcc} and LLVM commands can be used. Removing these dependencies would allow to port the application on other platform.
 	\item \textbf{file dependence and generation} : on the one hand, the compiler needs the implementation files of the runtime to be able to execute machine code generation and therefore couldn't be used as a standalone executable. On the other hand, the compiler generates a lot of files without checking their names. Therefore, finding a way to embed the runtime files into the executable would allow an easier use of the compiler and a system that checks existing file names would prevent troubles caused by collisions.
 \end{itemize}
+
+Also, one could have done several improvements on the code generation with more time : 
+\begin{itemize}
+	\item The \textbf{memory} used by the String are not handled,
+	\item The \textbf{foreach} loop was not implemented,
+	\item It is not possible to \textbf{set} the value of an element of a datastructure using '[]', 
+	\item There are still \textbf{memory leaks}.
+\end{itemize}
+
 \subsection{Runtime}
 \label{ssec:flaws_runtime}
 As said in the Section \ref{sec:runtime}, the internal data structure (called \textit{table}) used to store arrays and lists is itself a list. Therefore, accessing an element (list or array) has the a complexity $\mathcal{O}(n)$ where $n$ is the number of objects in the table. Moreover, every function of the interface has to access a particular object in the table before performing operations, this resulting in a search at every interface function call. This is of course extremely inefficient. The reason why the list implementation was chosen is mainly lack of time. As a simply linked list is easy to implement, we could focus on the code generation instead. A major improvement would then be the reimplementation of the tables with an adequate data structure such as an ordered vector (ordered on the array/list id), a tree or a hashtable. Nevertheless, as implementation details don't leak through the interface, this can be done without changing the code generation.
@@ -693,12 +687,12 @@ Also, initially, we wanted to implement closures but we dropped this feature due
 \appendix
 \section{Sources}
 \begin{enumerate}
-	\item \textbf{Lexical and syntax analysis} : 
+	\item \textbf{Lexical and syntax analysis} :
 	\begin{enumerate}
 		\item\label{enum:flex_ref} Flex documentation, "\textit{Lexical Analysis With Flex}", \texttt{http://goo.gl/wIJglV}
-		\item\label{enum:bison_ref} Charles Donnely, Richard Stallman, "\textit{Bison, Using the Yacc-compatible Parser Generator}", \texttt{http://goo.gl/rp2kpM} 
+		\item\label{enum:bison_ref} Charles Donnely, Richard Stallman, "\textit{Bison, Using the Yacc-compatible Parser Generator}", \texttt{http://goo.gl/rp2kpM}
 	\end{enumerate}
-	\item \textbf{Type inference} : 
+	\item \textbf{Type inference} :
 	\begin{enumerate}
 		\item\label{enum:inference_unification} Paul N. Hilfinger, "\textit{Lecture \#22: Type Inference and Unification}", \texttt{https://goo.gl/RR8Eme}, UC Berekeley, course \textit{CS164} : Programming Languages and Compilers.
 		\item\label{enum:inference_photon} Cyril Soldani, "\textit{Monomorphic type inference}", \texttt{http://goo.gl/Kveyvf}

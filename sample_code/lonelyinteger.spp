@@ -1,0 +1,21 @@
+
+maki lonelyinteger array :
+    maki size = (call array-size-int array)
+    maki i = 0
+    for , i < size, ++i
+        maki tmp = array[i]
+        maki j = i + 1
+        for , j < size, ++j
+            maki to_cmp = array[j]
+            if tmp == to_cmp
+                nori tmp
+            ;;
+        ;;
+    ;;
+
+    nori -1
+;;
+
+maki array = #[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5 ]#
+maki result = (call lonelyinteger array)
+call println-int result
