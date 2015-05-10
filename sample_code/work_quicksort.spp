@@ -26,8 +26,8 @@ $ item1 index of the first element to swap
 $ item2 index of the second element to swap
 maki array-swap array item1 item2 :
 	maki tmp = array[item1]
-	array[item1] = array[item2]
-	array[item2] = tmp
+	call array-set-int array item1 array[item2]
+	call array-set-int array item2 tmp
 ;;
 
 $ Partition a partially partitionned range of an array
