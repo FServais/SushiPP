@@ -83,6 +83,14 @@ static void array_insert_value(struct array_descriptor*, size_t pos, const void*
 static void* array_get_value(struct array_descriptor*, size_t);
 
 /**
+ * @brief Return a pointer to the element at the given position in the array
+ * @param struct array_descriptor* desc A valid array descriptor
+ * @param size_t pos The position of the element
+ * @param void* val A pointer to the value
+ */
+static void array_set_value(struct array_descriptor*, size_t, void*);
+
+/**
  * @brief Remove a value from the given array
  * @param struct array_descriptor* desc A valid array descriptor
  * @param size_t pos The position of the element
@@ -178,18 +186,26 @@ static void array_insert_value(struct array_descriptor* desc, size_t pos, const 
 		 *dst = src + num_bytes(desc->type);
 	size_t num = num_bytes(desc->type) * (desc->array_size - pos);
 
-	// printf("\n");
-	// printf("Array      : %p\n", desc->array_ptr);
-	// printf("Start move : %p\n", src);
-	// printf("End move   : %p\n", dst);
-	// printf("Move 	   : %zu bytes\n", num);
-
 	// move the value at the given position 
 	memmove(dst, src, num);
 	memcpy(src, val, num_bytes(desc->type));
 
 	// increase the size of the array
 	desc->array_size++;
+}
+
+static void array_set_value(struct array_descriptor* desc, size_t pos, void* val)
+{
+	if(pos >= desc->array_size)
+	{
+		fprintf(stderr, "Array index `%zu` out of bounds (array contains %zu element(s))\n", pos, desc->array_size);
+		exit(EXIT_FAILURE);
+	}
+
+	// move the elements of the array that should follow the ne element
+	void *dst = desc->array_ptr + num_bytes(desc->type) * pos;
+	size_t num = num_bytes(desc->type) * (desc->array_size - pos);
+	memcpy(dst,val,num);
 }
 
 static inline size_t num_bytes(size_t type)
@@ -751,6 +767,61 @@ size_t array_make_sequence(struct array_table* table, size_t a, size_t b)
 	for(size_t i = a; i <= b; ++i)
 		array_insert_value(desc, desc->array_size, &i);
 	return id;
+}
+
+void array_set_int(struct array_table* table, size_t arrid, size_t pos, int val)
+{
+	if(!table)
+		return;
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != INT)
+		return;
+
+	array_set_value(desc, pos, &val);
+}
+
+void array_set_float(struct array_table* table, size_t arrid, size_t pos, float val)
+{
+	if(!table)
+		return;
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != FLOAT)
+		return;
+
+	array_set_value(desc, pos, &val);
+}
+
+void array_set_bool(struct array_table* table, size_t arrid, size_t pos, bool val)
+{
+	if(!table)
+		return;
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != BOOL)
+		return;
+
+	array_set_value(desc, pos, &val);
+}
+
+void array_set_char(struct array_table* table, size_t arrid, size_t pos, char val)
+{
+	if(!table)
+		return;
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != CHAR)
+		return;
+
+	array_set_value(desc, pos, &val);
+}
+
+void array_set_string(struct array_table* table, size_t arrid, size_t pos, size_t val)
+{
+	if(!table)
+		return;
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != STRING)
+		return;
+
+	array_set_value(desc, pos, &val);
 }
 
 bool array_empty_int(const struct array_table* table, size_t id) { return array_empty(table, id); }
