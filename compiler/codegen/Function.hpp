@@ -26,6 +26,10 @@ namespace codegen
         //
         std::string get_name_nth_argument(int n);
         std::string str_name_nth_argument(int n);
+        // return a vector containig the argument as "type %name"
+        std::vector<std::string> str_arguments() const;
+        // return a vector containing the arguments as "type"
+        std::vector<std::string> str_arguments_sig() const;
         //
         std::shared_ptr<typegen::Type> get_return_type();
         std::string str_return_type();

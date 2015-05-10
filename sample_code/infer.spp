@@ -12,9 +12,6 @@ $	 incr1 = ++c,
 $	 incr2 = --c$,
 $	 incr3 = c++,
 $	 incr4 = c--
-maki a = 0, b = 18
-a = 3
-a += b
 $call print-bool (expo == 8192)
 $call print-bool (bit1 == 15)
 $call print-bool (bit2 == 0)
@@ -28,4 +25,9 @@ $call print-bool (cmp6)
 $call print-bool (incr1 == 1)
 $call print-bool (incr2 == 0)
 $call print-bool (c == 0)
-call print-int (a)
+$call print-int (a)
+$call print-int (b)
+maki k = #[ 1 to 3 ]#, b = k
+
+call print-int (call array-size-int k)
+call print-int (call array-size-int b)

@@ -1,0 +1,13 @@
+maki pow base<int> expo<int> :
+	if expo == 0
+		nori 1
+	elseif expo == 1
+		nori base
+	else 
+		
+	;;
+;;
+
+call print-int (call pow 1 1)
+call print-int (call pow 3 25)
+call print-int (call pow 5 3) 

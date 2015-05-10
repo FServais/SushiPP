@@ -37,7 +37,7 @@ struct list_table
 };
 
 // array containing the number of bytes for each type (can be indexed with the type macros )
-size_t bytes_per_type[5] = { sizeof(int), sizeof(float), sizeof(bool), sizeof(char), sizeof(size_t) };
+static size_t bytes_per_type[5] = { sizeof(int), sizeof(float), sizeof(bool), sizeof(char), sizeof(size_t) };
 
 // STATIC FUNCTIONS
 
@@ -1093,6 +1093,33 @@ size_t list_remove_element_string(struct list_table* table, size_t lid, size_t p
 	free(value);
 	return casted_value;
 }
+
+size_t list_make_sequence(struct list_table* table, size_t a, size_t b)
+{
+	size_t id = list_allocate_int(table);
+	struct list_descriptor* desc = find_descriptor(table, id);
+	for(size_t i = a; i <= b; ++i)
+		insert_list_element(desc, desc->list_size, &i);
+	return id;
+}
+
+bool list_empty_int(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_bool(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_float(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_string(struct list_table* table, size_t id) { return list_empty(table, id); }
+bool list_empty_char(struct list_table* table, size_t id) { return list_empty(table, id); }
+
+void list_clear_int(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_bool(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_float(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_string(struct list_table* table, size_t id) { list_clear(table, id); }
+void list_clear_char(struct list_table* table, size_t id) { list_clear(table, id); }
+
+size_t list_size_int(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_bool(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_float(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_string(struct list_table* table, size_t id) { return list_size(table, id); }
+size_t list_size_char(struct list_table* table, size_t id) { return list_size(table, id); }
 
 // void print_list_table(const struct list_table* table)
 // {

@@ -57,6 +57,24 @@ void array_rm_reference(struct array_table*, size_t);
  * @retval size_t The size of the array, 0 if the size is not found
  */
 size_t array_size(const struct array_table*, size_t);
+size_t array_size_int(const struct array_table*, size_t); // alias
+size_t array_size_float(const struct array_table*, size_t); // alias
+size_t array_size_double(const struct array_table*, size_t); // alias
+size_t array_size_char(const struct array_table*, size_t); // alias
+size_t array_size_string(const struct array_table*, size_t); // alias
+
+/**
+ * @brief Check whether the array is empty
+ * @param const struct array_table* descriptor The array_table structure (containing information about all the arrays)
+ * @param size_it arrid The array id 
+ * @retval bool True if the array is empty, false otherwise
+ */
+bool array_empty(const struct array_table*, size_t);
+bool array_empty_int(const struct array_table*, size_t); // alias
+bool array_empty_float(const struct array_table*, size_t); // alias
+bool array_empty_double(const struct array_table*, size_t); // alias
+bool array_empty_char(const struct array_table*, size_t); // alias
+bool array_empty_string(const struct array_table*, size_t); // alias
 
 /**
  * @brief Return the reference count of the array having the given id
@@ -106,6 +124,11 @@ size_t array_get_string(struct array_table*, size_t, size_t);
  * @param size_it arrid The array id
  */
 void array_clear(struct array_table*, size_t);
+void array_clear_int(struct array_table*, size_t); // alias
+void array_clear_float(struct array_table*, size_t); // alias
+void array_clear_double(struct array_table*, size_t); // alias
+void array_clear_char(struct array_table*, size_t); // alias
+void array_clear_string(struct array_table*, size_t); // alias
 
 /**
  * @brief Remove the nth element of the table
@@ -151,5 +174,14 @@ void array_push_float(struct array_table*, size_t, float);
 void array_push_bool(struct array_table*, size_t, bool);
 void array_push_char(struct array_table*, size_t, char);
 void array_push_string(struct array_table*, size_t, size_t);
+
+/**
+ * @brief Create a array of integers ranging from a to b 
+ * @param struct array_table* descriptor The array_table structure (containing information about all the arrays)
+ * @param size_t a The first element in the range
+ * @param size_t b The last element in the range
+ * @note If b < a, an empty array is returned
+ */
+size_t array_make_sequence(struct array_table*, size_t, size_t);
 
 #endif

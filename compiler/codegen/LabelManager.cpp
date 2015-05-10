@@ -40,6 +40,14 @@ string LabelManager::get_last_occurence(string var)
     return ss.str();
 }
 
+void LabelManager::decrease_occurence(std::string var)
+{
+    if(!exists(var))
+        labels[var] = 0;
+    else
+        --(labels[var]);
+}
+
 
 bool LabelManager::exists(string var)
 {

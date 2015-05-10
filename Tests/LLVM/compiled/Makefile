@@ -1,16 +1,16 @@
-ASSEMBLY = main.s support.s array_runtime.s list_runtime.s
+ASSEMBLY = support.s array_runtime.s list_runtime.s main.s 
 DELETABLE_LL = support.ll array_runtime.ll list_runtime.ll
 EXECUTABLE = main
 CC = clang
 CFLAGS = -c -S -emit-llvm
 LD = gcc
-LDFLAGS = 
+LDFLAGS =
 LLVM_ASSEMBLER = llvm-as
 LLVM_COMPILER  = llc
 
 all: $(ASSEMBLY)
 	gcc -o $(EXECUTABLE) $(ASSEMBLY)
-	
+
 main.s: main.ll
 	$(LLVM_ASSEMBLER) main.ll -o main.bc
 	$(LLVM_COMPILER) main.bc -o $@
