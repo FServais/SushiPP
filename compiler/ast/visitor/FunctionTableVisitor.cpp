@@ -1,13 +1,26 @@
 #include "FunctionTableVisitor.hpp"
 
+#include <tuple>
+#include <iterator>
+
 using namespace visitor;
 
 // Constructor
 FunctionTableVisitor::FunctionTableVisitor( symb::SymbolTable<symb::FunctionInfo>& fct_tab, symb::SymbolTable<symb::VariableInfo>& var_tab,
-	errors::ErrorHandler& err_han)
+	errors::ErrorHandler& err_han, settings::BuiltInFunctions& built_in)
  : function_table(fct_tab), variable_table(var_tab), error_handler(err_han)
 { 
-	counter = 0;	
+	counter = 0;
+
+	// add built in functions
+	for(auto& function : built_in)
+	{
+		std::vector<symb::VariableInfo> vars;
+		transform(std::get<1>(function.second).begin(), std::get<1>(function.second).end(),
+				  back_inserter(vars), 
+				  [](const std::string& varname) { return symb::VariableInfo(varname); });
+		function_table.add_symbol(function.first, symb::FunctionInfo(function.first, vars));
+	}
 }
 
 /************************************

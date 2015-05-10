@@ -1,0 +1,73 @@
+maki front list<list> :
+	nori (call list-front-int list)
+;;
+
+maki size list<list> :
+	nori (call list-size-int list)
+;;
+
+maki pop-front list<list> :
+	nori (call list-pop-front-int list)
+;;
+
+maki push-back list<list> value<int> :
+	call list-push-back-int list value
+;;
+
+maki push-front list<list> value<int> :
+	call list-push-back-int list value
+;;
+
+maki merge list1<list> list2<list> :
+	maki merge_list = {}
+
+	$ merge the two list
+	roll (call size list1) > 0 && (call size list2) > 0
+		if (call front list1) > (call front list2)
+			call push-back merge_list (call pop-front list2)
+		else
+			call push-back merge_list (call pop-front list1)
+		;;
+	;;
+
+	$ add the remaining elements
+	roll (call size list1) > 0
+		call push-back merge_list (call pop-front list1)
+	;;
+	roll (call size list2) > 0
+		call push-back merge_list (call pop-front list2)
+	;;
+
+	nori merge_list
+;;
+
+maki merge-sort list<list> :
+	
+	if (call size list) <= 1
+		nori list 
+	;;
+
+	maki right = list, left = {}
+
+	$ split the lists
+	roll (call size right) - (call size left) >= 1
+		call push-back left (call pop-front right)
+	;;
+
+	left = (call merge-sort left)
+	right = (call merge-sort right)
+
+	nori (call merge left right)
+;;
+
+maki print-list list<list> :
+	foreach list as element
+		call print-int element
+		call print-string " "
+	;;
+;;
+
+maki list = { 1, 5, 6, 9, 78, 65, 3, 65, 24, 54 }
+
+list = (call merge-sort list)
+call print-list list

@@ -26,6 +26,7 @@ namespace inference
 		virtual ~TypeSymbol() {};
 		/** Return the type in a string format (in one line without EOL) */
 		virtual std::string str() const = 0;
+
 		// predicates
 		virtual bool is_link() const = 0;
 		virtual bool is_variable() const = 0;
@@ -33,15 +34,23 @@ namespace inference
 		virtual bool is_flat_type() const = 0;
 		virtual bool is_function_type() const = 0;
 		virtual bool is_structured_type() const = 0; // true if the TypeSymbol is the array, list or function type
-		virtual bool is_uniparameter_type() const = 0;  // true if the TypeSymbol is the array or list type
-		virtual bool equals(const TypeSymbol&) const = 0; // return true if the given type symbol is equal to the one given as argument
-													// if one of the element is a link it is resolved before comparison
+		virtual bool is_uniparameter_type() const = 0;  // true if the TypeSymbol is and array or list type
+
+		/**
+		 * @brief Return true if the given type symbol is equal to the one given as argument
+		 * If one of the element is a link it is resolved before comparison
+		 */
+		virtual bool equals(const TypeSymbol&) const = 0; 
 
 		/**
 		 * @brief Check whether the give type symbol is a complete type (of which all the elements are actual types)
 		 * @retval bool True if it is resolved, false otherwise
  		 */
 		virtual bool is_resolved() const = 0;
+
+		/**
+		 * @brief Return a shared pointer to a typegen::Type object representing the actual type of the given type symbol
+		 */
 		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 	};
 
@@ -52,14 +61,14 @@ namespace inference
 	class TerminalTypeSymbol : public TypeSymbol
 	{
 	public:
-		virtual bool is_link() const { return false; }
 		
-/**
+		/**
 		 * @brief Return the hints associated with the TypeSymbol
 		 * @retval TypeHints A reference to the TypesHint object
 		 */
 		const TypesHint& get_hints() const { return hints; }
-		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
+
+		virtual bool is_link() const { return false; }
 
 	protected:
 		TypesHint hints; // the set of types that could be taken by this symbol
@@ -67,7 +76,7 @@ namespace inference
 
 	/**
 	 * @class TypeVariable
-	 * @brief A type variable
+	 * @brief A type variable (represent a yet unresolved type)
 	 */
 	class TypeVariable : public TerminalTypeSymbol
 	{
@@ -81,9 +90,11 @@ namespace inference
 		virtual bool is_function_type() const { return false; }
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
-		virtual bool equals(const TypeSymbol&) const;
 		virtual bool is_resolved() const { return false; }
 
+		virtual bool equals(const TypeSymbol&) const;
+		virtual std::shared_ptr<typegen::Type> ret_type() const;
+		
 		/**
 		 * @brief Set the hints object of the terminal symbol
 		 * @retval 
@@ -96,10 +107,8 @@ namespace inference
 		 */
 		TypesHint& get_hints() { return hints; }
 
-		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	private:
-		std::string varname;
+		std::string varname; // the variable name
 	};
 
 	/**
@@ -111,7 +120,6 @@ namespace inference
 	public:
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return true; }
-		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 	};
 
 	/**
@@ -119,8 +127,8 @@ namespace inference
 	 * @brief Represent a link to a type symbol
 	 * A typelink has two modes :
 	 * 1) Either it is linked type link which was allocated in another context
-	 * 2) Or it is linked to an actual type (functio, array, list or flat) or a type variable. In this case, 
-	 *   the type link object has the ownership of the underlying object (which must be dynamically allocated)
+	 * 2) Or it is linked to an actual type (function, array, list or flat) or a type variable. In this case, 
+	 *   the type link object has the ownership of the underlying object (which must be dynamically (de)allocated)
 	 */
 	class TypeLink : public TypeSymbol
 	{
@@ -140,19 +148,19 @@ namespace inference
 
 		/**
 		 * @brief Set the symbol linked by the type link
-		 * @param TypeLink* link A pointer to a link object (must not be allocated dynamically)
-		 * @note The object acquire the ownership
+		 * @param TypeSymbol* link A pointer to a type symbol object (must not be allocated dynamically)
+		 * @note The object acquire the ownership if the symbol is a TerminalTypeSymbol
 		 */
 		void set_symbol(TypeSymbol*);
 
 		/**
-		 * @brief Get the actual type object or type linked to the current link
+		 * @brief Get the terminal type symbol linked to the current link
 		 */
 		TerminalTypeSymbol& resolve();
 		const TerminalTypeSymbol& resolve() const;
 
 		/**
-		 * @brief Get the last link before the an actual type object or type variable
+		 * @brief Get the last link before the terminal type symbol that can be resolved from the link
 		 */
 		TypeLink& resolve_last_link();
 		const TypeLink& resolve_last_link() const;
@@ -163,7 +171,6 @@ namespace inference
 		TypeSymbol& symbol();
 		const TypeSymbol& symbol() const;
 
-		virtual std::string str() const;
 		virtual bool is_link() const { return true; }
 		virtual bool is_variable() const { return false; }
 		virtual bool is_type() const { return false; }
@@ -171,9 +178,10 @@ namespace inference
 		virtual bool is_function_type() const { return false; }
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
+		
 		virtual bool equals(const TypeSymbol&) const;
 		virtual bool is_resolved() const;
-
+		virtual std::string str() const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
 
 	private:
@@ -183,7 +191,7 @@ namespace inference
 
 	/**
 	 * @class FlatType
-	 * @brief Base class for any base type
+	 * @brief Base class for any flat type
 	 */
 	class FlatType : public Type
 	{
@@ -193,8 +201,6 @@ namespace inference
 		virtual bool is_structured_type() const { return false; }
 		virtual bool is_uniparameter_type() const { return false; }
 		virtual bool is_resolved() const { return true; }
-		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
-
 	};
 
 	/**
@@ -208,7 +214,6 @@ namespace inference
 		virtual std::string str() const { return "bool"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -222,7 +227,6 @@ namespace inference
 		virtual std::string str() const { return "string"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -236,7 +240,6 @@ namespace inference
 		virtual std::string str() const { return "int"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -250,7 +253,6 @@ namespace inference
 		virtual std::string str() const { return "float"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -264,7 +266,6 @@ namespace inference
 		virtual std::string str() const { return "void"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -278,7 +279,6 @@ namespace inference
 		virtual std::string str() const { return "char"; }
 		virtual bool equals(const TypeSymbol&) const;
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -290,8 +290,6 @@ namespace inference
 	public:
 		virtual bool is_flat_type() const { return false; }
 		virtual bool is_structured_type() const { return true; }
-		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
-
 	};
 
 	/**
@@ -332,20 +330,20 @@ namespace inference
 	public:
 		UniparameterType(TypeLink&);
 
-		virtual bool is_function_type() const { return false; };
-		virtual bool is_uniparameter_type() const { return true; };
-		virtual bool is_resolved() const;
-
 		virtual bool is_array() const = 0;
 		virtual bool is_list() const = 0;
+
+		virtual bool is_function_type() const { return false; };
+		virtual bool is_uniparameter_type() const { return true; };
+		
+		virtual bool is_resolved() const;
 
 		// parameter type getters
 		TypeLink& get_param_type() { return parameter_type; };
 		const TypeLink& get_param_type() const { return parameter_type; };
-		virtual std::shared_ptr<typegen::Type> ret_type() const = 0;
 
 	protected:
-		TypeLink& parameter_type;
+		TypeLink& parameter_type; 
 	};
 
 	/**
@@ -364,7 +362,6 @@ namespace inference
 		virtual bool is_array() const { return true; };
 		virtual bool is_list() const { return false; };
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 
 	/**
@@ -383,7 +380,6 @@ namespace inference
 		virtual bool is_array() const { return false; };
 		virtual bool is_list() const { return true; };
 		virtual std::shared_ptr<typegen::Type> ret_type() const;
-
 	};
 }
 

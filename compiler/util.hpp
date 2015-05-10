@@ -34,6 +34,13 @@ namespace util
 
 		return ss.str();
 	}
+
+	/**
+	 * @brief Remove the extension of a file (everything from the last dot)
+	 * @param const string& file A filename
+	 * @retval string The file name without extension
+	 */
+	std::string remove_extension(const std::string&);
 }
 
 #endif // UTIL_HPP_DEFINED

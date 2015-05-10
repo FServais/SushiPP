@@ -10,6 +10,7 @@
 #include "SemanticError.hpp"
 #include "IOError.hpp"
 #include "MemoryError.hpp"
+#include "GenError.hpp"
 
 #include "../settings/CompilerSettings.hpp"
 
@@ -70,12 +71,18 @@ namespace errors
 		/**
 		 * Add a IO error.
 		 * @param   const std::string&  Line where the error occur.
-		 * @param   int					Line number.
-		 * @param   int					Column number.
 		 * @param   const std::string&  Description of the error.
 		 */
-		void add_io_error(const std::string&, int, int, const std::string& desc = "IO error");
+		void add_io_error(const std::string&, const std::string& desc = "IO error");
 		void add_io_error(IOError&);
+
+		/**
+		 * Add an error at the code generation step.
+		 * @param   const std::string&  Line where the error occur.
+		 * @param   const std::string&  Description of the error.
+		 */
+		void add_gen_error(const std::string&, const std::string& desc = "Generation error");
+		void add_gen_error(GenError&);
 		
 		/**
 		 * Add a memory error.
