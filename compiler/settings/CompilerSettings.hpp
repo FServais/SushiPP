@@ -36,9 +36,11 @@ namespace settings
 	 *		 Verbose : the compiler emits messages detailing its execution
 	 *    -o filename  
 	 *		 Output program : name of the executable file
-	 * 	  -l [ filename ] " << endl;
+	 * 	  -l [ filename ]
 	 *  	 Dump LLVM : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is 
 	 *     	 	provided, the LLVM assembly is printed out in this file
+	 *	  -t 
+	 *  	 Enable intermediate representation optimization 
 	 */
 	class CompilerSettings
 	{
@@ -88,6 +90,7 @@ namespace settings
 		bool do_dump_llvm_in_stdout() const { return dump_llvm == DUMP_STDOUT; };
 		bool read_from_file() const { return prog_source == FILE; };
 		bool do_dump_help() const { return exec_mode == PRINT_HELP; };
+		bool do_optimize() const { return optimize; }
 
 		// print the compiler program usage to the standard output
 		static void print_help();
@@ -101,6 +104,7 @@ namespace settings
 		ProgramSource prog_source;
 		ExecutionMode exec_mode;
 		DumpMode dump_llvm;
+		bool optimize; // true for optimizing, false otherwise
 
 		// parameter map mapping input paremeters and their values
 		std::map<char, std::string> param_map;

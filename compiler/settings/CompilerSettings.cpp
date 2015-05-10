@@ -31,6 +31,7 @@ CompilerSettings::CompilerSettings(int argc, char** argv)
 
 	prog_source = param_map.count('i') ? FILE : STDIN;
 	verbose_mode = param_map.count('v') ? VERBOSE : QUIET;
+	optimize = (bool) param_map.count('t');
 
 	set_program_name(); 
 
@@ -55,6 +56,8 @@ void CompilerSettings::print_help()
 	cout << "  -l [ filename ] " << endl;
 	cout << "     LLVM output : specify if the LLVM assembly must printed out as soon as it is generated. If a filename is " << endl;
 	cout << "     provided, the LLVM assembly is printed out in this file" << endl;
+	cout << "  -t              " << endl;
+	cout << "     Enable intermediate representation optimizations " << endl;
 	cout << endl;
 }
 
@@ -93,6 +96,7 @@ void CompilerSettings::print_settings() const
 
 	cout << "  - Exec. name     : " << param_map.at('o') << endl; 
 	cout << "  - Help display   : " << (exec_mode == COMPILE ? "off" : "on") << endl;
+	cout << "  - Optimizations  : " << (optimize ? "on" : "off") << endl; 
 }
 
 void CompilerSettings::build_map(int argc, char** argv)
@@ -157,7 +161,7 @@ void CompilerSettings::set_default()
 
 bool CompilerSettings::valid_param_id(char c)
 {
-	return c == 'v' || c == 'h' || c == 'd' || c == 'i' || c == 'l' || c == 'o';
+	return c == 'v' || c == 'h' || c == 'd' || c == 'i' || c == 'l' || c == 'o' || c == 't';
 }
 
 void CompilerSettings::set_program_name()
