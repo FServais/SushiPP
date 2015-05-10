@@ -36,10 +36,16 @@ $ pivot 		 Index of the pivot (pivot >= item_index) pivot must be the last item 
 $ boundary_index Index of the element following the last element smaller than the pivot (item_index >= boundary_index)
 $ item_index     Index of the current item to partition
 maki partition array pivot boundary_index item_index :
-	if item_index == pivot
+	if item_index >= pivot
 		call array-swap array boundary_index pivot
 		nori boundary_index
 	;;
+
+	call println-int pivot
+	call println-int item_index
+	call println-int boundary_index
+	call print-array array
+	call println-char '\n'
 
 	$ compare item index to the pivot
 	if array[item_index] < array[pivot]

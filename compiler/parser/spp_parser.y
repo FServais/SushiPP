@@ -808,8 +808,8 @@ menu-def:
 
 /* Loop */
 loop :
-  foreach { $$ = $1; }
-| for     { $$ = $1; }
+/*  foreach { $$ = $1; }
+|*/ for     { $$ = $1; }
 | roll    { $$ = $1; }
 ;
 

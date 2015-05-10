@@ -22,11 +22,6 @@ void print_bool(bool val)
 	printf("%s", val ? "true" : "false");
 }
 
-void print_string(size_t string_id)
-{
-	printf("String id : %zu", string_id);
-}
-
 void println_int(int64_t val)
 {
 	printf("%ld\n", val);
@@ -45,11 +40,6 @@ void println_char(char val)
 void println_bool(bool val)
 {
 	printf("%s\n", val ? "true" : "false");
-}
-
-void println_string(size_t string_id)
-{
-	printf("String id : %zu\n", string_id);
 }
 
 int pow_int(uint64_t base, uint64_t exp)
