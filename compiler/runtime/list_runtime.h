@@ -199,6 +199,14 @@ bool list_remove_element_bool(struct list_table*, size_t, size_t);
 char list_remove_element_char(struct list_table*, size_t, size_t);
 size_t list_remove_element_string(struct list_table*, size_t, size_t);
 
+/**
+ * @brief Create a list of integers ranging from a to b 
+ * @param struct list_table* descriptor The list_table structure (containing information about all the lists)
+ * @param size_t a The first element in the range
+ * @param size_t b The last element in the range
+ * @note If b < a, an empty list is returned
+ */
+size_t list_make_sequence(struct list_table*, size_t, size_t);
 
 //void print_list_table(const struct list_table*);
 

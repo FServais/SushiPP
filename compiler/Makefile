@@ -33,7 +33,7 @@ OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o $(PATH_OBJS)BuiltInFunctions.o
 OBJS_UTIL	  		= $(PATH_OBJS)util.o
 OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(PATH_OBJS)Types.o $(PATH_OBJS)InferenceExceptions.o $(PATH_OBJS)TypeGen.o
 OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
-OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
+OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o $(PATH_OBJS)GenError.o
 OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
 OBJS_CODEGEN		= $(PATH_OBJS)BasicBlock.o $(PATH_OBJS)Builder.o $(PATH_OBJS)FunctionBlock.o $(PATH_OBJS)Module.o $(PATH_OBJS)Value.o $(PATH_OBJS)Variable.o $(PATH_OBJS)Function.o $(PATH_OBJS)VariableManager.o $(PATH_OBJS)LabelManager.o
 
@@ -54,7 +54,7 @@ DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.h
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
 DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS) 
-DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)SyntaxError.hpp
+DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)SyntaxError.hpp $(PATH_ERRORS)GenError.hpp
 
 DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB)SymbolInfo.hpp
 DEP_COMP				 = SppCompiler.hpp
@@ -175,7 +175,7 @@ $(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) 
 
 
 # Compiler #
-$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Settings #
@@ -214,6 +214,9 @@ $(PATH_OBJS)SemanticError.o: $(PATH_ERRORS)SemanticError.cpp $(PATH_ERRORS)Seman
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)SyntaxError.o: $(PATH_ERRORS)SyntaxError.cpp $(PATH_ERRORS)SyntaxError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)GenError.o: $(PATH_ERRORS)GenError.cpp $(PATH_ERRORS)GenError.hpp $(PATH_ERRORS)ErrorItem.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Inference #

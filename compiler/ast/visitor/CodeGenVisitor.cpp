@@ -51,6 +51,9 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("list_allocate_char", Module::make_declare("list_allocate_char", "i64", { "%struct.list_table*" }));
 	curr_module.add_declaration("list_allocate_string", Module::make_declare("list_allocate_string", "i64", { "%struct.list_table*" }));
 
+	curr_module.add_declaration("list_make_sequence", Module::make_declare("list_make_sequence", "i64", { "%struct.list_table*", "i64", "i64"}));
+	curr_module.add_declaration("array_make_sequence", Module::make_declare("array_make_sequence", "i64", { "%struct.array_table*", "i64", "i64"}));
+
 	// add main function 
 	shared_ptr<typegen::Function> main_func(new typegen::Function(shared_ptr<typegen::Type>(new typegen::Int)));
     FunctionBlock function(builder.get_variable_manager(), "main", main_func);
@@ -1824,14 +1827,82 @@ void CodeGenVisitor::visit( ast::List& token )
 void CodeGenVisitor::visit( MakeSequenceList& token )
 {
 	cout << "MakeSequenceList" << endl;
+	visit_children(token);
 
+	// normally two symbol were pushed 
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	vector<shared_ptr<Value>> range(get_n_return_values(2));
+
+	shared_ptr<Value> begin, end;
+
+	if(range[0]->is_variable())
+		begin = shared_ptr<Value>(block.create_load(*range[0]));
+	else 
+		begin = range[0];
+
+	if(range[1]->is_variable())
+		end = shared_ptr<Value>(block.create_load(*range[1]));
+	else 
+		end = range[1];
+
+	string list_table = block.create_load_raw("%struct.list_table** @..list_table"),
+			makes_call = "call i64 (%struct.list_table*, i64, i64)* @list_make_sequence(%struct.list_table* %" + list_table + 
+						 ", i64 " + begin->str_value() + ", i64 " + end->str_value() + ")";
+
+	curr_module.function_is_used("list_make_sequence");
+
+	// create the list
+	shared_ptr<typegen::Type> list_type(new typegen::List(begin->get_type()));
+	unique_ptr<Variable> list_id(block.add_expression(makes_call, "id", list_type));	
+
+	// store the list id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", list_type));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*list_id, *tmp_id_addr)); 
+
+	pop_n_return_values(2);
+	add_return(id_addr);
 }
 
 
 void CodeGenVisitor::visit( MakeSequenceArray& token )
 {
 	cout << "MakeSequenceArray" << endl;
+	visit_children(token);
 
+	// normally two symbol were pushed 
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	vector<shared_ptr<Value>> range(get_n_return_values(2));
+
+	shared_ptr<Value> begin, end;
+
+	if(range[0]->is_variable())
+		begin = shared_ptr<Value>(block.create_load(*range[0]));
+	else 
+		begin = range[0];
+
+	if(range[1]->is_variable())
+		end = shared_ptr<Value>(block.create_load(*range[1]));
+	else 
+		end = range[1];
+
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
+			makes_call = "call i64 (%struct.array_table*, i64, i64)* @array_make_sequence(%struct.array_table* %" + array_table + 
+						 ", i64 " + begin->str_value() + ", i64 " + end->str_value() + ")";
+
+	curr_module.function_is_used("array_make_sequence");
+
+	// create the array
+	shared_ptr<typegen::Type> array_type(new typegen::List(begin->get_type()));
+	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));	
+
+	// store the array id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*array_id, *tmp_id_addr)); 
+
+	pop_n_return_values(2);
+	add_return(id_addr);
 }
 
 
@@ -1904,7 +1975,7 @@ void CodeGenVisitor::visit( DeclVar& token )
 		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 		// Allocate in memory
-		unique_ptr<Value> lhs = unique_ptr<Value>(block.create_decl_var(id));
+		unique_ptr<Value> lhs(block.create_decl_var(id));
 		//Variable* lhs_ptr = dynamic_cast<Variable*>(lhs.get());
 
 		if(expr.is_variable())
@@ -1918,8 +1989,6 @@ void CodeGenVisitor::visit( DeclVar& token )
 		}
 		else
 			unique_ptr<Value> store = unique_ptr<Value>(block.create_store(expr, *lhs));
-
-
 
 		pop();
 		pop();

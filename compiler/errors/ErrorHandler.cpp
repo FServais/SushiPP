@@ -88,6 +88,23 @@ void ErrorHandler::add_io_error(IOError& err)
 
 /*
  ***************************************
+ *		     	Generation errors
+ *************************************** 
+ */
+
+void ErrorHandler::add_gen_error(const string& context, const string& desc)
+{
+	errors.push_back(unique_ptr<GenError>(new GenError(context, (settings.read_from_file()) ? settings.get_input_file() : "", desc)));
+}
+
+void ErrorHandler::add_gen_error(GenError& err)
+{
+	errors.push_back(unique_ptr<GenError>(new GenError(err)));
+}
+
+
+/*
+ ***************************************
  *		     Memory errors
  *************************************** 
  */

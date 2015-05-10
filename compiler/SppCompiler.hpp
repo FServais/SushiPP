@@ -54,6 +54,7 @@ namespace compiler
 		 * variable_table : symbol table containing the functions info
 		 * error_handler : object for emitting compilation error
 		 * type_table : table containing the information about the types of the language
+		 * generated_llvm : the generated llvm
 		 */
 		settings::CompilerSettings config;
 		settings::BuiltInFunctions built_in;
@@ -62,6 +63,7 @@ namespace compiler
 		symb::SymbolTable<symb::VariableInfo> variable_table;
 		errors::ErrorHandler error_handler;
 		inference::TypeSymbolTable type_table;
+		std::string generated_llvm;
 
 		/**
 		 * @brief Initialize the compiler for execution
@@ -104,6 +106,24 @@ namespace compiler
 		* @brief Generate the code corresponding the program.
 		*/
 		void export_llvm();
+
+		/**
+		 * @brief Generate an executable
+		 */
+		void executable_generation();
+
+		/**
+		 * @brief Execute the given command with `system`
+		 * @retval int The return of `system` 
+		 */
+		int execute_cmd(const std::string&);
+
+		/**
+		 * @brief Write the llvm generated in the code gen visitor into the given file
+		 * @param const std::string& filepath The file path
+		 * @retval bool true on success, false on error
+		 */
+		bool write_llvm_to_file(const std::string&);
 	};
 }
 
