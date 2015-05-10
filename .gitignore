@@ -37,3 +37,5 @@ compiler/runtime/list_runtime.bc
 compiler/runtime/list_runtime.s
 compiler/runtime/support.bc
 compiler/runtime/support.s
+Reports/Final/final_report.fdb_latexmk
+Reports/Final/final_report.log
