@@ -126,7 +126,7 @@ The \textit{Sushi++} language is a strongly and statically typed language. Never
 \subsubsection{Arrays}
 \label{sssec:arrays}
 \paragraph{Idea}
-The \texttt{array} type represents a sequence of elements having a given type \textit{T} and that are stored sequentially in the memory. This structure has the same behaviour as a vector data structure in terms of complexity. The \textit{Sushi++} arrays cannot stored any type of data, \textit{T} can only be one among : \texttt{int}, \texttt{float}, \texttt{char}, \texttt{string}, \texttt{bool}. The index of an array is an integer in the interval $[0, \text{array size}]$. Arrays are passed to function and returned by reference (they are never copied).
+The \texttt{array} type represents a sequence of elements having a given type \textit{T} and that are stored sequentially in the memory. This structure has the same behaviour as a vector data structure in terms of complexity. The \textit{Sushi++} arrays cannot store any type of data, \textit{T} can only be one among : \texttt{int}, \texttt{float}, \texttt{char}, \texttt{string}, \texttt{bool}. The index of an array is an integer in the interval $[0, \text{array size}[$. Arrays are passed to function and returned by reference (they are never copied).
 \paragraph{Syntax}
 To construct an array, its elements must be listed between the array delimiters \texttt{\#[} and \texttt{]\#} and separated by commas  :
 \begin{itemize}
@@ -194,7 +194,7 @@ The \textit{type} element must be one of the types listed in the Section \ref{ss
 \end{center}
 \subsection{Expressions}
 \subsubsection{Soy functions}
-\paragraph{Idea} Soy functions or anonymous functions are functions that are not bound to an identifier. They can either be used as value (passed as parameters), be called (see Section \ref{sssec:func_call}) or stored into a variable.
+\paragraph{Idea} (Code generation not implemented) Soy functions or anonymous functions are functions that are not bound to an identifier. They can either be used as value (passed as parameters), be called (see Section \ref{sssec:func_call}) or stored into a variable.
 \paragraph{Syntax} A soy function is declared by using the \texttt{soy} keyword :
 \begin{center}
 	\texttt{(soy} \{\textit{parameter}[\texttt{<}\textit{type}\texttt{>}]\} \texttt{:} \textit{function\_body} \texttt{)}
@@ -287,7 +287,7 @@ The \textit{Sushi++} language provides three kinds of loop.
 		\texttt{;;}\\
 	\end{minipage}
 \end{center}
-\paragraph{Collection-controlled loop} This loop is called \texttt{foreach} and is made for iterating over lists. At the first iteration, the element at the front of the list is stored in the iteration variable. Then, at each iteration, the same goes for next value till the list was completely covered. The syntax is the following :
+\paragraph{Collection-controlled loop} (Code generation not implemented) This loop is called \texttt{foreach} and is made for iterating over lists. At the first iteration, the element at the front of the list is stored in the iteration variable. Then, at each iteration, the same goes for next value till the list was completely covered. The syntax is the following :
 \begin{center}
 	\begin{minipage}{0.35\linewidth}
 		\texttt{foreach} \textit{list expression} \texttt{as} \textit{variable} \\
@@ -319,7 +319,7 @@ As the initial visitor class (\texttt{visitor::PrintASTVisitor}) was designed pa
 The errors formatting and storing is encapsulated by the class \texttt{ErrorHandler} to which are passed the various errors generated during a phase.
 \subsection{Lexical and syntax analysis}
 \label{ssec:lex_synt}
-At the beginning of the project, the choice was made to use \texttt{bison} and \texttt{flex} (versions \texttt{3.0.2} and \texttt{2.5.35} respectively) for the syntax and lexical analysis phases. This was motivated by the fact that many projects (including the integrated project) were ongoing during the development of this part of the compiler. So we decided to use existing tools to reduce the workload so that we could deliver a function syntax and lexical analysis for the first deadline. Among the existing tools, we have decided to use \texttt{bison} and \texttt{flex} because our compiler is developed in C++ and that integration would be easier.
+At the beginning of the project, the choice was made to use \texttt{bison} and \texttt{flex} (versions \texttt{3.0.2} and \texttt{2.5.35} respectively) for the syntax and lexical analysis phases. This was motivated by the fact that many projects (including the integrated project) were ongoing during the development of this part of the compiler. So we decided to use existing tools to reduce the workload so that we could deliver a functional syntax and lexical analysis for the first deadline. Among the existing tools, we have decided to use \texttt{bison} and \texttt{flex} because our compiler is developed in C++ and that integration would be easier.
 \\ \\
 The parser is implemented in the bison file \texttt{parser/spp\_parser.y} and the lexer in \texttt{scanner/spp\_scanner.lex}. Here are the elements that are worth to be mentioned :
 \begin{itemize}
@@ -333,7 +333,7 @@ The parser is implemented in the bison file \texttt{parser/spp\_parser.y} and th
 \end{itemize}
 \subsection{Semantic analysis}
 \subsubsection{Scope checking}
-In order to perform scope checking, we implemented two visitors. The first one aim's is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
+In order to perform scope checking, we implemented two visitors. The first one's aim is mainly to discover function's declarations and is named \texttt{FunctionTableVisitor}, while the second one \texttt{SymbolTableVisitor} will be the one to detect most semantic errors. The two visitors visit the abstract syntax tree and fill in the two symbol tables we maintain. There is one for the functions and one for the variables. The first one is filled by the first visitor and the second one by the second visitor. A little flaw is that the symbol table destined for variables may contain functions too. Sometimes we can only distinguish between a variable and a function at the inference step (in the case of an function passed as an argument for example).
 \paragraph{The \texttt{FunctionTableVisitor}} is also used for termination checking, as will be explained in the next paragraph. There was a need to visit two times the tree because a function may be called before its definition. So at this level, the visitor adds informations about the functions defined in the code in the part of the symbol table corresponding to the scope containing the function's declaration. The information yielded is the name, the location and the argument's name of the function. Note that the arguments are also added in the variable symbol table in the scope corresponding to the function body.
 
 \paragraph{The \texttt{SymbolTableVisitor}} fills the variable symbol table and checks that each variable was well declared and that each function call corresponds to a function repertoried by the \texttt{FunctionTableVisitor}. We decided to forbid closures.  
@@ -650,6 +650,7 @@ We wish we had more time to complete this phase. Indeed, there is a lot of impro
 		\item string garbage collection
 		\item assigning value to an element of an array with the array-access operator 
 		\item the foreach loop
+		\item the soy functions
 	\end{itemize}
 	\item while all the phases are clean, the code generation phase contains memory leaks. We didn't have time to to fix them.
 	\item in the last rush, some bug fixes were implemented in a dirty way (some things were hardcoded). A clean recoding would be suitable
