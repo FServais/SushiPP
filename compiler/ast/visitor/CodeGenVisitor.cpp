@@ -2035,7 +2035,7 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 	curr_module.function_is_used("array_make_sequence");
 
 	// create the array
-	shared_ptr<typegen::Type> array_type(new typegen::List(begin->get_type()));
+	shared_ptr<typegen::Type> array_type(new typegen::Array(begin->get_type()));
 	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));
 
 	// store the array id into memory
@@ -2400,9 +2400,6 @@ void CodeGenVisitor::visit( SoyFunc& token )
 	// curr_func_name = current_function;
 }
 
-
-
-
 /********************************
  * 		Program non-terminal    *
  ********************************/
@@ -2424,13 +2421,13 @@ void CodeGenVisitor::visit( Scope& token )
 
 	visit_children(token);
 
-	cout << ">>> Array <<<" << endl;
-	array_rm_ref_flags.print();
-	cout << endl;
+	// cout << ">>> Array <<<" << endl;
+	// array_rm_ref_flags.print();
+	// cout << endl;
 
-	cout << ">>> List <<<" << endl;
-	list_rm_ref_flags.print();
-	cout << endl;
+	// cout << ">>> List <<<" << endl;
+	// list_rm_ref_flags.print();
+	// cout << endl;
 
 	// Add free of array/list
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
@@ -2634,7 +2631,6 @@ void CodeGenVisitor::visit( For& token )
 	block2.add_expression(jump);
 
 	curr_function.add_block("label_false");
-
 }
 
 

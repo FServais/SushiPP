@@ -2387,12 +2387,18 @@ void TypeInferenceVisitor::visit( ast::For& for_loop )
 	params.call();
 	for_loop.get_scope().accept(*this);
 
-	params.call();
-	for_loop.get_initializer().accept(*this);
+	if(!for_loop.empty_initializer())
+	{
+		params.call();
+		for_loop.get_initializer().accept(*this);
+	}
 
-	params.call();
-	for_loop.get_update().accept(*this);
-
+	if(!for_loop.empty_update())
+	{
+		params.call();
+		for_loop.get_update().accept(*this);
+	}
+	
 	params.ret();
 }
 

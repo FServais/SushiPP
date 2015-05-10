@@ -416,19 +416,31 @@ ForInitializer& For::get_initializer()
 
 Expression& For::get_expression()
 {
-	return *dynamic_cast<Expression*>(children[1]);
+	if(empty_initializer())
+		return *dynamic_cast<Expression*>(children[0]);
+	else
+		return *dynamic_cast<Expression*>(children[1]);
 }
 
 ForUpdate& For::get_update()
 {
 	if(empty_update())
 		throw NoSuchChildException("empty for initializer section");
-	return *dynamic_cast<ForUpdate*>(children[2]);
+
+	if(empty_initializer())
+		return *dynamic_cast<ForUpdate*>(children[1]);
+	else
+		return *dynamic_cast<ForUpdate*>(children[2]);
 }
 
 Scope& For::get_scope()
 {
-	return *dynamic_cast<Scope*>(children[3]);
+	if(empty_initializer() && empty_update())
+		return *dynamic_cast<Scope*>(children[1]);
+	else if(empty_initializer() || empty_update())
+		return *dynamic_cast<Scope*>(children[2]);
+	else
+		return *dynamic_cast<Scope*>(children[3]);
 }
 
 /* ForInitializer */
