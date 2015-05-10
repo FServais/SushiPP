@@ -39,3 +39,6 @@ compiler/runtime/support.bc
 compiler/runtime/support.s
 Reports/Final/final_report.fdb_latexmk
 Reports/Final/final_report.log
+compiler/quicksort
+compiler/test
+compiler/work_quicksort

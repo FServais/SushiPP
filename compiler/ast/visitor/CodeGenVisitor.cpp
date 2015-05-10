@@ -1800,7 +1800,7 @@ void CodeGenVisitor::visit( ast::Array& token )
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 	size_t array_size;
-	
+
 	if(!token.empty_items()) // empty array
 		array_size = dynamic_cast<ExpressionList&>(token.get_items()).nb_expressions();
 	else
@@ -1888,7 +1888,7 @@ void CodeGenVisitor::visit( ast::List& token )
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 	size_t list_size;
-	
+
 	if(!token.empty_items()) // empty list
 		list_size = dynamic_cast<ExpressionList&>(token.get_items()).nb_expressions();
 	else
@@ -2159,9 +2159,6 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 	pop();
 	pop();
-
-	//add_return(store);
-
 }
 
 
@@ -2266,8 +2263,8 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
 	pop();
 	pop();
+
 	add_return(id_addr);
-	
 }
 
 
@@ -2468,7 +2465,6 @@ void CodeGenVisitor::visit( Scope& token )
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
 
-
 }
 
 
@@ -2650,7 +2646,7 @@ void CodeGenVisitor::visit( ForUpdate& token )
 void CodeGenVisitor::visit( Conditional& token )
 {
 	cout << "Conditional" << endl;
-
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	string end_if_label = label_manager.insert_label("end_if");
 
 	token.get_if().accept(*this);
@@ -2660,8 +2656,10 @@ void CodeGenVisitor::visit( Conditional& token )
 
 	if(token.contains_else())
 		token.get_else().accept(*this);
+	else
+		curr_function.get_last_block().create_branch(end_if_label);
 
-	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+
 	curr_function.add_block(end_if_label);
 }
 
@@ -2708,10 +2706,12 @@ void CodeGenVisitor::visit( ast::If& token )
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	BasicBlock& block = curr_function.get_last_block();
 
+	// Load the value of the result of the comparison
+	unique_ptr<Value>result_comp_value = unique_ptr<Value>(block.create_load(cast_result));
 
 	string label_true = label_manager.insert_label("if_true");
 	string label_false = label_manager.insert_label("if_false");
-	block.create_cond_branch(result_comp, label_true, label_false);
+	block.create_cond_branch(*result_comp_value, label_true, label_false);
 
 	pop();
 
