@@ -82,5 +82,6 @@ maki quicksort array :
 
 maki array = #[ 18, 33, 25, 45, 76, 89, 18, 19 ]#
 
+call print-array array
 call quicksort array
 call print-array array

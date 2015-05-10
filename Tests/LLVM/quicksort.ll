@@ -5,6 +5,7 @@
 
 declare i64 @array_get_int(%struct.array_table*, i64, i64)
 declare void @array_push_int(%struct.array_table*, i64, i64)
+declare void @array_set_int(%struct.array_table*, i64, i64, i64)
 declare i64 @array_size_int(%struct.array_table*, i64)
 declare void @array_add_reference(%struct.array_table*, i64)
 declare i64 @array_allocate_int(%struct.array_table*, i64, i64*)
@@ -15,7 +16,6 @@ declare void @list_add_reference(%struct.list_table*, i64)
 declare void @list_rm_reference(%struct.list_table*, i64)
 declare void @print_char(i8)
 declare void @print_int(i64)
-declare void @println_int(i64)
 
 define void @.array-swap(i64 %array_arg, i64 %item1_arg, i64 %item2_arg){
 entry:
@@ -26,40 +26,32 @@ entry:
 	%item2 = alloca i64
 	store i64 %item2_arg, i64* %item2
 	%tmp_load_array.2 = load i64* %array
-	%raw_load_tmp.8 = load %struct.array_table** @..array_table
+	%raw_load_tmp.2 = load %struct.array_table** @..array_table
 	%tmp_load_item1 = load i64* %item1
-	%ret.4 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.8, i64 %tmp_load_array.2, i64 %tmp_load_item1 )
+	%ret.4 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.2, i64 %tmp_load_array.2, i64 %tmp_load_item1 )
 	%tmp_ret_addr = alloca i64
 	store i64 %ret.4, i64* %tmp_ret_addr
 	%tmp = alloca i64
 	%tmp_load_tmp_ret_addr = load i64* %tmp_ret_addr
 	store i64 %tmp_load_tmp_ret_addr, i64* %tmp
 	%tmp_load_array.3 = load i64* %array
-	%raw_load_tmp.9 = load %struct.array_table** @..array_table
-	%tmp_load_item1.1 = load i64* %item1
-	%ret.5 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.9, i64 %tmp_load_array.3, i64 %tmp_load_item1.1 )
+	%raw_load_tmp.3 = load %struct.array_table** @..array_table
+	%tmp_load_item2 = load i64* %item2
+	%ret.5 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.3, i64 %tmp_load_array.3, i64 %tmp_load_item2 )
 	%tmp_ret_addr.1 = alloca i64
 	store i64 %ret.5, i64* %tmp_ret_addr.1
 	%tmp_load_array.4 = load i64* %array
-	%raw_load_tmp.10 = load %struct.array_table** @..array_table
-	%tmp_load_item2 = load i64* %item2
-	%ret.6 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.10, i64 %tmp_load_array.4, i64 %tmp_load_item2 )
-	%tmp_ret_addr.2 = alloca i64
-	store i64 %ret.6, i64* %tmp_ret_addr.2
-	%tmp_load_tmp_ret_addr.1 = load i64* %tmp_ret_addr.2
-	store i64 %tmp_load_tmp_ret_addr.1, i64* %tmp_ret_addr.1
+	%tmp_load_item1.1 = load i64* %item1
+	%tmp_load_tmp_ret_addr.1 = load i64* %tmp_ret_addr.1
+	%raw_load_tmp.4 = load %struct.array_table** @..array_table
+	call void (%struct.array_table*, i64, i64, i64)* @array_set_int(%struct.array_table* %raw_load_tmp.4, i64 %tmp_load_array.4, i64 %tmp_load_item1.1, i64 %tmp_load_tmp_ret_addr.1)
 	%tmp_load_array.5 = load i64* %array
-	%raw_load_tmp.11 = load %struct.array_table** @..array_table
 	%tmp_load_item2.1 = load i64* %item2
-	%ret.7 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.11, i64 %tmp_load_array.5, i64 %tmp_load_item2.1 )
-	%tmp_ret_addr.3 = alloca i64
-	store i64 %ret.7, i64* %tmp_ret_addr.3
 	%tmp_load_tmp = load i64* %tmp
-	store i64 %tmp_load_tmp, i64* %tmp_ret_addr.3
-	%raw_load_tmp.12 = load %struct.array_table** @..array_table
-	%raw_load_tmp.13 = load %struct.list_table** @..list_table
+	%raw_load_tmp.5 = load %struct.array_table** @..array_table
+	call void (%struct.array_table*, i64, i64, i64)* @array_set_int(%struct.array_table* %raw_load_tmp.5, i64 %tmp_load_array.5, i64 %tmp_load_item2.1, i64 %tmp_load_tmp)
 
-	ret void 
+	ret void
 }
 
 define i64 @main(){
@@ -68,29 +60,29 @@ entry:
 	%added_list_table = call %struct.list_table* (...)* @create_list_table()
 	store %struct.array_table* %added_array_table, %struct.array_table** @..array_table, align 8
 	store %struct.list_table* %added_list_table, %struct.list_table** @..list_table, align 8
-	%raw_load_tmp.34 = load %struct.array_table** @..array_table
-	%id = call i64 (%struct.array_table*, i64, i64*)* @array_allocate_int(%struct.array_table* %raw_load_tmp.34, i64 0, i64* null)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 18)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 33)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 25)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 45)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 76)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 89)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 18)
-	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 19)
+	%raw_load_tmp.18 = load %struct.array_table** @..array_table
+	%id = call i64 (%struct.array_table*, i64, i64*)* @array_allocate_int(%struct.array_table* %raw_load_tmp.18, i64 0, i64* null)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 18)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 33)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 25)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 45)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 76)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 89)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 18)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.18, i64 %id, i64 19)
 	%tmp_id_addr = alloca i64
 	store i64 %id, i64* %tmp_id_addr
 	%array = alloca i64
 	%tmp_load_tmp_id_addr = load i64* %tmp_id_addr
-	%raw_load_tmp.35 = load %struct.list_table** @..list_table
-	call void (%struct.list_table*, i64)* @list_add_reference(%struct.list_table* %raw_load_tmp.35, i64 %tmp_load_tmp_id_addr)
+	%raw_load_tmp.19 = load %struct.list_table** @..list_table
+	call void (%struct.list_table*, i64)* @list_add_reference(%struct.list_table* %raw_load_tmp.19, i64 %tmp_load_tmp_id_addr)
 	store i64 %tmp_load_tmp_id_addr, i64*%array
 	%tmp_load_array.19 = load i64* %array
-	call void (i64)* @.quicksort(i64 %tmp_load_array.19)
+	call void (i64)* @.print-array(i64 %tmp_load_array.19)
 	%tmp_load_array.20 = load i64* %array
-	call void (i64)* @.print-array(i64 %tmp_load_array.20)
-	%raw_load_tmp.36 = load %struct.array_table** @..array_table
-	%raw_load_tmp.37 = load %struct.list_table** @..list_table
+	call void (i64)* @.quicksort(i64 %tmp_load_array.20)
+	%tmp_load_array.21 = load i64* %array
+	call void (i64)* @.print-array(i64 %tmp_load_array.21)
 
 	ret i64 0
 }
@@ -118,9 +110,10 @@ if_true:
 	%tmp_load_boundary_index = load i64* %boundary_index
 	%tmp_load_pivot.1 = load i64* %pivot
 	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.6, i64 %tmp_load_boundary_index, i64 %tmp_load_pivot.1)
+	%raw_load_tmp.6 = load %struct.array_table** @..array_table
+	%raw_load_tmp.7 = load %struct.list_table** @..list_table
 	%tmp_load_boundary_index.1 = load i64* %boundary_index
-	%raw_load_tmp.14 = load %struct.array_table** @..array_table
-	%raw_load_tmp.15 = load %struct.list_table** @..list_table
+	ret i64 %tmp_load_boundary_index.1
 	br label %end_if
 
 if_false:
@@ -128,19 +121,19 @@ if_false:
 
 end_if:
 	%tmp_load_array.7 = load i64* %array
-	%raw_load_tmp.16 = load %struct.array_table** @..array_table
+	%raw_load_tmp.8 = load %struct.array_table** @..array_table
 	%tmp_load_item_index.1 = load i64* %item_index
-	%ret.8 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.16, i64 %tmp_load_array.7, i64 %tmp_load_item_index.1 )
-	%tmp_ret_addr.4 = alloca i64
-	store i64 %ret.8, i64* %tmp_ret_addr.4
+	%ret.6 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.8, i64 %tmp_load_array.7, i64 %tmp_load_item_index.1 )
+	%tmp_ret_addr.2 = alloca i64
+	store i64 %ret.6, i64* %tmp_ret_addr.2
 	%tmp_load_array.8 = load i64* %array
-	%raw_load_tmp.17 = load %struct.array_table** @..array_table
+	%raw_load_tmp.9 = load %struct.array_table** @..array_table
 	%tmp_load_pivot.2 = load i64* %pivot
-	%ret.9 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.17, i64 %tmp_load_array.8, i64 %tmp_load_pivot.2 )
-	%tmp_ret_addr.5 = alloca i64
-	store i64 %ret.9, i64* %tmp_ret_addr.5
-	%tmp_load_tmp_ret_addr.2 = load i64* %tmp_ret_addr.4
-	%tmp_load_tmp_ret_addr.3 = load i64* %tmp_ret_addr.5
+	%ret.7 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.9, i64 %tmp_load_array.8, i64 %tmp_load_pivot.2 )
+	%tmp_ret_addr.3 = alloca i64
+	store i64 %ret.7, i64* %tmp_ret_addr.3
+	%tmp_load_tmp_ret_addr.2 = load i64* %tmp_ret_addr.2
+	%tmp_load_tmp_ret_addr.3 = load i64* %tmp_ret_addr.3
 	%tmp_lt.2 = icmp slt i64 %tmp_load_tmp_ret_addr.2, %tmp_load_tmp_ret_addr.3
 	%tmp_lt.3 = alloca i1
 	store i1 %tmp_lt.2, i1* %tmp_lt.3
@@ -148,28 +141,23 @@ end_if:
 	br i1 %tmp_load_tmp_lt.3, label %if_true.1, label %if_false.1
 
 if_true.1:
-	call void (i64)* @.print-dbg(i64 1)
-	%tmp_load_boundary_index.2 = load i64* %boundary_index
-	call void (i64)* @println_int(i64 %tmp_load_boundary_index.2)
 	%tmp_load_array.9 = load i64* %array
-	%tmp_load_boundary_index.3 = load i64* %boundary_index
+	%tmp_load_boundary_index.2 = load i64* %boundary_index
 	%tmp_load_item_index.2 = load i64* %item_index
-	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.9, i64 %tmp_load_boundary_index.3, i64 %tmp_load_item_index.2)
-	%tmp_load_boundary_index.4 = load i64* %boundary_index
-	%tmp_add.1 = add i64 %tmp_load_boundary_index.4, 1
+	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.9, i64 %tmp_load_boundary_index.2, i64 %tmp_load_item_index.2)
+	%tmp_load_boundary_index.3 = load i64* %boundary_index
+	%tmp_add.1 = add i64 %tmp_load_boundary_index.3, 1
 	store i64 %tmp_add.1, i64* %boundary_index
 	%tmp_load_item_index.3 = load i64* %item_index
 	%tmp_add.2 = add i64 %tmp_load_item_index.3, 1
 	store i64 %tmp_add.2, i64* %item_index
 	%tmp_load_array.10 = load i64* %array
 	%tmp_load_pivot.3 = load i64* %pivot
-	%tmp_load_boundary_index.5 = load i64* %boundary_index
+	%tmp_load_boundary_index.4 = load i64* %boundary_index
 	%tmp_load_item_index.4 = load i64* %item_index
-	%ret.10 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.10, i64 %tmp_load_pivot.3, i64 %tmp_load_boundary_index.5, i64 %tmp_load_item_index.4)
-	%ret.11 = alloca i64
-	store i64 %ret.10, i64* %ret.11
-	%raw_load_tmp.18 = load %struct.array_table** @..array_table
-	%raw_load_tmp.19 = load %struct.list_table** @..list_table
+	%ret.8 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.10, i64 %tmp_load_pivot.3, i64 %tmp_load_boundary_index.4, i64 %tmp_load_item_index.4)
+	%ret.9 = alloca i64
+	store i64 %ret.8, i64* %ret.9
 	br label %end_if.1
 
 if_false.1:
@@ -178,21 +166,19 @@ if_false.1:
 	store i64 %tmp_add.3, i64* %item_index
 	%tmp_load_array.11 = load i64* %array
 	%tmp_load_pivot.4 = load i64* %pivot
-	%tmp_load_boundary_index.6 = load i64* %boundary_index
+	%tmp_load_boundary_index.5 = load i64* %boundary_index
 	%tmp_load_item_index.6 = load i64* %item_index
-	%ret.12 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.11, i64 %tmp_load_pivot.4, i64 %tmp_load_boundary_index.6, i64 %tmp_load_item_index.6)
-	%ret.13 = alloca i64
-	store i64 %ret.12, i64* %ret.13
-	%raw_load_tmp.20 = load %struct.array_table** @..array_table
-	%raw_load_tmp.21 = load %struct.list_table** @..list_table
+	%ret.10 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.11, i64 %tmp_load_pivot.4, i64 %tmp_load_boundary_index.5, i64 %tmp_load_item_index.6)
+	%ret.11 = alloca i64
+	store i64 %ret.10, i64* %ret.11
 	br label %end_if.1
 
 end_if.1:
-	%tmp_load_boundary_index.7 = load i64* %boundary_index
-	%raw_load_tmp.22 = load %struct.array_table** @..array_table
-	%raw_load_tmp.23 = load %struct.list_table** @..list_table
+	%raw_load_tmp.10 = load %struct.array_table** @..array_table
+	%raw_load_tmp.11 = load %struct.list_table** @..list_table
+	%tmp_load_boundary_index.6 = load i64* %boundary_index
+	ret i64 %tmp_load_boundary_index.6
 
-	ret i64 %tmp_load_boundary_index.7
 }
 
 define void @.print-array(i64 %array_arg){
@@ -227,8 +213,6 @@ label_true:
 	%tmp_load_ret.3 = load i64* %ret.3
 	call void (i64)* @print_int(i64 %tmp_load_ret.3)
 	call void (i8)* @print_char(i8 32)
-	%raw_load_tmp.2 = load %struct.array_table** @..array_table
-	%raw_load_tmp.3 = load %struct.list_table** @..list_table
 	%tmp_load_i.2 = load i64* %i
 	%tmp_add = add i64 %tmp_load_i.2, 1
 	store i64 %tmp_add, i64* %i
@@ -236,10 +220,8 @@ label_true:
 
 label_false:
 	call void (i8)* @print_char(i8 10)
-	%raw_load_tmp.4 = load %struct.array_table** @..array_table
-	%raw_load_tmp.5 = load %struct.list_table** @..list_table
 
-	ret void 
+	ret void
 }
 
 define void @.print-dbg(i64 %n_arg){
@@ -255,10 +237,8 @@ entry:
 	call void (i8)* @print_char(i8 93)
 	call void (i8)* @print_char(i8 58)
 	call void (i8)* @print_char(i8 32)
-	%raw_load_tmp.6 = load %struct.array_table** @..array_table
-	%raw_load_tmp.7 = load %struct.list_table** @..list_table
 
-	ret void 
+	ret void
 }
 
 define void @.quicksort(i64 %array_arg){
@@ -266,20 +246,21 @@ entry:
 	%array = alloca i64
 	store i64 %array_arg, i64* %array
 	%tmp_load_array.16 = load i64* %array
-	%raw_load_tmp.28 = load %struct.array_table** @..array_table
-	%ret.16 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.28, i64 %tmp_load_array.16)
-	%ret.17 = alloca i64
-	store i64 %ret.16, i64* %ret.17
-	%tmp_load_ret.17 = load i64* %ret.17
-	%tmp_lt.6 = icmp sle i64 %tmp_load_ret.17, 1
+	%raw_load_tmp.14 = load %struct.array_table** @..array_table
+	%ret.14 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.14, i64 %tmp_load_array.16)
+	%ret.15 = alloca i64
+	store i64 %ret.14, i64* %ret.15
+	%tmp_load_ret.15 = load i64* %ret.15
+	%tmp_lt.6 = icmp sle i64 %tmp_load_ret.15, 1
 	%tmp_lt.7 = alloca i1
 	store i1 %tmp_lt.6, i1* %tmp_lt.7
 	%tmp_load_tmp_lt.7 = load i1* %tmp_lt.7
 	br i1 %tmp_load_tmp_lt.7, label %if_true.3, label %if_false.3
 
 if_true.3:
-	%raw_load_tmp.29 = load %struct.array_table** @..array_table
-	%raw_load_tmp.30 = load %struct.list_table** @..list_table
+	%raw_load_tmp.15 = load %struct.array_table** @..array_table
+	%raw_load_tmp.16 = load %struct.list_table** @..list_table
+	ret void
 	br label %end_if.3
 
 if_false.3:
@@ -287,17 +268,15 @@ if_false.3:
 
 end_if.3:
 	%tmp_load_array.17 = load i64* %array
-	%raw_load_tmp.31 = load %struct.array_table** @..array_table
-	%ret.18 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.31, i64 %tmp_load_array.17)
-	%ret.19 = alloca i64
-	store i64 %ret.18, i64* %ret.19
+	%raw_load_tmp.17 = load %struct.array_table** @..array_table
+	%ret.16 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.17, i64 %tmp_load_array.17)
+	%ret.17 = alloca i64
+	store i64 %ret.16, i64* %ret.17
 	%tmp_load_array.18 = load i64* %array
-	%tmp_load_ret.19 = load i64* %ret.19
-	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.18, i64 0, i64 %tmp_load_ret.19)
-	%raw_load_tmp.32 = load %struct.array_table** @..array_table
-	%raw_load_tmp.33 = load %struct.list_table** @..list_table
+	%tmp_load_ret.17 = load i64* %ret.17
+	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.18, i64 0, i64 %tmp_load_ret.17)
 
-	ret void 
+	ret void
 }
 
 define void @.quicksort_aux(i64 %array_arg, i64 %start_arg, i64 %end_arg){
@@ -321,8 +300,9 @@ entry:
 	br i1 %tmp_load_tmp_lt.5, label %if_true.2, label %if_false.2
 
 if_true.2:
-	%raw_load_tmp.24 = load %struct.array_table** @..array_table
-	%raw_load_tmp.25 = load %struct.list_table** @..list_table
+	%raw_load_tmp.12 = load %struct.array_table** @..array_table
+	%raw_load_tmp.13 = load %struct.list_table** @..list_table
+	ret void
 	br label %end_if.2
 
 if_false.2:
@@ -361,12 +341,12 @@ end_if.2:
 	%tmp_load_last_index.1 = load i64* %last_index
 	%tmp_load_start.3 = load i64* %start
 	%tmp_load_start.4 = load i64* %start
-	%ret.14 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.13, i64 %tmp_load_last_index.1, i64 %tmp_load_start.3, i64 %tmp_load_start.4)
-	%ret.15 = alloca i64
-	store i64 %ret.14, i64* %ret.15
+	%ret.12 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.13, i64 %tmp_load_last_index.1, i64 %tmp_load_start.3, i64 %tmp_load_start.4)
+	%ret.13 = alloca i64
+	store i64 %ret.12, i64* %ret.13
 	%pivot = alloca i64
-	%tmp_load_ret.15 = load i64* %ret.15
-	store i64 %tmp_load_ret.15, i64* %pivot
+	%tmp_load_ret.13 = load i64* %ret.13
+	store i64 %tmp_load_ret.13, i64* %pivot
 	%tmp_load_array.14 = load i64* %array
 	%tmp_load_start.5 = load i64* %start
 	%tmp_load_pivot.5 = load i64* %pivot
@@ -378,10 +358,8 @@ end_if.2:
 	%tmp_load_pivot.7 = load i64* %pivot
 	%tmp_load_end.3 = load i64* %end
 	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.15, i64 %tmp_load_pivot.7, i64 %tmp_load_end.3)
-	%raw_load_tmp.26 = load %struct.array_table** @..array_table
-	%raw_load_tmp.27 = load %struct.list_table** @..list_table
 
-	ret void 
+	ret void
 }
 
 
