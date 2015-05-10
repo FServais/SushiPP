@@ -140,6 +140,13 @@ void CodeGenVisitor::visit( Identifier& token )
 void CodeGenVisitor::visit( K_Break& token )
 {
 	cout << "K_Break" << endl;
+	int size = loops_manager.size();
+	string end_loop = loops_manager[size-1].second;
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	block.add_expression("br label "+end_loop);
+
 
 }
 
@@ -147,6 +154,12 @@ void CodeGenVisitor::visit( K_Break& token )
 void CodeGenVisitor::visit( K_Continue& token )
 {
 	cout << "K_Continue" << endl;
+	int size = loops_manager.size();
+	string beg_loop = loops_manager[size-1].first;
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	block.add_expression("br label "+beg_loop);
 
 }
 
@@ -1752,8 +1765,48 @@ void CodeGenVisitor::visit( Op_AssignConcat& token )
 void CodeGenVisitor::visit( ast::String& token )
 {
 	cout << "String" << endl;
-	ConstantString* constant_string = new ConstantString(token.value());
-	add_return(constant_string);
+	string val = token.value();
+
+	int nb_el = 0;
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	
+	string ctype = "char";
+	string llvmtype = "i8";
+	shared_ptr<typegen::Char> char_typegen; 
+	shared_ptr<typegen::Array> array_string(new typegen::Array(char_typegen));
+
+	// load the address of the array table
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
+			alloc_func = "array_allocate_" + ctype,
+			spp_push_func = "array-push-" + ctype,
+			push_func = Module::get_llvm_function_name(spp_push_func, true),
+			alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, "+llvmtype+"* null)";
+
+	// notify the module that the allocate function is used
+	curr_module.function_is_used(alloc_func);
+	curr_module.function_is_used(spp_push_func);
+
+	// create the array
+	unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_string));
+
+	// add the elements in the array
+	for(int i = 0; i < val.size(); i++)
+	{
+
+		string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
+						    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
+						    ", " + llvmtype + " " + to_string((int)val[i]) + ")";
+
+		block.add_expression(push_call);
+	}
+
+	// store the array id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_string));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Value* id_addr = block.create_store(*array_id, *tmp_id_addr);
+	add_return(id_addr);
+	
 }
 
 
@@ -2687,7 +2740,6 @@ void CodeGenVisitor::visit( Menu& token )
 		son.get_nth_case(i).get_scope().accept(*this);
 		curr_module.get_function(curr_func_name).get_last_block().add_expression(end);
 	}
-	cout << "COU"<<son.contains_default()<<endl;
 	if(son.contains_default())
 	{
 		curr_function.add_block(def_lab);
@@ -2724,6 +2776,8 @@ void CodeGenVisitor::visit( Roll& token )
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
+	loops_manager.push_back(make_pair(begin_loop, label_false));
+	int index = loops_manager.size()-1;
 	string jump0 = "br label %"+begin_loop;
 	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
 	block0.add_expression(jump0);
@@ -2754,6 +2808,7 @@ void CodeGenVisitor::visit( Roll& token )
 	block2.add_expression(jump);
 
 	curr_function.add_block(label_false);
+	loops_manager.pop_back();
 	pop();
 
 
@@ -2773,6 +2828,8 @@ void CodeGenVisitor::visit( For& token )
 	string begin_loop = label_manager.insert_label("begin_loop");
 	string label_true = label_manager.insert_label("label_true");
 	string label_false = label_manager.insert_label("label_false");
+	loops_manager.push_back(make_pair(begin_loop, label_false));
+	int index = loops_manager.size()-1;
 	// init
 	if(! token.empty_initializer())
 		token.get_initializer().accept(*this);
@@ -2813,6 +2870,8 @@ void CodeGenVisitor::visit( For& token )
 	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
 	block2.add_expression(jump);
 	curr_function.add_block(label_false);
+	loops_manager.pop_back();
+
 
 	pop();
 }
