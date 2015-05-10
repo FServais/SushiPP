@@ -204,8 +204,7 @@ static void array_set_value(struct array_descriptor* desc, size_t pos, void* val
 
 	// move the elements of the array that should follow the ne element
 	void *dst = desc->array_ptr + num_bytes(desc->type) * pos;
-	size_t num = num_bytes(desc->type) * (desc->array_size - pos);
-	memcpy(dst,val,num);
+	memcpy(dst,val,num_bytes(desc->type));
 }
 
 static inline size_t num_bytes(size_t type)
@@ -341,7 +340,10 @@ size_t array_allocate_bool(struct array_table* table, size_t size, bool* populat
 void array_add_reference(struct array_table* table, size_t arrid)
 {
 	if(!table)
-		return; 
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_add_reference`\n");
+		exit(EXIT_FAILURE);
+	} 
 
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 
@@ -354,7 +356,10 @@ void array_add_reference(struct array_table* table, size_t arrid)
 void array_rm_reference(struct array_table* table, size_t arrid)
 {
 	if(!table)
-		return; 
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_rm_reference`\n");
+		exit(EXIT_FAILURE);
+	} 
 
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 
@@ -370,7 +375,10 @@ void array_rm_reference(struct array_table* table, size_t arrid)
 size_t array_size(const struct array_table* table, size_t arrid)
 {
 	if(!table)
-		return 0; 
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_size`\n");
+		exit(EXIT_FAILURE);
+	} 
 
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 
@@ -383,7 +391,10 @@ size_t array_size(const struct array_table* table, size_t arrid)
 size_t array_ref_count(const struct array_table* table, size_t arrid)
 {
 	if(!table)
-		return 0; 
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_ref_count`\n");
+		exit(EXIT_FAILURE);
+	} 
 
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 
@@ -395,7 +406,7 @@ size_t array_ref_count(const struct array_table* table, size_t arrid)
 
 void array_deallocate(struct array_table* table, size_t arrid)
 {
-	if(!table) 
+	if(!table)
 		return;
 	struct array_descriptor *current = table->head, 
 							*previous = NULL;
@@ -420,7 +431,11 @@ void array_deallocate(struct array_table* table, size_t arrid)
 void array_insert_int(struct array_table* table, size_t arrid, int value, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_insert_int`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != INT)
 		return;
@@ -431,7 +446,11 @@ void array_insert_int(struct array_table* table, size_t arrid, int value, size_t
 void array_insert_bool(struct array_table* table, size_t arrid, bool value, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_insert_bool`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != BOOL)
 		return;
@@ -442,7 +461,11 @@ void array_insert_bool(struct array_table* table, size_t arrid, bool value, size
 void array_insert_float(struct array_table* table, size_t arrid, float value, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_insert_float`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != FLOAT)
 		return;
@@ -453,7 +476,11 @@ void array_insert_float(struct array_table* table, size_t arrid, float value, si
 void array_insert_char(struct array_table* table, size_t arrid, char value, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_insert_char`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != CHAR)
 		return;
@@ -464,7 +491,11 @@ void array_insert_char(struct array_table* table, size_t arrid, char value, size
 void array_insert_string(struct array_table* table, size_t arrid, size_t value, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_insert_string`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != STRING)
 		return;
@@ -525,7 +556,11 @@ size_t array_get_string(struct array_table* table, size_t arrid, size_t pos)
 void array_clear(struct array_table* table, size_t arrid)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_clear`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc)
 		return;
@@ -538,7 +573,11 @@ void array_clear(struct array_table* table, size_t arrid)
 void array_remove(struct array_table* table, size_t arrid, size_t pos)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_remove`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc)
 		return;
@@ -684,7 +723,11 @@ size_t array_pop_string(struct array_table* table, size_t arrid)
 void array_push_int(struct array_table* table, size_t arrid, int value)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_push_int`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != INT)
 		return;
@@ -695,7 +738,11 @@ void array_push_int(struct array_table* table, size_t arrid, int value)
 void array_push_float(struct array_table* table, size_t arrid, float value)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_push_float`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != FLOAT)
 		return;
@@ -706,7 +753,11 @@ void array_push_float(struct array_table* table, size_t arrid, float value)
 void array_push_bool(struct array_table* table, size_t arrid, bool value)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_push_bool`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != BOOL)
 		return;
@@ -717,7 +768,11 @@ void array_push_bool(struct array_table* table, size_t arrid, bool value)
 void array_push_char(struct array_table* table, size_t arrid, char value)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_push_char`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != CHAR)
 		return;
@@ -728,7 +783,11 @@ void array_push_char(struct array_table* table, size_t arrid, char value)
 void array_push_string(struct array_table* table, size_t arrid, size_t value)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_push_string`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != STRING)
 		return;
@@ -743,6 +802,7 @@ struct array_table* create_array_table()
 	if(!table)
 	{
 		fprintf(stderr, "Memory allocation failure in `create_array_table`\n");
+		exit(EXIT_FAILURE);
 	}
 
 	table->head = NULL;
@@ -772,7 +832,11 @@ size_t array_make_sequence(struct array_table* table, size_t a, size_t b)
 void array_set_int(struct array_table* table, size_t arrid, size_t pos, int val)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_set_int`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != INT)
 		return;
@@ -783,7 +847,11 @@ void array_set_int(struct array_table* table, size_t arrid, size_t pos, int val)
 void array_set_float(struct array_table* table, size_t arrid, size_t pos, float val)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_set_float`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != FLOAT)
 		return;
@@ -794,7 +862,11 @@ void array_set_float(struct array_table* table, size_t arrid, size_t pos, float 
 void array_set_bool(struct array_table* table, size_t arrid, size_t pos, bool val)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_set_bool`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != BOOL)
 		return;
@@ -805,7 +877,11 @@ void array_set_bool(struct array_table* table, size_t arrid, size_t pos, bool va
 void array_set_char(struct array_table* table, size_t arrid, size_t pos, char val)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_set_char`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != CHAR)
 		return;
@@ -816,12 +892,77 @@ void array_set_char(struct array_table* table, size_t arrid, size_t pos, char va
 void array_set_string(struct array_table* table, size_t arrid, size_t pos, size_t val)
 {
 	if(!table)
-		return;
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `array_set_string`\n");
+		exit(EXIT_FAILURE);
+	}
+
 	struct array_descriptor* desc = find_array_descriptor(table, arrid);
 	if(!desc || desc->type != STRING)
 		return;
 
 	array_set_value(desc, pos, &val);
+}
+
+char string_get_char(struct array_table* table, size_t arrid, size_t pos)
+{
+	return array_get_char(table, arrid, pos);
+}
+
+size_t string_concat(struct array_table* table, size_t arrid1, size_t arrid2)
+{
+	if(!table)
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `string_concat`\n");
+		exit(EXIT_FAILURE);
+	}
+
+	struct array_descriptor *desc1 = find_array_descriptor(table, arrid1),
+							*desc2 = find_array_descriptor(table, arrid2);
+
+	if(!desc1 || desc1->type != CHAR || !desc2 || desc2->type != CHAR)
+	{
+		fprintf(stderr, "Invalid array id or type in `string_concat`\n");
+		exit(EXIT_FAILURE);
+	}
+
+	size_t new_array = array_allocate_char(table, desc1->array_size, (char*) desc1->array_ptr);
+	struct array_descriptor* new_desc = find_array_descriptor(table, new_array);
+
+	for(size_t i = 0; i < desc2->array_size; ++i)
+		array_insert_value(new_desc, new_desc->array_size, ((char*)new_desc->array_ptr) + i);
+
+	return new_array;
+}
+
+void print_string(struct array_table* table, size_t arrid)
+{
+	if(!table)
+	{
+		fprintf(stderr, "Invalid pointer to the array table in `print_string`\n");
+		exit(EXIT_FAILURE);
+	}
+
+	struct array_descriptor* desc = find_array_descriptor(table, arrid);
+	if(!desc || desc->type != CHAR)
+	{
+		fprintf(stderr, "Invalid array id or type in `print_string`\n");
+		exit(EXIT_FAILURE);
+	}
+
+	for(size_t i = 0; i < desc->array_size; ++i)
+		printf("%c", ((char*)desc->array_ptr)[i]);
+}
+
+size_t string_len(struct array_table* table, size_t arrid)
+{
+	return array_size_char(table, arrid);
+}
+
+void println_string(struct array_table* table, size_t arrid)
+{
+	print_string(table, arrid);
+	printf("\n");
 }
 
 bool array_empty_int(const struct array_table* table, size_t id) { return array_empty(table, id); }

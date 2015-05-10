@@ -198,4 +198,18 @@ void array_push_string(struct array_table*, size_t, size_t);
  */
 size_t array_make_sequence(struct array_table*, size_t, size_t);
 
+/**
+ * @brief Get the char at the given position in the string
+ */
+char string_get_char(struct array_table*, size_t, size_t);
+/**
+ * @return the new string id (a new string is allcoation)
+ * @concat the strnig 1 and 2
+ */
+size_t string_concat(struct array_table*, size_t, size_t);
+void print_string(struct array_table*, size_t);
+void println_string(struct array_table*, size_t);
+
+size_t string_len(struct array_table*, size_t);
+
 #endif

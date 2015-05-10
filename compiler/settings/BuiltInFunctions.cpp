@@ -52,6 +52,10 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("array-remove-float", 	{ "array", "pos" }, { ARRAY, INT }, FLOAT, FLOAT, ARRAY_RUNTIME);
 	insert_function("array-remove-char", 	{ "array", "pos" }, { ARRAY, INT }, CHAR, CHAR, ARRAY_RUNTIME);
 	insert_function("array-remove-string", 	{ "array", "pos" }, { ARRAY, INT }, STRING, STRING, ARRAY_RUNTIME);
+	insert_function("print-string",			{ "to_print" }, { STRING }, VOID, NO_TYPE, ARRAY_RUNTIME);
+	insert_function("println-string",		{ "to_print" }, { STRING }, VOID, NO_TYPE, ARRAY_RUNTIME);
+	insert_function("string-concat",		{ "to_print" }, { STRING, STRING }, STRING, NO_TYPE, ARRAY_RUNTIME);
+	insert_function("string-len", 			{ "str" }, { STRING }, INT, NO_TYPE, STRING_RUNTIME);
 
 	/** List functions */
 	insert_function("list-size-bool", 			{ "list" }, { LIST }, INT, BOOL, LIST_RUNTIME);
@@ -128,10 +132,6 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("println-string", { "to_print" }, { STRING }, VOID, NO_TYPE, SUPPORT);
 
 	/** String functions */
-	insert_function("string-len", 		{ "str" }, { STRING }, INT, NO_TYPE, STRING_RUNTIME);
-	insert_function("string-reverse", 	{ "str" }, { STRING }, STRING, NO_TYPE, STRING_RUNTIME);
-	insert_function("string-tolower", 	{ "str" }, { STRING }, STRING, NO_TYPE, STRING_RUNTIME);
-	insert_function("string-toupper", 	{ "str" }, { STRING }, STRING, NO_TYPE, STRING_RUNTIME);
 
 	/** Math functions */
 	insert_function("pow-int", { "base", "exp" }, { INT, INT }, INT, NO_TYPE, SUPPORT);
