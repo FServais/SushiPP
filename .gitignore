@@ -44,3 +44,5 @@ compiler/test
 compiler/work_quicksort
 compiler/lonelyinteger
 Tests/LLVM/lonelyinteger.ll
+Tests/LLVM/merge_sort.bc
+Tests/LLVM/merge_sort.s
