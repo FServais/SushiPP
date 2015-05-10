@@ -258,7 +258,7 @@ static void* get_list_element(struct list_descriptor* desc, size_t pos)
 {
 	if(pos >= desc->list_size)
 	{
-		fprintf(stderr, "Out of range error in `get_list_element`\n");
+		fprintf(stderr, "List node number `%zu` out of bounds (list contains %zu element(s))\n", pos, desc->list_size);
 		exit(EXIT_FAILURE);
 	}
 
@@ -279,7 +279,7 @@ static void* remove_list_element(struct list_descriptor* desc, size_t pos)
 {
 	if(pos >= desc->list_size)
 	{
-		fprintf(stderr, "Out of range error in `remove_list_element`\n");
+		fprintf(stderr, "List node number `%zu` out of bounds (list contains %zu element(s))\n", pos, desc->list_size);
 		exit(EXIT_FAILURE);
 	}
 
@@ -327,7 +327,7 @@ static void insert_list_element(struct list_descriptor* desc, size_t pos, void* 
 {
 	if(pos > desc->list_size)
 	{
-		fprintf(stderr, "Out of range error in `insert_list_element`\n");
+		fprintf(stderr, "List node number `%zu` out of bounds (list contains %zu element(s))\n", pos, desc->list_size);
 		exit(EXIT_FAILURE);
 	}
 	

@@ -158,6 +158,12 @@ static inline void insert_descriptor(struct array_table* table, struct array_des
 
 static void array_insert_value(struct array_descriptor* desc, size_t pos, const void* val)
 {
+	if(pos > desc->array_size)
+	{
+		fprintf(stderr, "Array index `%zu` out of bounds (array contains %zu element(s))\n", pos, desc->array_size);
+		exit(EXIT_FAILURE);
+	}
+
 	// realloc the array for storing the new element
 	desc->array_ptr = realloc(desc->array_ptr, (desc->array_size + 1) * num_bytes(desc->type));
 
@@ -193,11 +199,23 @@ static inline size_t num_bytes(size_t type)
 
 static void* array_get_value(struct array_descriptor* desc, size_t pos)
 {
+	if(pos >= desc->array_size)
+	{
+		fprintf(stderr, "Array index `%zu` out of bounds (array contains %zu element(s))\n", pos, desc->array_size);
+		exit(EXIT_FAILURE);
+	}
+
 	return desc->array_ptr + pos * num_bytes(desc->type);
 }
 
 static void array_remove_value(struct array_descriptor* desc, size_t pos)
 {
+	if(pos >= desc->array_size)
+	{
+		fprintf(stderr, "Array index `%zu` out of bounds (array contains %zu element(s))\n", pos, desc->array_size);
+		exit(EXIT_FAILURE);
+	}
+
 	// move the end of the array over the removed element
 	void *dst = desc->array_ptr + pos * num_bytes(desc->type),
 		 *src = dst + num_bytes(desc->type);
