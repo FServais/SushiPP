@@ -4,25 +4,50 @@
 
 void print_int(int64_t val)
 {
-	printf("%ld\n", val);
+	printf("%ld", val);
 }
 
 void print_float(float val)
 {
-	printf("%f\n", val);
+	printf("%f", val);
 }
 
 void print_char(char val)
 {
-	printf("%c\n", val);
+	printf("%c", val);
 }
 
 void print_bool(bool val)
 {
-	printf("%s\n", val ? "true" : "false");
+	printf("%s", val ? "true" : "false");
 }
 
 void print_string(size_t string_id)
+{
+	printf("String id : %zu", string_id);
+}
+
+void println_int(int64_t val)
+{
+	printf("%ld\n", val);
+}
+
+void println_float(float val)
+{
+	printf("%f\n", val);
+}
+
+void println_char(char val)
+{
+	printf("%c\n", val);
+}
+
+void println_bool(bool val)
+{
+	printf("%s\n", val ? "true" : "false");
+}
+
+void println_string(size_t string_id)
 {
 	printf("String id : %zu\n", string_id);
 }

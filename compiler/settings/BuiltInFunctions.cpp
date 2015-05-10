@@ -121,6 +121,11 @@ BuiltInFunctions::BuiltInFunctions()
 	insert_function("print-float", 	{ "to_print" }, { FLOAT }, VOID, NO_TYPE, SUPPORT);
 	insert_function("print-char", 	{ "to_print" }, { CHAR }, VOID, NO_TYPE, SUPPORT);
 	insert_function("print-string", { "to_print" }, { STRING }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-bool", 	{ "to_print" }, { BOOL }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-int", 	{ "to_print" }, { INT }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-float", 	{ "to_print" }, { FLOAT }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-char", 	{ "to_print" }, { CHAR }, VOID, NO_TYPE, SUPPORT);
+	insert_function("println-string", { "to_print" }, { STRING }, VOID, NO_TYPE, SUPPORT);
 
 	/** String functions */
 	insert_function("string-len", 		{ "str" }, { STRING }, INT, NO_TYPE, STRING_RUNTIME);

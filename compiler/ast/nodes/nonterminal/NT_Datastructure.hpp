@@ -41,6 +41,12 @@ namespace ast
 		ASTNode& get_items();
 
 		virtual void accept(visitor::ASTVisitor&);
+		// type of the elements stored in the table
+		const std::string& get_type_id() const { return type_id; };
+		void set_type_id(const std::string& type_id_) { type_id = type_id_; }
+
+	private:
+		std::string type_id;
 	};
 
 	class List : public NT_Datastructure
@@ -60,6 +66,12 @@ namespace ast
 		ASTNode& get_items();
 
 		virtual void accept(visitor::ASTVisitor&);
+		// type of the elements stored in the table
+		const std::string& get_type_id() const { return type_id; };
+		void set_type_id(const std::string& type_id_) { type_id = type_id_; }
+
+	private:
+		std::string type_id;
 	};
 
 	class MakeSequenceList : public NT_Datastructure

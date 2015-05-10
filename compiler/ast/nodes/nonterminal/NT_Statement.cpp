@@ -211,33 +211,33 @@ void MenuBody::accept(visitor::ASTVisitor& visitor)
 }
 
 /* MenuCase */
-MenuCase::MenuCase(Scope* scope, ASTNode* expr) : NT_Statement("Case") 
+MenuCase::MenuCase(Scope* scope, Expression* expr) : NT_Statement("Case") 
 {
-	add_child(scope);
 	add_child(expr);
+	add_child(scope);
 }
 
-MenuCase::MenuCase(Scope* scope, ASTNode* expr, int first_line, int last_line, int first_column, int last_column)
+MenuCase::MenuCase(Scope* scope, Expression* expr, int first_line, int last_line, int first_column, int last_column)
 	: NT_Statement("Case", first_line, last_line, first_column, last_column)
 {
-	add_child(scope);
 	add_child(expr);
+	add_child(scope);
 }
 
-MenuCase::MenuCase(Scope* scope, ASTNode* expr, const NodeLocation& node_loc) : NT_Statement("Case", node_loc)
+MenuCase::MenuCase(Scope* scope, Expression* expr, const NodeLocation& node_loc) : NT_Statement("Case", node_loc)
 {
-	add_child(scope);
 	add_child(expr);
+	add_child(scope);
 }
 
 Scope& MenuCase::get_scope()
 {
-	return *dynamic_cast<Scope*>(children[0]);
+	return *dynamic_cast<Scope*>(children[1]);
 }
 
-ASTNode& MenuCase::get_expression()
+Expression& MenuCase::get_expression()
 {
-	return *(children[1]);
+	return *dynamic_cast<Expression*>(children[0]);
 }
 
 
@@ -416,19 +416,31 @@ ForInitializer& For::get_initializer()
 
 Expression& For::get_expression()
 {
-	return *dynamic_cast<Expression*>(children[1]);
+	if(empty_initializer())
+		return *dynamic_cast<Expression*>(children[0]);
+	else
+		return *dynamic_cast<Expression*>(children[1]);
 }
 
 ForUpdate& For::get_update()
 {
 	if(empty_update())
 		throw NoSuchChildException("empty for initializer section");
-	return *dynamic_cast<ForUpdate*>(children[2]);
+
+	if(empty_initializer())
+		return *dynamic_cast<ForUpdate*>(children[1]);
+	else
+		return *dynamic_cast<ForUpdate*>(children[2]);
 }
 
 Scope& For::get_scope()
 {
-	return *dynamic_cast<Scope*>(children[3]);
+	if(empty_initializer() && empty_update())
+		return *dynamic_cast<Scope*>(children[1]);
+	else if(empty_initializer() || empty_update())
+		return *dynamic_cast<Scope*>(children[2]);
+	else
+		return *dynamic_cast<Scope*>(children[3]);
 }
 
 /* ForInitializer */

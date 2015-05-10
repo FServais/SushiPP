@@ -119,6 +119,20 @@ char array_get_char(struct array_table*, size_t, size_t);
 size_t array_get_string(struct array_table*, size_t, size_t);
 
 /**
+ * @brief Set the element of type T at the given position in the array having the given id
+ * @param struct array_table* descriptor The array_table structure (containing information about all the arrays)
+ * @param size_it arrid The array id
+ * @param size_t pos The position of the element to add (in [0, size[)
+ * @param T val The new value
+ * @retval T The element at the position pos
+ */
+void array_set_int(struct array_table*, size_t, size_t, int);
+void array_set_float(struct array_table*, size_t, size_t, float);
+void array_set_bool(struct array_table*, size_t, size_t, bool);
+void array_set_char(struct array_table*, size_t, size_t, char);
+void array_set_string(struct array_table*, size_t, size_t, size_t);
+
+/**
  * @brief Reset the size of the array having the given id to zero and deallocate the memory
  * @param struct array_table* descriptor The array_table structure (containing information about all the arrays)
  * @param size_it arrid The array id

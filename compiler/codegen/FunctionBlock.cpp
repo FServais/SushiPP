@@ -41,7 +41,12 @@ void FunctionBlock::dump(ostream& out) const
         block->dump(out);
         out << endl;
     }
-    out << "\tret " << function_type->get_ret_type()->to_str() << " " << return_value << endl;
+    
+    if(function_type->get_ret_type()->is_void())
+        out << "\tret void" << endl;
+    else if(name == "main")
+        out << "\tret i64 0" << endl;
+    //out << "\tret " << function_type->get_ret_type()->to_str() << " " << return_value << endl;
     out << "}" << endl;
 }
 
@@ -108,7 +113,7 @@ vector<string> FunctionBlock::arguments_signature()
 
   for(size_t i = 0; i < function_type->nb_param(); ++i)
     sigs.push_back(function_type->get_arg(i)->to_str());
-    
+
   return sigs;
 }
 
@@ -135,7 +140,7 @@ void FunctionBlock::generate_argument_type_conv()
     parameters_name[i] = newname.str();
 
     // Store the value given in argument where is the pointer
-    Variable value(var_manager, newname.str(), function_type->get_arg(i));
+    Variable value(var_manager, newname.str(), function_type->get_arg(i), true);
 
     unique_ptr<Value> store(entry.create_store(value, pointer));
   }

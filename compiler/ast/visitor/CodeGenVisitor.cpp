@@ -145,7 +145,7 @@ void CodeGenVisitor::visit( K_Break& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	block.add_expression("br label "+end_loop);
+	block.add_expression("br label %"+end_loop);
 
 
 }
@@ -159,7 +159,7 @@ void CodeGenVisitor::visit( K_Continue& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	block.add_expression("br label "+beg_loop);
+	block.add_expression("br label %"+beg_loop);
 
 }
 
@@ -1321,37 +1321,37 @@ void CodeGenVisitor::visit( Op_PrefixDecrement& token )
 void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 {
 	cout << "Op_PostfixIncrement" << endl;
-	// visit_children(token);
+	visit_children(token);
 
-	// // Get 2 arguments
-	// Value& operand = get_return_value(0);
-	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	// Variable* result;
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
 
-	// if(operand.is_variable())
-	// {
-	// 	unique_ptr<Value> load_operand(block.create_load(operand));
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_incr(*load_operand));
-	// }
-	// else
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_incr(operand));
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
 
-	// // increment the value stored
-	// Value* after_store = block.create_store(*result, operand);
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
 
-	// // return the non incremented value
-	// Variable* container = new Variable(builder.get_variable_manager(),
-	// 									builder.get_variable_manager().insert_variable(operand->get_name()),
-	// 									result->get_type(), true);
+	unique_ptr<Variable> result;
 
-	// unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
-	// Value* after_store = block.create_store(*container, *ptr);
-	// Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(operand)));
 
-	// pop();
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
 
-	// add_return(after_store);
+	add_return(copy_ptr);
+
 
 }
 
@@ -1359,28 +1359,36 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 {
 	cout << "Op_PostfixDecrement" << endl;
-	// visit_children(token);
+	visit_children(token);
 
-	// // Get 2 arguments
-	// Value& operand = get_return_value(0);
-	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	// Variable* result;
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
 
-	// if(operand.is_variable())
-	// {
-	// 	unique_ptr<Value> load_operand(block.create_load(operand));
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_decr(*load_operand));
-	// }
-	// else
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_decr(operand));
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
 
-	// Value* after_store = block.create_store(*result, operand);
-	// //Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
 
-	// pop();
+	unique_ptr<Variable> result;
 
-	// add_return(after_store);
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(operand)));
+
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
+
+	add_return(copy_ptr);
 }
 
 
@@ -1838,86 +1846,88 @@ void CodeGenVisitor::visit( ast::Bool& token )
 void CodeGenVisitor::visit( ast::Array& token )
 {
 	cout << "Array" << endl;
-	int nb_el = 0;
+
+	// store all the elements into memory
+	visit_children(token);
+
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	if(!token.empty_items())
+	size_t array_size;
+
+	if(!token.empty_items()) // empty array
+		array_size = dynamic_cast<ExpressionList&>(token.get_items()).nb_expressions();
+	else
+		array_size = 0;
+
+	// get the Value containint the elements to store in the array
+	vector<shared_ptr<Value>> array_elements = get_n_return_values(array_size);
+
+	string ctype, llvmtype; // the c type and llvm of the array elements
+	shared_ptr<typegen::Type> array_subtype(type_table.get_type(token.get_type_id())),
+							  array_type(new typegen::List(array_subtype));
+
+	switch(array_subtype->get_type())
 	{
-		visit_children(token);
-		ExpressionList& expr_array = dynamic_cast<ExpressionList&>(token.get_items());
-		nb_el = expr_array.nb_expressions();
-
-
-		vector<shared_ptr<Value>> array_elements = get_n_return_values(nb_el);
-		std::string ctype, llvmtype; // the c type and llvm of the array elements
-		shared_ptr<typegen::Type> array_subtype(array_elements[0]->get_type()),
-								  array_type(new typegen::Array(array_subtype));
-
-		switch(array_subtype->get_type())
-		{
-		case inference::FLOAT:
-			ctype = "float";
-			llvmtype = "float";
-			break;
-		case inference::CHAR:
-			ctype = "char";
-			llvmtype = "i8";
-			break;
-		case inference::BOOL:
-			ctype = "bool";
-			llvmtype = "i1";
-			break;
-		case inference::INT:
-			ctype = "int";
-			llvmtype = "i64";
-			break;
-		default:
-			ctype = "string";
-			llvmtype = "i64";
-			break;
-		}
-
-		// load the address of the array table
-		string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
-				alloc_func = "array_allocate_" + ctype,
-				spp_push_func = "array-push-" + ctype,
-				push_func = Module::get_llvm_function_name(spp_push_func, true),
-				alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, "+llvmtype+"* null)";
-
-		// notify the module that the allocate function is used
-		curr_module.function_is_used(alloc_func);
-		curr_module.function_is_used(spp_push_func);
-
-		// create the array
-		unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_type));
-
-		// add the elements in the array
-		for(auto current_value : array_elements)
-		{
-			shared_ptr<Value> element_value; // the value to pass to the push function call
-
-			if(current_value->is_variable())
-				element_value = shared_ptr<Value>(block.create_load(*current_value));
-			else
-				element_value = current_value;
-
-			string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
-							    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
-							    ", " + llvmtype + " " + element_value->str_value() + ")";
-
- 			block.add_expression(push_call);
-		}
-
-		pop_n_return_values(expr_array.nb_expressions());
-
-		// store the array id into memory
-		unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
-		unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
-		Value* id_addr = block.create_store(*array_id, *tmp_id_addr);
-		add_return(id_addr);
+	case inference::FLOAT:
+		ctype = "float";
+		llvmtype = "float";
+		break;
+	case inference::CHAR:
+		ctype = "char";
+		llvmtype = "i8";
+		break;
+	case inference::BOOL:
+		ctype = "bool";
+		llvmtype = "i1";
+		break;
+	case inference::INT:
+		ctype = "int";
+		llvmtype = "i64";
+		break;
+	default:
+		ctype = "string";
+		llvmtype = "i64";
+		break;
 	}
 
+	// load the address of the array table
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
+			alloc_func = "array_allocate_" + ctype,
+			spp_push_func = "array-push-" + ctype,
+			push_func = Module::get_llvm_function_name(spp_push_func, true),
+			alloc_call = "call i64 (%struct.array_table*, i64, "+llvmtype+"*)* @" + alloc_func + "(%struct.array_table* %" + array_table + ", i64 0, i64* null)";
 
+	// notify the module that the allocate function is used
+	curr_module.function_is_used(alloc_func);
+	curr_module.function_is_used(spp_push_func);
+
+	// create the array
+	unique_ptr<Variable> array_id(block.add_expression(alloc_call, "id", array_type));
+
+	// add the elements in the array
+	for(auto current_value : array_elements)
+	{
+		shared_ptr<Value> element_value; // the value to pass to the push function call
+
+		if(current_value->is_variable())
+			element_value = shared_ptr<Value>(block.create_load(*current_value));
+		else
+			element_value = current_value;
+
+		string push_call = "call void (%struct.array_table*, i64, " + llvmtype + ")* @" + push_func +
+						    "(%struct.array_table* %" + array_table + ", i64 " + array_id->str_value() +
+						    ", " + llvmtype + " " + element_value->str_value() + ")";
+
+			block.add_expression(push_call);
+	}
+
+	pop_n_return_values(array_size);
+
+	// store the array id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Value* id_addr = block.create_store(*array_id, *tmp_id_addr);
+	add_return(id_addr);
 }
 
 
@@ -1930,83 +1940,82 @@ void CodeGenVisitor::visit( ast::List& token )
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	if(!token.empty_items()) // empty array
-	/*{
+	size_t list_size;
 
-	}
-	else*/
+	if(!token.empty_items()) // empty list
+		list_size = dynamic_cast<ExpressionList&>(token.get_items()).nb_expressions();
+	else
+		list_size = 0;
+
+	// get the Value containint the elements to store in the list
+	vector<shared_ptr<Value>> list_elements = get_n_return_values(list_size);
+
+	string ctype, llvmtype; // the c type and llvm of the array elements
+	shared_ptr<typegen::Type> list_subtype(type_table.get_type(token.get_type_id())),
+							  list_type(new typegen::List(list_subtype));
+
+	switch(list_subtype->get_type())
 	{
-		ExpressionList& expr_list = dynamic_cast<ExpressionList&>(token.get_items());
-		// get the Value containint the elements to store in the list
-		vector<shared_ptr<Value>> list_elements = get_n_return_values(expr_list.nb_expressions());
-
-		string ctype, llvmtype; // the c type and llvm of the array elements
-		shared_ptr<typegen::Type> list_subtype(list_elements[0]->get_type()),
-								  list_type(new typegen::List(list_subtype));
-
-		switch(list_subtype->get_type())
-		{
-		case inference::FLOAT:
-			ctype = "float";
-			llvmtype = "float";
-			break;
-		case inference::CHAR:
-			ctype = "char";
-			llvmtype = "i8";
-			break;
-		case inference::BOOL:
-			ctype = "bool";
-			llvmtype = "i1";
-			break;
-		case inference::INT:
-			ctype = "int";
-			llvmtype = "i64";
-			break;
-		default:
-			ctype = "string";
-			llvmtype = "i64";
-			break;
-		}
-
-		// load the address of the list table
-		string list_table = block.create_load_raw("%struct.list_table** @..list_table"),
-				alloc_func = "list_allocate_" + ctype,
-				spp_push_func = "list-push-back-" + ctype,
-				push_func = Module::get_llvm_function_name(spp_push_func, true),
-				alloc_call = "call i64 (%struct.list_table*)* @" + alloc_func + "(%struct.list_table* %" + list_table + ")";
-
-		// notify the module that the allocate function is used
-		curr_module.function_is_used(alloc_func);
-		curr_module.function_is_used(spp_push_func);
-
-		// create the list
-		unique_ptr<Variable> list_id(block.add_expression(alloc_call, "id", list_type));
-
-		// add the elements in the array
-		for(auto current_value : list_elements)
-		{
-			shared_ptr<Value> element_value; // the value to pass to the push function call
-
-			if(current_value->is_variable())
-				element_value = shared_ptr<Value>(block.create_load(*current_value));
-			else
-				element_value = current_value;
-
-			string push_call = "call void (%struct.list_table*, i64, " + llvmtype + ")* @" + push_func +
-							    "(%struct.list_table* %" + list_table + ", i64 " + list_id->str_value() +
-							    ", " + llvmtype + " " + element_value->str_value() + ")";
-
- 			block.add_expression(push_call);
-		}
-
-		pop_n_return_values(expr_list.nb_expressions());
-
-		// store the list id into memory
-		unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", list_type));
-		unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
-		Value* id_addr = block.create_store(*list_id, *tmp_id_addr);
-		add_return(id_addr);
+	case inference::FLOAT:
+		ctype = "float";
+		llvmtype = "float";
+		break;
+	case inference::CHAR:
+		ctype = "char";
+		llvmtype = "i8";
+		break;
+	case inference::BOOL:
+		ctype = "bool";
+		llvmtype = "i1";
+		break;
+	case inference::INT:
+		ctype = "int";
+		llvmtype = "i64";
+		break;
+	default:
+		ctype = "string";
+		llvmtype = "i64";
+		break;
 	}
+
+	// load the address of the list table
+	string list_table = block.create_load_raw("%struct.list_table** @..list_table"),
+			alloc_func = "list_allocate_" + ctype,
+			spp_push_func = "list-push-back-" + ctype,
+			push_func = Module::get_llvm_function_name(spp_push_func, true),
+			alloc_call = "call i64 (%struct.list_table*)* @" + alloc_func + "(%struct.list_table* %" + list_table + ")";
+
+	// notify the module that the allocate function is used
+	curr_module.function_is_used(alloc_func);
+	curr_module.function_is_used(spp_push_func);
+
+	// create the list
+	unique_ptr<Variable> list_id(block.add_expression(alloc_call, "id", list_type));
+
+	// add the elements in the array
+	for(auto current_value : list_elements)
+	{
+		shared_ptr<Value> element_value; // the value to pass to the push function call
+
+		if(current_value->is_variable())
+			element_value = shared_ptr<Value>(block.create_load(*current_value));
+		else
+			element_value = current_value;
+
+		string push_call = "call void (%struct.list_table*, i64, " + llvmtype + ")* @" + push_func +
+						    "(%struct.list_table* %" + list_table + ", i64 " + list_id->str_value() +
+						    ", " + llvmtype + " " + element_value->str_value() + ")";
+
+			block.add_expression(push_call);
+	}
+
+	pop_n_return_values(list_size);
+
+	// store the list id into memory
+	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", list_type));
+	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
+	Value* id_addr = block.create_store(*list_id, *tmp_id_addr);
+	add_return(id_addr);
 }
 
 
@@ -2079,7 +2088,7 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 	curr_module.function_is_used("array_make_sequence");
 
 	// create the array
-	shared_ptr<typegen::Type> array_type(new typegen::List(begin->get_type()));
+	shared_ptr<typegen::Type> array_type(new typegen::Array(begin->get_type()));
 	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));
 
 	// store the array id into memory
@@ -2203,9 +2212,6 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 	pop();
 	pop();
-
-	//add_return(store);
-
 }
 
 
@@ -2259,7 +2265,7 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	Value& tab = get_return_value(1);
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	
+
 
 	Variable* tab_id = dynamic_cast<Variable*>(block.create_load(tab));
 	string array_table = block.create_load_raw("%struct.array_table** @..array_table");
@@ -2296,12 +2302,12 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
 			array_table + ", i64 " + tab_id->str_value() + ", i64 " + ind->str_value() + " )";
 	}
-	else 
+	else
 		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
 			array_table + ", i64 " + tab_id->str_value() + ", i64 " + index.str_value() + " )";
-	
 
-	curr_module.function_is_used("array_get_"+ctype);
+
+	curr_module.function_is_used("array-get-"+ctype);
 
 	Variable* ret = block.add_expression(get_val, "ret", type);
 	// store the ret value into memory
@@ -2310,10 +2316,8 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
 	pop();
 	pop();
+
 	add_return(id_addr);
-	
-
-
 }
 
 
@@ -2353,7 +2357,7 @@ void CodeGenVisitor::visit( FuncCall& token )
 
 	// Get values from arguments
 	vector<shared_ptr<Value>> args_value;
-	for(auto arg = args.rbegin() ; arg != args.rend() ; ++arg)
+	for(auto arg = args.begin() ; arg != args.end() ; ++arg)
 	{
 		shared_ptr<Value> arg_ptr = *arg;
 		if(arg_ptr->is_constant())
@@ -2409,30 +2413,23 @@ void CodeGenVisitor::visit( Argument& token )
 void CodeGenVisitor::visit( SoyFunc& token )
 {
 	cout << "SoyFunc" << endl;
-
-	// // Visit 1st child : Identifier
-	// token.get_children().at(0)->accept(*this);
-
-	// Value& id = get_return_value(0);
-	// Variable& id_var = dynamic_cast<Variable&>(id);
-
+	visit_children(token);
 	// // Create new FunctionBlock
-	// string declared_function_name = id_var.get_name(),
+	// string function_name = token.get_name(),
 	// 		func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), declared_function_name),
 	// 		llvm_func_name = Module::get_llvm_function_name(declared_function_name, built_in.count(declared_function_name));
 
 	// //typegen::Function* function_type = ;
+	// shared_ptr<typegen::Type> func_type = type_table.get_type(func_name_table);
 	// vector<string> params;
 
 	// if(token.contains_params())
-	// 	token.get_param_list().get_parameters_name(params);
+	// 	token.get_params().get_parameters_name(params);
 
 	// FunctionBlock function(builder.get_variable_manager(),
 	// 					   llvm_func_name,
-	// 					   dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_name_table)),
+	// 					   dynamic_pointer_cast<typegen::Function>(func_type),
 	// 					   params);
-
-	// pop();
 
 	// // Change "cursor" of the visitor to the new function
 	// string current_function = curr_func_name;
@@ -2444,10 +2441,15 @@ void CodeGenVisitor::visit( SoyFunc& token )
 
 	// // Get back to previous block
 	// curr_func_name = current_function;
+
+	// // soy expression is an expression so a pointer should be returned on the stack
+	// // allocate memory
+	// create_load_raw("");block.create_load_raw(func_type->to_str() + "** " + table_name);
+
+
+
+
 }
-
-
-
 
 /********************************
  * 		Program non-terminal    *
@@ -2470,56 +2472,55 @@ void CodeGenVisitor::visit( Scope& token )
 
 	visit_children(token);
 
-	cout << ">>> Array <<<" << endl;
-	array_rm_ref_flags.print();
-	cout << endl;
-
-	cout << ">>> List <<<" << endl;
-	list_rm_ref_flags.print();
-	cout << endl;
-
-	// Add free of array/list
-	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
-
-	// -> Array
-	string type = "array";
-	string struct_type_name = "%struct." + type + "_table";
-	string table_name = "@.." + type + "_table";
-
-	string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
-	string func_name = type + "_rm_reference";
-
-	for(auto var : array_vars_to_free)
-	{
-		stringstream line;
-		line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
-		block.add_expression(line.str());
-	}
-
-	vector<string> list_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
-
-	// -> List
-	type = "list";
-	struct_type_name = "%struct." + type + "_table";
-	table_name = "@.." + type + "_table";
-
-	array_table = block.create_load_raw(struct_type_name + "** " + table_name);
-	func_name = type + "_rm_reference";
-
-	for(auto var : list_vars_to_free)
-	{
-		stringstream line;
-		line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
-		block.add_expression(line.str());
-	}
+	// // cout << ">>> Array <<<" << endl;
+	// // array_rm_ref_flags.print();
+	// // cout << endl;
+	//
+	// // cout << ">>> List <<<" << endl;
+	// // list_rm_ref_flags.print();
+	// // cout << endl;
+	//
+	// // Add free of array/list
+	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+	//
+	// // -> Array
+	// string type = "array";
+	// string struct_type_name = "%struct." + type + "_table";
+	// string table_name = "@.." + type + "_table";
+	//
+	// string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
+	// string func_name = type + "_rm_reference";
+	//
+	// for(auto var : array_vars_to_free)
+	// {
+	// 	stringstream line;
+	// 	line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+	// 	block.add_expression(line.str());
+	// }
+	//
+	// vector<string> list_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+	//
+	// // -> List
+	// type = "list";
+	// struct_type_name = "%struct." + type + "_table";
+	// table_name = "@.." + type + "_table";
+	//
+	// array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+	// func_name = type + "_rm_reference";
+	//
+	// for(auto var : list_vars_to_free)
+	// {
+	// 	stringstream line;
+	// 	line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+	// 	block.add_expression(line.str());
+	// }
 
 	if(!function_table.is_root())
 		function_table.move_to_parent_scope();
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-
 
 }
 
@@ -2539,12 +2540,60 @@ void CodeGenVisitor::visit( Statement& token )
 void CodeGenVisitor::visit( Return& token )
 {
 	cout << "Return" << endl;
-	FunctionBlock& function = curr_module.get_function(curr_func_name);
+	//FunctionBlock& function = curr_module.get_function(curr_func_name);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	size_t id_scope = function_table.curr_scope_id();
 
 	if(token.has_child())
 	{
 		// Child is Expression
 		visit_children(token);
+
+
+		// cout << ">>> Array <<<" << endl;
+		// array_rm_ref_flags.print();
+		// cout << endl;
+
+		// cout << ">>> List <<<" << endl;
+		// list_rm_ref_flags.print();
+		// cout << endl;
+
+		// Add free of array/list
+		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+		vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+		// -> Array
+		string type = "array";
+		string struct_type_name = "%struct." + type + "_table";
+		string table_name = "@.." + type + "_table";
+
+		string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
+		string func_name = type + "_rm_reference";
+
+		for(auto var : array_vars_to_free)
+		{
+			stringstream line;
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+			block.add_expression(line.str());
+		}
+
+		vector<string> list_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+		// -> List
+		type = "list";
+		struct_type_name = "%struct." + type + "_table";
+		table_name = "@.." + type + "_table";
+
+		array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+		func_name = type + "_rm_reference";
+
+		for(auto var : list_vars_to_free)
+		{
+			stringstream line;
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+			block.add_expression(line.str());
+		}
+
 
 		Value& exp = get_return_value(0);
 		if(exp.is_variable())
@@ -2552,26 +2601,83 @@ void CodeGenVisitor::visit( Return& token )
 			Variable& exp_var = dynamic_cast<Variable&>(exp);
 			if(exp_var.is_pointer())
 			{
-				shared_ptr<Value> return_value(function.get_last_block().create_load(exp_var));
-				function.set_return(return_value->str_value());
+				//shared_ptr<Value> return_value(function.get_last_block().create_load(exp_var));
+				//function.set_return(return_value->str_value());
+				shared_ptr<Value> return_value(block.create_load(exp_var));
+				block.create_return(*return_value);
 			}
 			else
-				function.set_return(exp.str_value());
+			{
+				//function.set_return(exp.str_value());
+				block.create_return(exp);
+			}
 		}
 		else
-			function.set_return(exp.str_value());
+		{
+			//function.set_return(exp.str_value());
+			block.create_return(exp);
+		}
+
 
 		pop();
 	}
 	else
-		function.set_return("");
+	{
+		// cout << ">>> Array <<<" << endl;
+		// array_rm_ref_flags.print();
+		// cout << endl;
+
+		// cout << ">>> List <<<" << endl;
+		// list_rm_ref_flags.print();
+		// cout << endl;
+
+		// Add free of array/list
+		BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+		vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+		// -> Array
+		string type = "array";
+		string struct_type_name = "%struct." + type + "_table";
+		string table_name = "@.." + type + "_table";
+
+		string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
+		string func_name = type + "_rm_reference";
+
+		for(auto var : array_vars_to_free)
+		{
+			stringstream line;
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+			block.add_expression(line.str());
+		}
+
+		vector<string> list_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
+
+		// -> List
+		type = "list";
+		struct_type_name = "%struct." + type + "_table";
+		table_name = "@.." + type + "_table";
+
+		array_table = block.create_load_raw(struct_type_name + "** " + table_name);
+		func_name = type + "_rm_reference";
+
+		for(auto var : list_vars_to_free)
+		{
+			stringstream line;
+			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << var << ")";
+			block.add_expression(line.str());
+		}
+
+		//function.set_return("");
+		block.add_expression("ret void");
+	}
+
 }
 
 
 void CodeGenVisitor::visit( Menu& token )
 {
 	cout << "Menu" << endl;
-	
+
 	token.get_expression().accept(*this);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
@@ -2590,7 +2696,7 @@ void CodeGenVisitor::visit( Menu& token )
 	if(son.contains_default())
 		switch_jump = "switch "+ llvm_type + " " + val->str_value() + ", label %"+def_lab ;
 	else
-		switch_jump = "switch "+ llvm_type + " " + val->str_value() + ", label %"+end_lab ; 
+		switch_jump = "switch "+ llvm_type + " " + val->str_value() + ", label %"+end_lab ;
 	int nb_case = son.nb_cases();
 
 
@@ -2763,13 +2869,11 @@ void CodeGenVisitor::visit( For& token )
 	string jump = "br label %"+begin_loop;
 	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
 	block2.add_expression(jump);
-
 	curr_function.add_block(label_false);
 	loops_manager.pop_back();
 
 
 	pop();
-
 }
 
 
@@ -2792,7 +2896,7 @@ void CodeGenVisitor::visit( ForUpdate& token )
 void CodeGenVisitor::visit( Conditional& token )
 {
 	cout << "Conditional" << endl;
-
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	string end_if_label = label_manager.insert_label("end_if");
 
 	token.get_if().accept(*this);
@@ -2802,8 +2906,10 @@ void CodeGenVisitor::visit( Conditional& token )
 
 	if(token.contains_else())
 		token.get_else().accept(*this);
+	else
+		curr_function.get_last_block().create_branch(end_if_label);
 
-	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+
 	curr_function.add_block(end_if_label);
 }
 
@@ -2850,10 +2956,12 @@ void CodeGenVisitor::visit( ast::If& token )
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
 	BasicBlock& block = curr_function.get_last_block();
 
+	// Load the value of the result of the comparison
+	unique_ptr<Value>result_comp_value = unique_ptr<Value>(block.create_load(cast_result));
 
 	string label_true = label_manager.insert_label("if_true");
 	string label_false = label_manager.insert_label("if_false");
-	block.create_cond_branch(result_comp, label_true, label_false);
+	block.create_cond_branch(*result_comp_value, label_true, label_false);
 
 	pop();
 

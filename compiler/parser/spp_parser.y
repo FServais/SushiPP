@@ -593,7 +593,7 @@ assignable-expression:
 		// delete the memory allocated for the string
 		delete $1;
 	}
-| datastructure-access { $$ = $1; }
+//| datastructure-access { $$ = $1; }
 ;
 
 datastructure-access: 
