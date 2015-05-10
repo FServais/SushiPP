@@ -122,7 +122,7 @@ function 				     { yylval.vstring = new string(yytext, yyleng); return IDENTIFI
 [+-]?{DIGIT}+                { yylval.vstring = new string(yytext, yyleng); return CONST_INT; }
 [+-]?{DIGIT}+\.{DIGIT}+      { yylval.vstring = new string(yytext, yyleng); return CONST_FLOAT; }
 \"[^"]*\"                    { yylval.vstring = new string(yytext, yyleng); return CONST_STRING; }
-'[^']'                       { yylval.vstring = new string(yytext, yyleng); return CONST_CHAR; }
+'([^']|\\[n0tr])'            { yylval.vstring = new string(yytext, yyleng); return CONST_CHAR; }
 ({EOL}+|\$.*{EOL})           { yylineno += count_ln(yytext, yyleng); return DELIM_EOL; }
 [ \t]+                       { }
 .                            {

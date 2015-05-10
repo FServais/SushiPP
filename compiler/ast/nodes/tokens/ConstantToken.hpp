@@ -55,6 +55,8 @@ namespace ast
 
 	private:
 		char char_val;
+
+		char extract_char(const std::string&) const;
 	};
 
 	class Integer : public ConstantToken

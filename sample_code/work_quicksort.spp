@@ -1,3 +1,13 @@
+$ print an array of integers to the screen
+maki print-array array :
+	maki i = 0
+	for , i < (call array-size-int array), ++i
+		call print-int (call array-get-int array i)
+		call print-char ' '
+	;; 
+	call print-char '\n'
+;;
+
 $ Swap values of the array
 $ array Array of which items must be swapped
 $ item1 index of the first element to swap
@@ -60,4 +70,6 @@ maki quicksort array :
 ;;
 
 maki array = #[ 18, 33, 25, 45, 76, 89, 18, 19 ]#
+call print-array array
 call quicksort array
+call print-array array

@@ -69,7 +69,7 @@ namespace codegen
 
         // store Value* in variable
         Value* create_store(Value&, Value&);
-
+        Value* create_func_store(Value&, Value&);
         // load the value
         Value* create_load(Value&);
         /**
