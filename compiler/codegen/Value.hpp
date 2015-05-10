@@ -3,29 +3,35 @@
 
 #include <string>
 
+#include "../inference/TypeGen.hpp"
+
 namespace codegen
 {
     class Value
     {
     public:
-        Value(const std::string& _type);
+        Value(std::shared_ptr<typegen::Type> _type);
 
-        // Type
-        bool is_variable() { return variable; }
-        bool is_constant() { return constant; }
+        bool is_variable();
+        bool is_constant();
+        bool is_function();
+
+        void set_is_variable();
+        void set_is_constant();
+        void set_is_function();
 
         // std::string -> to change
-        std::string get_type();
+        std::shared_ptr<typegen::Type> get_type();
         std::string str_type();
 
         virtual std::string str_value();
 
     protected:
         // Type
-        bool variable, constant;
-        std::string type;
+        bool variable, constant, function;
+        std::shared_ptr<typegen::Type> type;
 
-        void set_type(std::string _type);
+        void set_type(std::shared_ptr<typegen::Type> _type);
 
     };
 }

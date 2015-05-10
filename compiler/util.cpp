@@ -18,3 +18,9 @@ std::string util::random_string(size_t length)
     std::generate_n(str.begin(), length, randchar);
     return str;
 }
+
+std::string util::remove_extension(const std::string& filename)
+{
+    size_t pos_of_dot = filename.find_last_of('.');
+    return filename.substr(0, pos_of_dot);
+}

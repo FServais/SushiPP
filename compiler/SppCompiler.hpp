@@ -2,6 +2,7 @@
 #define SPP_COMPILER_HPP_DEFINED
 
 #include "settings/CompilerSettings.hpp"
+#include "settings/BuiltInFunctions.hpp"
 #include "ast/AbstractSyntaxTree.hpp"
 #include "ast/nodes/ASTNode.hpp"
 #include "symb/SymbolTable.hpp"
@@ -12,11 +13,18 @@
 
 namespace compiler
 {
+	/**
+	 * @class SppCompiler
+	 * @brief Main class of the compiler : coordinates the actions of the different compilation phases. Contains the data 
+	 * accumulated during the various phases
+	 */
 	class SppCompiler
 	{
 	public:
 		/**
-		 *
+		 * @brief Construct a spp compiler object with the user inputs
+		 * @param int argc Does it need to be explained? 
+		 * @param char** argv Does it need to be explained? 
 		 */
 		SppCompiler(int argc, char** argv);
 
@@ -38,12 +46,24 @@ namespace compiler
 
 
 	private:
+		/**
+		 * config : compiler settings of the current execution
+		 * built_in : datastructure containing all the built in functions descriptions
+		 * syntax_tree : as soon as it is build (afterparsing), contains the abstract syntax tree
+		 * functions_table : symbol table containing the functions info
+		 * variable_table : symbol table containing the functions info
+		 * error_handler : object for emitting compilation error
+		 * type_table : table containing the information about the types of the language
+		 * generated_llvm : the generated llvm
+		 */
 		settings::CompilerSettings config;
+		settings::BuiltInFunctions built_in;
 		ast::AbstractSyntaxTree syntax_tree;
 		symb::SymbolTable<symb::FunctionInfo> function_table;
 		symb::SymbolTable<symb::VariableInfo> variable_table;
 		errors::ErrorHandler error_handler;
 		inference::TypeSymbolTable type_table;
+		std::string generated_llvm;
 
 		/**
 		 * @brief Initialize the compiler for execution
@@ -86,6 +106,24 @@ namespace compiler
 		* @brief Generate the code corresponding the program.
 		*/
 		void export_llvm();
+
+		/**
+		 * @brief Generate an executable
+		 */
+		void executable_generation();
+
+		/**
+		 * @brief Execute the given command with `system`
+		 * @retval int The return of `system` 
+		 */
+		int execute_cmd(const std::string&);
+
+		/**
+		 * @brief Write the llvm generated in the code gen visitor into the given file
+		 * @param const std::string& filepath The file path
+		 * @retval bool true on success, false on error
+		 */
+		bool write_llvm_to_file(const std::string&);
 	};
 }
 

@@ -17,6 +17,7 @@ namespace except
 		explicit UnificationException(const std::string&);
 	};
 
+	/** Unification exception with a uniparameter type */
 	class UniparameterTypesUnificationException : public UnificationException
 	{
 	public:
@@ -25,7 +26,8 @@ namespace except
 		 */
 		UniparameterTypesUnificationException(const inference::UniparameterType&, const inference::TypeSymbol&);
 	};
-
+	
+	/** Unification exception with a flat type */
 	class FlatTypesUnificationException : public UnificationException
 	{
 	public:
@@ -34,7 +36,8 @@ namespace except
 		 */
 		FlatTypesUnificationException(const inference::FlatType&, const inference::TypeSymbol&);
 	};
-
+	
+	/** Unification exception with a function type */
 	class FunctionTypeUnificationException : public UnificationException
 	{
 	public:
@@ -43,7 +46,8 @@ namespace except
 		 */
 		FunctionTypeUnificationException(const inference::Function&, const inference::TypeSymbol&); 
 	};
-
+	
+	/** Unification exception with a hints */
 	class HintsUnificationException : public UnificationException
 	{
 	public:
@@ -55,6 +59,8 @@ namespace except
 		HintsUnificationException(inference::TypesHint, inference::TypesHint);
 	};
 
+	
+	/** Unification exception with a paraemter mismatch in a function */
 	class ParameterNumberMismatchException : public UnificationException
 	{
 	public:
@@ -65,7 +71,8 @@ namespace except
 		 */
 		ParameterNumberMismatchException(size_t, size_t);
 	};
-
+	
+	/** Trying to a variable name in the table which already exists */
 	class ExistingTypeSymbolException : public std::logic_error
 	{
 	public:
@@ -73,6 +80,7 @@ namespace except
 		explicit ExistingTypeSymbolException(const std::string&);
 	};
 
+	/** Trying to access an unexisting variable name in table  */
 	class NoSuchTypeSymbolException : public std::runtime_error
 	{
 	public:
@@ -80,6 +88,7 @@ namespace except
 		explicit NoSuchTypeSymbolException(const std::string&);
 	};
 
+	/** Trying to get a complete type out of a unresolved type variable */
 	class UnresolvableTypeException : public std::runtime_error
 	{
 	public:

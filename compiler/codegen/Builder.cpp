@@ -28,3 +28,9 @@ void Builder::add_module(Module& module)
     modules.push_back(module);
     ++curr_pos;
 }
+
+
+VariableManager& Builder::get_variable_manager()
+{
+    return var_manager;
+}
