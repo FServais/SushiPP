@@ -4,10 +4,14 @@
 @..list_table = internal global %struct.list_table* null, align 8
 
 declare void @array_push_int(%struct.array_table*, i64, i64)
-declare i64 @array_size_int(%struct.array_table*, i64)
+declare void @array_add_reference(%struct.array_table*, i64)
 declare i64 @array_allocate_int(%struct.array_table*, i64, i64*)
+declare i64 @array_get_int(%struct.array_table*, i64, i64)
+declare void @array_rm_reference(%struct.array_table*, i64)
 declare %struct.array_table* @create_array_table(...)
 declare %struct.list_table* @create_list_table(...)
+declare void @list_add_reference(%struct.list_table*, i64)
+declare void @list_rm_reference(%struct.list_table*, i64)
 declare void @print_int(i64)
 
 define i64 @main(){
@@ -25,14 +29,17 @@ entry:
 	store i64 %id, i64* %tmp_id_addr
 	%a = alloca i64
 	%tmp_load_tmp_id_addr = load i64* %tmp_id_addr
-	store i64 %tmp_load_tmp_id_addr, i64* %a
-	%tmp_load_a = load i64* %a
 	%raw_load_tmp.1 = load %struct.array_table** @..array_table
-	%ret = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.1, i64 %tmp_load_a)
-	%ret.1 = alloca i64
-	store i64 %ret, i64* %ret.1
-	%tmp_load_ret.1 = load i64* %ret.1
-	call void (i64)* @print_int(i64 %tmp_load_ret.1)
+	call void (%struct.array_table*, i64)* @array_add_reference(%struct.array_table* %raw_load_tmp.1, i64 %tmp_load_tmp_id_addr)
+	store i64 %tmp_load_tmp_id_addr, i64*%a
+	%tmp_load_a = load i64* %a
+	%raw_load_tmp.2 = load %struct.array_table** @..array_table
+	%ret = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.2, i64 %tmp_load_a, i64 1 )
+	%tmp_load_a.1 = load i64* %a
+	call void (i64)* @print_int(i64 %ret)
+	%raw_load_tmp.3 = load %struct.array_table** @..array_table
+	call void (%struct.array_table*, i64)* @array_rm_reference(%struct.array_table* %raw_load_tmp.3, i64 %tmp_load_tmp_id_addr)
+	%raw_load_tmp.4 = load %struct.list_table** @..list_table
 
 	ret i64 0
 }

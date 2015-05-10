@@ -59,6 +59,13 @@ CodeGenVisitor::CodeGenVisitor(SymbolTable<VariableInfo>& _variable_table,
 	curr_module.add_declaration("array_allocate_char", Module::make_declare("array_allocate_char", "i64", { "%struct.array_table*, i64, i8*" }));
 	curr_module.add_declaration("array_allocate_string", Module::make_declare("array_allocate_string", "i64", { "%struct.array_table*, i64, i64*" }));
 
+	// add datastructureaccess
+	curr_module.add_declaration("array_get_int", Module::make_declare("array_get_int" , "i64", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_float", Module::make_declare("array_get_float" , "float", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_bool", Module::make_declare("array_get_bool" , "i1", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_char", Module::make_declare("array_get_char" , "i8", {"%struct.array_table*, i64, i64"}));
+	curr_module.add_declaration("array_get_string", Module::make_declare("array_get_string" , "i64", {"%struct.array_table*, i64, i64"}));
+
 	// add make sequence
 	curr_module.add_declaration("list_make_sequence", Module::make_declare("list_make_sequence", "i64", { "%struct.list_table*", "i64", "i64"}));
 	curr_module.add_declaration("array_make_sequence", Module::make_declare("array_make_sequence", "i64", { "%struct.array_table*", "i64", "i64"}));
@@ -1392,9 +1399,13 @@ void CodeGenVisitor::visit( Op_Assignment& token )
 			string array_table = "%" + block.create_load_raw(struct_type_name + "** " + table_name);
 			string func_name = type + "_add_reference";
 
-			stringstream line;
-			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << loaded_rhs->str_value() << ")";
-			block.add_expression(line.str());
+			stringstream call_line;
+			call_line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << array_table << ", i64 " << loaded_rhs->str_value() << ")";
+			block.add_expression(call_line.str());
+
+			stringstream store_line;
+			store_line << "store i64 " << loaded_rhs->str_value() << ", i64*" << lhs.str_value();
+			block.add_expression(store_line.str());
 
 			if(lhs.get_type()->is_array())
 				array_rm_ref_flags.add_flag(loaded_rhs->str_value(), function_table.curr_scope_id());
@@ -1951,7 +1962,7 @@ void CodeGenVisitor::visit( MakeSequenceList& token )
 	cout << "MakeSequenceList" << endl;
 	visit_children(token);
 
-	// normally two symbol were pushed 
+	// normally two symbol were pushed
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	vector<shared_ptr<Value>> range(get_n_return_values(2));
 
@@ -1959,28 +1970,28 @@ void CodeGenVisitor::visit( MakeSequenceList& token )
 
 	if(range[0]->is_variable())
 		begin = shared_ptr<Value>(block.create_load(*range[0]));
-	else 
+	else
 		begin = range[0];
 
 	if(range[1]->is_variable())
 		end = shared_ptr<Value>(block.create_load(*range[1]));
-	else 
+	else
 		end = range[1];
 
 	string list_table = block.create_load_raw("%struct.list_table** @..list_table"),
-			makes_call = "call i64 (%struct.list_table*, i64, i64)* @list_make_sequence(%struct.list_table* %" + list_table + 
+			makes_call = "call i64 (%struct.list_table*, i64, i64)* @list_make_sequence(%struct.list_table* %" + list_table +
 						 ", i64 " + begin->str_value() + ", i64 " + end->str_value() + ")";
 
 	curr_module.function_is_used("list_make_sequence");
 
 	// create the list
 	shared_ptr<typegen::Type> list_type(new typegen::List(begin->get_type()));
-	unique_ptr<Variable> list_id(block.add_expression(makes_call, "id", list_type));	
+	unique_ptr<Variable> list_id(block.add_expression(makes_call, "id", list_type));
 
 	// store the list id into memory
 	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", list_type));
 	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
-	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*list_id, *tmp_id_addr)); 
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*list_id, *tmp_id_addr));
 
 	pop_n_return_values(2);
 	add_return(id_addr);
@@ -1992,7 +2003,7 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 	cout << "MakeSequenceArray" << endl;
 	visit_children(token);
 
-	// normally two symbol were pushed 
+	// normally two symbol were pushed
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	vector<shared_ptr<Value>> range(get_n_return_values(2));
 
@@ -2000,28 +2011,28 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 
 	if(range[0]->is_variable())
 		begin = shared_ptr<Value>(block.create_load(*range[0]));
-	else 
+	else
 		begin = range[0];
 
 	if(range[1]->is_variable())
 		end = shared_ptr<Value>(block.create_load(*range[1]));
-	else 
+	else
 		end = range[1];
 
 	string array_table = block.create_load_raw("%struct.array_table** @..array_table"),
-			makes_call = "call i64 (%struct.array_table*, i64, i64)* @array_make_sequence(%struct.array_table* %" + array_table + 
+			makes_call = "call i64 (%struct.array_table*, i64, i64)* @array_make_sequence(%struct.array_table* %" + array_table +
 						 ", i64 " + begin->str_value() + ", i64 " + end->str_value() + ")";
 
 	curr_module.function_is_used("array_make_sequence");
 
 	// create the array
 	shared_ptr<typegen::Type> array_type(new typegen::List(begin->get_type()));
-	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));	
+	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));
 
 	// store the array id into memory
 	unique_ptr<Variable> tmp_id_addr_var(new Variable(builder.get_variable_manager(), "tmp_id_addr", array_type));
 	unique_ptr<Value> tmp_id_addr(block.create_decl_var(*tmp_id_addr_var));
-	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*array_id, *tmp_id_addr)); 
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*array_id, *tmp_id_addr));
 
 	pop_n_return_values(2);
 	add_return(id_addr);
@@ -2118,6 +2129,10 @@ void CodeGenVisitor::visit( DeclVar& token )
 			line << "call void (" << struct_type_name << "*, i64)* @" << func_name << "(" << struct_type_name << "* " << table << ", i64 " << expr_value->str_value() << ")";
 			block.add_expression(line.str());
 
+			stringstream store_line;
+			store_line << "store i64 " << expr_value->str_value() << ", i64*" << lhs->str_value();
+			block.add_expression(store_line.str());
+
 			if(expr_cast.get_type()->is_array())
 				array_rm_ref_flags.add_flag(expr_value->str_value(), function_table.curr_scope_id());
 			else
@@ -2185,6 +2200,66 @@ void CodeGenVisitor::visit( ModifyingExpression& token )
 void CodeGenVisitor::visit( DatastructureAccess& token )
 {
 	cout << "DatastructureAccess" << endl;
+	visit_children(token);
+	//is a constant
+	Value& index = get_return_value(0);
+	Value& tab = get_return_value(1);
+
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	
+
+	Variable* tab_id = dynamic_cast<Variable*>(block.create_load(tab));
+	string array_table = block.create_load_raw("%struct.array_table** @..array_table");
+	shared_ptr<typegen::Type> type = dynamic_cast<typegen::Array*>(tab_id->get_type().get())->get_param_type();
+
+	string ctype, llvmtype;
+	switch(type->get_type())
+	{
+		case inference::FLOAT:
+			ctype = "float";
+			llvmtype = "float";
+			break;
+		case inference::CHAR:
+			ctype = "char";
+			llvmtype = "i8";
+			break;
+		case inference::BOOL:
+			ctype = "bool";
+			llvmtype = "i1";
+			break;
+		case inference::INT:
+			ctype = "int";
+			llvmtype = "i64";
+			break;
+		default:
+			ctype = "string";
+			llvmtype = "i64";
+			break;
+	}
+	string get_val;
+	if(index.is_variable())
+	{
+		Variable* ind = dynamic_cast<Variable*>(block.create_load(index));
+		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
+			array_table + ", i64 " + tab_id->str_value() + ", i64 " + ind->str_value() + " )";
+	}
+	else 
+		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
+			array_table + ", i64 " + tab_id->str_value() + ", i64 " + index.str_value() + " )";
+	
+
+	curr_module.function_is_used("array_get_"+ctype);
+
+	Variable* ret = block.add_expression(get_val, "ret", type);
+	// store the ret value into memory
+	unique_ptr<Variable> tmp_ret_addr_var(new Variable(builder.get_variable_manager(), "tmp_ret_addr", type));
+	unique_ptr<Value> tmp_ret_addr(block.create_decl_var(*tmp_ret_addr_var));
+	Variable* id_addr = dynamic_cast<Variable*>(block.create_store(*ret, *tmp_ret_addr));
+	pop();
+	pop();
+	add_return(id_addr);
+	
+
 
 }
 
@@ -2320,6 +2395,7 @@ void CodeGenVisitor::visit( SoyFunc& token )
 
 
 
+
 /********************************
  * 		Program non-terminal    *
  ********************************/
@@ -2340,6 +2416,14 @@ void CodeGenVisitor::visit( Scope& token )
 	variable_table.move_to_scope(id_scope);
 
 	visit_children(token);
+
+	cout << ">>> Array <<<" << endl;
+	array_rm_ref_flags.print();
+	cout << endl;
+
+	cout << ">>> List <<<" << endl;
+	list_rm_ref_flags.print();
+	cout << endl;
 
 	// Add free of array/list
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
@@ -2457,6 +2541,37 @@ void CodeGenVisitor::visit( MenuCase& token )
 void CodeGenVisitor::visit( Roll& token )
 {
 	cout << "Roll" << endl;
+	string jump0 = "br label %begin_loop";
+	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
+	block0.add_expression(jump0);
+
+
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+	curr_function.add_block("begin_loop");
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	//calculate expression
+	token.get_expression().accept(*this);
+	Value& cond = get_return_value(0);
+	string branch;
+	if(cond.is_constant())
+		branch = "br i1 "+ cond.str_value()+", label %label_true , label %label_false";
+	else
+	{
+		Value* expr = block.create_load(cond);
+		branch = "br i1 "+ expr->str_value()+", label %label_true , label %label_false";
+	}
+	block.add_expression(branch);
+	curr_function.add_block("label_true");
+
+	// body
+	token.get_scope().accept(*this);
+	string jump = "br label %begin_loop";
+	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
+	block2.add_expression(jump);
+
+	curr_function.add_block("label_false");
+
 
 }
 
@@ -2471,6 +2586,47 @@ void CodeGenVisitor::visit( Foreach& token )
 void CodeGenVisitor::visit( For& token )
 {
 	cout << "For" << endl;
+	// init
+	if(! token.empty_initializer())
+		token.get_initializer().accept(*this);
+	// jump to loop
+	string jump0 = "br label %begin_loop";
+	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
+	block0.add_expression(jump0);
+
+	// behin loop
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+	curr_function.add_block("begin_loop");
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+
+	// calculate guardian expression
+	token.get_expression().accept(*this);
+	Value& cond = get_return_value(0);
+
+	// branch
+	string branch;
+	if(cond.is_constant())
+		branch = "br i1 "+ cond.str_value()+", label %label_true , label %label_false";
+	else
+	{
+		Value* expr = block.create_load(cond);
+		branch = "br i1 "+ expr->str_value()+", label %label_true , label %label_false";
+	}
+	block.add_expression(branch);
+	curr_function.add_block("label_true");
+
+	// body
+	token.get_scope().accept(*this);
+
+	// update
+	if(! token.empty_update())
+		token.get_update().accept(*this);
+
+	string jump = "br label %begin_loop";
+	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
+	block2.add_expression(jump);
+
+	curr_function.add_block("label_false");
 
 }
 
@@ -2478,6 +2634,7 @@ void CodeGenVisitor::visit( For& token )
 void CodeGenVisitor::visit( ForInitializer& token )
 {
 	cout << "ForInitializer" << endl;
+	visit_children(token);
 
 }
 
@@ -2485,6 +2642,7 @@ void CodeGenVisitor::visit( ForInitializer& token )
 void CodeGenVisitor::visit( ForUpdate& token )
 {
 	cout << "ForUpdate" << endl;
+	visit_children(token);
 
 }
 
