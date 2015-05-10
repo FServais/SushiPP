@@ -1308,37 +1308,37 @@ void CodeGenVisitor::visit( Op_PrefixDecrement& token )
 void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 {
 	cout << "Op_PostfixIncrement" << endl;
-	// visit_children(token);
+	visit_children(token);
 
-	// // Get 2 arguments
-	// Value& operand = get_return_value(0);
-	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	// Variable* result;
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
 
-	// if(operand.is_variable())
-	// {
-	// 	unique_ptr<Value> load_operand(block.create_load(operand));
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_incr(*load_operand));
-	// }
-	// else
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_incr(operand));
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
 
-	// // increment the value stored
-	// Value* after_store = block.create_store(*result, operand);
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
 
-	// // return the non incremented value
-	// Variable* container = new Variable(builder.get_variable_manager(),
-	// 									builder.get_variable_manager().insert_variable(operand->get_name()),
-	// 									result->get_type(), true);
+	unique_ptr<Variable> result;
 
-	// unique_ptr<Value> ptr = unique_ptr<Value>(block.create_decl_var(*container));
-	// Value* after_store = block.create_store(*container, *ptr);
-	// Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_incr(operand)));
 
-	// pop();
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
 
-	// add_return(after_store);
+	add_return(copy_ptr);
+
 
 }
 
@@ -1346,28 +1346,36 @@ void CodeGenVisitor::visit( Op_PostfixIncrement& token )
 void CodeGenVisitor::visit( Op_PostfixDecrement& token )
 {
 	cout << "Op_PostfixDecrement" << endl;
-	// visit_children(token);
+	visit_children(token);
 
-	// // Get 2 arguments
-	// Value& operand = get_return_value(0);
-	// BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	// Get 2 arguments
+	Value& operand = get_return_value(0);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
-	// Variable* result;
+	// Create variable which will store the value of the operand
+	Variable tmp_post_incr(builder.get_variable_manager(), "tmp_post_incr", operand.get_type());
+	unique_ptr<Value> tmp_ptr = unique_ptr<Value>(block.create_decl_var(tmp_post_incr));
 
-	// if(operand.is_variable())
-	// {
-	// 	unique_ptr<Value> load_operand(block.create_load(operand));
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_decr(*load_operand));
-	// }
-	// else
-	// 	result = dynamic_cast<Variable*>(block.create_op_post_decr(operand));
+	// Load the value
+	unique_ptr<Value> value = unique_ptr<Value>(block.create_load(operand));
 
-	// Value* after_store = block.create_store(*result, operand);
-	// //Variable* after_store_var = dynamic_cast<Variable*>(after_store);
+	// Store in the new pointer
+	Variable* copy_ptr = dynamic_cast<Variable*>(block.create_store(*value, *tmp_ptr));
 
-	// pop();
+	unique_ptr<Variable> result;
 
-	// add_return(after_store);
+	if(operand.is_variable())
+	{
+		unique_ptr<Value> load_operand(block.create_load(operand));
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(*load_operand)));
+	}
+	else
+		result = unique_ptr<Variable>(dynamic_cast<Variable*>(block.create_op_post_decr(operand)));
+
+	unique_ptr<Value> after_store = unique_ptr<Value>(block.create_store(*result, operand));
+	pop();
+
+	add_return(copy_ptr);
 }
 
 
@@ -2206,7 +2214,7 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	Value& tab = get_return_value(1);
 
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
-	
+
 
 	Variable* tab_id = dynamic_cast<Variable*>(block.create_load(tab));
 	string array_table = block.create_load_raw("%struct.array_table** @..array_table");
@@ -2243,10 +2251,10 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
 			array_table + ", i64 " + tab_id->str_value() + ", i64 " + ind->str_value() + " )";
 	}
-	else 
+	else
 		get_val = "call "+ llvmtype +" (%struct.array_table*, i64, i64)* @array_get_"+ctype+"( %struct.array_table* %"+
 			array_table + ", i64 " + tab_id->str_value() + ", i64 " + index.str_value() + " )";
-	
+
 
 	curr_module.function_is_used("array_get_"+ctype);
 

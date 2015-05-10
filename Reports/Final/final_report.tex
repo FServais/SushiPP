@@ -85,11 +85,11 @@
 \textbf{Servais Fabrice}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
 {\small Option : Computer systems and networks}\\
-{\small s111093} \\ 
+{\small s111093} \\
 \textbf{Mormont Romain}\\
 {\small 1$^{\text{st}}$ master in computer engineering}\\
 {\small Option : Intelligent systems}\\
-{\small s110940} \\ 
+{\small s110940} \\
 \end{center}
 
 \vfill
@@ -104,7 +104,7 @@ Academic year 2014-2015\\
 \newpage
 \setcounter{page}{1}
 \section{Introduction}
-In the context of the course INFO0085, we had to develop a compiler for a handmade programming language called \textbf{Sushi++}. This language is garbage-collected and halfway between a functional and an imperative language of which the keywords are inspired from the \textit{sushi food} lexical field. The first part of the report describes both syntax and semantic of the language (section \ref{sec:language}) and the second details the compiler organization and algorithms (section \ref{sec:compiler}). The Section \ref{sec:runtime} presents the organization of the small runtime library handling the garbage collector. Finally, in the Section \ref{sec:improv}, the improvements that could be made are discussed. 
+In the context of the course INFO0085, we had to develop a compiler for a handmade programming language called \textbf{Sushi++}. This language is garbage-collected and halfway between a functional and an imperative language of which the keywords are inspired from the \textit{sushi food} lexical field. The first part of the report describes both syntax and semantic of the language (section \ref{sec:language}) and the second details the compiler organization and algorithms (section \ref{sec:compiler}). The Section \ref{sec:runtime} presents the organization of the small runtime library handling the garbage collector. Finally, in the Section \ref{sec:improv}, the improvements that could be made are discussed.
 \section{Language}
 \label{sec:language}
 \subsection{General information}
@@ -120,7 +120,7 @@ The \textit{Sushi++} language is a strongly and statically typed language. Never
 	\item \texttt{array} : an array of elements (see Section \ref{sssec:arrays})
 	\item \texttt{list} : a list of elements (see Section \ref{sssec:lists})
 	\item \texttt{string} : a string
-	\item \texttt{function} : a function 
+	\item \texttt{function} : a function
 	\item \texttt{void} : return type for function that doesn't return anything
 \end{itemize}
 \subsubsection{Arrays}
@@ -128,13 +128,13 @@ The \textit{Sushi++} language is a strongly and statically typed language. Never
 \paragraph{Idea}
 The \texttt{array} type represents a sequence of elements having a given type \textit{T} and that are stored sequentially in the memory. This structure has the same behaviour as a vector data structure in terms of complexity. The \textit{Sushi++} arrays cannot stored any type of data, \textit{T} can only be one among : \texttt{int}, \texttt{float}, \texttt{char}, \texttt{string}, \texttt{bool}. The index of an array is an integer in the interval $[0, \text{array size}]$. Arrays are passed to function and returned by reference (they are never copied).
 \paragraph{Syntax}
-To construct an array, its elements must be listed between the array delimiters \texttt{\#[} and \texttt{]\#} and separated by commas  : 
+To construct an array, its elements must be listed between the array delimiters \texttt{\#[} and \texttt{]\#} and separated by commas  :
 \begin{itemize}
-	\item array of integers : \texttt{\#[ 1, 2, 3, 4 ]\#} 
-	\item array of strings : \texttt{\#[ "str1", "str2", "str3", "str4" ]\#} 
+	\item array of integers : \texttt{\#[ 1, 2, 3, 4 ]\#}
+	\item array of strings : \texttt{\#[ "str1", "str2", "str3", "str4" ]\#}
 	\item assigning a variable : \texttt{maki a = \#[ true, false ]\#}
 \end{itemize}
-To access an element in the array, the C-like array-access operator \texttt{[]} can be used with a valid index. 
+To access an element in the array, the C-like array-access operator \texttt{[]} can be used with a valid index.
 \begin{center}
 	\texttt{maki first\_element = array[0]}
 \end{center}
@@ -150,22 +150,22 @@ A set of built-in functions are provided to the programmer to handle arrays. The
 \end{itemize}
 \paragraph{Memory} Arrays are \textbf{heap-allocated} and their memory is managed at runtime with a garbage collector (see Section \ref{ssec:garabage_collector}).
 
-\subsubsection{Lists} 
+\subsubsection{Lists}
 \label{sssec:lists}
-The construction of lists follows the same principles as the construction of array except that the delimiters are the curly brackets characters : 
+The construction of lists follows the same principles as the construction of array except that the delimiters are the curly brackets characters :
 \begin{itemize}
-	\item array of integers : \texttt{\{ 1, 2, 3, 4 \}} 
-	\item array of strings : \texttt{\{ "str1", "str2", "str3", "str4" \}} 
+	\item array of integers : \texttt{\{ 1, 2, 3, 4 \}}
+	\item array of strings : \texttt{\{ "str1", "str2", "str3", "str4" \}}
 	\item assigning a variable : \texttt{maki a = \{ true, false \}}
 \end{itemize}
 Lists \textit{cannot} be accessed with the array-access operator. Nevertheless, a set of built-in functions are provided for interacting with them (inspired from standard C++ lists interface):
 \begin{itemize}
-	\item \texttt{int list\_size(List l)} : return the size of the list 
+	\item \texttt{int list\_size(List l)} : return the size of the list
 	\item \texttt{bool list\_empty(List l)} : return true if the list is empty, false otherwise
 	\item \texttt{void list\_clear(List l)} : clear the content of the list
 	\item \texttt{T list\_front\_T(List l)} : return the element at the front of the list
 	\item \texttt{T list\_back\_T(List l)} : return the element at the back of the list
-	\item \texttt{T list\_pop\_front\_T(List l)} : remove and return the element at the front of the list 
+	\item \texttt{T list\_pop\_front\_T(List l)} : remove and return the element at the front of the list
 	\item \texttt{T list\_pop\_back\_T(List l)} : remove and return the element at the back of the list
 	\item \texttt{void list\_push\_front\_T(List l)} : push an element at the front of the list
 	\item \texttt{void list\_push\_back\_T(List l)} : push an element at the back of the list
@@ -181,21 +181,21 @@ The \textit{Sushi++} language provides declaration syntax for both functions and
 \subsubsection{Functions}
 \label{sssec:decl_func}
 \paragraph{Idea} The function declared with the \texttt{maki} keyword are called \textbf{named function} in opposition to anonymous function (or \textit{soy functions}, see Section \ref{sssec:soy_func}). As soon as it is declared, a function can be either called (see Section \ref{sssec:func_call}) or used as expression (passed as parameter). A declared named function is accessible in the scope in which it is declared and its nested scopes (including the function own scope).
-\paragraph{Syntax}  The named function declaration syntax is the following : 
+\paragraph{Syntax}  The named function declaration syntax is the following :
 \begin{center}
 \texttt{maki} \textit{function\_name} \{\textit{parameter\_name}[\texttt{<} \textit{type} \texttt{>}]\} \texttt{:} \textit{function\_body} \texttt{;;}
 \end{center}
 The \textit{type} element must be one of the types listed in the Section \ref{ssec:types_s} except \texttt{void}.
 \subsubsection{Variables}
 \paragraph{Idea} A variable must be assigned a value when it is declared. It is accessible in the scope in which it is declared and its nested scopes but \textbf{cannot be captured} in a function. A variable can only by reassigned a value having the same type as the one initially assigned.
-\paragraph{Syntax} Several variables can be declared with a single \texttt{maki}, the different declarations must be separated by commas : 
+\paragraph{Syntax} Several variables can be declared with a single \texttt{maki}, the different declarations must be separated by commas :
 \begin{center}
 \texttt{maki} \textit{variable\_name} = expression \{, \textit{variable\_name} = expression \}
 \end{center}
 \subsection{Expressions}
 \subsubsection{Soy functions}
 \paragraph{Idea} Soy functions or anonymous functions are functions that are not bound to an identifier. They can either be used as value (passed as parameters), be called (see Section \ref{sssec:func_call}) or stored into a variable.
-\paragraph{Syntax} A soy function is declared by using the \texttt{soy} keyword : 
+\paragraph{Syntax} A soy function is declared by using the \texttt{soy} keyword :
 \begin{center}
 	\texttt{(soy} \{\textit{parameter}[\texttt{<}\textit{type}\texttt{>}]\} \texttt{:} \textit{function\_body} \texttt{)}
 \end{center}
@@ -270,7 +270,7 @@ The \textit{Sushi++} language provides a set of operators for expressing operati
 \end{table}
 \subsection{Statements}
 \subsubsection{Loops}
-The \textit{Sushi++} language provides three kinds of loop. 
+The \textit{Sushi++} language provides three kinds of loop.
 \paragraph{Condition-controlled loop} This loop is called \texttt{roll} and behaves like a C while loop. The scope containing this code fragment is delimited by the end of line following the condition and the scope delimiter \texttt{;;}. The condition must be an expression of type \texttt{bool}, otherwise the compiler will return a type error. . The syntax is the following :
 \begin{center}
 	\begin{minipage}{0.20\linewidth}
@@ -351,20 +351,21 @@ As the \textit{Sushi++} language is statically typed, the types must be checked 
 	\item variable can only be reassigned a value of the same type as the one initially assigned
 	\item ...
 \end{itemize}
-As \textit{Sushi++} is free from type annotation, these checks cannot be performed directly and the types of expressions and identifiers have to be inferred. 
+As \textit{Sushi++} is free from type annotation, these checks cannot be performed directly and the types of expressions and identifiers have to be inferred.
 \paragraph{}
 Formally, the type inference problem can be as formulated as follows : given a set of types $\mathcal{T}$ defined for the programming language, a set of expressions $\mathcal{E}$ and a set of identifiers $\mathcal{I}$ defined in a program, inferring the types consists in assigning a type $t \in \mathcal{T}$ for any identifier $i \in \mathcal{I}$ and expression $e \in \mathcal{E}$ used in the program (if the expression has no effect or if the identifier is not used in the program than knowing his type is not relevant). In the literature, a classical approach for assigning types is the Hindley-Milner (or Damas-Milner) algorithm. This algorithm assigns types to language constructs using a set of deduction rules and derivations. Unfortunately, this algorithm was designed for purely functional languages and is not directly applicable to the \textit{Sushi++} language. \\
+
 Alternatively, the type inference can be seen as problem of \textbf{constraints generation and unification}. The types associated with the various program elements are represented by variables. Some constraints bringing in these variables are generated from some rules encoding the language type semantic and these constrains are unified to find the actual type of the program elements. Two sub-problems have therefore to be addressed to design the type inference algorithm : on the one hand, an unification algorithm has to be defined. On the other hand, for each \textit{Sushi++} construct, the type semantic has to be encoded into a rule defining the constraints to be generated.
-\paragraph{Framework} The algorithm associates a type variable, symbolized by a greek letters, to every language typed construct (including function parameters, return type and data structure elements' type). A variable is either resolved, meaning that it is associated with a valid type, or unresolved. A valid type is either a flat type (integer, float, char, string, bool or void) or a structured type of which the type parameters are valid types (array, list or function). A variable is also associated a set of types that it can be assigned and such a set is called \textit{hints} (the hints of a variable $\alpha$ is noted $\mathcal{H}_\alpha$). The hint system is a way to encode operator polymorphism and function parameter hinting. An unresolved type variable $\alpha$ can be resolved if $\mathcal{H}_\alpha$ contains only one flat type. 
-\paragraph{Unification} The goal of the unification is to "\textit{find a substitution for all type variables that make the expressions identical}" (taken from document [\ref{enum:inference_unification}], slide 8). The algorithm used in the compiler is given in Listing \ref{lst:unification} and uses the following function : 
+\paragraph{Framework} The algorithm associates a type variable, symbolized by a greek letters, to every language typed construct (including function parameters, return type and data structure elements' type). A variable is either resolved, meaning that it is associated with a valid type, or unresolved. A valid type is either a flat type (integer, float, char, string, bool or void) or a structured type of which the type parameters are valid types (array, list or function). A variable is also associated a set of types that it can be assigned and such a set is called \textit{hints} (the hints of a variable $\alpha$ is noted $\mathcal{H}_\alpha$). The hint system is a way to encode operator polymorphism and function parameter hinting. An unresolved type variable $\alpha$ can be resolved if $\mathcal{H}_\alpha$ contains only one flat type.
+\paragraph{Unification} The goal of the unification is to "\textit{find a substitution for all type variables that make the expressions identical}" (taken from document [\ref{enum:inference_unification}], slide 8). The algorithm used in the compiler is given in Listing \ref{lst:unification} and uses the following function :
 
 \begin{itemize}
-	\item \texttt{is\_unresolved($\alpha$)} : returns false if the variable is resolved, true otherwise 
+	\item \texttt{is\_unresolved($\alpha$)} : returns false if the variable is resolved, true otherwise
 	\item \texttt{is\_function($\alpha$)} : returns true if the variable contains a function type, false otherwise
-	\item \texttt{count\_parameters($\alpha$)} : given a variable containing a function type, return the number of parameters of this function 
+	\item \texttt{count\_parameters($\alpha$)} : given a variable containing a function type, return the number of parameters of this function
 	\item \texttt{get\_return\_type($\alpha$)} : given a variable containing a function type, return the type variable containing the return type of this function
 	\item \texttt{is\_array($\alpha$)} : return true if the variable contains an array type, false otherwise
-	\item \texttt{is\_list($\alpha$)} : return true if the variable contains an list type, false otherwise 
+	\item \texttt{is\_list($\alpha$)} : return true if the variable contains an list type, false otherwise
 	\item \texttt{get\_datastructure\_type($\alpha$)} : given a variable containing an array or a list type, return the type variable containing the type of its elements
 \end{itemize}
 The worst-case complexity of the unification algorithm is $\Theta(n)$ where $n$ is the number of parameters which intervenes in the types contained in $\alpha$ and $\beta$. This can be an issue when $\alpha$ and $\beta$ both contains a function of which one of the parameters is a function taking itself as argument a function taking itself as argument a function, etc. Nonetheless, in the other cases, $n$ often equals to 1 or 2.
@@ -374,44 +375,44 @@ The worst-case complexity of the unification algorithm is $\Theta(n)$ where $n$ 
 // Unification algorithm
 unify ( $\alpha$, $\beta$ )
 {
-	if is_unresolved($\alpha$) || is_unresolved($\beta$) 
+	if is_unresolved($\alpha$) || is_unresolved($\beta$)
 	{
 		if $\mathcal{H}_\alpha \cap \mathcal{H}_\beta = \emptyset$ // check hints compatiblity
 			throw error("incompatible hints")
-	 	
-	 	// update hints 
+
+	 	// update hints
 	 	$\mathcal{H}_\beta$ = $\mathcal{H}_\alpha$ = $\mathcal{H}_\alpha \cap \mathcal{H}_\beta$
 		// add indirection between the variables
 		if is_unresolved($\alpha$)	{ $\alpha$ = $\beta$ } else { $\beta$ = $\alpha$ }
-		
-		return  
-	}	
-	// both variables are resolved : the valid types must be compatibles 
+
+		return
+	}
+	// both variables are resolved : the valid types must be compatibles
 	if is_function($\alpha$) && is_function($\beta$) // variables are functions
 	{
-		if count_paramters($\alpha$) != count_parameters($\beta$) 
+		if count_paramters($\alpha$) != count_parameters($\beta$)
 			throw error("function types should have the same number of parameters")
-		
+
 		for each parameters types variables $\gamma$ of function $\alpha$ and $\delta$ of function $\beta$
 			unify($\gamma$, $\delta$)
-		
+
 		unify(get_return_type($\alpha$), get_return_type($\beta$))
-		
+
 		return
 	}
 
 	// variables are both uniparameter types
-	if ( is_array($\alpha$) && is_array($\beta$) ) || ( is_list($\alpha$) && is_list($\beta$) ) 
+	if ( is_array($\alpha$) && is_array($\beta$) ) || ( is_list($\alpha$) && is_list($\beta$) )
 	{
 		$\gamma$ = get_datastructure_type($\alpha$)
 		$\delta$ = get_datastructure_type($\beta$)
 		unify($\gamma$, $\delta$)
 	}
-	
+
 	// variables contains the same flat type
 	if is_flat($\alpha$) && is_flat($\beta$) && $\alpha$ = $\beta$
 		return
-		
+
 	throw error("types cannot be unified")
 }
 \end{lstlisting}
@@ -444,8 +445,8 @@ The \texttt{ShallowType} enumeration represents the possible types as integers. 
 	\item creation of new variables
 	\item construction of type symbol objects for variables, functions, arrays and lists
 	\item construction of a type object for the code generation phase
-	\item generation of unique type variable names 
-\end{itemize} 
+	\item generation of unique type variable names
+\end{itemize}
 The table stores two kind of variables : the ones bounded to the program's identifiers (so-called \textit{bounded} type variables) and the ones that are not (so-called \textit{pure} type variables). As every variable has to be uniquely identified, the generation of variable names have to be done carefully :
 \begin{itemize}
 	\item pure variable names are numbers generated with a counter and is therefore collision free as long as the counter does not overflow
@@ -459,16 +460,16 @@ The table stores two kind of variables : the ones bounded to the program's ident
 	\item \textbf{Inheritance} : which type variables are inherited from the parent node?
 	\item \textbf{Table insertion} : which variables must be created in the type symbol table and with which terminal type symbols have they to be associated?
 	\item \textbf{Unification} : which pairs of variables have to be unified ? Does a variable have to be unified with a flat type?
-	\item \textbf{Hinting} : has the hints of a variable to be updated ? 
+	\item \textbf{Hinting} : has the hints of a variable to be updated ?
 	\item \textbf{Transmission} : which variables must be given to the children nodes?
-\end{enumerate} 
-As these elements must be defined for every node, the complete list is not detailed here. Nevertheless, three examples are given : the \textit{+} operator, the \textit{if} statement and the function declaration. 
+\end{enumerate}
+As these elements must be defined for every node, the complete list is not detailed here. Nevertheless, three examples are given : the \textit{+} operator, the \textit{if} statement and the function declaration.
 \begin{itemize}
-	\item \textbf{Operator +} : this node has two children, the two operands 
+	\item \textbf{Operator +} : this node has two children, the two operands
 	\begin{itemize}
 		\item \textit{Inheritance} : $\alpha$ is the type that should be returned by the operation
-		\item \textit{Table insertion} : no type variable insertion 
-		\item \textit{Unification} : no unification 
+		\item \textit{Table insertion} : no type variable insertion
+		\item \textit{Unification} : no unification
 		\item \textit{Hinting} : as '\texttt{+}' can only take integer or float operands, we have : $\mathcal{H}_\alpha = \mathcal{H}_\alpha \cap \{\texttt{int}, \texttt{float}\}$
 		\item \textit{Transmission} : as the type returned by the addition is the same as the type of the operands $\alpha$ is passed the both of them
 	\end{itemize}
@@ -484,16 +485,44 @@ As these elements must be defined for every node, the complete list is not detai
 	\begin{itemize}
 		\item \textit{Inheritance} : no inheritance
 		\item \textit{Table insertion} : \textit{func\_name@1} is the type of the function, \textit{p$_i$@2} is the type of the $i^{th}$ parameter and $\alpha$ is the return type
-		\item \textit{Unification} : the function name must be unified with the function type : 
+		\item \textit{Unification} : the function name must be unified with the function type :
 		\[ unify(\textit{func\_name@1}, \textit{p}_1\textit{@2} \hdots \textit{p}_n\textit{@2} \rightarrow \gamma) \]
 		\item \textit{Hinting} : each hinted parameter should be hinted. If the hint is a flat type, an unification can be performed instead
 		\item \textit{Transmission} : $\gamma$ to the scope node
 	\end{itemize}
 \end{itemize}
+<<<<<<< HEAD
 The \textit{almost} complete list of the nodes and their inference actions is given in the \texttt{Inference.pdf} document attached to the submitted archive.
 \subparagraph{Error handling} When an error occurs, the unification errors are added to the error handler with a message indicating the type causing the error, and the one that was expected. If an error occurred during type inference, the next stages are bypassed. As said above, a program passing the type inference without error might not be a valid program, nevertheless an explicit check of this possible problem wasn't implemented but will trigger an exception in the intermediate code generation phase.
-\subsection{Intermediate code generation}
-\subsubsection{Code construction}
+\subsection{Code generation}
+
+The code generation part is divided into two main modules : 
+\begin{itemize}
+	\item A visitor going through the nodes of the AST,
+	\item A builder aggregating the lines of LLVM code.
+\end{itemize}
+
+	\subsubsection{Code generation}
+
+The LLVM
+
+
+	\subsubsection{Code construction}
+
+An LLVM code for a program is structured that way : a file is represented as a \texttt{Module}, which contains functions, global variables and external declarations. Functions are represented as \texttt{FunctionBlock}, having a name, a return type and arguments. In a function, one also have blocks beginning with a label, these are \texttt{BasicBlock}. This class contains all the methods to generate a specific line or operation in the code. 
+
+\paragraph{}
+
+In order to facilitate and encapsulate the data needed for these methods, one creates a type which is transmitted in all of these : \texttt{Value}. From this class inherits types : \texttt{codegen::Function}, \texttt{codegen::Variable} and \texttt{codegen::Constant}. They need to implement the \texttt{str\_value()} abstract method, which has as purpose to return the string value corresponding to the class, for instance a \texttt{Variable} should return the concatenation of '\%' with its name, a \texttt{Constant} its value and a \texttt{Function} its signature (although this is not used in practice). A simplified class diagram is shown in \textsc{Figure} \ref{codegen:value}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.8]{Value.png}
+	\caption{Simplified diagram of code generation types}
+	\label{codegen:value}
+\end{figure}
+
+The main class that handles the creation and aggregation of the code is \texttt{Builder}. It contains a vector of \texttt{Module}s. In our case, there is only one module possible, the handling of multiple files (hence modules) is an improvement.
 \subsection{Optimization and machine code generation}
 The last compile phase is implemented using the C standard \texttt{system} function which "\textit{invokes the command processor to execute a command}" (taken from [\ref{enum:system_cmd_proc}]). Through this function, calls to LLVM utilities are done to optimize the intermediate representation and to generate the executable.
 \subsubsection{Optimization}
@@ -558,7 +587,7 @@ As far as the machine code generation is concern, two problems arise :
 \end{itemize}
 \subsection{Runtime}
 \label{ssec:flaws_runtime}
-As said in the Section \ref{sec:runtime}, the internal data structure (called \textit{table}) used to store arrays and lists is itself a list. Therefore, accessing an element (list or array) has the a complexity $\mathcal{O}(n)$ where $n$ is the number of objects in the table. Moreover, every function of the interface has to access a particular object in the table before performing operations, this resulting in a search at every function call. This is of course extremely inefficient. The reason why the list implementation was chosen is mainly lack of time. As a simply linked list is easy to implement, we could focus on the code generation instead. A major improvement would then be the reimplementation of the tables with an adequate data structure such as an ordered vector (ordered on the array/list id), a tree or a hashtable. Nevertheless, as implementation details don't leak through the interface, this can be done without changing the code generation.
+As said in the Section \ref{sec:runtime}, the internal data structure (called \textit{table}) used to store arrays and lists is itself a list. Therefore, accessing an element (list or array) has the a complexity $\mathcal{O}(n)$ where $n$ is the number of objects in the table. Moreover, every function of the interface has to access a particular object in the table before performing operations, this resulting in a search at every interface function call. This is of course extremely inefficient. The reason why the list implementation was chosen is mainly lack of time. As a simply linked list is easy to implement, we could focus on the code generation instead. A major improvement would then be the reimplementation of the tables with an adequate data structure such as an ordered vector (ordered on the array/list id), a tree or a hashtable. Nevertheless, as implementation details don't leak through the interface, this can be done without changing the code generation.
 \\
 Also, initially, we wanted to implement closures but we dropped this feature due to lack of time. A improvement in the usability of the language would be the implementation of such a mechanisms. This would include the implementation of another runtime module for handling it (and some parts of the compiler would also have to be modified).
 \appendix

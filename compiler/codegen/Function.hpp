@@ -16,7 +16,7 @@ namespace codegen
         // //Function(std::shared_ptr<typegen::Type>, std::string&, std::vector<std::string>&);
         // Function(std::shared_ptr<typegen::Type>, std::string&, std::vector<Value&>&);
         //
-        // std::string str_value();
+        std::string str_value();
 
         std::string get_name() const;
         std::string str_name() const;
