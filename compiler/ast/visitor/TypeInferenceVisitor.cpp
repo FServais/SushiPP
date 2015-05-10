@@ -110,13 +110,13 @@ void TypeInferenceVisitor::visit( ast::Identifier& id )
 void TypeInferenceVisitor::visit( ast::K_Continue& cont )
 {
 	// bypassed by the decl func node
-	throw std::logic_error("This node should be bypassed");
+	//throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::K_Break& brk )
 {
 	// bypassed by the decl func node
-	throw std::logic_error("This node should be bypassed");
+	//throw std::logic_error("This node should be bypassed");
 }
 
 void TypeInferenceVisitor::visit( ast::Type_Int& type )

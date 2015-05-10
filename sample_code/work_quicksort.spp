@@ -1,11 +1,23 @@
+
 $ print an array of integers to the screen
 maki print-array array :
 	maki i = 0
 	for , i < (call array-size-int array), ++i
 		call print-int (call array-get-int array i)
 		call print-char ' '
-	;; 
+	;;
 	call print-char '\n'
+;;
+
+maki print-dbg n :
+	call print-char '['
+	call print-char 'D'
+	call print-char 'B'
+	call print-char 'G'
+	call print-int n
+	call print-char ']'
+	call print-char ':'
+	call print-char ' '
 ;;
 
 $ Swap values of the array
@@ -36,7 +48,7 @@ maki partition array pivot boundary_index item_index :
 	call println-char '\n'
 
 	$ compare item index to the pivot
-	if array[item_index] < array[pivot] 
+	if array[item_index] < array[pivot]
 		call array-swap array boundary_index item_index
 		call partition array pivot (++boundary_index) (++item_index)
 	else
@@ -63,7 +75,7 @@ maki quicksort_aux array start end :
 	maki pivot = (call partition array last_index start start)
 
 	call quicksort_aux array start pivot
-	call quicksort_aux array (++pivot) end 
+	call quicksort_aux array (++pivot) end
 ;;
 
 $ Array sorting with quicksort algorithm
@@ -71,11 +83,11 @@ maki quicksort array :
 	if (call array-size-int array) <= 1
 		nori
 	;;
-
 	call quicksort_aux array 0 (call array-size-int array)
 ;;
 
 maki array = #[ 18, 33, 25, 45, 76, 89, 18, 19 ]#
+
 call print-array array
 call quicksort array
 call print-array array

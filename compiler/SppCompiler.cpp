@@ -29,9 +29,9 @@ using namespace errors;
 using namespace std;
 using namespace visitor;
 
-SppCompiler::SppCompiler(int argc, char** argv) 
-  : config(argc, argv), 
-  	error_handler(config), 
+SppCompiler::SppCompiler(int argc, char** argv)
+  : config(argc, argv),
+  	error_handler(config),
   	optimization_flags("-mem2reg -tailcallelim -inline -constprop -dce")
 {
 	srand(time(NULL));
@@ -140,11 +140,11 @@ void SppCompiler::scope_checking()
 	visitor::SymbolTableVisitor var_visitor(function_table, variable_table, error_handler);
 	syntax_tree.root().accept(var_visitor);
 
-	// std::cout<<"FUNCTION TABLE"<<std::endl;
-	// function_table.print_table();
+	std::cout<<"FUNCTION TABLE"<<std::endl;
+	function_table.print_table();
 
-	// std::cout<<"VARIABLE TABLE"<<std::endl;
-	// variable_table.print_table();
+	std::cout<<"VARIABLE TABLE"<<std::endl;
+	variable_table.print_table();
 }
 
 void SppCompiler::inference()
@@ -157,7 +157,7 @@ void SppCompiler::inference()
 
 	visitor::TypeInferenceVisitor visitor(error_handler, function_table, variable_table, type_table, built_in);
 	syntax_tree.root().accept(visitor);
-	
+
 	//cout << endl << type_table << endl << endl;
 }
 
@@ -190,7 +190,7 @@ void SppCompiler::export_llvm()
 {
 	if(error_handler.error_occurred())
 		return;
-	
+
 	if(config.is_verbose())
 		cout << "Starting code generation..." << endl;
 
@@ -199,13 +199,13 @@ void SppCompiler::export_llvm()
 
 	stringstream ss;
 	visitor.print(ss);
-	generated_llvm = ss.str(); 
+	generated_llvm = ss.str();
 
 	if(!config.do_dump_llvm())
 		return;
 
 	if(config.do_dump_llvm_in_file()) // write to a file
-		write_llvm_to_file(config.get_llvm_dump_file()); 
+		write_llvm_to_file(config.get_llvm_dump_file());
 	else // dump to screen
 		cout << generated_llvm << endl;
 }
@@ -224,7 +224,7 @@ void SppCompiler::executable_generation()
 		error_handler.add_io_error("Command processor `system` not available");
 		return;
 	}
-	
+
 	// name of the .ll file to assemble, compile and link
 	vector<string> to_assemble({ "runtime/list_runtime", "runtime/array_runtime", "runtime/support" }),
 					generated_files;
@@ -232,7 +232,7 @@ void SppCompiler::executable_generation()
 	// add generated file
 	string prog_file;
 
-	if(config.do_dump_llvm_in_file()) 
+	if(config.do_dump_llvm_in_file())
 		prog_file = util::remove_extension(config.get_llvm_dump_file());
 	else
 	{
@@ -248,13 +248,13 @@ void SppCompiler::executable_generation()
 	// add it in file to remove
 	to_assemble.push_back(prog_file);
 
-	// perform optimization 
+	// perform optimization
 	string optimize_cmd("opt \"" + prog_file + ".ll\" " + optimization_flags + " -S >> \"" + prog_file + "_opt.ll\"");
 	if(config.do_optimize() && execute_cmd(optimize_cmd))
 	{
 		error_handler.add_gen_error("", "cannot optimize intermediate representation");
 		return;
-	} 
+	}
 	else if(config.do_optimize()) // put back optimize code into the prog_file
 	{
 		string move_cmd("mv \"" + prog_file + "_opt.ll\" \"" + prog_file + ".ll\"");
@@ -266,20 +266,20 @@ void SppCompiler::executable_generation()
 		}
 	}
 
-	for(string& filename : to_assemble) 
+	for(string& filename : to_assemble)
 	{
 		string convert2ll_cmd("clang \"" + filename + ".c\" --std=c99 -emit-llvm -S -O3 -o \"" + filename + ".ll\""),
 			   assembly_cmd("llvm-as \"" + filename + ".ll\" -o \"" + filename + ".bc\""),
 			   compile_cmd("llc \"" + filename + ".bc\" -o \"" + filename + ".s\"");
-		
+
 		if(filename != prog_file && execute_cmd(convert2ll_cmd))
 		{
 			error_handler.add_gen_error("", "cannot convert runtime sources to llvm assembly...");
 			return;
-		} 
+		}
 		else if(filename != prog_file)
 			generated_files.push_back(filename + ".ll");
-		
+
 		// convert to bitcode
 		if(execute_cmd(assembly_cmd))
 		{
@@ -345,7 +345,7 @@ bool SppCompiler::write_llvm_to_file(const std::string& filepath)
 		error_handler.add_io_error("", ss.str());
 		return false;
 	}
-	
+
 	file << generated_llvm;
 	file.close();
 	return true;
