@@ -460,16 +460,15 @@ The \textit{almost} complete list of the nodes and their inference actions is gi
 
 \subsection{Code generation}
 
-The code generation part is divided into two main modules : 
+The code generation part is done manually, we do not use the LLVM library due to the lack of documentation and its difficulty. Nevertheless, it was really interesting to handle this part. 
+
+\paragraph{}
+
+It is divided into two main modules : 
 \begin{itemize}
 	\item A visitor going through the nodes of the AST,
 	\item A builder aggregating the lines of LLVM code.
 \end{itemize}
-
-	\subsubsection{Code generation}
-
-The LLVM
-
 
 	\subsubsection{Code construction}
 
@@ -487,6 +486,64 @@ In order to facilitate and encapsulate the data needed for these methods, one cr
 \end{figure}
 
 The main class that handles the creation and aggregation of the code is \texttt{Builder}. It contains a vector of \texttt{Module}s. In our case, there is only one module possible, the handling of multiple files (hence modules) is an improvement.
+
+\paragraph{}
+
+Another noticeable module is the \texttt{\{Label,Variable\}Manager}. It has to handle the name of the labels (or variables). Indeed, since we are in a SSA form, variables cannot be re-assigned. In a similar way, two labels cannot have the same name. The design is pretty simple, it is only a mapping of the name of the variable and a number which is basically the number of time the variable had been assigned. Thanks to that, one can easily retrieve a new name of variable with the same prefix, for instance, if "var\_name" has already been used, \texttt{string insert\_variable(string)} will give the next available name with the prefix : "var\_name.1".
+
+\paragraph{}
+
+A simplified diagram is shown in \textsc{Figure} \ref{codegen:builder}.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.7]{Builder.png}
+	\caption{Simplified diagram of the \texttt{Builder} architecture}
+	\label{codegen:builder}
+\end{figure}
+
+	\subsubsection{Code generation}
+
+After having handled how to write lines of LLVM, we can go to the part where we manipulate this tool to generate code depending on the source code.
+
+\paragraph{}
+
+The generation is done through a visitor on the AST : \texttt{CodeGenVisitor}. It contains an instance of the \texttt{Builder}, as well as some kind of cursor to where it should add lines next, so which function of which module. It also contains a reference to the symbol tables and the type table, in addition to information for the built-in fonctions. To handle the passing of \texttt{Value}'s though the nodes (when it is visited bottom-up), one uses a common stack where the returned values are pushed. 
+
+\paragraph{}
+
+At the construction, the object initializes some global variables, types and functions related to the arrays and lists from the runtime. It also adds a \texttt{main} function.
+
+\paragraph{}
+
+The values we are manipulating are all stored in memory, we are thus managing pointers in LLVM. The values are then loaded from these pointers, or are the results of functions. Typically, in this case, the value of a variable is loaded from it, given to the function, and its result is stored in a new allocated zone in memory. This pointer is given to the node's parent and is responsible to load the value again and store it in the correct place.
+
+\paragraph{Operators :} The sons of the node are visited, putting either a \texttt{Variable} or a \texttt{Constant} on the stack. If it is a \texttt{Variable}, the value is loaded in a temporary LLVM variable. The values are given to a \texttt{create} method of the \texttt{Builder} (more precisely, of the current \texttt{BasicBlock}). The result is then stored in a new location in memory. This result is also pushed on the stack.
+
+\paragraph{Assignment :} It basically does a \texttt{load} and a \texttt{store} just after. In the case of an array or a list, the counter of references to it is updated.
+
+\paragraph{Constant token :} It only creates a \texttt{Constant} of the correct type.
+
+\paragraph{Datastructure non-terminal :} In this case, one has to use the functions of the runtime. These are hardcoded in the block.
+
+\paragraph{Declaration non-terminal :} 
+\begin{itemize}
+	\item Function : A new \texttt{FunctionBlock} is created, containing the name, the return value and the arguments of the function, optained by visitig the sons of the node. One also has to set the current function block of the visitor to it, hence, the following lines to be written will be in that function.
+	\item Variable : First visit the expression and the identifier. It will then create a pointer where the value of the expression is stored. In the case of an array or a list, the reference counter is also updated.
+\end{itemize}
+
+\paragraph{Expression non-terminal :} It basically only visits the children of the node. In the case of a datastructure access, it has to use de built-in functions, to be then stored in memory.
+
+\paragraph{FunctionCall non-terminal :} It first visits its children to retrieve the identifier and the parameters. It also retrieves the return type from the type table. For the arguments, one has to load the values from the pointers. One can afterwards store the result of the call of the function in memory, if the function return type is not void.
+
+\paragraph{Program non-terminal :} The main node is Scope, it has to handle the change of scope id. Also, at the end of the scope, the arrays and the lists allocated has to be freed. One has thus to go through the \texttt{RemoveReferenceFlags} to see which datastructure has to be freed, and generate the associated lines.
+
+\paragraph{Statement non-terminal :} 
+
+\begin{itemize}
+	\item Return : The reasoning is the same as before, where it simply loads the needed values and call the corresponding method in the block to create a return.
+	\item Conditional/If/Elesif/Else : It first appends the condition of the if to the current block and creates a conditional branch depending on the value of the condition, if the result is true, branch on the block with hte prefix "if\_true", and on "if\_false" otherwise. The block "if\_true" is first created, fulfilled, add a branch to the "end\_if" block and then the "if\_false" block is inserted. If there is any Elseif or Else condition, they are inserted in the same way. Finally, the "end\_if" block is inserted.
+\end{itemize}
 
 
 \section{Runtime}
