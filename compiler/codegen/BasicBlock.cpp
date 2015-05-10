@@ -517,7 +517,7 @@ string BasicBlock::make_binop(const string& func, const string& op1, const strin
 }
 
 Variable* BasicBlock::add_expression(const string& expr, const string& ret, shared_ptr<typegen::Type> type)
-{   
+{
     Variable* ret_var = new Variable(var_manager, ret, type);
     add_line(ret_var->str_value() + " = " + expr);
     return ret_var;

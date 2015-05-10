@@ -1,4 +1,4 @@
-ASSEMBLY = support.s array_runtime.s list_runtime.s main.s
+ASSEMBLY = support.s array_runtime.s list_runtime.s main.s 
 DELETABLE_LL = support.ll array_runtime.ll list_runtime.ll
 EXECUTABLE = main
 CC = clang

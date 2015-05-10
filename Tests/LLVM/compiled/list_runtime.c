@@ -1094,6 +1094,14 @@ size_t list_remove_element_string(struct list_table* table, size_t lid, size_t p
 	return casted_value;
 }
 
+size_t list_make_sequence(struct list_table* table, size_t a, size_t b)
+{
+	size_t id = list_allocate_int(table);
+	struct list_descriptor* desc = find_descriptor(table, id);
+	for(size_t i = a; i <= b; ++i)
+		insert_list_element(desc, desc->list_size, &i);
+	return id;
+}
 
 bool list_empty_int(struct list_table* table, size_t id) { return list_empty(table, id); }
 bool list_empty_bool(struct list_table* table, size_t id) { return list_empty(table, id); }

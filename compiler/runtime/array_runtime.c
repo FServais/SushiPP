@@ -726,6 +726,15 @@ bool array_empty(const struct array_table* table, size_t id)
 	return array_size(table, id) == 0;
 }
 
+size_t array_make_sequence(struct array_table* table, size_t a, size_t b)
+{
+	size_t id = array_allocate_int(table, 0, NULL);
+	struct array_descriptor* desc = find_array_descriptor(table, id);
+	for(size_t i = a; i <= b; ++i)
+		array_insert_value(desc, desc->array_size, &i);
+	return id;
+}
+
 bool array_empty_int(const struct array_table* table, size_t id) { return array_empty(table, id); }
 bool array_empty_float(const struct array_table* table, size_t id) { return array_empty(table, id); }
 bool array_empty_double(const struct array_table* table, size_t id) { return array_empty(table, id); }
@@ -738,11 +747,11 @@ size_t array_size_double(const struct array_table* table, size_t id) { return ar
 size_t array_size_char(const struct array_table* table, size_t id) { return array_size(table, id); }
 size_t array_size_string(const struct array_table* table, size_t id) { return array_size(table, id); }
 
-void array_clear_int(const struct array_table* table, size_t id) { array_clear(table, id); }
-void array_clear_float(const struct array_table* table, size_t id) { array_clear(table, id); }
-void array_clear_double(const struct array_table* table, size_t id) { array_clear(table, id); }
-void array_clear_char(const struct array_table* table, size_t id) { array_clear(table, id); }
-void array_clear_string(const struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_int(struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_float(struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_double(struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_char(struct array_table* table, size_t id) { array_clear(table, id); }
+void array_clear_string(struct array_table* table, size_t id) { array_clear(table, id); }
 
 
 // void print_array_table(const struct array_table* table)
