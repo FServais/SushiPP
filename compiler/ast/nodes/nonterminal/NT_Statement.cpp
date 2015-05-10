@@ -211,20 +211,20 @@ void MenuBody::accept(visitor::ASTVisitor& visitor)
 }
 
 /* MenuCase */
-MenuCase::MenuCase(Scope* scope, Expression* expr) : NT_Statement("Case") 
+MenuCase::MenuCase(Scope* scope, ASTNode* expr) : NT_Statement("Case") 
 {
 	add_child(scope);
 	add_child(expr);
 }
 
-MenuCase::MenuCase(Scope* scope, Expression* expr, int first_line, int last_line, int first_column, int last_column)
+MenuCase::MenuCase(Scope* scope, ASTNode* expr, int first_line, int last_line, int first_column, int last_column)
 	: NT_Statement("Case", first_line, last_line, first_column, last_column)
 {
 	add_child(scope);
 	add_child(expr);
 }
 
-MenuCase::MenuCase(Scope* scope, Expression* expr, const NodeLocation& node_loc) : NT_Statement("Case", node_loc)
+MenuCase::MenuCase(Scope* scope, ASTNode* expr, const NodeLocation& node_loc) : NT_Statement("Case", node_loc)
 {
 	add_child(scope);
 	add_child(expr);
@@ -235,9 +235,9 @@ Scope& MenuCase::get_scope()
 	return *dynamic_cast<Scope*>(children[0]);
 }
 
-Expression& MenuCase::get_expression()
+ASTNode& MenuCase::get_expression()
 {
-	return *dynamic_cast<Expression*>(children[1]);
+	return *(children[1]);
 }
 
 

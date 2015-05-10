@@ -2248,7 +2248,8 @@ void TypeInferenceVisitor::visit( ast::MenuBody& body )
 
 	params.add_param(alpha);
 	params.call();
-	body.get_default_case().accept(*this);
+	if(body.contains_default())
+		body.get_default_case().accept(*this);
 
 	params.ret();
 }

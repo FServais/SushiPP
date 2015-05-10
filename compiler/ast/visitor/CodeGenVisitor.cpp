@@ -2518,6 +2518,79 @@ void CodeGenVisitor::visit( Return& token )
 void CodeGenVisitor::visit( Menu& token )
 {
 	cout << "Menu" << endl;
+	
+	token.get_expression().accept(*this);
+	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
+	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
+
+
+	Value& val_to_switch = get_return_value(0);
+	Variable* val = dynamic_cast<Variable*>(block.create_load(val_to_switch));
+	string llvm_type = val->get_type()->to_str();
+
+	MenuBody& son = token.get_body();
+
+	string switch_jump;
+	string def_lab = label_manager.insert_label("default");
+	string end_lab = label_manager.insert_label("end");
+
+	if(son.contains_default())
+		switch_jump = "switch "+ llvm_type + " " + val->str_value() + ", label %"+def_lab ;
+	else
+		switch_jump = "switch "+ llvm_type + " " + val->str_value() + ", label %"+end_lab ; 
+	int nb_case = son.nb_cases();
+
+
+	vector<string> case_lab;
+
+	if(nb_case > 0)
+	{
+
+		switch_jump += "[ ";
+
+		for(size_t i = 0; i < nb_case; i++)
+		{
+
+			(son.get_nth_case(i)).get_expression().accept(*this);
+
+			Value& expr = get_return_value(0);
+
+			string label = label_manager.insert_label("case");
+			case_lab.push_back(label);
+
+			if(expr.is_constant())
+				switch_jump += llvm_type+" "+ expr.str_value() + ", label %"+label + " \n ";
+			else
+			{
+				Variable* v = dynamic_cast<Variable*>(block.create_load(expr));
+				switch_jump += llvm_type+" "+ v->str_value() + ", label %"+label + " \n ";
+			}
+
+			pop();
+
+		}
+
+		switch_jump += " ]";
+	}
+	string end = "br label %"+end_lab;
+	block.add_expression(switch_jump);
+
+	for( int i = 0; i < nb_case ; i ++)
+	{
+		curr_function.add_block(case_lab[i]);
+		son.get_nth_case(i).get_scope().accept(*this);
+		curr_module.get_function(curr_func_name).get_last_block().add_expression(end);
+	}
+	cout << "COU"<<son.contains_default()<<endl;
+	if(son.contains_default())
+	{
+		curr_function.add_block(def_lab);
+		son.get_default_case().accept(*this);
+		curr_module.get_function(curr_func_name).get_last_block().add_expression(end);
+	}
+
+	curr_function.add_block(end_lab);
+
 
 }
 
@@ -2529,6 +2602,7 @@ void CodeGenVisitor::visit( ast::MenuBody& )
 void CodeGenVisitor::visit( MenuDef& token )
 {
 	cout << "MenuDef" << endl;
+	visit_children(token);
 
 }
 
@@ -2541,13 +2615,16 @@ void CodeGenVisitor::visit( MenuCase& token )
 void CodeGenVisitor::visit( Roll& token )
 {
 	cout << "Roll" << endl;
-	string jump0 = "br label %begin_loop";
+	string begin_loop = label_manager.insert_label("begin_loop");
+	string label_true = label_manager.insert_label("label_true");
+	string label_false = label_manager.insert_label("label_false");
+	string jump0 = "br label %"+begin_loop;
 	BasicBlock& block0 = curr_module.get_function(curr_func_name).get_last_block();
 	block0.add_expression(jump0);
 
 
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
-	curr_function.add_block("begin_loop");
+	curr_function.add_block(begin_loop);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 	//calculate expression
@@ -2555,22 +2632,23 @@ void CodeGenVisitor::visit( Roll& token )
 	Value& cond = get_return_value(0);
 	string branch;
 	if(cond.is_constant())
-		branch = "br i1 "+ cond.str_value()+", label %label_true , label %label_false";
+		branch = "br i1 "+ cond.str_value()+", label %"+label_true+" , label %"+label_false;
 	else
 	{
 		Value* expr = block.create_load(cond);
-		branch = "br i1 "+ expr->str_value()+", label %label_true , label %label_false";
+		branch = "br i1 "+ expr->str_value()+", label %"+label_true+" , label %"+label_false;
 	}
 	block.add_expression(branch);
-	curr_function.add_block("label_true");
+	curr_function.add_block(label_true);
 
 	// body
 	token.get_scope().accept(*this);
-	string jump = "br label %begin_loop";
+	string jump = "br label %"+begin_loop;
 	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
 	block2.add_expression(jump);
 
-	curr_function.add_block("label_false");
+	curr_function.add_block(label_false);
+	pop();
 
 
 }
@@ -2586,6 +2664,9 @@ void CodeGenVisitor::visit( Foreach& token )
 void CodeGenVisitor::visit( For& token )
 {
 	cout << "For" << endl;
+	string begin_loop = label_manager.insert_label("begin_loop");
+	string label_true = label_manager.insert_label("label_true");
+	string label_false = label_manager.insert_label("label_false");
 	// init
 	if(! token.empty_initializer())
 		token.get_initializer().accept(*this);
@@ -2596,7 +2677,7 @@ void CodeGenVisitor::visit( For& token )
 
 	// behin loop
 	FunctionBlock& curr_function = curr_module.get_function(curr_func_name);
-	curr_function.add_block("begin_loop");
+	curr_function.add_block(begin_loop);
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 
 	// calculate guardian expression
@@ -2606,14 +2687,14 @@ void CodeGenVisitor::visit( For& token )
 	// branch
 	string branch;
 	if(cond.is_constant())
-		branch = "br i1 "+ cond.str_value()+", label %label_true , label %label_false";
+		branch = "br i1 "+ cond.str_value()+", label %"+label_true+" , label %"+label_false;
 	else
 	{
 		Value* expr = block.create_load(cond);
-		branch = "br i1 "+ expr->str_value()+", label %label_true , label %label_false";
+		branch = "br i1 "+ expr->str_value()+", label %"+label_true+" , label %"+label_false;
 	}
 	block.add_expression(branch);
-	curr_function.add_block("label_true");
+	curr_function.add_block(label_true);
 
 	// body
 	token.get_scope().accept(*this);
@@ -2622,11 +2703,13 @@ void CodeGenVisitor::visit( For& token )
 	if(! token.empty_update())
 		token.get_update().accept(*this);
 
-	string jump = "br label %begin_loop";
+	string jump = "br label %"+begin_loop;
 	BasicBlock& block2 = curr_module.get_function(curr_func_name).get_last_block();
 	block2.add_expression(jump);
 
-	curr_function.add_block("label_false");
+	curr_function.add_block(label_false);
+
+	pop();
 
 }
 
