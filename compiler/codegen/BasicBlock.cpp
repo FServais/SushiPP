@@ -362,7 +362,6 @@ Value* BasicBlock::create_assign_value(Value& lhs, Value& rhs)
     return val_ptr;
 }
 
-
 Value* BasicBlock::create_store(Value& value, Value& variable)
 {
     //Variable& value_cast = dynamic_cast<Variable&>(value);
@@ -377,6 +376,19 @@ Value* BasicBlock::create_store(Value& value, Value& variable)
     Variable* variable_ptr = new Variable(variable_cast);
 
     return variable_ptr;
+}
+
+Value* BasicBlock::create_func_store(Value& value, Value& variable)
+{
+    Variable& variable_cast = dynamic_cast<Variable&>(variable);
+
+    stringstream ss;
+    ss << "store " << value.str_type() << "* " << value.str_value() << ", " << variable_cast.str_type() << "** " << variable_cast.str_value();
+
+    add_line(ss.str());
+
+    //Variable& variable_cast = dynamic_cast<Variable&>(variable);
+    Variable* variable_ptr = new Variable(variable_cast);
 }
 
 Value* BasicBlock::create_load(Value& ptr)

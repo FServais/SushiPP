@@ -2257,7 +2257,7 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 			array_table + ", i64 " + tab_id->str_value() + ", i64 " + index.str_value() + " )";
 
 
-	curr_module.function_is_used("array_get_"+ctype);
+	curr_module.function_is_used("array-get-"+ctype);
 
 	Variable* ret = block.add_expression(get_val, "ret", type);
 	// store the ret value into memory
@@ -2364,29 +2364,22 @@ void CodeGenVisitor::visit( SoyFunc& token )
 {
 	cout << "SoyFunc" << endl;
 
-	// // Visit 1st child : Identifier
-	// token.get_children().at(0)->accept(*this);
-
-	// Value& id = get_return_value(0);
-	// Variable& id_var = dynamic_cast<Variable&>(id);
-
 	// // Create new FunctionBlock
-	// string declared_function_name = id_var.get_name(),
+	// string function_name = token.get_name(),
 	// 		func_name_table = type_table.unique_id_name(function_table.get_curr_scope_id(), declared_function_name),
 	// 		llvm_func_name = Module::get_llvm_function_name(declared_function_name, built_in.count(declared_function_name));
 
 	// //typegen::Function* function_type = ;
+	// shared_ptr<typegen::Type> func_type = type_table.get_type(func_name_table);
 	// vector<string> params;
 
 	// if(token.contains_params())
-	// 	token.get_param_list().get_parameters_name(params);
+	// 	token.get_params().get_parameters_name(params);
 
 	// FunctionBlock function(builder.get_variable_manager(),
 	// 					   llvm_func_name,
-	// 					   dynamic_pointer_cast<typegen::Function>(type_table.get_type(func_name_table)),
+	// 					   dynamic_pointer_cast<typegen::Function>(func_type),
 	// 					   params);
-
-	// pop();
 
 	// // Change "cursor" of the visitor to the new function
 	// string current_function = curr_func_name;
@@ -2398,6 +2391,10 @@ void CodeGenVisitor::visit( SoyFunc& token )
 
 	// // Get back to previous block
 	// curr_func_name = current_function;
+
+	// // soy expression is an expression so a pointer should be returned on the stack
+	// // allocate memory
+	// create_load_raw("");block.create_load_raw(func_type->to_str() + "** " + table_name);
 }
 
 /********************************
