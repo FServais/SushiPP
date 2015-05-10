@@ -1,145 +1,387 @@
-;
-; =====================================
-; 				Quicksort
-; =====================================
-;
-; Written by
-; - Floriane Magera
-; - Romain Mormont
-; - Fabrice Servais
-;
-; DESCRIPTION: 
-; This file contains the llvm code corresponding to a Sushi++ Quicksort code for intergers.
-;
+%struct.array_table = type opaque
+%struct.list_table = type opaque
+@..array_table = internal global %struct.array_table* null, align 8
+@..list_table = internal global %struct.list_table* null, align 8
 
+declare i64 @array_get_int(%struct.array_table*, i64, i64)
+declare void @array_push_int(%struct.array_table*, i64, i64)
+declare i64 @array_size_int(%struct.array_table*, i64)
+declare void @array_add_reference(%struct.array_table*, i64)
+declare i64 @array_allocate_int(%struct.array_table*, i64, i64*)
+declare void @array_rm_reference(%struct.array_table*, i64)
+declare %struct.array_table* @create_array_table(...)
+declare %struct.list_table* @create_list_table(...)
+declare void @list_add_reference(%struct.list_table*, i64)
+declare void @list_rm_reference(%struct.list_table*, i64)
+declare void @print_char(i8)
+declare void @print_int(i64)
+declare void @println_int(i64)
 
-; array-swap
-; Swap elements array[item1] and array[item2]
-define void @array-swap(i32* %array, i32 %item1, i32 %item2 ) {
-	; maki tmp = array[item1]
-	%tmp1 = getelementptr inbounds i32* %array, i32 %item1 ; int* tmp1 = &array[item1]
-	%tmp = load i32* %tmp1 ; int temp1value = *tmp1
+define void @.array-swap(i64 %array_arg, i64 %item1_arg, i64 %item2_arg){
+entry:
+	%array = alloca i64
+	store i64 %array_arg, i64* %array
+	%item1 = alloca i64
+	store i64 %item1_arg, i64* %item1
+	%item2 = alloca i64
+	store i64 %item2_arg, i64* %item2
+	%tmp_load_array.2 = load i64* %array
+	%raw_load_tmp.8 = load %struct.array_table** @..array_table
+	%tmp_load_item1 = load i64* %item1
+	%ret.4 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.8, i64 %tmp_load_array.2, i64 %tmp_load_item1 )
+	%tmp_ret_addr = alloca i64
+	store i64 %ret.4, i64* %tmp_ret_addr
+	%tmp = alloca i64
+	%tmp_load_tmp_ret_addr = load i64* %tmp_ret_addr
+	store i64 %tmp_load_tmp_ret_addr, i64* %tmp
+	%tmp_load_array.3 = load i64* %array
+	%raw_load_tmp.9 = load %struct.array_table** @..array_table
+	%tmp_load_item1.1 = load i64* %item1
+	%ret.5 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.9, i64 %tmp_load_array.3, i64 %tmp_load_item1.1 )
+	%tmp_ret_addr.1 = alloca i64
+	store i64 %ret.5, i64* %tmp_ret_addr.1
+	%tmp_load_array.4 = load i64* %array
+	%raw_load_tmp.10 = load %struct.array_table** @..array_table
+	%tmp_load_item2 = load i64* %item2
+	%ret.6 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.10, i64 %tmp_load_array.4, i64 %tmp_load_item2 )
+	%tmp_ret_addr.2 = alloca i64
+	store i64 %ret.6, i64* %tmp_ret_addr.2
+	%tmp_load_tmp_ret_addr.1 = load i64* %tmp_ret_addr.2
+	store i64 %tmp_load_tmp_ret_addr.1, i64* %tmp_ret_addr.1
+	%tmp_load_array.5 = load i64* %array
+	%raw_load_tmp.11 = load %struct.array_table** @..array_table
+	%tmp_load_item2.1 = load i64* %item2
+	%ret.7 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.11, i64 %tmp_load_array.5, i64 %tmp_load_item2.1 )
+	%tmp_ret_addr.3 = alloca i64
+	store i64 %ret.7, i64* %tmp_ret_addr.3
+	%tmp_load_tmp = load i64* %tmp
+	store i64 %tmp_load_tmp, i64* %tmp_ret_addr.3
+	%raw_load_tmp.12 = load %struct.array_table** @..array_table
+	%raw_load_tmp.13 = load %struct.list_table** @..list_table
 
-	; array[item1] = array[item2]
-	%tmp2 = getelementptr inbounds i32* %array, i32 %item2 ; int* tmp2 = &array[item2]
-	%tmp2_value = load i32* %tmp2 ; int tmp2_value = *tmp2
-	store i32 %tmp2_value, i32* %tmp1 ; array[item1] = tmp2_value
-
-	; array[item2] = tmp
-	store i32 %tmp, i32* %tmp2
-
-	ret void
+	ret void 
 }
 
-define i32 @partition(i32* %array, i32 %pivot, i32 %boundary_index, i32 %item_index)
-{
-	%cond1 = icmp eq i32 %pivot, %item_index
-	br i1 %cond1, label %if_true, label %if_false
-	if_true: 
-		call void @array-swap(i32* %array, i32 %boundary_index, i32 %pivot)
-		ret i32 %boundary_index
+define i64 @main(){
+entry:
+	%added_array_table = call %struct.array_table* (...)* @create_array_table()
+	%added_list_table = call %struct.list_table* (...)* @create_list_table()
+	store %struct.array_table* %added_array_table, %struct.array_table** @..array_table, align 8
+	store %struct.list_table* %added_list_table, %struct.list_table** @..list_table, align 8
+	%raw_load_tmp.34 = load %struct.array_table** @..array_table
+	%id = call i64 (%struct.array_table*, i64, i64*)* @array_allocate_int(%struct.array_table* %raw_load_tmp.34, i64 0, i64* null)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 18)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 33)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 25)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 45)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 76)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 89)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 18)
+	call void (%struct.array_table*, i64, i64)* @array_push_int(%struct.array_table* %raw_load_tmp.34, i64 %id, i64 19)
+	%tmp_id_addr = alloca i64
+	store i64 %id, i64* %tmp_id_addr
+	%array = alloca i64
+	%tmp_load_tmp_id_addr = load i64* %tmp_id_addr
+	%raw_load_tmp.35 = load %struct.list_table** @..list_table
+	call void (%struct.list_table*, i64)* @list_add_reference(%struct.list_table* %raw_load_tmp.35, i64 %tmp_load_tmp_id_addr)
+	store i64 %tmp_load_tmp_id_addr, i64*%array
+	%tmp_load_array.19 = load i64* %array
+	call void (i64)* @.quicksort(i64 %tmp_load_array.19)
+	%tmp_load_array.20 = load i64* %array
+	call void (i64)* @.print-array(i64 %tmp_load_array.20)
+	%raw_load_tmp.36 = load %struct.array_table** @..array_table
+	%raw_load_tmp.37 = load %struct.list_table** @..list_table
 
-	if_false: 	
-		%tmp1 = getelementptr inbounds i32* %array, i32 %item_index
-		%tmp = load i32* %tmp1
-		%tmp2 = getelementptr inbounds i32* %array, i32 %pivot
-		%tmp3 = load i32* %tmp2
-		%cond2 = icmp ugt i32 %tmp3, %tmp
-		br i1 %cond2, label %if_truer, label %if_falser
-
-	if_truer:
-		call void @array-swap(i32* %array, i32 %boundary_index, i32 %item_index)
-		%tmp1.1 = add i32 %boundary_index, 1
-		%tmp2.1 = add i32 %item_index, 1
-		%ret = call i32 @partition(i32* %array, i32 %pivot, i32 %tmp1.1, i32 %tmp2.1)
-		ret i32 %ret
-
-	if_falser:
-		%tmp2.3 = add i32 %item_index, 1
-		%ret.1 = call i32 @partition(i32* %array, i32 %pivot, i32 %boundary_index, i32 %tmp2.3)
-		ret i32 %ret.1
-
-} 
-
-; quicksort_aux
-; Sort the array range with the quicksort algorithm
-define void @quicksort_aux ( i32* %array, i32 %start, i32 %end) {
-	; if (end - start) <= 1
-	%tmp1 = sub i32 %end, %start
-	%cmp1 = icmp ult i32 %tmp1, 1
-	br i1 %cmp1, label %iftrue, label %iffalse
-
-iftrue:
-	; nori
-	ret void
-
-iffalse:
-	; maki pivot_index = (end - start)
-	%tmp.2 = sub i32 %end, %start
-	%tmp.3 = udiv i32 %tmp.2, 2
-	%pivot_index = add i32 %tmp.3, %start
-
-	; maki last_index = end - 1
-	%last_index = sub i32 %end, 1
-
-	; array-swap array pivot_index last_index
-	call void @array-swap( i32* %array, i32 %pivot_index, i32 %last_index )	
-
-	; pivot = (partition array last_index start start)
-	%pivot = call i32 @partition( i32* %array, i32 %last_index, i32 %start, i32 %start )
-
-	; quicksort_aux array start pivot
-	call void @quicksort_aux( i32* %array, i32 %start, i32 %pivot )
-
-	; quicksort_aux array (++pivot) end 
-	%pivot.1 = add i32 %pivot, 1
-	call void @quicksort_aux( i32* %array, i32 %pivot.1, i32 %end )
-
-	ret void
+	ret i64 0
 }
 
-; ------ DEBUGGING PURPOSE ------ ;
-declare i32 @printf(i8*, ...) nounwind
+define i64 @.partition(i64 %array_arg, i64 %pivot_arg, i64 %boundary_index_arg, i64 %item_index_arg){
+entry:
+	%array = alloca i64
+	store i64 %array_arg, i64* %array
+	%pivot = alloca i64
+	store i64 %pivot_arg, i64* %pivot
+	%boundary_index = alloca i64
+	store i64 %boundary_index_arg, i64* %boundary_index
+	%item_index = alloca i64
+	store i64 %item_index_arg, i64* %item_index
+	%tmp_load_item_index = load i64* %item_index
+	%tmp_load_pivot = load i64* %pivot
+	%tmp_eq = icmp eq i64 %tmp_load_item_index, %tmp_load_pivot
+	%tmp_eq.1 = alloca i1
+	store i1 %tmp_eq, i1* %tmp_eq.1
+	%tmp_load_tmp_eq.1 = load i1* %tmp_eq.1
+	br i1 %tmp_load_tmp_eq.1, label %if_true, label %if_false
 
-@disp_array = internal constant [27 x i8] c"Array : %d - %d - %d - %d\0A\00"
-; ------------------------------- ;
+if_true:
+	%tmp_load_array.6 = load i64* %array
+	%tmp_load_boundary_index = load i64* %boundary_index
+	%tmp_load_pivot.1 = load i64* %pivot
+	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.6, i64 %tmp_load_boundary_index, i64 %tmp_load_pivot.1)
+	%tmp_load_boundary_index.1 = load i64* %boundary_index
+	%raw_load_tmp.14 = load %struct.array_table** @..array_table
+	%raw_load_tmp.15 = load %struct.list_table** @..list_table
+	br label %end_if
 
+if_false:
+	br label %end_if
 
-define i32 @main(i32 %argc, i8** %argv) {
-	%1 = alloca i32, align 4
-	%2 = alloca i32, align 4
-	%3 = alloca i8**, align 8
-	store i32 0, i32* %1
-	store i32 %argc, i32* %2, align 4
-	store i8** %argv, i8*** %3, align 8
+end_if:
+	%tmp_load_array.7 = load i64* %array
+	%raw_load_tmp.16 = load %struct.array_table** @..array_table
+	%tmp_load_item_index.1 = load i64* %item_index
+	%ret.8 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.16, i64 %tmp_load_array.7, i64 %tmp_load_item_index.1 )
+	%tmp_ret_addr.4 = alloca i64
+	store i64 %ret.8, i64* %tmp_ret_addr.4
+	%tmp_load_array.8 = load i64* %array
+	%raw_load_tmp.17 = load %struct.array_table** @..array_table
+	%tmp_load_pivot.2 = load i64* %pivot
+	%ret.9 = call i64 (%struct.array_table*, i64, i64)* @array_get_int( %struct.array_table* %raw_load_tmp.17, i64 %tmp_load_array.8, i64 %tmp_load_pivot.2 )
+	%tmp_ret_addr.5 = alloca i64
+	store i64 %ret.9, i64* %tmp_ret_addr.5
+	%tmp_load_tmp_ret_addr.2 = load i64* %tmp_ret_addr.4
+	%tmp_load_tmp_ret_addr.3 = load i64* %tmp_ret_addr.5
+	%tmp_lt.2 = icmp slt i64 %tmp_load_tmp_ret_addr.2, %tmp_load_tmp_ret_addr.3
+	%tmp_lt.3 = alloca i1
+	store i1 %tmp_lt.2, i1* %tmp_lt.3
+	%tmp_load_tmp_lt.3 = load i1* %tmp_lt.3
+	br i1 %tmp_load_tmp_lt.3, label %if_true.1, label %if_false.1
 
-	%array = alloca [4 x i32], align 4
+if_true.1:
+	call void (i64)* @.print-dbg(i64 1)
+	%tmp_load_boundary_index.2 = load i64* %boundary_index
+	call void (i64)* @println_int(i64 %tmp_load_boundary_index.2)
+	%tmp_load_array.9 = load i64* %array
+	%tmp_load_boundary_index.3 = load i64* %boundary_index
+	%tmp_load_item_index.2 = load i64* %item_index
+	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.9, i64 %tmp_load_boundary_index.3, i64 %tmp_load_item_index.2)
+	%tmp_load_boundary_index.4 = load i64* %boundary_index
+	%tmp_add.1 = add i64 %tmp_load_boundary_index.4, 1
+	store i64 %tmp_add.1, i64* %boundary_index
+	%tmp_load_item_index.3 = load i64* %item_index
+	%tmp_add.2 = add i64 %tmp_load_item_index.3, 1
+	store i64 %tmp_add.2, i64* %item_index
+	%tmp_load_array.10 = load i64* %array
+	%tmp_load_pivot.3 = load i64* %pivot
+	%tmp_load_boundary_index.5 = load i64* %boundary_index
+	%tmp_load_item_index.4 = load i64* %item_index
+	%ret.10 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.10, i64 %tmp_load_pivot.3, i64 %tmp_load_boundary_index.5, i64 %tmp_load_item_index.4)
+	%ret.11 = alloca i64
+	store i64 %ret.10, i64* %ret.11
+	%raw_load_tmp.18 = load %struct.array_table** @..array_table
+	%raw_load_tmp.19 = load %struct.list_table** @..list_table
+	br label %end_if.1
 
-	%4 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 0
-	store i32 6, i32* %4, align 4
-	%5 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 1
-	store i32 5, i32* %5, align 4
-	%6 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 2
-	store i32 4, i32* %6, align 4
-    %7 = getelementptr inbounds [4 x i32]* %array, i32 0, i64 3
-    store i32 8, i32* %7, align 4
+if_false.1:
+	%tmp_load_item_index.5 = load i64* %item_index
+	%tmp_add.3 = add i64 %tmp_load_item_index.5, 1
+	store i64 %tmp_add.3, i64* %item_index
+	%tmp_load_array.11 = load i64* %array
+	%tmp_load_pivot.4 = load i64* %pivot
+	%tmp_load_boundary_index.6 = load i64* %boundary_index
+	%tmp_load_item_index.6 = load i64* %item_index
+	%ret.12 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.11, i64 %tmp_load_pivot.4, i64 %tmp_load_boundary_index.6, i64 %tmp_load_item_index.6)
+	%ret.13 = alloca i64
+	store i64 %ret.12, i64* %ret.13
+	%raw_load_tmp.20 = load %struct.array_table** @..array_table
+	%raw_load_tmp.21 = load %struct.list_table** @..list_table
+	br label %end_if.1
 
-	%arrayptr = getelementptr inbounds [4 x i32]* %array, i32 0, i32 0
+end_if.1:
+	%tmp_load_boundary_index.7 = load i64* %boundary_index
+	%raw_load_tmp.22 = load %struct.array_table** @..array_table
+	%raw_load_tmp.23 = load %struct.list_table** @..list_table
 
-	call void @quicksort_aux( i32* %arrayptr, i32 0, i32 4 )
-
-	; ------ DEBUGGING PURPOSE ------ ;
-	; Check if worked correctly
-	%val.1 = load i32* %4
-	%val.2 = load i32* %5
-	%val.3 = load i32* %6
-	%val.4 = load i32* %7
-
-	%8 = call i32 (i8*, ...)* @printf(i8* getelementptr([27 x i8]* @disp_array, i32 0, i32 0), i32 %val.1, i32 %val.2, i32 %val.3, i32 %val.4)
-	; ------------------------------- ;
-
-	ret i32 0
+	ret i64 %tmp_load_boundary_index.7
 }
 
+define void @.print-array(i64 %array_arg){
+entry:
+	%array = alloca i64
+	store i64 %array_arg, i64* %array
+	%i = alloca i64
+	store i64 0, i64* %i
+	br label %begin_loop
+
+begin_loop:
+	%tmp_load_array = load i64* %array
+	%raw_load_tmp = load %struct.array_table** @..array_table
+	%ret = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp, i64 %tmp_load_array)
+	%ret.1 = alloca i64
+	store i64 %ret, i64* %ret.1
+	%tmp_load_i = load i64* %i
+	%tmp_load_ret.1 = load i64* %ret.1
+	%tmp_lt = icmp slt i64 %tmp_load_i, %tmp_load_ret.1
+	%tmp_lt.1 = alloca i1
+	store i1 %tmp_lt, i1* %tmp_lt.1
+	%tmp_load_tmp_lt.1 = load i1* %tmp_lt.1
+	br i1 %tmp_load_tmp_lt.1, label %label_true , label %label_false
+
+label_true:
+	%tmp_load_array.1 = load i64* %array
+	%tmp_load_i.1 = load i64* %i
+	%raw_load_tmp.1 = load %struct.array_table** @..array_table
+	%ret.2 = call i64 (%struct.array_table*, i64, i64)* @array_get_int(%struct.array_table* %raw_load_tmp.1, i64 %tmp_load_array.1, i64 %tmp_load_i.1)
+	%ret.3 = alloca i64
+	store i64 %ret.2, i64* %ret.3
+	%tmp_load_ret.3 = load i64* %ret.3
+	call void (i64)* @print_int(i64 %tmp_load_ret.3)
+	call void (i8)* @print_char(i8 32)
+	%raw_load_tmp.2 = load %struct.array_table** @..array_table
+	%raw_load_tmp.3 = load %struct.list_table** @..list_table
+	%tmp_load_i.2 = load i64* %i
+	%tmp_add = add i64 %tmp_load_i.2, 1
+	store i64 %tmp_add, i64* %i
+	br label %begin_loop
+
+label_false:
+	call void (i8)* @print_char(i8 10)
+	%raw_load_tmp.4 = load %struct.array_table** @..array_table
+	%raw_load_tmp.5 = load %struct.list_table** @..list_table
+
+	ret void 
+}
+
+define void @.print-dbg(i64 %n_arg){
+entry:
+	%n = alloca i64
+	store i64 %n_arg, i64* %n
+	call void (i8)* @print_char(i8 91)
+	call void (i8)* @print_char(i8 68)
+	call void (i8)* @print_char(i8 66)
+	call void (i8)* @print_char(i8 71)
+	%tmp_load_n = load i64* %n
+	call void (i64)* @print_int(i64 %tmp_load_n)
+	call void (i8)* @print_char(i8 93)
+	call void (i8)* @print_char(i8 58)
+	call void (i8)* @print_char(i8 32)
+	%raw_load_tmp.6 = load %struct.array_table** @..array_table
+	%raw_load_tmp.7 = load %struct.list_table** @..list_table
+
+	ret void 
+}
+
+define void @.quicksort(i64 %array_arg){
+entry:
+	%array = alloca i64
+	store i64 %array_arg, i64* %array
+	%tmp_load_array.16 = load i64* %array
+	%raw_load_tmp.28 = load %struct.array_table** @..array_table
+	%ret.16 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.28, i64 %tmp_load_array.16)
+	%ret.17 = alloca i64
+	store i64 %ret.16, i64* %ret.17
+	%tmp_load_ret.17 = load i64* %ret.17
+	%tmp_lt.6 = icmp sle i64 %tmp_load_ret.17, 1
+	%tmp_lt.7 = alloca i1
+	store i1 %tmp_lt.6, i1* %tmp_lt.7
+	%tmp_load_tmp_lt.7 = load i1* %tmp_lt.7
+	br i1 %tmp_load_tmp_lt.7, label %if_true.3, label %if_false.3
+
+if_true.3:
+	%raw_load_tmp.29 = load %struct.array_table** @..array_table
+	%raw_load_tmp.30 = load %struct.list_table** @..list_table
+	br label %end_if.3
+
+if_false.3:
+	br label %end_if.3
+
+end_if.3:
+	%tmp_load_array.17 = load i64* %array
+	%raw_load_tmp.31 = load %struct.array_table** @..array_table
+	%ret.18 = call i64 (%struct.array_table*, i64)* @array_size_int(%struct.array_table* %raw_load_tmp.31, i64 %tmp_load_array.17)
+	%ret.19 = alloca i64
+	store i64 %ret.18, i64* %ret.19
+	%tmp_load_array.18 = load i64* %array
+	%tmp_load_ret.19 = load i64* %ret.19
+	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.18, i64 0, i64 %tmp_load_ret.19)
+	%raw_load_tmp.32 = load %struct.array_table** @..array_table
+	%raw_load_tmp.33 = load %struct.list_table** @..list_table
+
+	ret void 
+}
+
+define void @.quicksort_aux(i64 %array_arg, i64 %start_arg, i64 %end_arg){
+entry:
+	%array = alloca i64
+	store i64 %array_arg, i64* %array
+	%start = alloca i64
+	store i64 %start_arg, i64* %start
+	%end = alloca i64
+	store i64 %end_arg, i64* %end
+	%tmp_load_end = load i64* %end
+	%tmp_load_start = load i64* %start
+	%tmp_sub = sub i64 %tmp_load_end, %tmp_load_start
+	%tmp_sub.1 = alloca i64
+	store i64 %tmp_sub, i64* %tmp_sub.1
+	%tmp_load_tmp_sub.1 = load i64* %tmp_sub.1
+	%tmp_lt.4 = icmp sle i64 %tmp_load_tmp_sub.1, 1
+	%tmp_lt.5 = alloca i1
+	store i1 %tmp_lt.4, i1* %tmp_lt.5
+	%tmp_load_tmp_lt.5 = load i1* %tmp_lt.5
+	br i1 %tmp_load_tmp_lt.5, label %if_true.2, label %if_false.2
+
+if_true.2:
+	%raw_load_tmp.24 = load %struct.array_table** @..array_table
+	%raw_load_tmp.25 = load %struct.list_table** @..list_table
+	br label %end_if.2
+
+if_false.2:
+	br label %end_if.2
+
+end_if.2:
+	%tmp_load_end.1 = load i64* %end
+	%tmp_load_start.1 = load i64* %start
+	%tmp_sub.2 = sub i64 %tmp_load_end.1, %tmp_load_start.1
+	%tmp_sub.3 = alloca i64
+	store i64 %tmp_sub.2, i64* %tmp_sub.3
+	%tmp_load_tmp_sub.3 = load i64* %tmp_sub.3
+	%tmp_div = sdiv i64 %tmp_load_tmp_sub.3, 2
+	%tmp_div.1 = alloca i64
+	store i64 %tmp_div, i64* %tmp_div.1
+	%tmp_load_tmp_div.1 = load i64* %tmp_div.1
+	%tmp_load_start.2 = load i64* %start
+	%tmp_add.4 = add i64 %tmp_load_tmp_div.1, %tmp_load_start.2
+	%tmp_add.5 = alloca i64
+	store i64 %tmp_add.4, i64* %tmp_add.5
+	%pivot_index = alloca i64
+	%tmp_load_tmp_add.5 = load i64* %tmp_add.5
+	store i64 %tmp_load_tmp_add.5, i64* %pivot_index
+	%tmp_load_end.2 = load i64* %end
+	%tmp_sub.4 = sub i64 %tmp_load_end.2, 1
+	%tmp_sub.5 = alloca i64
+	store i64 %tmp_sub.4, i64* %tmp_sub.5
+	%last_index = alloca i64
+	%tmp_load_tmp_sub.5 = load i64* %tmp_sub.5
+	store i64 %tmp_load_tmp_sub.5, i64* %last_index
+	%tmp_load_array.12 = load i64* %array
+	%tmp_load_pivot_index = load i64* %pivot_index
+	%tmp_load_last_index = load i64* %last_index
+	call void (i64, i64, i64)* @.array-swap(i64 %tmp_load_array.12, i64 %tmp_load_pivot_index, i64 %tmp_load_last_index)
+	%tmp_load_array.13 = load i64* %array
+	%tmp_load_last_index.1 = load i64* %last_index
+	%tmp_load_start.3 = load i64* %start
+	%tmp_load_start.4 = load i64* %start
+	%ret.14 = call i64 (i64, i64, i64, i64)* @.partition(i64 %tmp_load_array.13, i64 %tmp_load_last_index.1, i64 %tmp_load_start.3, i64 %tmp_load_start.4)
+	%ret.15 = alloca i64
+	store i64 %ret.14, i64* %ret.15
+	%pivot = alloca i64
+	%tmp_load_ret.15 = load i64* %ret.15
+	store i64 %tmp_load_ret.15, i64* %pivot
+	%tmp_load_array.14 = load i64* %array
+	%tmp_load_start.5 = load i64* %start
+	%tmp_load_pivot.5 = load i64* %pivot
+	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.14, i64 %tmp_load_start.5, i64 %tmp_load_pivot.5)
+	%tmp_load_pivot.6 = load i64* %pivot
+	%tmp_add.6 = add i64 %tmp_load_pivot.6, 1
+	store i64 %tmp_add.6, i64* %pivot
+	%tmp_load_array.15 = load i64* %array
+	%tmp_load_pivot.7 = load i64* %pivot
+	%tmp_load_end.3 = load i64* %end
+	call void (i64, i64, i64)* @.quicksort_aux(i64 %tmp_load_array.15, i64 %tmp_load_pivot.7, i64 %tmp_load_end.3)
+	%raw_load_tmp.26 = load %struct.array_table** @..array_table
+	%raw_load_tmp.27 = load %struct.list_table** @..list_table
+
+	ret void 
+}
 
 
