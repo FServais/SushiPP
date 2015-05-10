@@ -2034,7 +2034,7 @@ void CodeGenVisitor::visit( MakeSequenceArray& token )
 	curr_module.function_is_used("array_make_sequence");
 
 	// create the array
-	shared_ptr<typegen::Type> array_type(new typegen::List(begin->get_type()));
+	shared_ptr<typegen::Type> array_type(new typegen::Array(begin->get_type()));
 	unique_ptr<Variable> array_id(block.add_expression(makes_call, "id", array_type));
 
 	// store the array id into memory
@@ -2158,9 +2158,6 @@ void CodeGenVisitor::visit( DeclVar& token )
 
 	pop();
 	pop();
-
-	//add_return(store);
-
 }
 
 
@@ -2267,16 +2264,6 @@ void CodeGenVisitor::visit( DatastructureAccess& token )
 	add_return(id_addr);
 	pop();
 	pop();
-
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -2432,14 +2419,6 @@ void CodeGenVisitor::visit( Scope& token )
 
 	visit_children(token);
 
-	cout << ">>> Array <<<" << endl;
-	array_rm_ref_flags.print();
-	cout << endl;
-
-	cout << ">>> List <<<" << endl;
-	list_rm_ref_flags.print();
-	cout << endl;
-
 	// Add free of array/list
 	BasicBlock& block = curr_module.get_function(curr_func_name).get_last_block();
 	vector<string> array_vars_to_free = array_rm_ref_flags.pop_vars_at_scope(id_scope);
@@ -2481,7 +2460,6 @@ void CodeGenVisitor::visit( Scope& token )
 
 	if(!variable_table.is_root())
 		variable_table.move_to_parent_scope();
-
 
 }
 
