@@ -108,7 +108,7 @@ vector<string> FunctionBlock::arguments_signature()
 
   for(size_t i = 0; i < function_type->nb_param(); ++i)
     sigs.push_back(function_type->get_arg(i)->to_str());
-    
+
   return sigs;
 }
 
@@ -135,7 +135,7 @@ void FunctionBlock::generate_argument_type_conv()
     parameters_name[i] = newname.str();
 
     // Store the value given in argument where is the pointer
-    Variable value(var_manager, newname.str(), function_type->get_arg(i));
+    Variable value(var_manager, newname.str(), function_type->get_arg(i), true);
 
     unique_ptr<Value> store(entry.create_store(value, pointer));
   }
