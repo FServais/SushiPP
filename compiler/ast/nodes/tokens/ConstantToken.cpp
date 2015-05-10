@@ -68,24 +68,21 @@ const std::string& String::value() const
 
 // Character
 Character::Character(const std::string& lexer_val)
-	: ConstantToken("char"),
-	  char_val(lexer_val[1])
+  : ConstantToken("char"),
+	char_val(extract_char(lexer_val))
 {
-
 }
 
 Character::Character(const std::string& lexer_val, int first_line, int last_line, int first_column, int last_column)
-	: ConstantToken("char", first_line, last_line, first_column, last_column),
-	  char_val(lexer_val[1])
+  : ConstantToken("char", first_line, last_line, first_column, last_column),
+	char_val(extract_char(lexer_val))
 {
-
 }
 
 Character::Character(const std::string& lexer_val, const NodeLocation& node_loc)
-	: ConstantToken("char", node_loc),
-	  char_val(lexer_val[1])
+  : ConstantToken("char", node_loc),
+	char_val(extract_char(lexer_val))
 {
-
 }
 
 void Character::accept(visitor::ASTVisitor& visitor)
@@ -98,6 +95,24 @@ char Character::value() const
 	return char_val;
 }
 
+char Character::extract_char(const std::string& char_str) const
+{
+	if(char_str.size() == 3)
+		return char_str[1];
+
+	if(char_str.size() != 4)
+		return '\0';
+
+	switch(char_str[2])
+	{
+	case '0' : return '\0';
+	case 'r' : return '\r';
+	case 'n' : return '\n';
+	case 't' : return '\t';
+	case 'f' : return '\f';
+	default: return '\0';
+	}
+}
 
 // Integer
 Integer::Integer(const std::string& lexer_val)
