@@ -24,6 +24,15 @@ int main(int argc, char** argv)
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+	catch(std::ios_base::failure& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Unexpected error : " << e.what() << std::endl;
+	}
 
 	return EXIT_SUCCESS;
 }

@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 
 #include "VariableManager.hpp"
 
@@ -31,9 +32,11 @@ string VariableManager::get_last_occurence(string var)
         variables[var] = 0;
 
     int value = variables[var];
-    string postfix = (value == 0) ? "" : to_string(value);
 
-    ss << var << postfix;
+    if(value == 0)
+        return var;
+
+    ss << var << "." << to_string(value);
 
     return ss.str();
 }

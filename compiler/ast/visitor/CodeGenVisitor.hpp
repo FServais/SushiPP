@@ -16,13 +16,25 @@
 
 #include "ASTVisitor.hpp"
 #include "../../codegen/Builder.hpp"
+#include "../../codegen/Variable.hpp"
+#include "../../codegen/LabelManager.hpp"
+#include "../../codegen/Function.hpp"
+#include "../../codegen/Constant.hpp"
+
+#include "../../symb/SymbolTable.hpp"
+#include "../../symb/SymbolInfo.hpp"
+#include "../../settings/BuiltInFunctions.hpp"
+#include "../../inference/TypeSymbolTable.hpp"
 
 namespace visitor
 {
 	class CodeGenVisitor : public ASTVisitor
 	{
 	public:
-		CodeGenVisitor(std::ostream& out = std::cout); // arg: the stream in which to output the tree
+		CodeGenVisitor(symb::SymbolTable<symb::VariableInfo>&,
+					   symb::SymbolTable<symb::FunctionInfo>&,
+					   inference::TypeSymbolTable&,
+					   settings::BuiltInFunctions&); // arg: the stream in which to output the tree
 
 		virtual void visit( ast::ASTNode& );
 
@@ -50,44 +62,44 @@ namespace visitor
 		 * 		Operator token    *
 		 **************************/
 
-		virtual void visit( ast::Op_Plus& );
-		virtual void visit( ast::Op_Minus& );
-		virtual void visit( ast::Op_Mult& );
-		virtual void visit( ast::Op_Div& );
-		virtual void visit( ast::Op_Modulo& );
-		virtual void visit( ast::Op_Exponentiation& );
-		virtual void visit( ast::Op_UnaryMinus& );
-		virtual void visit( ast::Op_BitwiseOr& );
-		virtual void visit( ast::Op_BitwiseAnd& );
-		virtual void visit( ast::Op_BitwiseXor& );
-		virtual void visit( ast::Op_BitwiseNot& );
-		virtual void visit( ast::Op_LogicalOr& );
-		virtual void visit( ast::Op_LogicalAnd& );
-		virtual void visit( ast::Op_LogicalNot& );
-		virtual void visit( ast::Op_CompLessThan& );
-		virtual void visit( ast::Op_CompGreaterThan& );
-		virtual void visit( ast::Op_CompLessEqual& );
-		virtual void visit( ast::Op_CompGreaterEqual& );
-		virtual void visit( ast::Op_CompEqual& );
-		virtual void visit( ast::Op_CompNotEqual& );
-		virtual void visit( ast::Op_LeftShift& );
-		virtual void visit( ast::Op_RightShift& );
-		virtual void visit( ast::Op_StringConcat& );
-		virtual void visit( ast::Op_PrefixIncrement& );
-		virtual void visit( ast::Op_PrefixDecrement& );
-		virtual void visit( ast::Op_PostfixIncrement& );
-		virtual void visit( ast::Op_PostfixDecrement& );
-		virtual void visit( ast::Op_Assignment& );
-		virtual void visit( ast::Op_AssignPlus& );
-		virtual void visit( ast::Op_AssignMinus& );
-		virtual void visit( ast::Op_AssignMult& );
+		virtual void visit( ast::Op_Plus& ); // Int or float
+		virtual void visit( ast::Op_Minus& ); // Int or float
+		virtual void visit( ast::Op_Mult& ); // Int or float
+		virtual void visit( ast::Op_Div& ); // Int or float
+		virtual void visit( ast::Op_Modulo& ); // Int
+		virtual void visit( ast::Op_Exponentiation& ); // Base is int of float
+		virtual void visit( ast::Op_UnaryMinus& ); // Int or float
+		virtual void visit( ast::Op_BitwiseOr& ); // int
+		virtual void visit( ast::Op_BitwiseAnd& ); // int
+		virtual void visit( ast::Op_BitwiseXor& ); // int
+		virtual void visit( ast::Op_BitwiseNot& ); // int
+		virtual void visit( ast::Op_LogicalOr& ); // bool
+		virtual void visit( ast::Op_LogicalAnd& ); // bool
+		virtual void visit( ast::Op_LogicalNot& ); // bool
+		virtual void visit( ast::Op_CompLessThan& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompGreaterThan& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompLessEqual& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompGreaterEqual& ); // Int or float for operand, returns bool
+		virtual void visit( ast::Op_CompEqual& ); // Int, float or bool, returns bool
+		virtual void visit( ast::Op_CompNotEqual& ); // Int, float or bool, returns bool
+		virtual void visit( ast::Op_LeftShift& ); // int
+		virtual void visit( ast::Op_RightShift& ); // int
+		virtual void visit( ast::Op_StringConcat& ); // string
+		virtual void visit( ast::Op_PrefixIncrement& ); // Int or float
+		virtual void visit( ast::Op_PrefixDecrement& ); // Int or float
+		virtual void visit( ast::Op_PostfixIncrement& ); // Int or float
+		virtual void visit( ast::Op_PostfixDecrement& ); // Int or float
+		virtual void visit( ast::Op_Assignment& ); // Whatever
+		virtual void visit( ast::Op_AssignPlus& ); // Int or float
+		virtual void visit( ast::Op_AssignMinus& ); // Int or float
+		virtual void visit( ast::Op_AssignMult& ); // Int or float
 		virtual void visit( ast::Op_AssignDiv& );
 		virtual void visit( ast::Op_AssignExpo& );
-		virtual void visit( ast::Op_AssignMod& );
+		virtual void visit( ast::Op_AssignMod& ); // int
 		virtual void visit( ast::Op_AssignAnd& );
 		virtual void visit( ast::Op_AssignOr& );
 		virtual void visit( ast::Op_AssignXor& );
-		virtual void visit( ast::Op_AssignConcat& );
+		virtual void visit( ast::Op_AssignConcat& ); // String
 
 		/**************************
 		 * 		Constant token    *
@@ -123,6 +135,7 @@ namespace visitor
 		 ***********************************/
 
 		virtual void visit( ast::Expression& );
+		virtual void visit( ast::ExpressionList& );
 		virtual void visit( ast::ModifyingExpression& );
 		virtual void visit( ast::DatastructureAccess& );
 
@@ -149,6 +162,7 @@ namespace visitor
 		virtual void visit( ast::Statement& );
 		virtual void visit( ast::Return& );
 		virtual void visit( ast::Menu& );
+		virtual void visit( ast::MenuBody& );
 		virtual void visit( ast::MenuDef& );
 		virtual void visit( ast::MenuCase& );
 		virtual void visit( ast::Roll& );
@@ -158,27 +172,42 @@ namespace visitor
 		virtual void visit( ast::ForUpdate& );
 		virtual void visit( ast::Conditional& );
 		virtual void visit( ast::Elseif& );
+		virtual void visit( ast::If& );
+		virtual void visit( ast::Else& );
+
 
 		void visit_children( ast::ASTNode& );
 
 		void print(std::ostream&);
 
-	private:
-		std::ostream& out_; // stream in which to write
 
+	private:
 		codegen::Builder builder;
 		codegen::Module& curr_module;
 		std::string curr_func_name;
 
-		/* Stack */
-		std::stack<codegen::Value> return_stack;
+		codegen::LabelManager label_manager;
 
-		void add_return(codegen::Value&);
-		codegen::Value pop_return();
-		bool is_stack_empty() const;
-		int get_stack_size() const;
+		symb::SymbolTable<symb::VariableInfo>& variable_table;
+		symb::SymbolTable<symb::FunctionInfo>& function_table;
+		inference::TypeSymbolTable& type_table;
+		settings::BuiltInFunctions& built_in;
 
+		/* Vector */
+		std::vector<std::shared_ptr<codegen::Value>> return_vector;
 
+		void add_return(codegen::Value*);
+		codegen::Value& top();
+		void pop();
+
+		codegen::Value& get_return_value(int n);
+		void remove_return_value(int n);
+
+		std::vector<std::shared_ptr<codegen::Value>> get_n_return_values(int n);
+		void pop_n_return_values(int n);
+
+		bool is_vector_empty() const;
+		int get_vector_size() const;
 		/*
 		llvm::Module *the_module;
 		llvm::IRBuilder<> builder;

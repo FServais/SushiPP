@@ -74,7 +74,7 @@ namespace settings
 		// these methods return relevant data only for some given settings
 		const std::string& get_ast_dump_file() const { return param_map.at('d'); }; // only if dump ast is DUMP_FILE
 		const std::string& get_input_file() const { return param_map.at('i'); }; // only if program source is FILE
-		const std::string& get_llvm_dump_file() const { return param_map.at('i'); }; // only if dump llvm is FILE
+		const std::string& get_llvm_dump_file() const { return param_map.at('l'); }; // only if dump llvm is FILE
 		
 		const std::string& get_executable_file() const { return param_map.at('o'); };
 

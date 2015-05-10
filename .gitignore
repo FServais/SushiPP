@@ -28,3 +28,6 @@ Tests/LLVM/test_for_gen.s
 Reports/Final/final_report.aux
 Reports/Final/final_report.synctex.gz
 Reports/Final/final_report.toc
+Tests/LLVM/test_llvm
+Tests/LLVM/test_llvm.bc
+Tests/LLVM/test_llvm.s

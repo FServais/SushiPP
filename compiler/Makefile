@@ -13,6 +13,7 @@ PATH_SETTINGS    = settings/
 PATH_ERRORS		 = errors/
 PATH_INFERENCE   = inference/
 PATH_CODEGEN	 = codegen/
+PATH_UTIL 		 =
 
 PATH_OBJS		 = obj/
 
@@ -22,7 +23,7 @@ OBJS_TOKENS   		= $(PATH_OBJS)Operator.o $(PATH_OBJS)Token.o $(PATH_OBJS)Constan
 OBJS_NONTERMS 		= $(PATH_OBJS)NonTerminal.o $(PATH_OBJS)NT_Datastructure.o $(PATH_OBJS)NT_Statement.o $(PATH_OBJS)NT_Program.o $(PATH_OBJS)NT_Expression.o $(PATH_OBJS)NT_Declaration.o $(PATH_OBJS)Constant.o $(PATH_OBJS)NT_Functioncall.o
 OBJS_NODE_ALL 		= $(OBJS_NODES) $(OBJS_NONTERMS) $(OBJS_TOKENS)
 OBJS_AST 	  		= $(PATH_OBJS)AbstractSyntaxTree.o
-OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o $(PATH_OBJS)TypeInferenceVisitor.o $(PATH_OBJS)SymbolTableVisitor.o  $(PATH_OBJS)FunctionTableVisitor.o 
+OBJS_VST	  		= $(PATH_OBJS)PrintASTVisitor.o $(PATH_OBJS)TypeInferenceVisitor.o $(PATH_OBJS)SymbolTableVisitor.o  $(PATH_OBJS)FunctionTableVisitor.o $(PATH_OBJS)CodeGenVisitor.o
 OBJS_EXCEP    		= $(PATH_OBJS)Exceptions.o
 OBJS_MAIN 	  		= $(PATH_OBJS)main.o
 OBJS_PARSER   		= $(PATH_OBJS)sushipp.tab.o
@@ -32,8 +33,9 @@ OBJS_SETTINGS 		= $(PATH_OBJS)CompilerSettings.o $(PATH_OBJS)BuiltInFunctions.o
 OBJS_UTIL	  		= $(PATH_OBJS)util.o
 OBJS_INFERENCE      = $(PATH_OBJS)TypeSymbol.o $(PATH_OBJS)TypeSymbolTable.o $(PATH_OBJS)Types.o $(PATH_OBJS)InferenceExceptions.o $(PATH_OBJS)TypeGen.o
 OBJS_SYMB	  		= $(PATH_OBJS)SymbolInfo.o
-OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o
+OBJS_ERRORS			= $(PATH_OBJS)ErrorItem.o $(PATH_OBJS)IOError.o $(PATH_OBJS)LexicalError.o $(PATH_OBJS)MemoryError.o $(PATH_OBJS)SemanticError.o $(PATH_OBJS)SyntaxError.o $(PATH_OBJS)GenError.o
 OBJS_ERR_HANDLER	= $(PATH_OBJS)ErrorHandler.o
+OBJS_CODEGEN		= $(PATH_OBJS)BasicBlock.o $(PATH_OBJS)Builder.o $(PATH_OBJS)FunctionBlock.o $(PATH_OBJS)Module.o $(PATH_OBJS)Value.o $(PATH_OBJS)Variable.o $(PATH_OBJS)Function.o $(PATH_OBJS)VariableManager.o $(PATH_OBJS)LabelManager.o
 
 OBJS = $(OBJS_NODE_ALL) $(OBJS_AST) $(OBJS_MAIN) $(OBJS_VST) $(OBJS_PARSER) $(OBJS_SCANNER) $(OBJS_EXCEP) $(OBJS_COMP) $(OBJS_SETTINGS) $(OBJS_SYMB) $(OBJS_UTIL) $(OBJS_ERRORS) $(OBJS_ERR_HANDLER) $(OBJS_INFERENCE) $(OBJS_CODEGEN)
 
@@ -51,8 +53,8 @@ DEP_ASTNODE_SHALLOW 	 = $(PATH_NODES)ASTNode.hpp $(PATH_NODES)NodeLocation.hpp
 DEP_VISITORS			 = $(PATH_VISITOR)ASTVisitor.hpp $(PATH_VISITOR)PrintASTVisitor.hpp $(PATH_VISITOR)FunctionTableVisitor.hpp $(PATH_VISITOR)SymbolTableVisitor.hpp $(PATH_VISITOR)CodeGenVisitor.hpp $(PATH_VISITOR)TypeInferenceVisitor.hpp
 DEP_AST 				 = $(PATH_AST)AbstractSyntaxTree.hpp $(DEP_ASTNODE_SHALLOW)
 DEP_AST_ALL  			 = $(DEP_ASTNODE_DEEP) $(PATH_AST)AbstractSyntaxTree.hpp
-DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS)
-DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)SyntaxError.hpp
+DEP_AST_ALL_VISITOR      = $(DEP_AST_ALL) $(DEP_VISITORS) 
+DEP_ERRORS				 = $(PATH_ERRORS)ErrorItem.hpp $(PATH_ERRORS)IOError.hpp $(PATH_ERRORS)LexicalError.hpp $(PATH_ERRORS)MemoryError.hpp $(PATH_ERRORS)SemanticError.hpp $(PATH_ERRORS)SyntaxError.hpp $(PATH_ERRORS)GenError.hpp
 
 DEP_SYMB				 = $(PATH_SYMB)ScopeNode.hpp $(PATH_SYMB)SymbolTable.hpp $(PATH_SYMB)SymbolInfo.hpp
 DEP_COMP				 = SppCompiler.hpp
@@ -159,22 +161,21 @@ $(PATH_OBJS)Exceptions.o: $(PATH_EXCEP)Exceptions.cpp $(PATH_EXCEP)Exceptions.hp
 $(PATH_OBJS)PrintASTVisitor.o: $(PATH_VISITOR)PrintASTVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
 	$(CC) $< -o $@ $(CCFLAGS)
 
-# Visitor #
-$(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(DEP_EXCEP) $(DEP_ERRORS)
+$(PATH_OBJS)SymbolTableVisitor.o: $(PATH_VISITOR)SymbolTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(DEP_EXCEP) $(DEP_ERRORS) $(PATH_SETTINGS)BuiltInFunctions.hpp 
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB)
+$(PATH_OBJS)FunctionTableVisitor.o: $(PATH_VISITOR)FunctionTableVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(DEP_SYMB) $(PATH_SETTINGS)BuiltInFunctions.hpp 
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(DEP_VISITORS) $(DEP_INFERENCE) $(DEP_SYMB) $(DEP_ERRORS)
+$(PATH_OBJS)TypeInferenceVisitor.o: $(PATH_VISITOR)TypeInferenceVisitor.cpp $(DEP_VISITORS) $(DEP_INFERENCE) $(DEP_SYMB) $(DEP_ERRORS) $(PATH_SETTINGS)BuiltInFunctions.hpp 
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP)
+$(PATH_OBJS)CodeGenVisitor.o: $(PATH_VISITOR)CodeGenVisitor.cpp $(DEP_VISITORS) $(DEP_ASTNODE_DEEP) $(PATH_CODEGEN)LabelManager.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 
 # Compiler #
-$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp
+$(PATH_OBJS)SppCompiler.o: SppCompiler.cpp SppCompiler.hpp $(DEP_AST_ALL_VISITOR) $(DEP_EXCEP) $(DEP_SETTINGS) $(PATH_PARSER)sushipp.tab.h $(DEP_SYMB) $(PATH_ERRORS)ErrorHandler.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Settings #
@@ -215,6 +216,9 @@ $(PATH_OBJS)SemanticError.o: $(PATH_ERRORS)SemanticError.cpp $(PATH_ERRORS)Seman
 $(PATH_OBJS)SyntaxError.o: $(PATH_ERRORS)SyntaxError.cpp $(PATH_ERRORS)SyntaxError.hpp $(PATH_ERRORS)ErrorItem.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
+$(PATH_OBJS)GenError.o: $(PATH_ERRORS)GenError.cpp $(PATH_ERRORS)GenError.hpp $(PATH_ERRORS)ErrorItem.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
 # Inference #
 $(PATH_OBJS)TypeSymbolTable.o: $(PATH_INFERENCE)TypeSymbolTable.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
@@ -232,16 +236,16 @@ $(PATH_OBJS)TypeGen.o: $(PATH_INFERENCE)TypeGen.cpp $(DEP_INFERENCE)
 	$(CC) $< -o $@ $(CCFLAGS)
 
 # Code Generation #
-$(PATH_OBJS)BasicBlock.o: $(PATH_CODEGEN)BasicBlock.cpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)Value.hpp
+$(PATH_OBJS)BasicBlock.o: $(PATH_CODEGEN)BasicBlock.cpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)Value.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)Builder.o: $(PATH_CODEGEN)Builder.cpp $(PATH_CODEGEN)Builder.hpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)VariableManager.hpp
+$(PATH_OBJS)Builder.o: $(PATH_CODEGEN)Builder.cpp $(PATH_CODEGEN)Builder.hpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)VariableManager.hpp 
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)FunctionBlock.o: $(PATH_CODEGEN)FunctionBlock.cpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_CODEGEN)BasicBlock.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
-$(PATH_OBJS)Module.o: $(PATH_CODEGEN)Module.cpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp
+$(PATH_OBJS)Module.o: $(PATH_CODEGEN)Module.cpp $(PATH_CODEGEN)Module.hpp $(PATH_CODEGEN)BasicBlock.hpp $(PATH_CODEGEN)FunctionBlock.hpp $(PATH_CODEGEN)VariableManager.hpp $(PATH_SETTINGS)BuiltInFunctions.hpp $(PATH_UTIL)util.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 $(PATH_OBJS)Value.o: $(PATH_CODEGEN)Value.cpp $(PATH_CODEGEN)Value.hpp
@@ -250,7 +254,13 @@ $(PATH_OBJS)Value.o: $(PATH_CODEGEN)Value.cpp $(PATH_CODEGEN)Value.hpp
 $(PATH_OBJS)Variable.o: $(PATH_CODEGEN)Variable.cpp $(PATH_CODEGEN)Variable.hpp $(PATH_CODEGEN)Value.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
+$(PATH_OBJS)Function.o: $(PATH_CODEGEN)Function.cpp $(PATH_CODEGEN)Function.hpp $(PATH_CODEGEN)Value.hpp $(PATH_CODEGEN)Variable.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
 $(PATH_OBJS)VariableManager.o: $(PATH_CODEGEN)VariableManager.cpp $(PATH_CODEGEN)VariableManager.hpp
+	$(CC) $< -o $@ $(CCFLAGS)
+
+$(PATH_OBJS)LabelManager.o: $(PATH_CODEGEN)LabelManager.cpp $(PATH_CODEGEN)LabelManager.hpp
 	$(CC) $< -o $@ $(CCFLAGS)
 
 

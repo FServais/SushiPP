@@ -1,10 +1,31 @@
-maki func a<function> :
-	nori (call func2 a)
-;;
-
-maki func2 b<function> :
-	nori (call func b)
-;;
-
-
-call func (soy x : nori x)
+$maki a = 2, b = 13, expo = a ** b, c = 0,
+$	 cmp1 = 5 < 6,
+$	 cmp2 = 5 <= 6,
+$	 cmp3 = 5 > 6,
+$	 cmp4 = 5 >= 6,
+$	 cmp5 = 5 == 5,
+$	 cmp6 = 5 != 6,
+$	 bit1 = a | b,
+$	 bit2 = a & b,
+$	 bit3 = a ^ b,
+$	 incr1 = ++c,
+$	 incr2 = --c$,
+$	 incr3 = c++,
+$	 incr4 = c--
+$call print-bool (expo == 8192)
+$call print-bool (bit1 == 15)
+$call print-bool (bit2 == 0)
+$call print-bool (bit3 == 15)
+$call print-bool (cmp1)
+$call print-bool (cmp2)
+$call print-bool (cmp3)
+$call print-bool (cmp4)
+$call print-bool (cmp5)
+$call print-bool (cmp6)
+$call print-bool (incr1 == 1)
+$call print-bool (incr2 == 0)
+$call print-bool (c == 0)
+$call print-int (a)
+$call print-int (b)
+maki k = #[ 1 to 3 ]#
+call print-int (call array-size-int k)
