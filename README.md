@@ -1,4 +1,4 @@
-== Sushi++ Compiler ==
+# Sushi++ Compiler
 
 At this stage, the lexer/parser part is not fully functionnal. 
 
@@ -17,15 +17,15 @@ What is not implemented or does not work yet :
 
 Nevertheless, the parser succeeds at outputting the tree form some valid programs given in this archive. Moreover, as the AST management and the visitor pattern are implemented we can start the semantic analysis while debugging the parser.
 
-== File organization ==
+## File organization
 
 The root folder contains the following packages :
 
-* compiler : contains the code, a Makefile for compiling the project, the bison and flex files,...
+- compiler : contains the code, a Makefile for compiling the project, the bison and flex files,...
 	- ast : contains the abstract syntax tree classes 
 	- scanner : the Flex file + the flex output code *.yy.c 
 	- parser : the Bison file + the bison output code *.tab.c *.tab.h
-* sample_code : Sushi+ programs that are either parsed successfully (prefix 'work_') or output a parsing error without crashing the compiler (preifx 'error_')
-* sample_code/alloc_error : Sushi++ programs that cause segfault when parsed
+- sample_code : Sushi+ programs that are either parsed successfully (prefix 'work_') or output a parsing error without crashing the compiler (preifx 'error_')
+- sample_code/alloc_error : Sushi++ programs that cause segfault when parsed
 
 
