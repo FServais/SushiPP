@@ -13,6 +13,11 @@ maki a = 3, b = 5, c = 18
 
 ```
 
+## Authors
+- Floriane Magera (flomage2612)
+- Romain Mormont (Waliens)
+- Fabrice Servais (FServais)
+
 ## Types 
 
 As said, the type system is made as unobtrusive as possible. The only presence of types in the language is the function parameters hinting mechanism : see 'Functions' section.
