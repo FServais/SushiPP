@@ -76,7 +76,7 @@ maki a = { true, false }
 
 The Sushi++ language supports a large set of operations that can be performed either on variables or literals. 
 
-![Operators](https://github.com/Waliens/SushiPP/raw/master/ops.png "Operators")
+![Operators](https://github.com/FServais/SushiPP/raw/master/ops.png "Operators")
 
 ## Conditionals
 
