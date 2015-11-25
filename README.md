@@ -3,14 +3,14 @@
 The Sushi++ language is a strongly and statically typed language. Nevertheless, to alleviate the
 programmer's work, the type system is made as unobtrusive as possible and types are inferred during compilation. 
 
-## Variables
-
-To declare a variable, one can use the keyword `maki` followed by the variable name and the assigned value.
-
 ## Authors
 - Floriane Magera (flomage2612)
 - Romain Mormont (Waliens)
 - Fabrice Servais (FServais)
+
+## Variables
+
+To declare a variable, one can use the keyword `maki` followed by the variable name and the assigned value.
 
 ```
 maki a = 2
