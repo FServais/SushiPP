@@ -7,16 +7,16 @@ programmer's work, the type system is made as unobtrusive as possible and types 
 
 To declare a variable, one can use the keyword `maki` followed by the variable name and the assigned value.
 
+## Authors
+- Floriane Magera (flomage2612)
+- Romain Mormont (Waliens)
+- Fabrice Servais (FServais)
+
 ```
 maki a = 2
 maki a = 3, b = 5, c = 18
 
 ```
-
-## Authors
-- Floriane Magera (flomage2612)
-- Romain Mormont (Waliens)
-- Fabrice Servais (FServais)
 
 ## Types 
 
